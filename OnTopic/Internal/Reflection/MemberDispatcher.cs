@@ -143,7 +143,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    internal bool SetPropertyValue(object target, string name, object? value) {
+    internal void SetPropertyValue(object target, string name, object? value) {
 
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
@@ -157,7 +157,6 @@ namespace OnTopic.Internal.Reflection {
       var valueObject = isString? GetValueObject(property.PropertyType, value as string) : value;
 
       property.SetValue(target, valueObject);
-      return true;
 
     }
 
@@ -256,7 +255,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    internal bool SetMethodValue(object target, string name, string? value) {
+    internal void SetMethodValue(object target, string name, string? value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -273,8 +272,6 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
 
-
-      return true;
       method.Invoke(target, new object?[] { valueObject });
 
     }
@@ -290,7 +287,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    internal bool SetMethodValue(object target, string name, object? value) {
+    internal void SetMethodValue(object target, string name, object? value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -311,7 +308,6 @@ namespace OnTopic.Internal.Reflection {
         valueObject = GetValueObject(method.GetParameters().First().ParameterType, valueObject as string);
       }
 
-      return true;
       method.Invoke(target, new object?[] { valueObject });
 
     }

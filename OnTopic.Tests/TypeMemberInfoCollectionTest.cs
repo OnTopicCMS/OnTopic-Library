@@ -323,11 +323,10 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
+      types.SetPropertyValue(topic, "Key", "NewKey");
 
       var key                   = types.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
 
-      Assert.IsTrue(isKeySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.AreEqual<string?>("NewKey", key);
 
@@ -348,9 +347,8 @@ namespace OnTopic.Tests {
         NullableInteger         = 5
       };
 
-      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", null);
+      types.SetPropertyValue(model, "NullableInteger", null);
 
-      Assert.IsFalse(isValueSet);
       Assert.IsNull(model.NullableInteger);
 
     }
@@ -371,9 +369,8 @@ namespace OnTopic.Tests {
         NullableInteger         = 5
       };
 
-      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", "");
+      types.SetPropertyValue(model, "NullableInteger", "");
 
-      Assert.IsFalse(isValueSet);
       Assert.IsNull(model.NullableInteger);
 
     }
@@ -410,18 +407,14 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isDateSet             = types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "2008-06-03") && isDateSet;
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "06/03/2008") && isDateSet;
-
-      var lastModified          = DateTime.Parse(
-        types.GetPropertyValue(topic, "LastModified", typeof(DateTime))?.ToString()?? "",
-        CultureInfo.InvariantCulture
-      );
-
-      Assert.IsTrue(isDateSet);
+      types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
       Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
-      Assert.AreEqual<DateTime>(new(2008, 6, 3), lastModified);
+
+      types.SetPropertyValue(topic, "LastModified", "2008-06-03");
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+
+      types.SetPropertyValue(topic, "LastModified", "06/03/2008");
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
 
     }
 
@@ -457,9 +450,8 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
+      types.SetMethodValue(source, "SetMethod", "123");
 
-      Assert.IsTrue(isValueSet);
       Assert.AreEqual<int>(123, source.GetMethod());
 
     }
@@ -477,9 +469,8 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
+      types.SetMethodValue(source, "SetMethod", "ABC");
 
-      Assert.IsFalse(isValueSet);
       Assert.AreEqual<int>(0, source.GetMethod());
 
     }
@@ -516,9 +507,8 @@ namespace OnTopic.Tests {
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new TopicViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+      types.SetMethodValue(source, "SetMethod", reference);
 
-      Assert.IsTrue(isValueSet);
       Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
 
     }
@@ -573,9 +563,8 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedReferenceViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", (object?)null);
+      types.SetMethodValue(source, "SetMethod", (object?)null);
 
-      Assert.IsFalse(isValueSet);
       Assert.IsNull(source.GetMethod());
 
     }
