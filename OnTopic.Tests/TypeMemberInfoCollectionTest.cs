@@ -323,59 +323,75 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
+      types.SetPropertyValue(topic, "Key", "NewKey");
 
       var key                   = types.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
 
-      Assert.IsTrue(isKeySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.AreEqual<string?>("NewKey", key);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: NULL VALUE: IGNORES
+    | TEST: SET PROPERTY VALUE: NULL VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
-    ///   Object, String, Object?)"/> method ignores <c>null</c> values, assuming the target property isn't a <see cref="String"
-    ///   />.
+    ///   Object, String, Object?)"/> method sets the property to <c>null</c>.
     /// </summary>
     [TestMethod]
-    public void SetPropertyValue_NullValue_Ignores() {
+    public void SetPropertyValue_NullValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
       var model                 = new NullablePropertyTopicViewModel() {
         NullableInteger         = 5
       };
 
-      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", null);
+      types.SetPropertyValue(model, "NullableInteger", null);
 
-      Assert.IsFalse(isValueSet);
-      Assert.AreEqual<int?>(5, model.NullableInteger);
+      Assert.IsNull(model.NullableInteger);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: EMPTY VALUE: IGNORES
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
-    ///   Object, String, Object?)"/> method ignores <see cref="String.Empty"/> values, assuming the target property isn't a
-    ///   <see cref="String"/>.
+    ///   Object, String, Object?)"/> sets the target property value to <c>null</c> if the value is set to <see cref="String.
+    ///   Empty"/>.
     /// </summary>
     [TestMethod]
-    public void SetPropertyValue_EmptyValue_Ignores() {
+    public void SetPropertyValue_EmptyValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
       var model                 = new NullablePropertyTopicViewModel() {
         NullableInteger         = 5
       };
 
-      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", "");
+      types.SetPropertyValue(model, "NullableInteger", "");
 
-      Assert.IsFalse(isValueSet);
-      Assert.AreEqual<int?>(5, model.NullableInteger);
+      Assert.IsNull(model.NullableInteger);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> sets the value to its default if the value is set to <see cref="String.Empty"/> and the
+    ///   target property type is not nullable.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_EmptyValue_ThrowsException() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NonNullablePropertyTopicViewModel();
+
+      types.SetPropertyValue(model, "NonNullableInteger", "ABC");
+
+      Assert.IsNotNull(model.NonNullableInteger);
 
     }
 
@@ -411,37 +427,33 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isDateSet             = types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "2008-06-03") && isDateSet;
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "06/03/2008") && isDateSet;
-
-      var lastModified          = DateTime.Parse(
-        types.GetPropertyValue(topic, "LastModified", typeof(DateTime))?.ToString()?? "",
-        CultureInfo.InvariantCulture
-      );
-
-      Assert.IsTrue(isDateSet);
+      types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
       Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
-      Assert.AreEqual<DateTime>(new(2008, 6, 3), lastModified);
+
+      types.SetPropertyValue(topic, "LastModified", "2008-06-03");
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+
+      types.SetPropertyValue(topic, "LastModified", "06/03/2008");
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
+    | TEST: SET PROPERTY VALUE: INVALID PROPERTY: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that an invalid property being set via the <see cref="
-    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method throws an <see cref="InvalidOperationException"
+    ///   />.
     /// </summary>
     [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
-
-      Assert.IsFalse(isInvalidPropertySet);
+      types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
 
     }
 
@@ -450,7 +462,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetMethodValue_ValidValue_SetsValue() {
@@ -458,9 +470,8 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
+      types.SetMethodValue(source, "SetMethod", "123");
 
-      Assert.IsTrue(isValueSet);
       Assert.AreEqual<int>(123, source.GetMethod());
 
     }
@@ -470,7 +481,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -478,29 +489,27 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
+      types.SetMethodValue(source, "SetMethod", "ABC");
 
-      Assert.IsFalse(isValueSet);
       Assert.AreEqual<int>(0, source.GetMethod());
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID MEMBER: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method throws an exception.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidMember_ReturnsFalse() {
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void SetMethodValue_InvalidMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
-
-      Assert.IsFalse(isInvalidSet);
+      types.SetMethodValue(source, "BogusMethod", "123");
 
     }
 
@@ -518,50 +527,46 @@ namespace OnTopic.Tests {
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new TopicViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+      types.SetMethodValue(source, "SetMethod", reference);
 
-      Assert.IsTrue(isValueSet);
       Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: DOESN'T SET VALUE
+    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="ArgumentException"/>.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidReferenceValue_DoesNotSetValue() {
+    [ExpectedException(typeof(ArgumentException))]
+    public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new EmptyViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
-
-      Assert.IsFalse(isValueSet);
-      Assert.IsNull(source.GetMethod());
+      types.SetMethodValue(source, "SetMethod", reference);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidReferenceMember_ReturnsFalse() {
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", new object());
-
-      Assert.IsFalse(isInvalidSet);
+      types.SetMethodValue(source, "BogusMethod", new object());
 
     }
 
@@ -578,9 +583,8 @@ namespace OnTopic.Tests {
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedReferenceViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", (object?)null);
+      types.SetMethodValue(source, "SetMethod", (object?)null);
 
-      Assert.IsFalse(isValueSet);
       Assert.IsNull(source.GetMethod());
 
     }
