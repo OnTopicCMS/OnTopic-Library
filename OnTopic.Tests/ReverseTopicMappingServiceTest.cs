@@ -412,6 +412,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: NULL TOPIC REFERENCE KEY: THROW EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the <see
+    ///   cref="IAssociatedTopicBindingModel.UniqueKey"/> is set to null.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_NullTopicReferenceKey_ThrowException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+
+      var bindingModel          = new ReferenceTopicBindingModel("AttributeDescriptor") {
+        ContentType             = "AttributeDescriptor",
+        BaseTopic               = new()
+      };
+
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES: THOWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
