@@ -70,9 +70,9 @@ namespace OnTopic.Mapping {
     /// <remarks>
     ///   <para>
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
-    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
+    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, AssociationTypes)"/>.
+    ///     upfront, and it is imperative that it be strongly typed, prefer <see cref="MapAsync{T}(Topic, AssociationTypes)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -103,6 +103,66 @@ namespace OnTopic.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Lookup type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel", $"{topic.ContentType}ViewModel");
+
+      if (viewModelType is null) {
+        throw new InvalidTypeException(
+          $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
+          $"to map the topic '{topic.GetUniqueKey()}'."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Perform mapping
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return await MapAsync(topic, viewModelType, associations, cache, attributePrefix).ConfigureAwait(false);
+
+    }
+
+    /// <summary>
+    ///   Will map a given <paramref name="topic"/> to a given <paramref name="type"/>, according to the rules of the mapping
+    ///   implementation.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
+    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
+    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, AssociationTypes)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
+    ///   </para>
+    ///   <para>
+    ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
+    ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
+    ///     <see cref="IncludeAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="type">The <see cref="Type"/> that should be used for the View Model.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
+    private async Task<object?> MapAsync(
+      Topic?                    topic,
+      Type                      type,
+      AssociationTypes          associations,
+      MappedTopicCache          cache,
+      string?                   attributePrefix                 = null
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic is null || type is null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       object? target;
@@ -119,21 +179,11 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
 
-        var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel", $"{topic.ContentType}ViewModel");
-
-        if (viewModelType is null) {
-          throw new InvalidTypeException(
-            $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
-            $"to map the topic '{topic.GetUniqueKey()}'."
-          );
-        }
-
-        target                  = Activator.CreateInstance(viewModelType);
+        target                  = Activator.CreateInstance(type);
 
         Contract.Assume(
           target,
-          $"The target type '{viewModelType}' could not be properly constructed, as required to map the topic " +
-          $"'{topic.GetUniqueKey()}'."
+          $"The target type '{type}' could not be properly constructed, as required to map the topic '{topic.GetUniqueKey()}'."
         );
 
       }
