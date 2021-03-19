@@ -334,15 +334,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: NULL VALUE: IGNORES
+    | TEST: SET PROPERTY VALUE: NULL VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
-    ///   Object, String, Object?)"/> method ignores <c>null</c> values, assuming the target property isn't a <see cref="String"
-    ///   />.
+    ///   Object, String, Object?)"/> method sets the property to <c>null</c>.
     /// </summary>
     [TestMethod]
-    public void SetPropertyValue_NullValue_Ignores() {
+    public void SetPropertyValue_NullValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
       var model                 = new NullablePropertyTopicViewModel() {
@@ -352,20 +351,20 @@ namespace OnTopic.Tests {
       var isValueSet            = types.SetPropertyValue(model, "NullableInteger", null);
 
       Assert.IsFalse(isValueSet);
-      Assert.AreEqual<int?>(5, model.NullableInteger);
+      Assert.IsNull(model.NullableInteger);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: EMPTY VALUE: IGNORES
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
-    ///   Object, String, Object?)"/> method ignores <see cref="String.Empty"/> values, assuming the target property isn't a
-    ///   <see cref="String"/>.
+    ///   Object, String, Object?)"/> sets the target property value to <c>null</c> if the value is set to <see cref="String.
+    ///   Empty"/>.
     /// </summary>
     [TestMethod]
-    public void SetPropertyValue_EmptyValue_Ignores() {
+    public void SetPropertyValue_EmptyValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
       var model                 = new NullablePropertyTopicViewModel() {
@@ -375,7 +374,7 @@ namespace OnTopic.Tests {
       var isValueSet            = types.SetPropertyValue(model, "NullableInteger", "");
 
       Assert.IsFalse(isValueSet);
-      Assert.AreEqual<int?>(5, model.NullableInteger);
+      Assert.IsNull(model.NullableInteger);
 
     }
 
