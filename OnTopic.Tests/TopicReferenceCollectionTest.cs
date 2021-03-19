@@ -418,6 +418,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: ADD: TOPIC REFERENCE WITH BUSINESS LOGIC: REMOVES REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a topic reference on a topic instance, then sets it to null, ensuring that it is correctly removed.
+    /// </summary>
+    [TestMethod]
+    public void Add_TopicReferenceWithBusinessLogic_RemovedReference() {
+
+      var topic                 = new CustomTopic("Test", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.References.SetValue("BaseTopic", reference);
+      topic.References.SetValue("BaseTopic", null);
+
+      Assert.IsNull(topic.TopicReference);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: ADD: TOPIC REFERENCE WITH BUSINESS LOGIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
