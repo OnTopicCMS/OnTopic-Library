@@ -376,6 +376,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> sets the value to its default if the value is set to <see cref="String.Empty"/> and the
+    ///   target property type is not nullable.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_EmptyValue_ThrowsException() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NonNullablePropertyTopicViewModel();
+
+      types.SetPropertyValue(model, "NonNullableInteger", "ABC");
+
+      Assert.IsNotNull(model.NonNullableInteger);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
