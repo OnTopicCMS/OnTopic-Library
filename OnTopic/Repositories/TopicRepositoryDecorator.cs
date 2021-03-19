@@ -80,6 +80,9 @@ namespace OnTopic.Repositories {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    public override Topic? Load() => Load(-1);
+
+    /// <inheritdoc />
     public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
       TopicRepository.Load(topicId, referenceTopic, isRecursive);
 

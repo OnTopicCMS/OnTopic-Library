@@ -207,6 +207,9 @@ namespace OnTopic.Repositories {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    public virtual Topic? Load() => Load(-1);
+
+    /// <inheritdoc />
     public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
