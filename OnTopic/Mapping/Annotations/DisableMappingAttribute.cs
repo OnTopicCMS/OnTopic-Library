@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using OnTopic.Mapping.Reverse;
 
 namespace OnTopic.Mapping.Annotations {
@@ -18,8 +19,8 @@ namespace OnTopic.Mapping.Annotations {
   ///   cref="IReverseTopicMappingService"/> (as in the case of e.g. <see cref="Topic.Parent"/> or <see cref="Topic.Children"/>)
   ///   or is designated for special handling by the caller, and not intended to utilize the default mapping rules.
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class DisableMappingAttribute: System.Attribute {
+  [AttributeUsage(AttributeTargets.Property)]
+  public sealed class DisableMappingAttribute: Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

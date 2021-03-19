@@ -31,8 +31,8 @@ namespace OnTopic.Mapping.Annotations {
   ///   same property would instead be mapped to <c>FirstName</c>—which could potentially introduce conflicts if there is also a
   ///   <c>FirstName</c> property on the parent object.
   /// </example>
-  [System.AttributeUsage(System.AttributeTargets.Property, Inherited=true)]
-  public sealed class MapToParentAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property, Inherited=true)]
+  public sealed class MapToParentAttribute : Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
