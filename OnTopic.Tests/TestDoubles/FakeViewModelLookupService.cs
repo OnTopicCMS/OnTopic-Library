@@ -46,6 +46,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(FlattenChildrenTopicViewModel));
       Add(typeof(InheritedPropertyTopicViewModel));
       Add(typeof(KeyOnlyTopicViewModel));
+      Add(typeof(MapAsTopicViewModel));
       Add(typeof(MapToParentTopicViewModel));
       Add(typeof(MethodBasedViewModel));
       Add(typeof(MinimumLengthPropertyTopicViewModel));
