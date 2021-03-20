@@ -167,7 +167,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       object? target;
 
-      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+      if (cache.TryGetValue(topic.Id, type, out var cacheEntry)) {
         target                  = cacheEntry.MappedTopic;
         if (cacheEntry.GetMissingAssociations(associations) == AssociationTypes.None) {
           return target;
@@ -259,7 +259,7 @@ namespace OnTopic.Mapping {
       | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
       | If it doesn't, determine the missing associations and request to have those mapped.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+      if (cache.TryGetValue(topic.Id, target.GetType(), out var cacheEntry)) {
         associations            = cacheEntry.GetMissingAssociations(associations);
         target                  = cacheEntry.MappedTopic;
         if (associations == AssociationTypes.None) {
@@ -270,10 +270,8 @@ namespace OnTopic.Mapping {
       else if (!topic.IsNew) {
         cache.GetOrAdd(
           topic.Id,
-          new MappedTopicCacheEntry() {
-            MappedTopic         = target,
-            Associations        = associations
-          }
+          associations,
+          target
         );
       }
 
