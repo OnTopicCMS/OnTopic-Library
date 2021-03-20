@@ -405,6 +405,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that entries are <i>not</i> added when using <see cref=
+    ///   "MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> doesn't add entries with <see cref="Topic.IsNew"/>,
+    ///   null view models, or of type <see cref="Object"/>.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_GetOrAdd_ReturnsNull() {
+
+      var cache                 = new MappedTopicCache();
+
+      cache.GetOrAdd(0, AssociationTypes.None, new EmptyViewModel());
+      cache.GetOrAdd(1, AssociationTypes.None, new object());
+
+      Assert.AreEqual<int>(0, cache.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
