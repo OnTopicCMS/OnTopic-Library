@@ -379,6 +379,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: RETURNS EXISTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that the existing entry is returned when calling <see
+    ///   cref="MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> with duplicate parameters.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_GetOrAdd_ReturnsExisting() {
+
+      var cache                 = new MappedTopicCache();
+      var cacheKey              = (1, typeof(EmptyViewModel));
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        MappedTopic             = new EmptyViewModel(),
+        Associations            = AssociationTypes.None
+      };
+
+      cache.TryAdd(cacheKey, cacheEntry);
+
+      var result                = cache.GetOrAdd(1, AssociationTypes.None, new EmptyViewModel());
+
+      Assert.AreEqual<int>(1, cache.Count);
+      Assert.AreEqual<MappedTopicCacheEntry>(cacheEntry, result);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
