@@ -325,6 +325,33 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: TRY GET VALUE: RETURNS ENTRY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref="
+    ///   MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_TryGetValue_ReturnsEntry() {
+
+      var cache                 = new MappedTopicCache();
+      var topicId               = 1;
+      var type                  = typeof(EmptyViewModel);
+      var cacheKey              = (topicId, type);
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        MappedTopic             = new EmptyViewModel(),
+        Associations            = AssociationTypes.None
+      };
+      cache.TryAdd(cacheKey, cacheEntry);
+
+      var isSuccess             = cache.TryGetValue(topicId, type, out var result);
+
+      Assert.IsTrue(isSuccess);
+      Assert.AreEqual<MappedTopicCacheEntry>(cacheEntry, result);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
