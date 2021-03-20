@@ -702,6 +702,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: MAP AS: RETURNS TOPIC REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps a topic reference using the
+    ///   type specified in the <see cref="MapAsAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_MapAs_ReturnsTopicReference() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var topicReference        = _topicRepository.Load(11111);
+
+      Contract.Assume(topicReference);
+
+      var topic                 = TopicFactory.Create("Test", "MapAs");
+
+      topic.References.SetValue("TopicReference", topicReference);
+
+      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target?.TopicReference);
+      Assert.AreEqual<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference.GetType());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES AS ATTRIBUTE: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
