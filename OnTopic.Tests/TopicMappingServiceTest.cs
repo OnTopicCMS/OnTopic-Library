@@ -728,6 +728,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: MAP AS: RETURNS RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps a relationship collection using
+    ///   the type specified in the <see cref="MapAsAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_MapAs_ReturnsRelationships() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var relatedTopic          = _topicRepository.Load(11111);
+
+      Contract.Assume(relatedTopic);
+
+      var topic                 = TopicFactory.Create("Test", "MapAs");
+
+      topic.Relationships.SetValue("Relationships", relatedTopic);
+
+      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int?>(1, target?.Relationships.Count);
+      Assert.AreEqual<Type?>(typeof(AscendentTopicViewModel), target?.Relationships.FirstOrDefault()?.GetType());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES AS ATTRIBUTE: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
