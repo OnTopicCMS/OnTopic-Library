@@ -325,6 +325,106 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: TRY GET VALUE: RETURNS ENTRY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref="
+    ///   MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_TryGetValue_ReturnsEntry() {
+
+      var cache                 = new MappedTopicCache();
+      var topicId               = 1;
+      var type                  = typeof(EmptyViewModel);
+      var cacheKey              = (topicId, type);
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        MappedTopic             = new EmptyViewModel(),
+        Associations            = AssociationTypes.None
+      };
+      cache.TryAdd(cacheKey, cacheEntry);
+
+      var isSuccess             = cache.TryGetValue(topicId, type, out var result);
+
+      Assert.IsTrue(isSuccess);
+      Assert.AreEqual<MappedTopicCacheEntry>(cacheEntry, result);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: TRY GET VALUE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that it is not returned via <see cref="MappedTopicCache
+    ///   .TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/> if the <see cref="Type"/> doesn't match.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_TryGetValue_ReturnsNull() {
+
+      var cache                 = new MappedTopicCache();
+      var topicId               = 1;
+      var type                  = typeof(EmptyViewModel);
+      var cacheKey              = (topicId, type);
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        MappedTopic             = new EmptyViewModel(),
+        Associations            = AssociationTypes.None
+      };
+      cache.TryAdd(cacheKey, cacheEntry);
+
+      var isSuccess             = cache.TryGetValue(topicId, typeof(TopicViewModel), out var result);
+
+      Assert.IsFalse(isSuccess);
+      Assert.IsNull(result);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: RETURNS EXISTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that the existing entry is returned when calling <see
+    ///   cref="MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> with duplicate parameters.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_GetOrAdd_ReturnsExisting() {
+
+      var cache                 = new MappedTopicCache();
+      var cacheKey              = (1, typeof(EmptyViewModel));
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        MappedTopic             = new EmptyViewModel(),
+        Associations            = AssociationTypes.None
+      };
+
+      cache.TryAdd(cacheKey, cacheEntry);
+
+      var result                = cache.GetOrAdd(1, AssociationTypes.None, new EmptyViewModel());
+
+      Assert.AreEqual<int>(1, cache.Count);
+      Assert.AreEqual<MappedTopicCacheEntry>(cacheEntry, result);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that entries are <i>not</i> added when using <see cref=
+    ///   "MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> doesn't add entries with <see cref="Topic.IsNew"/>,
+    ///   null view models, or of type <see cref="Object"/>.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_GetOrAdd_ReturnsNull() {
+
+      var cache                 = new MappedTopicCache();
+
+      cache.GetOrAdd(0, AssociationTypes.None, new EmptyViewModel());
+      cache.GetOrAdd(1, AssociationTypes.None, new object());
+
+      Assert.AreEqual<int>(0, cache.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -598,6 +698,58 @@ namespace OnTopic.Tests {
       Assert.AreEqual<string?>("Test", target?.Primary?.Key);
       Assert.AreEqual<string?>("Aliased Key", target?.Alternate?.Key);
       Assert.AreEqual<string?>("Ancillary Key", target?.Ancillary?.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: MAP AS: RETURNS TOPIC REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps a topic reference using the
+    ///   type specified in the <see cref="MapAsAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_MapAs_ReturnsTopicReference() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var topicReference        = _topicRepository.Load(11111);
+
+      Contract.Assume(topicReference);
+
+      var topic                 = TopicFactory.Create("Test", "MapAs");
+
+      topic.References.SetValue("TopicReference", topicReference);
+
+      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target?.TopicReference);
+      Assert.AreEqual<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference.GetType());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: MAP AS: RETURNS RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps a relationship collection using
+    ///   the type specified in the <see cref="MapAsAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_MapAs_ReturnsRelationships() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var relatedTopic          = _topicRepository.Load(11111);
+
+      Contract.Assume(relatedTopic);
+
+      var topic                 = TopicFactory.Create("Test", "MapAs");
+
+      topic.Relationships.SetValue("Relationships", relatedTopic);
+
+      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int?>(1, target?.Relationships.Count);
+      Assert.AreEqual<Type?>(typeof(AscendentTopicViewModel), target?.Relationships.FirstOrDefault()?.GetType());
 
     }
 

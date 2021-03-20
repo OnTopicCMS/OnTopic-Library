@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -22,8 +23,8 @@ namespace OnTopic.Mapping.Annotations {
   ///     of a specific view model type), as it allows a list to provide, effectively, search results.
   ///   </para>
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class FlattenAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property)]
+  public sealed class FlattenAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
