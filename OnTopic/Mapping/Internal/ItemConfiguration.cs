@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Collections.Specialized;
@@ -17,15 +16,15 @@ using OnTopic.Mapping.Annotations;
 namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
-  | CLASS: PROPERTY ATTRIBUTES
+  | CLASS: ITEM CONFIGURATION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Evaluates a <see cref="PropertyInfo"/> instance for known <see cref="Attribute"/>, and exposes them through a set of
-  ///   property values.
+  ///   Evaluates the <see cref="ICustomAttributeProvider"/> for a given instance for a <see cref="ParameterInfo"/> or <see cref
+  ///   ="PropertyInfo"/>, and exposes known <see cref="Attribute"/>s through a set of property values.
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     The <see cref="PropertyConfiguration"/> class is utilized by implementations of <see cref="ITopicMappingService"/> to
+  ///     The <see cref="ItemConfiguration"/> class is utilized by implementations of <see cref="ITopicMappingService"/> to
   ///     facilitate the mapping of source <see cref="Topic"/> instances to Data Transfer Objects (DTOs), such as View Models.
   ///     The attribute values provide hints to the mapping service that help manage how the mapping occurs.
   ///   </para>
@@ -35,34 +34,42 @@ namespace OnTopic.Mapping.Internal {
   ///     then the <see cref="ITopicMappingService"/> will instead use the value defined by that attribute, thus allowing a
   ///     property on the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
   ///   </para>
+  ///   <para>
+  ///     The <see cref="ItemConfiguration"/> works with both <see cref="ParameterInfo"/> and <see cref="PropertyInfo"/>
+  ///     instances, whereas the <see cref="PropertyConfiguration"/> works exclusively with <see cref="PropertyInfo"/> instances.
+  ///   </para>
   /// </remarks>
-  internal class PropertyConfiguration {
+  internal class ItemConfiguration {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="PropertyInfo"/> instance, exposes a set of properties associated with known <see cref="Attribute"/>
-    ///   instances.
+    ///   Given an <see cref="ICustomAttributeProvider"/> instance, exposes a set of properties associated with known <see cref=
+    ///   "Attribute"/> instances.
     /// </summary>
-    /// <param name="property">The <see cref="PropertyInfo"/> instance to check for <see cref="Attribute"/> values.</param>
+    /// <param name="source">
+    ///   The <see cref="ICustomAttributeProvider"/> instance to check for <see cref="Attribute"/> values.
+    /// </param>
+    /// <param name="name">The name of the <see cref="ParameterInfo"/> or <see cref="PropertyInfo"/>.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal PropertyConfiguration(PropertyInfo property, string? attributePrefix = "") {
+    internal ItemConfiguration(ICustomAttributeProvider source, string name, string? attributePrefix = "") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(property, nameof(property));
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set backing property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Property = property;
+      Source = source;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeKey              = attributePrefix + property.Name;
+      AttributeKey              = attributePrefix + name;
       AttributePrefix           = attributePrefix;
       DefaultValue              = null;
       InheritValue              = false;
@@ -77,23 +84,23 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<MapAsAttribute>(property,               a => MapAs = a.Type);
-      GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
-      GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
-      GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
-      GetAttributeValue<IncludeAttribute>(property,             a => IncludeAssociations = a.Associations);
-      GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
-      GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
-      GetAttributeValue<FilterByContentTypeAttribute>(property, a => ContentTypeFilter = a.ContentType);
+      GetAttributeValue<MapAsAttribute>(source,               a => MapAs = a.Type);
+      GetAttributeValue<DefaultValueAttribute>(source,        a => DefaultValue = a.Value);
+      GetAttributeValue<InheritAttribute>(source,             a => InheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(source,        a => AttributeKey = attributePrefix + a.Key);
+      GetAttributeValue<MapToParentAttribute>(source,         a => MapToParent = true);
+      GetAttributeValue<MapToParentAttribute>(source,         a => AttributePrefix += (a.AttributePrefix?? name));
+      GetAttributeValue<IncludeAttribute>(source,             a => IncludeAssociations = a.Associations);
+      GetAttributeValue<FlattenAttribute>(source,             a => FlattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(source,            a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(source,      a => DisableMapping = true);
+      GetAttributeValue<FilterByContentTypeAttribute>(source, a => ContentTypeFilter = a.ContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine collection key and type
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<CollectionAttribute>(
-        property,
+        source,
         a => {
           CollectionKey = a.Key ?? CollectionKey;
           CollectionType = a.Type;
@@ -107,9 +114,9 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute is not null && filterByAttribute.Any()) {
-        foreach (var filter in filterByAttribute) {
+      var filterByAttributes = (FilterByAttributeAttribute[])source.GetCustomAttributes(typeof(FilterByAttributeAttribute), true);
+      if (filterByAttributes is not null && filterByAttributes.Any()) {
+        foreach (var filter in filterByAttributes) {
           AttributeFilters.Add(filter.Key, filter.Value);
         }
       }
@@ -117,12 +124,12 @@ namespace OnTopic.Mapping.Internal {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: PROPERTY
+    | PROPERTY: SOURCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   The <see cref="PropertyInfo"/> that the current <see cref="PropertyConfiguration"/> is associated with.
+    ///   The <see cref="ICustomAttributeProvider"/> that the current <see cref="ItemConfiguration"/> is associated with.
     /// </summary>
-    internal PropertyInfo Property { get; }
+    internal ICustomAttributeProvider Source { get; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE KEY
@@ -442,20 +449,6 @@ namespace OnTopic.Mapping.Internal {
       );
 
     /*==========================================================================================================================
-    | METHOD: VALIDATE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a target DTO, will automatically identify any attributes that derive from <see cref="ValidationAttribute"/> and
-    ///   ensure that their conditions are satisfied.
-    /// </summary>
-    /// <param name="target">The target DTO to validate the current property on.</param>
-    internal void Validate(object target) {
-      foreach (ValidationAttribute validator in Property.GetCustomAttributes(typeof(ValidationAttribute))) {
-        validator.Validate(Property.GetValue(target), Property.Name);
-      }
-    }
-
-    /*==========================================================================================================================
     | PRIVATE: GET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -463,12 +456,12 @@ namespace OnTopic.Mapping.Internal {
     ///   results.
     /// </summary>
     /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
-    /// <param name="property">The <see cref="PropertyInfo"/> instance to pull the attribute from.</param>
+    /// <param name="source">The <see cref="ICustomAttributeProvider"/> instance to pull the attribute from.</param>
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
-    private static void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
-      var attribute = (T?)property.GetCustomAttribute(typeof(T), true);
-      if (attribute is not null) {
-        action(attribute);
+    private static void GetAttributeValue<T>(ICustomAttributeProvider source, Action<T> action) where T : Attribute {
+      var attributes = (T[])source.GetCustomAttributes(typeof(T), true);
+      if (attributes is not null) {
+        action(attributes.FirstOrDefault());
       }
     }
 
