@@ -459,9 +459,9 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="source">The <see cref="ICustomAttributeProvider"/> instance to pull the attribute from.</param>
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
     private static void GetAttributeValue<T>(ICustomAttributeProvider source, Action<T> action) where T : Attribute {
-      var attributes = (T[])source.GetCustomAttributes(typeof(T), true);
-      if (attributes is not null) {
-        action(attributes.FirstOrDefault());
+      var attribute = (T)source.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+      if (attribute is not null) {
+        action(attribute);
       }
     }
 
