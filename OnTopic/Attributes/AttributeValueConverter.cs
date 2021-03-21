@@ -111,5 +111,50 @@ namespace OnTopic.Attributes {
     /// <inheritdoc/>
     internal static T? Convert<T>(string? value) => (T?)Convert(value, typeof(T))?? default;
 
+    /// <summary>
+    ///   Converts the supplied <paramref name="value"/> to an object of type <see cref="String"/>.
+    /// </summary>
+    /// <param name="value">The value to convert to a <see cref="String"/>.</param>
+    /// <returns>An instance of the <paramref name="value"/> as a <see cref="String"/>.</returns>
+    internal static string? Convert(object? value) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle null values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (value is null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle type-specific rules
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var type                  = value.GetType();
+
+      if (type.Equals(typeof(string))) {
+        return (string)value;
+      }
+      else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
+        return ((bool)value) ? "1" : "0";
+      }
+      else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
+        return ((int)value).ToString(CultureInfo.InvariantCulture);
+      }
+      else if (type.Equals(typeof(double)) || type.Equals(typeof(double?))) {
+        return ((double)value).ToString(CultureInfo.InvariantCulture);
+      }
+      else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
+        return ((DateTime)value).ToString(CultureInfo.InvariantCulture);
+      }
+      else if (type.Equals(typeof(Uri))) {
+        return ((Uri)value).ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Fallback to default
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return value.ToString();
+
+    }
+
   }
 }
