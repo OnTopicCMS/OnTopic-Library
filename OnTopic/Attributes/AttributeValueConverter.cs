@@ -108,5 +108,8 @@ namespace OnTopic.Attributes {
 
     }
 
+    /// <inheritdoc/>
+    internal static T? Convert<T>(string? value) => (T?)Convert(value, typeof(T))?? default;
+
   }
 }
