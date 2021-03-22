@@ -508,6 +508,58 @@ namespace OnTopic.Mapping {
     }
 
     /*==========================================================================================================================
+    | PRIVATE: INITIALIZE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a collection type, attempts to initialize a compatible type.
+    /// </summary>
+    /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
+    private static IList? InitializeCollection(Type targetType) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(targetType, nameof(targetType));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Escape clause if preconditions are not met
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!typeof(IList).IsAssignableFrom(targetType)) {
+        return (IList?)null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to create specific type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!targetType.IsInterface && !targetType.IsAbstract) {
+        return (IList?)Activator.CreateInstance(targetType);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle types that don't implement IList
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (targetType != typeof(IList<>)) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to create generic list
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var constructor           = targetType.GetConstructor(Array.Empty<Type>());
+      var parameters            = targetType.GetGenericArguments();
+
+      if (constructor is null || parameters.Length != 1) {
+        return null;
+      }
+
+      var genericType           = typeof(List<>);
+      var concreteType          = genericType.MakeGenericType(parameters);
+
+      return (IList?)Activator.CreateInstance(concreteType);
+
+    }
+
+    /*==========================================================================================================================
     | PRIVATE: SET COLLECTION VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -555,7 +607,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var targetList = (IList?)configuration.Property.GetValue(target, null);
       if (targetList is null) {
-        targetList = (IList?)Activator.CreateInstance(configuration.Property.PropertyType);
+        targetList = InitializeCollection(configuration.Property.PropertyType);
         configuration.Property.SetValue(target, targetList);
       }
 
