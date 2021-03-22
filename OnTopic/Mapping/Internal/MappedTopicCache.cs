@@ -67,6 +67,44 @@ namespace OnTopic.Mapping.Internal {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId > 0 && !type.Equals(typeof(object))) {
         return GetOrAdd(cacheKey, cacheEntry);
+
+    /*==========================================================================================================================
+    | METHOD: PREREGISTER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to preregister a <see cref="MappedTopicCacheEntry"/> for a <see cref="Topic"/> that is in the process of
+    ///   being mapped to <paramref name="type"/>.
+    /// </summary>
+    /// <param name="topicId">The <see cref="Topic.Id"/> associated with the cache entry.</param>
+    /// <param name="type">The <see cref="Type"/> that the <see cref="Topic"/> is being mapped to.</param>
+    internal MappedTopicCacheEntry Preregister(int topicId, Type type) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topicId, nameof(topicId));
+      Contract.Requires(type, nameof(type));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Construct cache entry
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var cacheKey = GetCacheKey(topicId, type);
+      var cacheEntry = new MappedTopicCacheEntry() {
+        IsInitializing = true
+      };
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get or add entry
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicId > 0 && !type.Equals(typeof(object))) {
+        var existingCacheEntry  = GetOrAdd(cacheKey, cacheEntry);
+        if (existingCacheEntry != cacheEntry) {
+          throw new TopicMappingException(
+            $"An attempt has been made to map '{topicId}' to a {type.Name} has resulted in a circular reference during the " +
+            $"construction of the {type.Name} instance. This is not allowed. Circular must be be mapped as properties, not " +
+            $"as constructor parameters, so that cached entries can be returned."
+          );
+        }
       }
       return cacheEntry;
 
