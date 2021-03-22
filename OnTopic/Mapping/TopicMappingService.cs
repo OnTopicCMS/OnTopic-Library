@@ -165,33 +165,82 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      object? target;
+      var target                = (object?)null;
 
       if (cache.TryGetValue(topic.Id, type, out var cacheEntry)) {
         target                  = cacheEntry.MappedTopic;
         if (cacheEntry.GetMissingAssociations(associations) == AssociationTypes.None) {
           return target;
         }
+        //Call MapAsync() with target object to map missing attributes
+        return await MapAsync(topic, target, associations, cache, attributePrefix).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Instantiate object
+      | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else {
+      var constructorInfo       = _typeCache.GetMembers<ConstructorInfo>(type).Where(c => c.IsPublic).FirstOrDefault();
+      var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
+      var arguments             = new object?[parameters.Length];
 
-        target                  = Activator.CreateInstance(type);
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Pre-cache entry
+      >-------------------------------------------------------------------------------------------------------------------------
+      | In property mapping, we deal with circular references by returning a cached reference. That isn't practical with
+      | circular references in constructor mapping. To help avoid these, we register a pre-cache entry as IsInitializing, but
+      | without a mapped object; the TopicMappingCache is expected to throw an exception if an attempt to map that topic to that
+      | type occurs again prior to the constructor mapping being completed.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      cache.Preregister(topic.Id, type);
 
-        Contract.Assume(
-          target,
-          $"The target type '{type}' could not be properly constructed, as required to map the topic '{topic.GetUniqueKey()}'."
-        );
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var parameterQueue        = new Dictionary<int, Task<object?>>();
 
+      foreach (var parameter in parameters) {
+        parameterQueue.Add(parameter.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
+      }
+
+      await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
+
+      foreach (var parameter in parameterQueue) {
+        arguments[parameter.Key] = parameter.Value.Result;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Provide mapping
+      | Initialize object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return await MapAsync(topic, target, associations, cache, attributePrefix).ConfigureAwait(false);
+      target = Activator.CreateInstance(type, arguments);
+
+      Contract.Assume(
+        target,
+        $"The target type '{type}' could not be properly constructed, as required to map the topic '{topic.GetUniqueKey()}'."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Cache object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      cache.Register(topic.Id, associations, target);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through properties, mapping each one
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var propertyQueue         = new List<Task>();
+      var mappedParameters      = parameters.Select(p => p.Name);
+
+      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
+        if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
+          propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false));
+        }
+      }
+
+      await Task.WhenAll(propertyQueue.ToArray()).ConfigureAwait(false);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return target
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return target;
 
     }
 
@@ -278,9 +327,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue = new List<Task>();
+      var taskQueue             = new List<Task>();
+
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry != null));
+        taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
