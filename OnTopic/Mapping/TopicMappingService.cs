@@ -248,11 +248,11 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      return (T?)await MapAsync(topic, new T(), associations).ConfigureAwait(false);
+      return (T?)await MapAsync(topic, typeof(T), associations, new()).ConfigureAwait(false);
     }
 
     /*==========================================================================================================================
