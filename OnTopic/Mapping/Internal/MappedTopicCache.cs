@@ -16,7 +16,12 @@ namespace OnTopic.Mapping.Internal {
   /// <summary>
   ///   Provides a collection intended to track local caching of objects mapped using the <see cref="TopicMappingService"/>.
   /// </summary>
-  internal class MappedTopicCache: ConcurrentDictionary<(int, Type), MappedTopicCacheEntry> {
+  internal class MappedTopicCache {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private readonly            ConcurrentDictionary<(int, Type), MappedTopicCacheEntry>        _cache = new();
 
     /*==========================================================================================================================
     | METHOD: TRY GET VALUE
@@ -31,7 +36,7 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="cacheEntry">The <see cref="MappedTopicCacheEntry"/> containing the cached instance and metadata.</param>
     /// <returns>Returns <c>true</c> if a cached entry could be found, and otherwise <c>false</c>.</returns>
     internal bool TryGetValue(int topicId, Type type, out MappedTopicCacheEntry cacheEntry) =>
-      TryGetValue(GetCacheKey(topicId, type), out cacheEntry);
+      _cache.TryGetValue(GetCacheKey(topicId, type), out cacheEntry);
 
     /*==========================================================================================================================
     | METHOD: GET OR ADD
@@ -66,7 +71,7 @@ namespace OnTopic.Mapping.Internal {
       | Get or add entry
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId > 0 && !type.Equals(typeof(object))) {
-        cacheEntry = GetOrAdd(cacheKey, cacheEntry);
+        cacheEntry = _cache.GetOrAdd(cacheKey, cacheEntry);
         if (cacheEntry.IsInitializing) {
           cacheEntry.IsInitializing = false;
           cacheEntry.MappedTopic = viewModel;
@@ -106,7 +111,7 @@ namespace OnTopic.Mapping.Internal {
       | Get or add entry
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId > 0 && !type.Equals(typeof(object))) {
-        var existingCacheEntry  = GetOrAdd(cacheKey, cacheEntry);
+        var existingCacheEntry  = _cache.GetOrAdd(cacheKey, cacheEntry);
         if (existingCacheEntry != cacheEntry) {
           throw new TopicMappingException(
             $"An attempt has been made to map '{topicId}' to a {type.Name} has resulted in a circular reference during the " +

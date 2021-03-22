@@ -337,13 +337,8 @@ namespace OnTopic.Tests {
       var cache                 = new MappedTopicCache();
       var topicId               = 1;
       var type                  = typeof(EmptyViewModel);
-      var cacheKey              = (topicId, type);
-      var cacheEntry            = new MappedTopicCacheEntry() {
-        MappedTopic             = new EmptyViewModel(),
-        Associations            = AssociationTypes.None
-      };
-      cache.TryAdd(cacheKey, cacheEntry);
 
+      var cacheEntry            = cache.GetOrAdd(topicId, AssociationTypes.None, new EmptyViewModel());
       var isSuccess             = cache.TryGetValue(topicId, type, out var result);
 
       Assert.IsTrue(isSuccess);
@@ -363,13 +358,7 @@ namespace OnTopic.Tests {
 
       var cache                 = new MappedTopicCache();
       var topicId               = 1;
-      var type                  = typeof(EmptyViewModel);
-      var cacheKey              = (topicId, type);
-      var cacheEntry            = new MappedTopicCacheEntry() {
-        MappedTopic             = new EmptyViewModel(),
-        Associations            = AssociationTypes.None
-      };
-      cache.TryAdd(cacheKey, cacheEntry);
+      _                         = cache.GetOrAdd(topicId, AssociationTypes.None, new EmptyViewModel());
 
       var isSuccess             = cache.TryGetValue(topicId, typeof(TopicViewModel), out var result);
 
@@ -389,38 +378,51 @@ namespace OnTopic.Tests {
     public void MappedTopicCache_GetOrAdd_ReturnsExisting() {
 
       var cache                 = new MappedTopicCache();
-      var cacheKey              = (1, typeof(EmptyViewModel));
-      var cacheEntry            = new MappedTopicCacheEntry() {
-        MappedTopic             = new EmptyViewModel(),
-        Associations            = AssociationTypes.None
-      };
 
-      cache.TryAdd(cacheKey, cacheEntry);
-
+      var cacheEntry            = cache.GetOrAdd(1, AssociationTypes.None, new EmptyViewModel());
       var result                = cache.GetOrAdd(1, AssociationTypes.None, new EmptyViewModel());
 
-      Assert.AreEqual<int>(1, cache.Count);
       Assert.AreEqual<MappedTopicCacheEntry>(cacheEntry, result);
 
     }
 
     /*==========================================================================================================================
-    | TEST: MAPPED TOPIC CACHE: GET OR ADD: RETURNS NULL
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: NEW TOPIC: IS NOT CACHED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that entries are <i>not</i> added when using <see cref=
-    ///   "MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> doesn't add entries with <see cref="Topic.IsNew"/>,
-    ///   null view models, or of type <see cref="Object"/>.
+    ///   "MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> doesn't add entries with <see cref="Topic.IsNew"/>.
     /// </summary>
     [TestMethod]
-    public void MappedTopicCache_GetOrAdd_ReturnsNull() {
+    public void MappedTopicCache_GetOrAdd_NewTopic_IsNotCached() {
 
       var cache                 = new MappedTopicCache();
+      _                         = cache.GetOrAdd(-1, AssociationTypes.None, new EmptyViewModel());
+      var isSuccess             = cache.TryGetValue(-1, typeof(EmptyViewModel), out var result);
 
-      cache.GetOrAdd(0, AssociationTypes.None, new EmptyViewModel());
-      cache.GetOrAdd(1, AssociationTypes.None, new object());
+      Assert.IsFalse(isSuccess);
+      Assert.IsNull(result);
 
-      Assert.AreEqual<int>(0, cache.Count);
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE: GET OR ADD: OBJECT: IS NOT CACHED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that entries are <i>not</i> added when using <see cref=
+    ///   "MappedTopicCache.GetOrAdd(Int32, AssociationTypes, Object)"/> doesn't add entries with view models of type <see cref=
+    ///   "Object"/>.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCache_GetOrAdd_IsNotCached() {
+
+      var cache                 = new MappedTopicCache();
+      _                         = cache.GetOrAdd(1, AssociationTypes.None, new object());
+      var isSuccess             = cache.TryGetValue(-1, typeof(object), out var result);
+
+      Assert.IsFalse(isSuccess);
+      Assert.IsNull(result);
+      Assert.IsNull(result);
 
     }
 
