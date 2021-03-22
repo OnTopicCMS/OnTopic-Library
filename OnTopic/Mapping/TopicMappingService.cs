@@ -292,6 +292,69 @@ namespace OnTopic.Mapping {
     }
 
     /*==========================================================================================================================
+    | PRIVATE: GET PARAMETER (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <paramref name="parameter"/>, retrieves the appropriate value from the corresponding <paramref name="source"/>
+    ///   topic, while honoring <paramref name="associations"/>.
+    /// </summary>
+    /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
+    /// <param name="parameter">Information related to the current parameter.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    private async Task<object?> GetParameterAsync(
+      Topic source,
+      AssociationTypes associations,
+      ParameterInfo parameter,
+      MappedTopicCache cache,
+      string? attributePrefix = null
+    ) {
+
+      var configuration = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
+
+      if (configuration.DisableMapping) {
+        return null;
+      }
+
+      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
+
+      if (value is null && typeof(IList).IsAssignableFrom(parameter.ParameterType)) {
+        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
+      }
+      else if (configuration.MapToParent) {
+        return await MapAsync(
+          source,
+          parameter.ParameterType,
+          associations,
+          cache,
+          configuration.AttributePrefix
+        ).ConfigureAwait(false);
+      }
+
+      return value;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get List Function
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      async Task<IList?> getList(Type targetType, ItemConfiguration configuration) {
+
+        var sourceList = GetSourceCollection(source, associations, configuration);
+        var targetList = InitializeCollection(targetType);
+
+        if (sourceList is null || targetList is null) {
+          return (IList?)null;
+        }
+
+        await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache).ConfigureAwait(false);
+
+        return targetList;
+
+      }
+
+    }
+
+    /*==========================================================================================================================
     | PRIVATE: SET PROPERTY (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
