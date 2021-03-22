@@ -23,7 +23,7 @@ namespace OnTopic.Mapping.Annotations {
   ///     of a specific view model type), as it allows a list to provide, effectively, search results.
   ///   </para>
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class FlattenAttribute : Attribute {
 
     /*==========================================================================================================================

@@ -22,7 +22,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   "TrackedRecordCollection{TItem, TValue, TAttribute}"/> to crawl up the <see cref="Topic.Parent"/> tree until a value is
   ///   found. This is useful when an attribute is expected to be inherited by all child topics.
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class InheritAttribute : Attribute {
 
   } //Class

@@ -19,7 +19,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   assignable to the collection's base type. With the <c>[FilterByAttribute(attributeKey, attributeValue)]</c> attribute,
   ///   the collection will instead be filtered to only those topics that have the specified attribute value assigned.
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property, AllowMultiple=true, Inherited=true)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple=true, Inherited=true)]
   public sealed class FilterByAttributeAttribute : Attribute {
 
     /*==========================================================================================================================

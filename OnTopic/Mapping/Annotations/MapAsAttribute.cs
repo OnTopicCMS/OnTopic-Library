@@ -31,7 +31,7 @@ namespace OnTopic.Mapping.Annotations {
   ///     part of the request.
   ///   </para>
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class MapAsAttribute : Attribute {
 
     /*==========================================================================================================================
