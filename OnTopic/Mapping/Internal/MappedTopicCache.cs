@@ -39,7 +39,7 @@ namespace OnTopic.Mapping.Internal {
       _cache.TryGetValue(GetCacheKey(topicId, type), out cacheEntry);
 
     /*==========================================================================================================================
-    | METHOD: GET OR ADD
+    | METHOD: REGISTER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Attempts to add a new <see cref="MappedTopicCacheEntry"/> to the collection based on the <paramref name="topicId"/>,
@@ -48,7 +48,7 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="topicId">The <see cref="Topic.Id"/> associated with the cache entry.</param>
     /// <param name="associations">The <see cref="AssociationTypes"/> used to map the current view model.</param>
     /// <param name="viewModel">The mapped view model associated with the <paramref name="topicId"/>.</param>
-    internal MappedTopicCacheEntry GetOrAdd(int topicId, AssociationTypes associations, object viewModel) {
+    internal void Register(int topicId, AssociationTypes associations, object viewModel) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -78,7 +78,6 @@ namespace OnTopic.Mapping.Internal {
           cacheEntry.Associations = associations;
         }
       }
-      return cacheEntry;
 
     }
 

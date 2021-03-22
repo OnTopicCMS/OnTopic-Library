@@ -268,7 +268,7 @@ namespace OnTopic.Mapping {
         cacheEntry.AddMissingAssociations(associations);
       }
       else if (!topic.IsNew) {
-        cache.GetOrAdd(
+        cache.Register(
           topic.Id,
           associations,
           target
