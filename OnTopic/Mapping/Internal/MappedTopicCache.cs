@@ -66,7 +66,16 @@ namespace OnTopic.Mapping.Internal {
       | Get or add entry
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId > 0 && !type.Equals(typeof(object))) {
-        return GetOrAdd(cacheKey, cacheEntry);
+        cacheEntry = GetOrAdd(cacheKey, cacheEntry);
+        if (cacheEntry.IsInitializing) {
+          cacheEntry.IsInitializing = false;
+          cacheEntry.MappedTopic = viewModel;
+          cacheEntry.Associations = associations;
+        }
+      }
+      return cacheEntry;
+
+    }
 
     /*==========================================================================================================================
     | METHOD: PREREGISTER
