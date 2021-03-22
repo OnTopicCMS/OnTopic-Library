@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Annotations;
 
@@ -35,8 +36,14 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="type">The <see cref="Type"/> that the <see cref="Topic"/> has been mapped to.</param>
     /// <param name="cacheEntry">The <see cref="MappedTopicCacheEntry"/> containing the cached instance and metadata.</param>
     /// <returns>Returns <c>true</c> if a cached entry could be found, and otherwise <c>false</c>.</returns>
-    internal bool TryGetValue(int topicId, Type type, out MappedTopicCacheEntry cacheEntry) =>
-      _cache.TryGetValue(GetCacheKey(topicId, type), out cacheEntry);
+    internal bool TryGetValue(int topicId, Type type, [NotNullWhen(true)] out MappedTopicCacheEntry? cacheEntry) {
+      if (_cache.TryGetValue(GetCacheKey(topicId, type), out var existingCacheEntry) && !existingCacheEntry.IsInitializing) {
+        cacheEntry = existingCacheEntry;
+        return true;
+      };
+      cacheEntry = null;
+      return false;
+    }
 
     /*==========================================================================================================================
     | METHOD: REGISTER

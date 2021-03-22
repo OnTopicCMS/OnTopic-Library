@@ -343,7 +343,7 @@ namespace OnTopic.Tests {
       var isSuccess             = cache.TryGetValue(topicId, viewModel.GetType(), out var result);
 
       Assert.IsTrue(isSuccess);
-      Assert.AreEqual<object?>(viewModel, result.MappedTopic);
+      Assert.AreEqual<object?>(viewModel, result?.MappedTopic);
 
     }
 
@@ -389,7 +389,7 @@ namespace OnTopic.Tests {
       var isSuccess             = cache.TryGetValue(1, newViewModel.GetType(), out var result);
 
       Assert.IsTrue(isSuccess);
-      Assert.AreEqual<object>(initialViewModel, result.MappedTopic);
+      Assert.AreEqual<object?>(initialViewModel, result?.MappedTopic);
 
     }
 
