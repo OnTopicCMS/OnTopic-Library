@@ -44,19 +44,19 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref="
     ///   TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
     /// </summary>
-    [Fact]
-    [DataRow(                   "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
-    [DataRow(                   "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
-    [DataRow(                   "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
-    [DataRow(                   "AreaContentTypesSharedView",   "ContentTypes/Shared/AreaContentTypesSharedView.cshtml")]
-    [DataRow(                   "AreaContentTypesFallbackView", "ContentTypes/AreaContentTypesFallbackView.cshtml")]
-    [DataRow(                   "AreaSharedView",               "Shared/AreaSharedView.cshtml")]
-    [DataRow(                   "ContentTypeView",              "ContentType/ContentTypeView.cshtml")]
-    [DataRow(                   "ContentTypeSharedView",        "ContentType/Shared/ContentTypeSharedView.cshtml")]
-    [DataRow(                   "ContentTypesView",             "ContentTypes/ContentType.ContentTypesView.cshtml")]
-    [DataRow(                   "ContentTypesSharedView",       "ContentTypes/Shared/ContentTypesSharedView.cshtml")]
-    [DataRow(                   "ContentTypesFallbackView",     "ContentTypes/ContentTypesFallbackView.cshtml")]
-    [DataRow(                   "SharedView",                   "Shared/SharedView.cshtml")]
+    [Theory]
+    [InlineData(                "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
+    [InlineData(                "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
+    [InlineData(                "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
+    [InlineData(                "AreaContentTypesSharedView",   "ContentTypes/Shared/AreaContentTypesSharedView.cshtml")]
+    [InlineData(                "AreaContentTypesFallbackView", "ContentTypes/AreaContentTypesFallbackView.cshtml")]
+    [InlineData(                "AreaSharedView",               "Shared/AreaSharedView.cshtml")]
+    [InlineData(                "ContentTypeView",              "ContentType/ContentTypeView.cshtml")]
+    [InlineData(                "ContentTypeSharedView",        "ContentType/Shared/ContentTypeSharedView.cshtml")]
+    [InlineData(                "ContentTypesView",             "ContentTypes/ContentType.ContentTypesView.cshtml")]
+    [InlineData(                "ContentTypesSharedView",       "ContentTypes/Shared/ContentTypesSharedView.cshtml")]
+    [InlineData(                "ContentTypesFallbackView",     "ContentTypes/ContentTypesFallbackView.cshtml")]
+    [InlineData(                "SharedView",                   "Shared/SharedView.cshtml")]
     public async Task ExpandViewLocations_Views(string viewName, string viewLocation) {
 
       if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
@@ -87,14 +87,14 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   .AreaViewLocations"/>.
     /// </summary>
     [Fact]
-    [DataRow(                   "AreaAction",                   "Controller/AreaAction.cshtml")]
-    [DataRow(                   "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
-    [DataRow(                   "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]
-    [DataRow(                   "AreaSharedFallbackAction",     "Shared/AreaSharedFallbackAction.cshtml")]
-    [DataRow(                   "Action",                       "Controller/Action.cshtml")]
-    [DataRow(                   "FallbackAction",               "FallbackAction.cshtml")]
-    [DataRow(                   "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
-    [DataRow(                   "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
+    [InlineData(                "AreaAction",                   "Controller/AreaAction.cshtml")]
+    [InlineData(                "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
+    [InlineData(                "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]
+    [InlineData(                "AreaSharedFallbackAction",     "Shared/AreaSharedFallbackAction.cshtml")]
+    [InlineData(                "Action",                       "Controller/Action.cshtml")]
+    [InlineData(                "FallbackAction",               "FallbackAction.cshtml")]
+    [InlineData(                "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
+    [InlineData(                "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
     public async Task ExpandViewLocations_Actions(string viewName, string viewLocation) {
 
       if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
