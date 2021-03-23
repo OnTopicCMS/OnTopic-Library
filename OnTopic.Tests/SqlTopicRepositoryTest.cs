@@ -22,7 +22,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="SqlTopicRepository"/> class.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class SqlTopicRepositoryTest {
 

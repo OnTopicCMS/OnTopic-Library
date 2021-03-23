@@ -29,7 +29,6 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicController"/>, and other <see cref="Controller"/> classes that are part of
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicControllerTest {
 

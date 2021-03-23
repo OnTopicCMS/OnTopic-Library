@@ -31,7 +31,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ReverseTopicMappingServiceTest {
 

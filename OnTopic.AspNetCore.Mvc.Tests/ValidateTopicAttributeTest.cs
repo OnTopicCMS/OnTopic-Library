@@ -26,7 +26,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="ValidateTopicAttribute"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ValidateTopicAttributeTest {
 

@@ -21,7 +21,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class AttributeCollectionTest {
 

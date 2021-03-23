@@ -26,7 +26,6 @@ namespace OnTopic.Tests {
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class MemberDispatcherTest {
 

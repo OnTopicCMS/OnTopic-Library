@@ -20,7 +20,6 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, including the
   ///   <see cref="StaticTypeLookupService"/> and <see cref="DynamicTypeLookupService"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ITypeLookupServiceTest {
 

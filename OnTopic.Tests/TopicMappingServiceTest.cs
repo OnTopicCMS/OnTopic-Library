@@ -36,7 +36,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicMappingService"/> using local DTOs.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicMappingServiceTest {
 

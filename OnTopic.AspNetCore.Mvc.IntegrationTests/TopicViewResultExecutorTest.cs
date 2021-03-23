@@ -20,7 +20,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   including the query string, HTTP request headers, <see cref="Topic.View"/>, etc. This test evaluates those to ensure
   ///   that views are being correctly identified based on these criteria.
   /// </summary>
-  [TestClass]
   public class TopicViewResultExecutorTest: IDisposable {
 
     /*==========================================================================================================================

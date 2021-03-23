@@ -19,7 +19,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   The <see cref="ServiceCollectionExtensions"/> are responsible, primarily, for establishing routes based on the <see cref
   ///   ="IEndpointRouteBuilder"/> interface. These integration tests validate that those routes are operating as expected.
   /// </summary>
-  [TestClass]
   public class ServiceCollectionExtensionsTests: IDisposable {
 
     /*==========================================================================================================================

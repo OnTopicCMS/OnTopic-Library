@@ -27,7 +27,6 @@ namespace OnTopic.Tests {
   /// <remarks>
   ///   These tests evaluate features that are specific to the <see cref="TopicRepository"/> class.
   /// </remarks>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicRepositoryBaseTest {
 

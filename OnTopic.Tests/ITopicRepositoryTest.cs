@@ -25,7 +25,6 @@ namespace OnTopic.Tests {
   ///   These tests not only validate that the <see cref="StubTopicRepository"/> is functioning as expected, but also that the
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ITopicRepositoryTest {
 

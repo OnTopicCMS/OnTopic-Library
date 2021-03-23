@@ -23,7 +23,6 @@ namespace OnTopic.Tests {
   ///   SetValue(String, TValue, Boolean?, DateTime?)"/>, and the cross-referencing of reciprocal values in the <see cref="
   ///   Topic.IncomingRelationships"/> property.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicReferenceCollectionTest {
 

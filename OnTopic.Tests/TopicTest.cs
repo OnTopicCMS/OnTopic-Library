@@ -19,7 +19,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="Topic"/> class.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicTest {
 

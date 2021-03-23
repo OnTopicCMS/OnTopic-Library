@@ -23,7 +23,6 @@ namespace OnTopic.Tests {
   ///   StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
   ///   and the underlying <see cref="TypeCollection"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TypeLookupServiceTest {
 

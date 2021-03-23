@@ -19,7 +19,6 @@ namespace OnTopic.Tests {
   ///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref="
   ///   AttributeDescriptorCollection"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ContentTypeDescriptorTest {
 

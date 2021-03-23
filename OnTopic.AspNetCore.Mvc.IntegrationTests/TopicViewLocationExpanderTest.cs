@@ -20,7 +20,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   path conventions. This test evaluates those to ensure that view locations are being correctly evaluated based on those
   ///   conventions.
   /// </summary>
-  [TestClass]
   public class TopicViewLocationExpanderTest: IDisposable {
 
     /*==========================================================================================================================

@@ -19,7 +19,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicRelationshipMultiMap"/> class.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicRelationshipMultiMapTest {
 
