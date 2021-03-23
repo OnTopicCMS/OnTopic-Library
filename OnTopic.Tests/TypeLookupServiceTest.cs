@@ -125,7 +125,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
       Assert.IsNotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
-      Assert.IsNull(lookupService.Lookup(nameof(EmptyViewModel)));
+      Assert.Null(lookupService.Lookup(nameof(EmptyViewModel)));
 
     }
 
@@ -180,7 +180,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<Type?>(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));
       Assert.Equal<Type?>(typeof(CustomTopic), lookupService.Lookup(nameof(CustomTopic)));
-      Assert.IsNull(lookupService.Lookup("TextAttributeDescriptor"));
+      Assert.Null(lookupService.Lookup("TextAttributeDescriptor"));
 
     }
 
@@ -197,7 +197,7 @@ namespace OnTopic.Tests {
       var lookupService         = new DynamicTopicBindingModelLookupService();
 
       Assert.Equal<Type?>(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
-      Assert.IsNull(lookupService.Lookup("MissingTopicBindingModel"));
+      Assert.Null(lookupService.Lookup("MissingTopicBindingModel"));
 
     }
 

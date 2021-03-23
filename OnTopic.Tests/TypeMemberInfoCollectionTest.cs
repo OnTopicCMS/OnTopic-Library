@@ -270,7 +270,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key"));
       Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
-      Assert.IsNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName"));
+      Assert.Null(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName"));
 
     }
 
@@ -287,7 +287,7 @@ namespace OnTopic.Tests {
       var types = new MemberDispatcher();
 
       Assert.IsNotNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath"));
-      Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+      Assert.Null(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
 
     }
 
@@ -303,8 +303,8 @@ namespace OnTopic.Tests {
 
       var types = new MemberDispatcher();
 
-      Assert.IsNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf"));
-      Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+      Assert.Null(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf"));
+      Assert.Null(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
 
     }
 
@@ -347,7 +347,7 @@ namespace OnTopic.Tests {
 
       types.SetPropertyValue(model, "NullableInteger", null);
 
-      Assert.IsNull(model.NullableInteger);
+      Assert.Null(model.NullableInteger);
 
     }
 
@@ -369,7 +369,7 @@ namespace OnTopic.Tests {
 
       types.SetPropertyValue(model, "NullableInteger", "");
 
-      Assert.IsNull(model.NullableInteger);
+      Assert.Null(model.NullableInteger);
 
     }
 
@@ -583,7 +583,7 @@ namespace OnTopic.Tests {
 
       types.SetMethodValue(source, "SetMethod", (object?)null);
 
-      Assert.IsNull(source.GetMethod());
+      Assert.Null(source.GetMethod());
 
     }
 

@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<string?>("Test", topic.Attributes.GetValue("View"));
       Assert.Equal<string>("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
-      Assert.IsNull(topic.Attributes.GetValue("View", null, inheritFromBase: false));
+      Assert.Null(topic.Attributes.GetValue("View", null, inheritFromBase: false));
 
     }
 
@@ -88,7 +88,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.Add(new("EmptyValue", ""));
 
-      Assert.IsNull(topic.Attributes.GetValue("EmptyValue"));
+      Assert.Null(topic.Attributes.GetValue("EmptyValue"));
 
     }
 
@@ -1048,7 +1048,7 @@ namespace OnTopic.Tests {
 
       topics[0].Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsNull(topics[4].Attributes.GetValue("Foo", null));
+      Assert.Null(topics[4].Attributes.GetValue("Foo", null));
       Assert.Equal<string?>("Bar", topics[7].Attributes.GetValue("Foo", true));
       Assert.AreNotEqual<string?>("Bar", topics[7].Attributes.GetValue("Foo", false));
 
@@ -1096,7 +1096,7 @@ namespace OnTopic.Tests {
 
       topics[7].Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsNull(topics[0].Attributes.GetValue("Foo", null, true, true));
+      Assert.Null(topics[0].Attributes.GetValue("Foo", null, true, true));
 
     }
 

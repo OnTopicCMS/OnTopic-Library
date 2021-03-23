@@ -105,7 +105,7 @@ namespace OnTopic.Tests {
 
       var foundTopic            = childTopic.FindFirstParent(t => t.Id is 10);
 
-      Assert.IsNull(foundTopic);
+      Assert.Null(foundTopic);
 
     }
 
@@ -203,7 +203,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
-      Assert.IsNull(foundTopic);
+      Assert.Null(foundTopic);
 
     }
 
@@ -238,7 +238,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "NonExistent", parentTopic);
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
-      Assert.IsNull(contentTypeDescriptor);
+      Assert.Null(contentTypeDescriptor);
 
     }
 
@@ -260,7 +260,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Title", parentTopic);
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
-      Assert.IsNull(contentTypeDescriptor);
+      Assert.Null(contentTypeDescriptor);
 
     }
 

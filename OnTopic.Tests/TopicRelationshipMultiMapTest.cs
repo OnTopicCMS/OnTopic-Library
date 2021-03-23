@@ -92,7 +92,7 @@ namespace OnTopic.Tests {
       parent.Relationships.SetValue("Friends", related);
       parent.Relationships.Remove("Friends", related);
 
-      Assert.IsNull(parent.Relationships.GetValues("Friends").FirstOrDefault());
+      Assert.Null(parent.Relationships.GetValues("Friends").FirstOrDefault());
 
     }
 
@@ -113,7 +113,7 @@ namespace OnTopic.Tests {
       relationships.SetValue("Friends", related);
       relationships.Remove("Friends", related);
 
-      Assert.IsNull(related.IncomingRelationships.GetValues("Friends").FirstOrDefault());
+      Assert.Null(related.IncomingRelationships.GetValues("Friends").FirstOrDefault());
 
     }
 

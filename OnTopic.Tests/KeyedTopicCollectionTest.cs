@@ -148,7 +148,7 @@ namespace OnTopic.Tests {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
 
-      Assert.IsNull(readOnlyCollection.GetValue("InvalidKey"));
+      Assert.Null(readOnlyCollection.GetValue("InvalidKey"));
 
     }
 

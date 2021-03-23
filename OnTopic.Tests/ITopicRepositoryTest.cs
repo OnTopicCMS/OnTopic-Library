@@ -93,7 +93,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType");
 
-      Assert.IsNull(topic);
+      Assert.Null(topic);
 
     }
 
@@ -124,7 +124,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _topicRepository.Load(9999999);
 
-      Assert.IsNull(topic);
+      Assert.Null(topic);
 
     }
 

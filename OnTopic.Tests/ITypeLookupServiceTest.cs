@@ -40,7 +40,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
       Assert.AreEqual(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
-      Assert.IsNull(compositeLookup.Lookup(nameof(Topic)));
+      Assert.Null(compositeLookup.Lookup(nameof(Topic)));
 
     }
 

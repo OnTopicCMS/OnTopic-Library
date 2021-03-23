@@ -127,7 +127,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(topic);
 
-      Assert.IsNull(topic.Attributes.GetValue("Test"));
+      Assert.Null(topic.Attributes.GetValue("Test"));
 
     }
 
@@ -275,7 +275,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(referenceTopic, false);
 
-      Assert.IsNull(referenceTopic.References.GetValue("Reference"));
+      Assert.Null(referenceTopic.References.GetValue("Reference"));
       Assert.IsTrue(referenceTopic.References.IsFullyLoaded);
 
     }

@@ -372,7 +372,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
       topic.BaseTopic           = null;
 
-      Assert.IsNull(topic.BaseTopic);
+      Assert.Null(topic.BaseTopic);
 
     }
 

@@ -230,7 +230,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(model);
       Assert.Equal<string?>(webPath, model?.CurrentWebPath);
-      Assert.IsNull(model?.NavigationRoot);
+      Assert.Null(model?.NavigationRoot);
 
     }
 
@@ -258,7 +258,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(model);
       Assert.Equal<string?>(String.Empty, model?.CurrentWebPath);
-      Assert.IsNull(model?.NavigationRoot);
+      Assert.Null(model?.NavigationRoot);
 
     }
 

@@ -81,7 +81,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _topicRepository.Load(11113);
 
-      Assert.IsNull(topic);
+      Assert.Null(topic);
 
     }
 
@@ -668,7 +668,7 @@ namespace OnTopic.Tests {
 
       var contentType           = topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNull(contentType);
+      Assert.Null(contentType);
 
     }
 
@@ -684,7 +684,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "InvalidContentType");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNull(contentType);
+      Assert.Null(contentType);
 
     }
 

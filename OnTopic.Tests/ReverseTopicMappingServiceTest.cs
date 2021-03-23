@@ -326,7 +326,7 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
       Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
       Assert.Equal<string?>("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
-      Assert.IsNull(target?.AttributeDescriptors.GetValue("Attribute4"));
+      Assert.Null(target?.AttributeDescriptors.GetValue("Attribute4"));
 
     }
 
@@ -385,7 +385,7 @@ namespace OnTopic.Tests {
 
       await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.IsNull(topic.BaseTopic);
+      Assert.Null(topic.BaseTopic);
 
     }
 
@@ -684,7 +684,7 @@ namespace OnTopic.Tests {
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNull(target?.Attributes.GetValue("UnmappedAttribute", null));
+      Assert.Null(target?.Attributes.GetValue("UnmappedAttribute", null));
 
     }
 

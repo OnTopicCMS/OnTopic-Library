@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
 
       var currentTopic          = _topicRepository.Load(routes);
 
-      Assert.IsNull(currentTopic);
+      Assert.Null(currentTopic);
 
     }
 
