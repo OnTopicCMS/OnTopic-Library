@@ -162,6 +162,51 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: CONSTRUCTOR: RETURNS NEW MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and attempts to map a view model with a constructor containing a
+    ///   scalar value, topic reference, relationship, and an optional parameter. Confirms that the expected model is returned.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Constructor_ReturnsNewModel() {
+
+      var topic                 = new Topic("Topic", "Constructed", null, 1);
+      var related1              = new Topic("Related1", "Constructed", null, 2);
+      var related2              = new Topic("Related2", "Constructed", null, 3);
+      var related3              = new Topic("Related3", "Constructed", null, 4);
+
+      topic.Attributes.SetValue("Value", "Foo");
+      topic.Attributes.SetValue("ScalarValue", "Invalid");
+      topic.Attributes.SetValue("OptionalValue", "3");
+      topic.References.SetValue("TopicReference", related1);
+      topic.Relationships.SetValue("Related", related2);
+      topic.Relationships.SetValue("Relationships", related2); //Should not be mapped
+      topic.Relationships.SetValue("Relationships", related3); //Should not be mapped
+
+      related1.Attributes.SetValue("Value", "Bar");
+      related1.References.SetValue("TopicReference", related3);
+
+      related3.Attributes.SetValue("Value", "Baz");
+
+      var target                = await _mappingService.MapAsync<ConstructedTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<string?>("Foo", target?.ScalarValue);
+      Assert.IsNotNull(target?.TopicReference);
+      Assert.IsNotNull(target?.Relationships);
+      Assert.AreEqual<int?>(5, target?.OptionalValue);
+      Assert.AreEqual<int?>(1, target?.Relationships.Count);
+
+      Assert.AreEqual<string?>("Bar", target?.TopicReference?.ScalarValue);
+
+      Assert.IsNotNull(target?.TopicReference?.TopicReference);
+      Assert.AreEqual<string?>("Baz", target?.TopicReference?.TopicReference.ScalarValue);
+
+      Assert.IsNull(target?.TopicReference?.TopicReference.TopicReference);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
