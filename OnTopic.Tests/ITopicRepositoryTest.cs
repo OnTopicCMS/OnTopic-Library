@@ -148,12 +148,12 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(configuration);
 
-      Assert.AreNotEqual<int>(-1, configuration.Id);
+      Assert.NotEqual<int>(-1, configuration.Id);
       Assert.Equal<int>(-1, configuration.Children.First().Id);
 
       _topicRepository.Save(configuration, true);
 
-      Assert.AreNotEqual<int>(-1, configuration.Children.First().Id);
+      Assert.NotEqual<int>(-1, configuration.Children.First().Id);
 
     }
 

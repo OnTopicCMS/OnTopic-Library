@@ -1050,7 +1050,7 @@ namespace OnTopic.Tests {
 
       Assert.Null(topics[4].Attributes.GetValue("Foo", null));
       Assert.Equal("Bar", topics[7].Attributes.GetValue("Foo", true));
-      Assert.AreNotEqual<string?>("Bar", topics[7].Attributes.GetValue("Foo", false));
+      Assert.NotEqual("Bar", topics[7].Attributes.GetValue("Foo", false));
 
     }
 

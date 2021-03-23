@@ -605,7 +605,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
 
-      Assert.AreNotEqual<int>(contentTypeCount, contentTypes.Count);
+      Assert.NotEqual<int>(contentTypeCount, contentTypes.Count);
       Assert.NotNull(contentTypes.Contains(newContentType));
 
     }
@@ -734,7 +734,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(contentTypesRoot, true);
 
-      Assert.AreNotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
+      Assert.NotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
 
     }
 
@@ -881,7 +881,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(contactContentType, pageContentType);
 
-      Assert.AreNotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
+      Assert.NotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
 
     }
 

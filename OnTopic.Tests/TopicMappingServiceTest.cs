@@ -1423,7 +1423,7 @@ namespace OnTopic.Tests {
       var target3 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.Equal<FilteredTopicViewModel?>(target1, target2);
-      Assert.AreNotEqual(target1, target3);
+      Assert.NotEqual<object?>(target1, target3);
 
     }
 
