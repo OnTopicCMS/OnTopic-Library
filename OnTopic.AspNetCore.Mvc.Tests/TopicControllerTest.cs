@@ -161,8 +161,8 @@ namespace OnTopic.Tests {
 
       Assert.NotNull(model);
 
-      Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model!, StringComparison.Ordinal);
 
     }
 
@@ -217,15 +217,15 @@ namespace OnTopic.Tests {
 
       Assert.NotNull(model);
 
-      Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.Contains("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model, StringComparison.Ordinal);
 
-      Assert.True(model!.Contains("<Attribute name=\"Attribute\">Value</Attribute>", StringComparison.Ordinal));
-      Assert.True(model!.Contains("<Attribute name=\"Title\">Title</Attribute>", StringComparison.Ordinal));
-      Assert.True(model!.Contains("<DataObject type=\"Relationships\">", StringComparison.Ordinal));
-      Assert.True(model!.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", StringComparison.Ordinal));
-      Assert.True(model!.Contains("<DataObject type=\"References\">", StringComparison.Ordinal));
-      Assert.True(model!.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+      Assert.Contains("<Attribute name=\"Attribute\">Value</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Title\">Title</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"Relationships\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"References\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
 
     }
 
