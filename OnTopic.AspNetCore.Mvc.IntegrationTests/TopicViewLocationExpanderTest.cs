@@ -45,7 +45,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref="
     ///   TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [DataRow(                   "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
     [DataRow(                   "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
     [DataRow(                   "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
@@ -87,7 +87,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   locations as defined in <see cref="TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander
     ///   .AreaViewLocations"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [DataRow(                   "AreaAction",                   "Controller/AreaAction.cshtml")]
     [DataRow(                   "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
     [DataRow(                   "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]

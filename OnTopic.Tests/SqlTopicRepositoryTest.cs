@@ -33,7 +33,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
     ///   TopicsDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithTopic_ReturnsTopic() {
 
       using var topics          = new TopicsDataTable();
@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
     ///   TopicsDataTable"/> record that represents a different parent than the existing <c>referenceTopic</c> and confirms that
     ///   the topic's parent is updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithNewParent_UpdatesParent() {
 
       using var topics          = new TopicsDataTable();
@@ -84,7 +84,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
     ///   AttributesDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithAttributes_ReturnsAttributes() {
 
       using var topics          = new TopicsDataTable();
@@ -111,7 +111,7 @@ namespace OnTopic.Tests {
     ///   AttributesDataTable"/> record representing a deleted attribute and confirms that an existing reference topic with that
     ///   attribute has the value removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
 
       using var topics          = new TopicsDataTable();
@@ -139,7 +139,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
     ///   RelationshipsDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithRelationship_ReturnsRelationship() {
 
       using var topics          = new TopicsDataTable();
@@ -169,7 +169,7 @@ namespace OnTopic.Tests {
     ///   RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.IsFullyLoaded"
     ///   /> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
 
       using var topics          = new TopicsDataTable();
@@ -197,7 +197,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
     ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithReference_ReturnsReference() {
 
       using var topics          = new TopicsDataTable();
@@ -226,7 +226,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
     ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithExternalReference_ReturnsReference() {
 
       using var topics          = new TopicsDataTable();
@@ -258,7 +258,7 @@ namespace OnTopic.Tests {
     ///   TopicReferencesDataTable"/> record and confirms that existing references on a reference topic are deleted if they are
     ///   <c>null</c> in the <see cref="TopicReferencesDataTable"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
 
       using var topics          = new TopicsDataTable();
@@ -289,7 +289,7 @@ namespace OnTopic.Tests {
     ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.IsFullyLoaded
     ///   "/> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
 
       using var topics          = new TopicsDataTable();
@@ -317,7 +317,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a deleted <see
     ///   cref="RelationshipsDataTable"/> record and confirms that it is deleted from the <c>referenceTopic</c> graph.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
 
       var topic                 = TopicFactory.Create("Test", "Container", 1);
@@ -348,7 +348,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
     ///   VersionHistoryDataTable"/> record and confirms that a topic with those values is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
 
       using var topics          = new TopicsDataTable();
@@ -376,7 +376,7 @@ namespace OnTopic.Tests {
     ///   Constructs a <see cref="Data.Sql.Models.TopicListDataTable"/> and calls <see cref="Data.Sql.Models.TopicListDataTable.
     ///   AddRow(Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicListDataTable_AddRow_Succeeds() {
 
       var dataTable             = new Data.Sql.Models.TopicListDataTable();
@@ -400,7 +400,7 @@ namespace OnTopic.Tests {
     ///   AttributeValuesDataTable.AddRow(String, String?)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
     ///   returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AttributeValuesDataTable_AddRow_Succeeds() {
 
       var dataTable             = new Data.Sql.Models.AttributeValuesDataTable();
@@ -424,7 +424,7 @@ namespace OnTopic.Tests {
     ///   TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
     ///   returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicReferencesDataTable_AddRow_Succeeds() {
 
       var dataTable             = new Data.Sql.Models.TopicReferencesDataTable();
@@ -447,7 +447,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_String() {
 
       var command               = new SqlCommand();
@@ -472,7 +472,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_NullString() {
 
       var command               = new SqlCommand();
@@ -497,7 +497,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_Int() {
 
       var command               = new SqlCommand();
@@ -522,7 +522,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_Bool() {
 
       var command               = new SqlCommand();
@@ -547,7 +547,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_DateTime() {
 
       var command               = new SqlCommand();
@@ -573,7 +573,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_DataTable() {
 
       var command               = new SqlCommand();
@@ -600,7 +600,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddParameter_StringBuilder() {
 
       var command               = new SqlCommand();
@@ -626,7 +626,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
     ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddOutputParameter_ReturnCode() {
 
       var command               = new SqlCommand();
@@ -655,7 +655,7 @@ namespace OnTopic.Tests {
     ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method. Ensures the default return code is
     ///   returned, if the value isn't explicitly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SqlCommand_AddOutputParameter_ReturnsDefault() {
 
       var command               = new SqlCommand();

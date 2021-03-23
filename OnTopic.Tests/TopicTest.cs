@@ -29,7 +29,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Create_ReturnsTopic() {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
@@ -44,7 +44,7 @@ namespace OnTopic.Tests {
     ///   Creates a topic of a content type which maps to a class derived from <see cref="Topic"/>, and ensures the derived
     ///   version of the <see cref="Topic"/> class is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Create_ContentType_ReturnsDerivedTopic() {
       var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
       Assert.IsNotNull(topic);
@@ -64,7 +64,7 @@ namespace OnTopic.Tests {
     ///   AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
     ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void Create_AttributeDescriptor_ReturnsFallback() {
       var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
       Assert.IsNotNull(topic);
@@ -77,7 +77,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Id_ChangeValue_ThrowsArgumentException() {
 
@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
     ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref="
     ///   Topic.Key"/> changed. We have code that will handle that, however.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void Key_ChangeValue_UpdatesParent() {
 
       var parent                = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
@@ -118,7 +118,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Parent_SetValue_UpdatesParent() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
@@ -139,7 +139,7 @@ namespace OnTopic.Tests {
     ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref="
     ///   ArgumentOutOfRangeException"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void Parent_SetToDescendant_ThrowsException() {
 
@@ -157,7 +157,7 @@ namespace OnTopic.Tests {
     ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> whose <see cref="Topic.Key"/> already exists in the new
     ///   <see cref="Topic.Parent"/> and ensures that an <see cref="InvalidKeyException"/> is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidKeyException))]
     public void Parent_DuplicateKey_ThrowsException() {
 
@@ -173,7 +173,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Parent_ChangeValue_UpdatesParent() {
 
       var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor", 5);
@@ -195,7 +195,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures the Unique Key is correct for a deeply nested child.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void UniqueKey_ReturnsUniqueKey() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page");
@@ -217,7 +217,7 @@ namespace OnTopic.Tests {
     ///   Ensures that <see cref="Topic.IsVisible(Boolean)"/> returns expected values based on <see cref="Topic.IsHidden"/> and
     ///   <see cref="Topic.IsDisabled"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsVisible_ReturnsExpectedValue() {
 
       var hiddenTopic           = TopicFactory.Create("HiddenTopic", "Page");
@@ -242,7 +242,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that the title falls back appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Title_NullValue_ReturnsKey() {
 
       var untitledTopic         = TopicFactory.Create("UntitledTopic", "Page");
@@ -261,7 +261,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Returns the last modified date via <see cref="Topic.LastModified"/>, and ensures it's returned correctly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LastModified_UpdateLastModified_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic1", "Page");
@@ -279,7 +279,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Returns the last modified date via <see cref="Topic.VersionHistory"/>, and ensures it's returned correctly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LastModified_UpdateVersionHistory_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic2", "Page");
@@ -298,7 +298,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Returns the last modified date via <see cref="AttributeCollection"/>, and ensures it's returned correctly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LastModified_UpdateValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic3", "Page");
@@ -318,7 +318,7 @@ namespace OnTopic.Tests {
     ///   Sets a base topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
     ///   base topic as well as the underlying <see cref="AttributeRecord"/> correctly reference the new value.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void BaseTopic_UpdateValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -342,7 +342,7 @@ namespace OnTopic.Tests {
     ///   Sets a base topic to an unsaved topic entity, then saves the entity and reestablishes the reference. Ensures that the
     ///   base topic is correctly set as a <see cref="Topic.References"/> entry.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void BaseTopic_ResavedValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -364,7 +364,7 @@ namespace OnTopic.Tests {
     ///   Sets a base topic to a topic entity, then updates it to a null value. Ensures that the base topic is correctly
     ///   removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void BaseTopic_SetToNull_RemovesValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -383,7 +383,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_NewTopic_ReturnsTrue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -398,7 +398,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ExistingTopic_ReturnsFalse() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -414,7 +414,7 @@ namespace OnTopic.Tests {
     ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
     ///   Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ChangeKey_ReturnsTrue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -432,7 +432,7 @@ namespace OnTopic.Tests {
     ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref="
     ///   Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ExistingValue_RemainsClean() {
 
       var parent                = TopicFactory.Create("Parent", "Page", 1);
@@ -454,7 +454,7 @@ namespace OnTopic.Tests {
     ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns
     ///   <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ChangeCollections_ReturnsTrue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -477,7 +477,7 @@ namespace OnTopic.Tests {
     ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(Boolean, DateTime?)"/> resets the
     ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkClean_ChangeCollections_ResetIsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -501,7 +501,7 @@ namespace OnTopic.Tests {
     ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(String, Boolean)"/> resets the value
     ///   of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkClean_IncludeCollections_ResetsIsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -526,7 +526,7 @@ namespace OnTopic.Tests {
     ///   Creates a new <see cref="Topic"/> and confirms that <see cref="Topic.MarkClean()"/> does <i>not</i> reset the value of
     ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkClean_NewTopic_RemainsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");

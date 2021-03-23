@@ -50,7 +50,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes route data and ensures that a topic is correctly identified based on that route.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ByRoute_ReturnsTopic() {
 
       var routes                = new RouteData();
@@ -73,7 +73,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes route data and ensures that the root topic is correctly identified based on that route.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ByRoute_ReturnsRootTopic() {
 
       var routes                = new RouteData();
@@ -95,7 +95,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes route data with an invalid key and ensures that no result is returned, but no exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ByRoute_SwallowsException() {
 
       var routes                = new RouteData();

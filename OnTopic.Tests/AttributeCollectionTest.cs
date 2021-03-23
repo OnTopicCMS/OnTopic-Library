@@ -31,7 +31,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a new attribute via an <c>[AttributeSetter]</c> and ensures that the attribute can be returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_CorrectValue_IsReturned() {
       var topic                 = TopicFactory.Create("Test", "Container");
       topic.View                = "Test";
@@ -45,7 +45,7 @@ namespace OnTopic.Tests {
     ///   Ensures that values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/> and <see
     ///   cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_InheritedValue_IsReturned() {
 
       var baseTopic             = TopicFactory.Create("Base", "Container");
@@ -68,7 +68,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_MissingValue_ReturnsDefault() {
       var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string?>(null, topic.Attributes.GetValue("InvalidAttribute"));
@@ -82,7 +82,7 @@ namespace OnTopic.Tests {
     ///   If the <see cref="TrackedRecord{T}.Value"/> is <see cref="String.Empty"/>, then <see cref="TrackedRecordCollection{
     ///   TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> should return <c>null</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_EmptyValue_ReturnsNull() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -99,7 +99,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that integer values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_CorrectValue_IsReturned() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -117,7 +117,7 @@ namespace OnTopic.Tests {
     ///   Ensures that integer values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
     ///   and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_InheritedValue_IsReturned() {
 
       var baseTopic             = TopicFactory.Create("Base", "Container");
@@ -140,7 +140,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_IncorrectValue_ReturnsDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -158,7 +158,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_IncorrectKey_ReturnsDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -174,7 +174,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_CorrectValue_IsReturned() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -192,7 +192,7 @@ namespace OnTopic.Tests {
     ///   Ensures that double values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
     ///   and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_InheritedValue_IsReturned() {
 
       var baseTopic             = TopicFactory.Create("Base", "Container");
@@ -215,7 +215,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_IncorrectValue_ReturnsDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -233,7 +233,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_IncorrectKey_ReturnsDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -249,7 +249,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that Date/Time values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_CorrectValue_IsReturned() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
@@ -268,7 +268,7 @@ namespace OnTopic.Tests {
     ///   Ensures that Date/Time values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
     ///   and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_InheritedValue_IsReturned() {
 
       var baseTopic             = TopicFactory.Create("Base", "Container");
@@ -292,7 +292,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_IncorrectValue_ReturnsDefault() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
@@ -311,7 +311,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_IncorrectKey_ReturnsDefault() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
@@ -331,7 +331,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that boolean values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_CorrectValue_IsReturned() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -352,7 +352,7 @@ namespace OnTopic.Tests {
     ///   Ensures that boolean values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
     ///   and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_InheritedValue_IsReturned() {
 
       var baseTopic             = TopicFactory.Create("Base", "Container");
@@ -375,7 +375,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_IncorrectValue_ReturnDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -394,7 +394,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_IncorrectKey_ReturnDefault() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -411,7 +411,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a custom attribute on a topic and ensures it can be retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
@@ -424,7 +424,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Modifies the value of a custom attribute on a topic and ensures it is marked as IsDirty.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ValueChanged_IsDirty() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -442,7 +442,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Calls <see cref="IList.Clear()"/> and confirms that the collection is marked as dirty, due to deleted attrbutes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Clear_ExistingValues_IsDirty() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -463,7 +463,7 @@ namespace OnTopic.Tests {
     ///   Sets the value of a custom <see cref="AttributeRecord"/> to the existing value and ensures it is <i>not</i> marked as
     ///   <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ValueUnchanged_IsNotDirty() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -482,7 +482,7 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref="
     ///   TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_DirtyValues_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -502,7 +502,7 @@ namespace OnTopic.Tests {
     ///   <c>true</c> if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
     ///   MarkClean(String)"/> was called.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_IsNew_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -524,7 +524,7 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_DeletedValues_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -544,7 +544,7 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after recreating the value.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_UndeletedValues_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -567,7 +567,7 @@ namespace OnTopic.Tests {
     ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
     ///   <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_NoDirtyValues_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -586,7 +586,7 @@ namespace OnTopic.Tests {
     ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> still returns
     ///   <c>true</c> if the associated <see cref="Topic"/> is <see cref="Topic.IsNew"/>. New topics cannot be clean.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_IsNew_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -604,7 +604,7 @@ namespace OnTopic.Tests {
     ///   Confirms that calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> with an invalid
     ///   <c>key</c> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MissingKey_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -622,7 +622,7 @@ namespace OnTopic.Tests {
     ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/>. Confirms that <see cref="AttributeCollection.
     ///   IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ExcludeLastModified_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -644,7 +644,7 @@ namespace OnTopic.Tests {
     ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
       var topic                 = TopicFactory.Create("Test", "Container", 1);
@@ -677,7 +677,7 @@ namespace OnTopic.Tests {
     ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -703,7 +703,7 @@ namespace OnTopic.Tests {
     ///   </c> even after calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String)"/> since new
     ///   topics cannot be clean.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkClean_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -724,7 +724,7 @@ namespace OnTopic.Tests {
     ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute after
     ///   calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -744,7 +744,7 @@ namespace OnTopic.Tests {
     ///   <see cref="AttributeRecord"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms that <see
     ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -770,7 +770,7 @@ namespace OnTopic.Tests {
     ///   IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedRecordCollection{TItem,
     ///   TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -788,7 +788,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to violate the business logic by bypassing the property setter; ensures that business logic is enforced.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(InvalidKeyException),
       "The topic allowed a view to be set via a back door, without routing it through the View property."
@@ -805,7 +805,7 @@ namespace OnTopic.Tests {
     ///   Attempts to insert a <see cref="TrackedRecord{T}"/> with the same <see cref="TrackedRecord{T}.Key"/> as an existing
     ///   value, and confirms that the expected <see cref="ArgumentException"/> is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentException))]
     public void SetValue_DuplicateValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
@@ -820,7 +820,7 @@ namespace OnTopic.Tests {
     ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeRecord"/> instance; ensures it can be
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_ValidAttributeRecord_IsReturned() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -838,7 +838,7 @@ namespace OnTopic.Tests {
     ///   Sets a numeric attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NumericValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
@@ -856,7 +856,7 @@ namespace OnTopic.Tests {
     ///   Sets a Boolean attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_BooleanValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
@@ -873,7 +873,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a numeric attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
@@ -893,7 +893,7 @@ namespace OnTopic.Tests {
     ///   Sets a Date/Time attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_DateTimeValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
@@ -911,7 +911,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a <see cref="DateTime"/> attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
@@ -931,7 +931,7 @@ namespace OnTopic.Tests {
     ///   Creates a new <see cref="AttributeRecord"/> and ensures that the <see cref="TrackedRecord{T}.LastModified"/> is set to
     ///   <see cref="DateTime.UtcNow"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AttributeRecord_LastModified_DefaultValue() {
 
       var beforeDate            = DateTime.UtcNow;
@@ -950,7 +950,7 @@ namespace OnTopic.Tests {
     ///   Attempts to violate the business logic by bypassing <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
     ///   SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that business logic is enforced.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(InvalidKeyException),
       "The topic allowed a key to be set via a back door, without routing it through the View property."
@@ -968,7 +968,7 @@ namespace OnTopic.Tests {
     ///   "AttributeCollection"/> and confirms that the original <see cref="TrackedRecord{T}.IsDirty"/> is replaced if the <see
     ///   cref="TrackedRecord{T}.Value"/> changes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_WithBusinessLogic_MaintainsIsDirty() {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
@@ -999,7 +999,7 @@ namespace OnTopic.Tests {
     ///   "/>. Empty values are treated as the same as non-existent attributes. They are stored for the sake of tracking <i>
     ///   deleted</i> attributes, but should not be stored for <i>new</i> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_EmptyAttributeRecord_Skips() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -1018,7 +1018,7 @@ namespace OnTopic.Tests {
     ///   "/> assuming the value previously existed. Empty values are treated as the same as non-existent attributes, but they
     ///   should be stored for the sake of tracking <i>deleted</i> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_EmptyAttributeRecord_Replaces() {
 
       var topic = TopicFactory.Create("Test", "Container");
@@ -1036,7 +1036,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_InheritFromParent_ReturnsParentValue() {
 
       var topics = new Topic[8];
@@ -1061,7 +1061,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a long tree of derived topics, and ensures that the inherited value is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_InheritFromBase_ReturnsInheritedValue() {
 
       var topics = new Topic[5];
@@ -1084,7 +1084,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a long tree of derives topics, and ensures that inheritance will pursue no more than five hops.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_ExceedsMaxHops_ReturnsDefault() {
 
       var topics = new Topic[8];

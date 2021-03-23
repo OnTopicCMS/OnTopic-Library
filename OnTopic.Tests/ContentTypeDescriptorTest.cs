@@ -31,7 +31,7 @@ namespace OnTopic.Tests {
     ///   PermittedContentTypes"/> returns all <see cref="ContentTypeDescriptor"/> instances from the associated <c>ContentTypes
     ///   </c> collection in <see cref="Topic.Relationships"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_PermittedContentTypes_ReturnsCollection() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -56,7 +56,7 @@ namespace OnTopic.Tests {
     ///   <c>ContentTypes</c> collection in <see cref="Topic.Relationships"/> after calling <see cref="ContentTypeDescriptor.
     ///   ResetPermittedContentTypes"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_ResetPermittedContentTypes_ReturnsUpdated() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -89,7 +89,7 @@ namespace OnTopic.Tests {
     ///   AttributeDescriptors"/> returns all <see cref="AttributeDescriptor"/> instances from the associated <c>Attributes</c>
     ///   collection in <see cref="Topic.Relationships"/>, as well as those from each <see cref="Topic.Parent"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_AttributeDescriptors_ReturnsInherited() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
     ///   </c>collection in <see cref="Topic.Relationships"/>, as well as those from each <see cref="Topic.Parent"/>, after
     ///   calling <see cref="ContentTypeDescriptor.ResetAttributeDescriptors()"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_ResetAttributeDescriptors_ReturnsUpdated() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -151,7 +151,7 @@ namespace OnTopic.Tests {
     ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
     ///   types.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsTypeOf_DerivedContentType_ReturnsTrue() {
 
       var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
@@ -171,7 +171,7 @@ namespace OnTopic.Tests {
     ///   Associates a new topic with several content types, and confirms that the topic is not reported as a type of a content
     ///   type that is not in that chain.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsTypeOf_InvalidContentType_ReturnsFalse() {
 
       var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
@@ -191,7 +191,7 @@ namespace OnTopic.Tests {
     ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
     ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptorCollection_ConstructWithValues_ReturnsValues() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
@@ -211,7 +211,7 @@ namespace OnTopic.Tests {
     ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
     ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptorCollection_Refresh_ReturnsUpdated() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
@@ -240,7 +240,7 @@ namespace OnTopic.Tests {
     ///   that an exception is thrown if the <see cref="Topic.Key"/> is not set to the expected value of <c>ContentTypes</c>,
     ///   which represents the root content type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void ContentTypeDescriptorCollection_ConstructWithValues_ThrowsException() {
 

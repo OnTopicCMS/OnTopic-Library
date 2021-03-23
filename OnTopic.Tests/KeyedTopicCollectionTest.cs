@@ -28,7 +28,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a number of topics, then accesses them by key.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetTopic_Indexer_ReturnsTopic() {
 
       var topics = new KeyedTopicCollection();
@@ -47,7 +47,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a number of topics, then seeds a new <see cref="KeyedTopicCollection{T}"/> with them.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Constructor_IEnumerable_SeedsTopics() {
 
       var topics = new List<Topic>();
@@ -69,7 +69,7 @@ namespace OnTopic.Tests {
     ///   Attempts to add two <see cref="Topic"/> instances with the same <see cref="Topic.Key"/> to a <see cref="
     ///   KeyedTopicCollection{T}"/> and confirms that a <see cref="ArgumentException"/> is correctly thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentException))]
     public void InsertItem_DuplicateKey_ThrowsException() =>
       new KeyedTopicCollection {
@@ -84,7 +84,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection"/> without a backing <see cref="KeyedTopicCollection"/>
     ///   and confirms that it successfully initialized with zero items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ReadOnlyKeyedTopicCollection_EmptyCollection() {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
@@ -101,7 +101,7 @@ namespace OnTopic.Tests {
     ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using <see cref="
     ///   ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsValue() {
 
       var collection            = new KeyedTopicCollection();
@@ -122,7 +122,7 @@ namespace OnTopic.Tests {
     ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using the indexer on <see cref=
     ///   "ReadOnlyKeyedTopicCollection{T}"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ReadOnlyKeyedTopicCollection_Indexer_ReturnsValue() {
 
       var collection            = new KeyedTopicCollection();
@@ -144,7 +144,7 @@ namespace OnTopic.Tests {
     ///   confirms that it returns null if when calling <see cref="ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/> with an
     ///   invalid <see cref="Topic.Key"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsNull() {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
@@ -159,7 +159,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AsReadOnly_ReturnsReadOnlyKeyedTopicCollection() {
 
       var topics = new KeyedTopicCollection();
@@ -181,7 +181,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AsReadOnly_ReturnsReadOnlyTopicCollection() {
 
       var topics = new TopicCollection();

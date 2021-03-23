@@ -95,7 +95,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a controller that doesn't derive from <see cref="TopicController"/> throws a <see
     ///   cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void InvalidControllerType_ThrowsException() {
 
@@ -119,7 +119,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NullTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -140,7 +140,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DisabledTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -165,7 +165,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> contains
     ///   a <c>Url</c> attribute.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicWithUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -190,7 +190,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NestedTopic_List_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -216,7 +216,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NestedTopic_Item_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -243,7 +243,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Container_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -269,7 +269,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void PageGroupTopic_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -296,7 +296,7 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c> with no <see cref="Topic.Children"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void PageGroupTopic_Empty_ReturnsRedirect() {
 
       var validateFilter = new ValidateTopicAttribute();
@@ -327,7 +327,7 @@ namespace OnTopic.Tests {
     ///   define a <see cref="HttpRequest.Path"/>. As a result, if no other condition is met, the canonical condition should
     ///   always be tripped as part of these unit tests.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void CanonicalUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();

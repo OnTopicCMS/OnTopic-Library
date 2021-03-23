@@ -37,7 +37,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
     ///   properties of the type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Constructor_ValidType_IdentifiesProperty() {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
@@ -54,7 +54,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
     ///   properties derived from the base class.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Constructor_ValidType_IdentifiesDerivedProperty() {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
@@ -70,7 +70,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
     ///   methods of the type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Constructor_ValidType_IdentifiesMethod() {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
@@ -88,7 +88,7 @@ namespace OnTopic.Tests {
     ///   ="MemberInfoCollection{T}.Type"/> already exists.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentException))]
     public void Add_DuplicateKey_ThrowsException() =>
       new TypeMemberInfoCollection {
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
     ///   }(Type, String)"/> returns <c>true</c> when appropriate.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasMember_PropertyInfo_ReturnsExpected() {
 
       var typeCollection        = new TypeMemberInfoCollection();
@@ -123,7 +123,7 @@ namespace OnTopic.Tests {
     ///   String, Type)"/> returns the expected value.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasGettableProperty_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher();
@@ -143,7 +143,7 @@ namespace OnTopic.Tests {
     ///   cref="MemberDispatcher.HasGettableProperty(Type, String, Type)"/> returns the expected value.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasGettableProperty_WithAttribute_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher(typeof(AttributeSetterAttribute));
@@ -161,7 +161,7 @@ namespace OnTopic.Tests {
     ///   String, Type)"/> returns the expected value.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasSettableProperty_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher();
@@ -181,7 +181,7 @@ namespace OnTopic.Tests {
     ///   String, Type)"/> returns the expected value.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasGettableMethod_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher();
@@ -205,7 +205,7 @@ namespace OnTopic.Tests {
     ///   In practice, we haven't encountered a need for this yet and, thus, don't have any semantically relevant attributes to
     ///   use in this situation. As a result, this example is a bit contrived.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void HasGettableMethod_WithAttribute_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher(typeof(DisplayNameAttribute));
@@ -223,7 +223,7 @@ namespace OnTopic.Tests {
     ///   String, Type)"/> returns the expected value.
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void HasSettableMethod_ReturnsExpected() {
 
       var dispatcher            = new MemberDispatcher();
@@ -243,7 +243,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMembers{T}(Type)"/>
     ///   functions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetMembers_PropertyInfo_ReturnsProperties() {
 
       var types = new MemberDispatcher();
@@ -264,7 +264,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)"
     ///   /> correctly returns the expected properties.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetMember_PropertyInfoByKey_ReturnsValue() {
 
       var types = new MemberDispatcher();
@@ -282,7 +282,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see
     ///   cref="MemberDispatcher.GetMember{T}(Type, String)"/> correctly returns the expected methods.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetMember_MethodInfoByKey_ReturnsValue() {
 
       var types = new MemberDispatcher();
@@ -299,7 +299,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)
     ///   "/> does not return values if the types mismatch.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetMember_GenericTypeMismatch_ReturnsNull() {
 
       var types = new MemberDispatcher();
@@ -316,7 +316,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a key value can be properly set using the <see cref="
     ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_Key_SetsValue() {
 
       var types                 = new MemberDispatcher();
@@ -338,7 +338,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
     ///   Object, String, Object?)"/> method sets the property to <c>null</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_NullValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
@@ -360,7 +360,7 @@ namespace OnTopic.Tests {
     ///   Object, String, Object?)"/> sets the target property value to <c>null</c> if the value is set to <see cref="String.
     ///   Empty"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_EmptyValue_SetsToNull() {
 
       var types                 = new MemberDispatcher();
@@ -382,7 +382,7 @@ namespace OnTopic.Tests {
     ///   Object, String, Object?)"/> sets the value to its default if the value is set to <see cref="String.Empty"/> and the
     ///   target property type is not nullable.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_EmptyValue_ThrowsException() {
 
       var types                 = new MemberDispatcher();
@@ -401,7 +401,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a boolean value can be properly set using the <see cref
     ///   ="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_Boolean_SetsValue() {
 
       var types                 = new MemberDispatcher();
@@ -420,7 +420,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a date/time value can be properly set using the <see
     ///   cref="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_DateTime_SetsValue() {
 
       var types                 = new MemberDispatcher();
@@ -445,7 +445,7 @@ namespace OnTopic.Tests {
     ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method throws an <see cref="InvalidOperationException"
     ///   />.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
@@ -463,7 +463,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetMethodValue_ValidValue_SetsValue() {
 
       var types                 = new MemberDispatcher();
@@ -482,7 +482,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
 
       var types                 = new MemberDispatcher();
@@ -501,7 +501,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method throws an exception.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void SetMethodValue_InvalidMember_ThrowsException() {
 
@@ -519,7 +519,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a reference value can be properly set using the <see
     ///   cref="MemberDispatcher.SetMethodValue(Object, String, Object)"/> method.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetMethodValue_ValidReferenceValue_SetsValue() {
 
       var types                 = new MemberDispatcher();
@@ -539,7 +539,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="ArgumentException"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentException))]
     public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
 
@@ -558,7 +558,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
 
@@ -576,7 +576,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an null value using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
 
       var types                 = new MemberDispatcher();
@@ -600,7 +600,7 @@ namespace OnTopic.Tests {
     ///   evaluating the performance impact of changes or optimizations without setting up a fully performance test. To adjust
     ///   the number of iterations, simply increment the "totalIterations" variable.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void SetPropertyValue_ReflectionPerformance() {
 
       var totalIterations = 1;

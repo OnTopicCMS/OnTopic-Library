@@ -117,7 +117,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads a new <see cref="MenuViewComponent"/> and confirms the resulting values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Menu_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
@@ -142,7 +142,7 @@ namespace OnTopic.Tests {
     ///   Loads a new <see cref="MenuViewComponent"/> with a context defining an alternate <c>NavigationRoot</c>, and confirms
     ///   that is returned as the <see cref="NavigationTopicViewModel"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Menu_Invoke_ReturnsConfiguredNavigationRoot() {
 
       var webPath               = "/Web/Web_3/Web_3_1/Web_3_1_0/";
@@ -167,7 +167,7 @@ namespace OnTopic.Tests {
     ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
     ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {
 
       var parent                = new NavigationTopicViewModel() {
@@ -190,7 +190,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> and confirms the resulting values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task PageLevelNavigation_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
@@ -216,7 +216,7 @@ namespace OnTopic.Tests {
     ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a root that does not derive from a <c>PageGroup</c>
     ///   and confirms the resulting <see cref="NavigationTopicViewModel"/> is <c>null</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task PageLevelNavigation_Invoke_ReturnsNull() {
 
       var webPath               = "/Web/Web_1/Web_1_0/";
@@ -242,7 +242,7 @@ namespace OnTopic.Tests {
     ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a null topic reference and confirms the resulting <see
     ///   cref="NavigationTopicViewModel"/> is <c>null</c>. This occurs when handling 404 errors.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task PageLevelNavigation_InvokeWithNullTopic_ReturnsNull()
     {
 

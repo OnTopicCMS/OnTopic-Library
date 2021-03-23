@@ -44,7 +44,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRoute(IEndpointRouteBuilder, String,
     ///   String, String)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -66,7 +66,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicAreaRoute(IEndpointRouteBuilder)"/>
     ///   and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicAreaRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -88,7 +88,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
     ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapDefaultAreaControllerRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -110,7 +110,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
     ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapImplicitAreaControllerRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -132,7 +132,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicSitemap(IEndpointRouteBuilder)"/> and
     ///   confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicSitemap_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -154,7 +154,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRedirect(IEndpointRouteBuilder)"/>
     ///   and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicRedirect_RedirectsRequest() {
 
       var client                = _factory.CreateClient();

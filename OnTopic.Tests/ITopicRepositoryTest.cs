@@ -56,7 +56,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads the default topic and ensures there are the expected number of children.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_Default_ReturnsTopicTopic() {
 
       var rootTopic             = _topicRepository.Load();
@@ -73,7 +73,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
@@ -89,7 +89,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads invalid topic key and ensures a null is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_InvalidUniqueKey_ReturnsTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType");
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topic by ID and ensures it is found.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidTopicId_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load(11111);
@@ -120,7 +120,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topic by an incorrect ID and ensures it a null is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_InvalidTopicId_ReturnsNull() {
 
       var topic                 = _topicRepository.Load(9999999);
@@ -135,7 +135,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Saves topics and ensures their identifiers are properly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save() {
 
       var web                   = _topicRepository.Load("Root:Web");
@@ -164,7 +164,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Moves topics and ensures their parents are correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_ToNewParent_ConfirmedMove() {
 
       var source                = _topicRepository.Load("Root:Web:Web_0");
@@ -193,7 +193,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_ToNewSibling_ConirmedMove() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_0");
@@ -223,7 +223,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic to ensure it is properly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_Topic_Removed() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_1");
@@ -250,7 +250,7 @@ namespace OnTopic.Tests {
     ///   TopicDeleted"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
     ///   and not the immediate <see cref="CachedTopicRepository"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_DeleteEvent_IsFired() {
 
       var topic                 = TopicFactory.Create("Test", "Page");

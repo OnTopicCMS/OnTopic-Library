@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     ///   Initializes a new <see cref="TypeCollection"/> with a list of <see cref="Type"/> objects, including a duplicate.
     ///   Confirms that only the unique values are provided.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TypeCollection_Constructor_ContainsUniqueTypes() {
 
       var topics = new List<Type> {
@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.TryAdd(Type)"/> to
     ///   ensure it correctly adds new items, but not duplicate items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_TryAdd_ReturnsExpected() {
 
       var topics = new List<Type> {
@@ -77,7 +77,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.Lookup(String[])"/>
     ///   to ensure it correctly falls back to subsequent items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_Lookup_ReturnsFallback() {
 
       var topics = new List<Type> {
@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.AddOrReplace(Type)"/>
     ///   to ensure it correctly adds new items, but and replaces duplicate items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_AddOrReplace_ReturnsExpected() {
 
       var lookupService         = new DummyStaticTypeLookupService();
@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
     ///   StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTypeLookupService_Predicate_ReturnsExpected() {
 
       var lookupService         = new DynamicTypeLookupService(t =>
@@ -137,7 +137,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="CompositeTypeLookupService"/> and calls <see cref="CompositeTypeLookupService.Lookup(String[]
     ///   )"/> to ensure it correctly falls back to each <see cref="ITypeLookupService"/> implementation.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void CompositeTypeLookupService_Lookup_ReturnsFallback() {
 
       var lookupService1        = new StaticTypeLookupService(
@@ -171,7 +171,7 @@ namespace OnTopic.Tests {
     ///   Tests the <see cref="DefaultTopicLookupService"/> to ensure it correctly identifies not only the built-in models, but
     ///   also an additional model injected via the constructor.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DefaultTopicLookupService_Lookup_ReturnsExpected() {
 
       var topics = new List<Type> {
@@ -192,7 +192,7 @@ namespace OnTopic.Tests {
     ///   Tests the <see cref="DynamicTopicBindingModelLookupService"/> to ensure it correctly identifies binding models that
     ///   are defined as part of the test project.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTopicBindingModelLookupService_Lookup_ReturnsExpected() {
 
       var lookupService         = new DynamicTopicBindingModelLookupService();

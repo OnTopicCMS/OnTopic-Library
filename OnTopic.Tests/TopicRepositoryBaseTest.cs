@@ -61,7 +61,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a valid <see cref="Topic.Id"/> and
     ///   confirms that the expected topic is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidTopicId_ReturnsExpectedTopic() {
 
       var topic                 = _topicRepository.Load(11111);
@@ -77,7 +77,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with an invalid <see cref="Topic.Id"/> and
     ///   confirms that no topic is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_InvalidTopicId_ReturnsExpectedTopic() {
 
       var topic                 = _topicRepository.Load(11113);
@@ -93,7 +93,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a negative <see cref="Topic.Id"/> and
     ///   confirms that the root topic is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_NegativeTopicId_ReturnsRootTopic() {
 
       var topic                 = _cachedTopicRepository.Load(-2);
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
     ///   with that date is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidDate_ReturnsTopic() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
@@ -127,7 +127,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
     ///   LastModified"/> value is updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Rollback_Topic_UpdatesLastModified() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
@@ -150,7 +150,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
     ///   confirms that an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void Load_FutureDate_ThrowsException() =>
       _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
     ///   introduced and ensures that an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(InvalidOperationException))]
     public void Load_OldDate_ThrowsException() =>
       _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15));
@@ -173,7 +173,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ReferentialIntegrityException))]
     public void Delete_BaseTopic_ThrowsException() {
 
@@ -194,7 +194,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic which another topic within the graph derives from. Expects success.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_InternallyDerivedTopic_Succeeds() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -216,7 +216,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ReferentialIntegrityException))]
     public void Delete_Descendants_ThrowsException() {
 
@@ -233,7 +233,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_DescendantsWithRecursive_Succeeds() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -252,7 +252,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_NestedTopics_Succeeds() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -272,7 +272,7 @@ namespace OnTopic.Tests {
     ///   Deletes a topic with outgoing relationships and topic references. Additionally, deletes those associations from the
     ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_Relationships_DeleteRelationships() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -296,7 +296,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_IncomingRelationships_DeleteAssociations() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -321,7 +321,7 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
     ///   cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -342,7 +342,7 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
     ///   be skipped.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_EmptyAttributes_Skips() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -363,7 +363,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_IndexedAttributes_ReturnsIndexedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -382,7 +382,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributes_ReturnsExtendedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -403,7 +403,7 @@ namespace OnTopic.Tests {
     ///   cref="AttributeRecord"/> to be returned even if it's <i>not</i> <see cref="TrackedRecord{T}.IsDirty"/> <i>but</i> its
     ///   <see cref="AttributeRecord.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
@@ -445,7 +445,7 @@ namespace OnTopic.Tests {
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -465,7 +465,7 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of attributes from a topic, filtering by <c>excludeLastModified</c>. Confirms that <see
     ///   cref="AttributeRecord"/>s are not returned which start with <c>LastModified</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -487,7 +487,7 @@ namespace OnTopic.Tests {
     ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -508,7 +508,7 @@ namespace OnTopic.Tests {
     ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
@@ -528,7 +528,7 @@ namespace OnTopic.Tests {
     ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="ContentTypeDescriptor"/> but not the <see cref="Topic"/> are returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetUnmatchedAttributes_ReturnsAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
@@ -551,7 +551,7 @@ namespace OnTopic.Tests {
     ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
     ///   the database.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetUnmatchedAttributes_EmptyArbitraryAttributes_ReturnsAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
@@ -577,7 +577,7 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
     ///   the expected number (2) are present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptors_ReturnsContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -596,7 +596,7 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> alongside a separate
     ///   topic graph and ensures the two are properly merged.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptors_WithTopicGraph_ReturnsMergedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -617,7 +617,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to retrieve a specific <see cref="ContentTypeDescriptor"/> by its <see cref="Topic.Key"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetValidContentType_ReturnsContentType() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
@@ -634,7 +634,7 @@ namespace OnTopic.Tests {
     ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> that hasn't yet been persisted to the data store. Instead,
     ///   attempts to retrieve it from the <see cref="Topic"/>'s graph.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
 
       var rootTopic             = _topicRepository.Load("Root");
@@ -658,7 +658,7 @@ namespace OnTopic.Tests {
     ///   root content type at <c>Root:Configuration:ContentTypes</c>. In this case, it should return <c>null</c>. This will
     ///   typically only occur when initializing a new database, and is an unexpected condition.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
 
       var topicRepository       = new StubTopicRepository();
@@ -679,7 +679,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to retrieve an invalid <see cref="ContentTypeDescriptor"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetInvalidContentType_ReturnsNull() {
 
       var topic                 = TopicFactory.Create("Test", "InvalidContentType");
@@ -697,7 +697,7 @@ namespace OnTopic.Tests {
     ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that it is
     ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -717,7 +717,7 @@ namespace OnTopic.Tests {
     ///   "ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -746,7 +746,7 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> and confirms that the <see cref="Topic.VersionHistory"/> is correctly updated with a
     ///   new version.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_NewTopic_UpdatesVersionHistory() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
@@ -765,7 +765,7 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with a child <see cref="Topic"/> and confirms that the <see cref="Topic.Id"/> of the
     ///   child <see cref="Topic"/> is correctly updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_IsRecursive_SavesChild() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
@@ -786,7 +786,7 @@ namespace OnTopic.Tests {
     ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedRecordCollection{TItem,
     ///   TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_UnresolvedReference_Resolves() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
@@ -806,7 +806,7 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws the
     ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ReferentialIntegrityException),
       "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
@@ -830,7 +830,7 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with an invalid <see cref="Topic.ContentType"/> and confirms that it throws the
     ///   expected <see cref="ReferentialIntegrityException"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ReferentialIntegrityException),
       "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
@@ -846,7 +846,7 @@ namespace OnTopic.Tests {
     ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Delete(Topic, Boolean)"/>, and ensures that it
     ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -869,7 +869,7 @@ namespace OnTopic.Tests {
     ///   that it is immediately reflected in the <see cref="TopicRepository"/> cache of <see
     ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -894,7 +894,7 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor"/> to the parent. Ensures that the <see cref="ContentTypeDescriptor.AttributeDescriptors"/>
     ///   of the child reflects the change.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_AttributeDescriptor_UpdatesContentType() {
 
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
@@ -923,7 +923,7 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor"/> to the parent, then immediately deletes it. Ensures that the <see
     ///   cref="ContentTypeDescriptor.AttributeDescriptors"/> of the child reflects the change.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
 
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
@@ -949,7 +949,7 @@ namespace OnTopic.Tests {
     ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean)"/> and ensures that the <see cref="
     ///   ITopicRepository.TopicLoaded"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_TopicLoadedEvent_IsRaised() {
 
       var hasFired              = false;
@@ -973,7 +973,7 @@ namespace OnTopic.Tests {
     ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
     ///   ITopicRepository.TopicLoaded"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
 
       var hasFired              = false;
@@ -1001,7 +1001,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
     ///   TopicDeleted"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_TopicDeletedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
@@ -1025,7 +1025,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved"
     ///   /> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicSavedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
@@ -1048,7 +1048,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
     ///   "/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicRenamedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
@@ -1073,7 +1073,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
     ///   TopicMoved"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicMovedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
@@ -1099,7 +1099,7 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
     ///   /> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_TopicMovedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);

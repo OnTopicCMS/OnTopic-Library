@@ -32,7 +32,7 @@ namespace OnTopic.Tests {
     ///   confirms that it returns the expected <see cref="Type"/> for a <see cref="ITypeLookupService.Lookup(String[])"/>
     ///   query.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Composite_LookupValidType_ReturnsType() {
 
       var lookupServiceA        = new FakeViewModelLookupService();
@@ -52,7 +52,7 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="DynamicTopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
     ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new DynamicTopicViewModelLookupService();
@@ -69,7 +69,7 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
     ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new FakeViewModelLookupService();

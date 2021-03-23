@@ -86,7 +86,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task TopicController_IndexAsync_ReturnsTopicViewResult() {
 
       var controller            = new TopicController(_topicRepository, _topicMappingService) {
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
 
       var controller            = new RedirectController(_topicRepository);
@@ -130,7 +130,7 @@ namespace OnTopic.Tests {
     ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action with an invalid <see cref="Topic.Id"/> and
     ///   confirms that a <see cref="NotFoundResult"/> is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
 
       var controller            = new RedirectController(_topicRepository);
@@ -149,7 +149,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ReturnsSitemapXml() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -174,7 +174,7 @@ namespace OnTopic.Tests {
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
     ///   properly excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ExcludesContentTypes() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -205,7 +205,7 @@ namespace OnTopic.Tests {
     ///   Triggers the extended action of the <see cref="SitemapController.Extended(Boolean)" /> action and ensures that the
     ///   results include the expected attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Extended_IncludesAttributes() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -237,7 +237,7 @@ namespace OnTopic.Tests {
     ///   Triggers the index action of the <see cref="SitemapController.Extended(Boolean)" /> action and verifies that it
     ///   properly excludes e.g. the <c>Body</c> and <c>IsHidden</c> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ExcludesAttributes() {
 
       var controller            = new SitemapController(_topicRepository) {

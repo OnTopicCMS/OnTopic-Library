@@ -53,7 +53,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Looks for a deeply nested child topic using only the attribute value.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void FindAllByAttribute_ReturnsCorrectTopics() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -78,7 +78,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a deeply nested <see cref="Topic"/>, returns the first parent <see cref="Topic"/> which satisfies a delegate.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void FindFirstParent_ReturnsCorrectTopic() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -98,7 +98,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Correctly returns null if the delegate cannot be satisfied.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void FindFirstParent_ReturnsNull() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a deeply nested <see cref="Topic"/>, returns the root <see cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetRootTopic_ReturnsRootTopic() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -136,7 +136,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a root <see cref="Topic"/>, returns the current <see cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetRootTopic_ReturnsCurrentTopic() {
 
       var topic                 = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -153,7 +153,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a root <see cref="Topic"/>, returns the root <see cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetByUniqueKey_RootKey_ReturnsRootTopic() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -172,7 +172,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetByUniqueKey_ValidKey_ReturnsTopic() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -194,7 +194,7 @@ namespace OnTopic.Tests {
     ///   Given an invalid <c>UniqueKey</c>, the <see cref="TopicExtensions.GetByUniqueKey(Topic, String)"/> returns
     ///   <c>null</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetByUniqueKey_InvalidKey_ReturnsNull() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
@@ -214,7 +214,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="ContentTypeDescriptor"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentType_ValidContentType_ReturnsContentType() {
 
       var topic                 = _topicRepository.Load(11111);
@@ -232,7 +232,7 @@ namespace OnTopic.Tests {
     ///   Given an invalid <see cref="ContentTypeDescriptor"/>, the <see cref="TopicExtensions.GetContentTypeDescriptor(Topic)"
     ///   /> returns <c>null</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentType_InvalidContentType_ReturnsNull() {
 
       var parentTopic           = _topicRepository.Load(11111);
@@ -254,7 +254,7 @@ namespace OnTopic.Tests {
     ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref="
     ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void GetContentType_InvalidType_ReturnsNull() {
 
       var parentTopic           = _topicRepository.Load(11111);
@@ -272,7 +272,7 @@ namespace OnTopic.Tests {
     ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsDirty(String)"/>,
     ///   returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AnyDirty_DirtyCollection_ReturnTrue() {
 
       var topics = new TopicCollection {
@@ -290,7 +290,7 @@ namespace OnTopic.Tests {
     ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
     ///   returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AnyDirty_CleanCollection_ReturnFalse() {
 
       var topics = new TopicCollection {
@@ -308,7 +308,7 @@ namespace OnTopic.Tests {
     ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsNew"/>, returns
     ///   <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AnyNew_ContainsNew_ReturnTrue() {
 
       var topics = new TopicCollection {
@@ -326,7 +326,7 @@ namespace OnTopic.Tests {
     ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsNew"/>, returns <c>
     ///   false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void AnyNew_ContainsExisting_ReturnFalse() {
 
       var topics = new TopicCollection {

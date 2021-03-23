@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_IsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -55,7 +55,7 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is not set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_NewReference_NotDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -76,7 +76,7 @@ namespace OnTopic.Tests {
     ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.RemoveItem(Int32)"/>, and confirms that <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Remove_ExistingReference_IsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -100,7 +100,7 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set. Also confirms that items are correctly removed
     ///   from recipricol <see cref="Topic.IncomingRelationships"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Clear_ExistingReferences_IsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -125,7 +125,7 @@ namespace OnTopic.Tests {
     ///   </c>, confirming that <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> remains <c>true</c>
     ///   since the target <see cref="Topic"/> is unsaved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewTopic_IsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -145,7 +145,7 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that
     ///   <see cref="Topic.IncomingRelationships"/> reference is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_IncomingRelationshipSet() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -171,7 +171,7 @@ namespace OnTopic.Tests {
     ///   Topic.IncomingRelationships"/> is removed, the second to ensure that the attempt to call <see cref="Topic.
     ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/> is <c>null</c>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -197,7 +197,7 @@ namespace OnTopic.Tests {
     ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.IncomingRelationships"/> are
     ///   correctly updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ExistingReference_TopicUpdated() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -229,7 +229,7 @@ namespace OnTopic.Tests {
     ///   the attempt to call <see cref="Topic.IncomingRelationships"/> isn't disrupted by the fact that the <see cref="
     ///   TrackedRecord{T}.Value"/> will now be <c>null</c>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void SetValue_ExistingReference_IncomingRelationshipsUpdates() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -254,7 +254,7 @@ namespace OnTopic.Tests {
     ///   reference with a null value using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String,
     ///   TValue, Boolean?, DateTime?)"/>, and confirms that the <see cref="Topic"/> reference is correctly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_NullReference_TopicRemoved() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -275,7 +275,7 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
     ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/> is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_TopicIsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
@@ -296,7 +296,7 @@ namespace OnTopic.Tests {
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the <see
     ///   cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_ExistingReference_ReturnsTopic() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -316,7 +316,7 @@ namespace OnTopic.Tests {
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null
     ///   </c> if an incorrect <c>referencedKey</c> is entered.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_MissingReference_ReturnsNull() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -337,7 +337,7 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the related topic reference, inheriting from both
     ///   <see cref="Topic.Parent"/> and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReference_ReturnsTopic() {
 
       var parentTopic           = TopicFactory.Create("Parent", "Page");
@@ -361,7 +361,7 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if an incorrect <c>referencedKey</c> is
     ///   entered.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReference_ReturnsNull() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -384,7 +384,7 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if <c>inheritFromBase</c> is set to
     ///   <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReferenceWithoutInheritance_ReturnsNull() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
@@ -405,7 +405,7 @@ namespace OnTopic.Tests {
     ///   Sets a topic reference on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_TopicReferenceWithBusinessLogic_IsReturned() {
 
       var topic                 = new CustomTopic("Test", "Page");
@@ -423,7 +423,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance, then sets it to null, ensuring that it is correctly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_TopicReferenceWithBusinessLogic_RemovedReference() {
 
       var topic                 = new CustomTopic("Test", "Page");
@@ -442,7 +442,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
@@ -462,7 +462,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(
       typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."

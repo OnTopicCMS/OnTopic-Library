@@ -44,7 +44,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a query string parameter to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task QueryString_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -65,7 +65,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a request header to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Header_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -89,7 +89,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a specified action to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Action_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -111,7 +111,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a specified <see cref="Topic.View"/> to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Topic_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -134,7 +134,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Constructs a test with without a view specified to ensure that the expected default view is returned based on the <see
     ///   cref="Topic.ContentType"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task ContentType_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -156,7 +156,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Constructs a test without a view and without a default implementation for the <see cref="Topic.ContentType"/> and
     ///   ensures that an <see cref="HttpStatusCode.InternalServerError"/> is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MissingView_ReturnsInternalServerError() {
 
       var client = _factory.CreateClient();

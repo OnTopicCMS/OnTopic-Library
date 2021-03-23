@@ -80,7 +80,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
     ///   <c>currentTopic</c> and ensures it falls back to the <c>defaultRoot</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetHierarchicalRoot_WithNullTopic_ReturnsDefaultRoot() {
 
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "Configuration");
@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
     ///   <c>currentTopic</c> or <c>defaultRoot</c> and ensures it throws an <see cref="ArgumentNullException"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentNullException))]
     public void GetHierarchicalRoot_WithNullTopic_ThrowsException() =>
       _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "");
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
     ///   <c>currentTopic</c> and throws an <see cref="ArgumentException"/> when it cannot identify the <c>defaultRoot</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void GetHierarchicalRoot_WithInvalidDefaultRoot_ThrowsException() =>
       _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "InvalidDefaultRoot");
@@ -121,7 +121,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with a deeply
     ///   nested topic and ensures that it returns the expected root.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetHierarchicalRoot_WithDeepTopic_ReturnsRoot() {
 
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(_topic, 2, "Configuration");
@@ -138,7 +138,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   and ensures that the expected data is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
@@ -157,7 +157,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   with a <c>validationDelegate</c> and ensures that it correctly trims the topic graph.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithValidationDelegate_ExcludesTopics() {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
@@ -178,7 +178,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   with a <see cref="Topic.IsDisabled"/> topic in the graph, and ensures it is not returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithDisabled_ExcludesDisabled() {
 
       var rootTopic             = _topicRepository.Load("Root:Web:Web_3")!;
