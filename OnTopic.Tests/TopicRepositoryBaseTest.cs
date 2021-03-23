@@ -610,7 +610,7 @@ namespace OnTopic.Tests {
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
 
       Assert.NotEqual<int>(contentTypeCount, contentTypes.Count);
-      Assert.DoesNotContain(newContentType, contentTypes);
+      Assert.Contains(newContentType, contentTypes);
 
     }
 

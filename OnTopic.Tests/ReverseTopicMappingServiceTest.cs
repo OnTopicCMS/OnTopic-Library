@@ -472,7 +472,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
-      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+      await Assert.ThrowsAsync<ValidationException>(async () =>
         await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
       ).ConfigureAwait(false);
 
