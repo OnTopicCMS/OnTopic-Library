@@ -44,7 +44,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int?>(1, topic?.Id);
 
     }
 
@@ -97,8 +97,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal("Value", topic.Attributes.GetValue("Test"));
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal("Value", topic?.Attributes.GetValue("Test"));
 
     }
 
@@ -154,9 +154,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int?>(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
-      Assert.True(topic.Relationships.IsFullyLoaded);
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
+      Assert.True(topic?.Relationships.IsFullyLoaded);
 
     }
 
@@ -183,9 +183,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int>(0, topic.Relationships.Count);
-      Assert.False(topic.Relationships.IsFullyLoaded);
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(0, topic?.Relationships.Count);
+      Assert.False(topic?.Relationships.IsFullyLoaded);
 
     }
 
@@ -212,9 +212,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int?>(2, topic.References.GetValue("Test")?.Id);
-      Assert.True(topic.References.IsDirty());
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(2, topic?.References.GetValue("Test")?.Id);
+      Assert.True(topic?.References.IsDirty());
 
     }
 
@@ -242,10 +242,10 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph(referenceTopic, false);
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int?>(2, topic.References.GetValue("Test")?.Id);
-      Assert.True(topic.References.IsFullyLoaded);
-      Assert.False(topic.References.IsDirty());
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(2, topic?.References.GetValue("Test")?.Id);
+      Assert.True(topic?.References.IsFullyLoaded);
+      Assert.False(topic?.References.IsDirty());
 
     }
 
@@ -303,9 +303,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int>(0, topic.References.Count);
-      Assert.False(topic.References.IsFullyLoaded);
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(0, topic?.References.Count);
+      Assert.False(topic?.References.IsFullyLoaded);
 
     }
 
@@ -362,9 +362,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<int>(1, topic.VersionHistory.Count);
-      Assert.True(topic.VersionHistory.Contains(DateTime.MinValue));
+      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal<int?>(1, topic?.VersionHistory.Count);
+      Assert.True(topic?.VersionHistory.Contains(DateTime.MinValue));
 
     }
 

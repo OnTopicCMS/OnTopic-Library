@@ -85,7 +85,7 @@ namespace OnTopic.Tests {
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "Configuration");
 
       Assert.NotNull(rootTopic);
-      Assert.Equal("Configuration", rootTopic.Key);
+      Assert.Equal("Configuration", rootTopic?.Key);
 
     }
 
@@ -128,7 +128,7 @@ namespace OnTopic.Tests {
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(_topic, 2, "Configuration");
 
       Assert.NotNull(rootTopic);
-      Assert.Equal("Web", rootTopic.Key);
+      Assert.Equal("Web", rootTopic?.Key);
 
     }
 
@@ -146,8 +146,8 @@ namespace OnTopic.Tests {
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Equal<int>(3, viewModel.Children.Count);
-      Assert.Equal<int>(0, viewModel.Children[0].Children.Count);
+      Assert.Equal<int?>(3, viewModel?.Children.Count);
+      Assert.Equal<int?>(0, viewModel?.Children[0].Children.Count);
 
     }
 
@@ -167,8 +167,8 @@ namespace OnTopic.Tests {
         .ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Equal<int>(1, viewModel.Children.Count);
-      Assert.Equal<int>(1, viewModel.Children[0].Children.Count);
+      Assert.Equal<int?>(1, viewModel?.Children.Count);
+      Assert.Equal<int?>(1, viewModel?.Children[0].Children.Count);
 
     }
 
@@ -193,7 +193,7 @@ namespace OnTopic.Tests {
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Equal<int>(1, viewModel.Children.Count);
+      Assert.Equal<int?>(1, viewModel?.Children.Count);
 
     }
 

@@ -194,14 +194,14 @@ namespace OnTopic.Tests {
       Assert.NotNull(target?.TopicReference);
       Assert.NotNull(target?.Relationships);
       Assert.Equal<int?>(5, target?.OptionalValue);
-      Assert.Equal<int?>(1, target?.Relationships.Count);
+      Assert.Equal<int?>(1, target?.Relationships?.Count);
 
       Assert.Equal("Bar", target?.TopicReference?.ScalarValue);
 
       Assert.NotNull(target?.TopicReference?.TopicReference);
-      Assert.Equal("Baz", target?.TopicReference?.TopicReference.ScalarValue);
+      Assert.Equal("Baz", target?.TopicReference?.TopicReference?.ScalarValue);
 
-      Assert.Null(target?.TopicReference?.TopicReference.TopicReference);
+      Assert.Null(target?.TopicReference?.TopicReference?.TopicReference);
 
     }
 
@@ -242,7 +242,7 @@ namespace OnTopic.Tests {
       var viewModel             = await _mappingService.MapAsync<DisableMappingTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Null(viewModel.Key);
+      Assert.Null(viewModel?.Key);
 
     }
 
@@ -268,11 +268,11 @@ namespace OnTopic.Tests {
       Assert.NotNull(viewModel);
       Assert.NotNull(parentViewModel);
       Assert.NotNull(grandParentViewModel);
-      Assert.Equal("Test", viewModel.Key);
-      Assert.Equal("Parent", parentViewModel.Key);
-      Assert.Equal("Grandparent", grandParentViewModel.Key);
-      Assert.True(grandParentViewModel.IsRoot);
-      Assert.Null(grandParentViewModel.Parent);
+      Assert.Equal("Test", viewModel?.Key);
+      Assert.Equal("Parent", parentViewModel?.Key);
+      Assert.Equal("Grandparent", grandParentViewModel?.Key);
+      Assert.True(grandParentViewModel?.IsRoot);
+      Assert.Null(grandParentViewModel?.Parent);
 
     }
 
@@ -802,7 +802,7 @@ namespace OnTopic.Tests {
       var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
-      Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference.GetType());
+      Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference?.GetType());
 
     }
 
@@ -854,7 +854,7 @@ namespace OnTopic.Tests {
       var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
-      Assert.Equal(topicReference.Key, target?.TopicReference.Key);
+      Assert.Equal(topicReference.Key, target?.TopicReference?.Key);
 
     }
 
@@ -877,7 +877,7 @@ namespace OnTopic.Tests {
       var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
-      Assert.Equal(topicReference?.Key, target?.TopicReference.Key);
+      Assert.Equal(topicReference?.Key, target?.TopicReference?.Key);
 
     }
 

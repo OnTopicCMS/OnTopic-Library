@@ -176,8 +176,8 @@ namespace OnTopic.Tests {
       var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
       Assert.NotNull(target);
-      Assert.Equal("Test", target.Key);
-      Assert.Equal("TextAttributeDescriptor", target.ContentType);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
 
     }
 
@@ -204,9 +204,9 @@ namespace OnTopic.Tests {
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.NotNull(target);
-      Assert.Equal("Jeremy", target.Attributes.GetValue("Name"));
-      Assert.Equal("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
-      Assert.Equal("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+      Assert.Equal("Jeremy", target?.Attributes.GetValue("Name"));
+      Assert.Equal("AlternateContact@Ignia.com", target?.Attributes.GetValue("AlternateEmail"));
+      Assert.Equal("BillingContact@Ignia.com", target?.Attributes.GetValue("BillingContactEmail"));
 
     }
 
@@ -354,7 +354,7 @@ namespace OnTopic.Tests {
       var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.NotNull(target?.BaseTopic);
-      Assert.Equal("Title", target?.BaseTopic.Key);
+      Assert.Equal("Title", target?.BaseTopic?.Key);
       Assert.Equal("Text", target?.EditorType);
 
     }

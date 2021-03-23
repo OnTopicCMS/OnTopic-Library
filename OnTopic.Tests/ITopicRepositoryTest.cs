@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load(11111);
 
       Assert.NotNull(topic);
-      Assert.Equal("Web_1_1_1_1", topic.Key);
+      Assert.Equal("Web_1_1_1_1", topic?.Key);
 
     }
 
