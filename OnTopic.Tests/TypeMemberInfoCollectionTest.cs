@@ -383,14 +383,14 @@ namespace OnTopic.Tests {
     ///   target property type is not nullable.
     /// </summary>
     [Fact]
-    public void SetPropertyValue_EmptyValue_ThrowsException() {
+    public void SetPropertyValue_EmptyValue_SetsDefault() {
 
       var types                 = new MemberDispatcher();
       var model                 = new NonNullablePropertyTopicViewModel();
 
       types.SetPropertyValue(model, "NonNullableInteger", "ABC");
 
-      Assert.NotNull(model.NonNullableInteger);
+      Assert.Equal<int>(0, model.NonNullableInteger);
 
     }
 
