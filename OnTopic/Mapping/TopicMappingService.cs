@@ -364,7 +364,7 @@ namespace OnTopic.Mapping {
       var configuration = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
 
       if (configuration.DisableMapping) {
-        return null;
+        return parameter.DefaultValue;
       }
 
       var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
