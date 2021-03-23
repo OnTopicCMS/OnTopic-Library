@@ -199,9 +199,9 @@ namespace OnTopic.Tests {
       Assert.Equal("Bar", target?.TopicReference?.ScalarValue);
 
       Assert.NotNull(target?.TopicReference?.TopicReference);
-      Assert.Equal("Baz", target?.TopicReference?.TopicReference?.ScalarValue);
+      Assert.Equal("Baz", target?.TopicReference!.TopicReference!.ScalarValue);
 
-      Assert.Null(target?.TopicReference?.TopicReference?.TopicReference);
+      Assert.Null(target?.TopicReference!.TopicReference!.TopicReference);
 
     }
 
