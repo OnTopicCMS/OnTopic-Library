@@ -355,8 +355,8 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.False(attributes.Any(a => a.Key is "EmptyAttribute"));
-      Assert.False(attributes.Any(a => a.Key is "NullAttribute"));
+      Assert.DoesNotContain(attributes, a => a.Key is "EmptyAttribute");
+      Assert.DoesNotContain(attributes, a => a.Key is "NullAttribute");
 
     }
 
@@ -499,7 +499,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
 
     }
 
@@ -520,7 +520,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
 
     }
 
@@ -541,7 +541,7 @@ namespace OnTopic.Tests {
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
       Assert.True(attributes.Any());
-      Assert.False(attributes.Any(a => a.Key is "Title"));
+      Assert.DoesNotContain(attributes, a => a.Key is "Title");
 
     }
 
@@ -567,9 +567,9 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
-      Assert.True(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
-      Assert.False(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
+      Assert.Contains(attributes, a => a.Key is "YetAnotherArbitraryAttribute");
+      Assert.DoesNotContain(attributes, a => a.Key is "AnotherArbitraryAttribute");
 
     }
 
