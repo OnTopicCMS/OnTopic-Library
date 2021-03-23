@@ -129,7 +129,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(NotFoundObjectResult));
+      Assert.IsType<NotFoundObjectResult>(context.Result);
 
     }
 
@@ -153,7 +153,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedResult));
+      Assert.IsType<UnauthorizedResult>(context.Result);
 
     }
 
@@ -178,7 +178,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.IsType<RedirectResult>(context.Result);
 
     }
 
@@ -204,7 +204,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.AreEqual<int?>(403, result?.StatusCode);
 
     }
 
@@ -231,7 +231,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -283,7 +283,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.IsType<RedirectResult>(context.Result);
       Assert.Equal(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
 
     }
@@ -340,7 +340,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.IsType<RedirectResult>(context.Result);
 
     }
 

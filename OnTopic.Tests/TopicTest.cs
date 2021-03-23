@@ -47,7 +47,7 @@ namespace OnTopic.Tests {
     public void Create_ContentType_ReturnsDerivedTopic() {
       var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
       Assert.NotNull(topic);
-      Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
+      Assert.IsType<ContentTypeDescriptor>(topic);
     }
 
     /*==========================================================================================================================
@@ -67,7 +67,7 @@ namespace OnTopic.Tests {
     public void Create_AttributeDescriptor_ReturnsFallback() {
       var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
       Assert.NotNull(topic);
-      Assert.IsInstanceOfType(topic, typeof(AttributeDescriptor));
+      Assert.IsType<AttributeDescriptor>(topic);
     }
 
     /*==========================================================================================================================
