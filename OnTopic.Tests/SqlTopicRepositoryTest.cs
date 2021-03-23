@@ -44,7 +44,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
+      Assert.Equal<int>(1, topic.Id);
 
     }
 
@@ -72,7 +72,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(topic);
 
-      Assert.AreEqual<Topic?>(parent2, child.Parent);
+      Assert.Equal<Topic?>(parent2, child.Parent);
 
     }
 
@@ -97,8 +97,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<string?>("Value", topic.Attributes.GetValue("Test"));
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<string?>("Value", topic.Attributes.GetValue("Test"));
 
     }
 
@@ -154,8 +154,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int?>(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
       Assert.IsTrue(topic.Relationships.IsFullyLoaded);
 
     }
@@ -183,8 +183,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int>(0, topic.Relationships.Count);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int>(0, topic.Relationships.Count);
       Assert.IsFalse(topic.Relationships.IsFullyLoaded);
 
     }
@@ -212,8 +212,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.References.GetValue("Test")?.Id);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int?>(2, topic.References.GetValue("Test")?.Id);
       Assert.IsTrue(topic.References.IsDirty());
 
     }
@@ -242,8 +242,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph(referenceTopic, false);
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.References.GetValue("Test")?.Id);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int?>(2, topic.References.GetValue("Test")?.Id);
       Assert.IsTrue(topic.References.IsFullyLoaded);
       Assert.IsFalse(topic.References.IsDirty());
 
@@ -303,8 +303,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int>(0, topic.References.Count);
       Assert.IsFalse(topic.References.IsFullyLoaded);
 
     }
@@ -334,7 +334,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(related);
 
-      Assert.AreEqual<int>(0, topic.Relationships.GetValues("Test").Count);
+      Assert.Equal<int>(0, topic.Relationships.GetValues("Test").Count);
 
     }
 
@@ -362,8 +362,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int>(1, topic.VersionHistory.Count);
+      Assert.Equal<int>(1, topic.Id);
+      Assert.Equal<int>(1, topic.VersionHistory.Count);
       Assert.IsTrue(topic.VersionHistory.Contains(DateTime.MinValue));
 
     }
@@ -384,8 +384,8 @@ namespace OnTopic.Tests {
       dataTable.AddRow(2);
       dataTable.AddRow(2);
 
-      Assert.AreEqual<int>(3, dataTable.Rows.Count);
-      Assert.AreEqual<int>(1, dataTable.Columns.Count);
+      Assert.Equal<int>(3, dataTable.Rows.Count);
+      Assert.Equal<int>(1, dataTable.Columns.Count);
 
       dataTable.Dispose();
 
@@ -408,8 +408,8 @@ namespace OnTopic.Tests {
       dataTable.AddRow("ContentType", "Page");
       dataTable.AddRow("ParentId", "4");
 
-      Assert.AreEqual<int>(3, dataTable.Rows.Count);
-      Assert.AreEqual<int>(2, dataTable.Columns.Count);
+      Assert.Equal<int>(3, dataTable.Rows.Count);
+      Assert.Equal<int>(2, dataTable.Columns.Count);
 
       dataTable.Dispose();
 
@@ -432,8 +432,8 @@ namespace OnTopic.Tests {
       dataTable.AddRow("Parent", 2);
       dataTable.AddRow("RootTopic", 3);
 
-      Assert.AreEqual<int>(3, dataTable.Rows.Count);
-      Assert.AreEqual<int>(2, dataTable.Columns.Count);
+      Assert.Equal<int>(3, dataTable.Rows.Count);
+      Assert.Equal<int>(2, dataTable.Columns.Count);
 
       dataTable.Dispose();
 
@@ -455,10 +455,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@TopicKey"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
-      Assert.AreEqual<string?>("Root", (string?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+      Assert.Equal<string?>("Root", (string?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -480,10 +480,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@TopicKey"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
-      Assert.AreEqual<string?>(null, (string?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+      Assert.Equal<string?>(null, (string?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -505,10 +505,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@TopicId"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicId"));
-      Assert.AreEqual<int?>(5, (int?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal<int?>(5, (int?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -530,10 +530,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@IsHidden"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@IsHidden"));
-      Assert.AreEqual<bool?>(true, (bool?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Bit, sqlParameter?.SqlDbType);
+      Assert.Equal<bool?>(true, (bool?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.Bit, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -556,10 +556,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@LastModified"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@LastModified"));
-      Assert.AreEqual<DateTime?>(lastModified, (DateTime?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
+      Assert.Equal<DateTime?>(lastModified, (DateTime?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -582,10 +582,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@Relationships"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@Relationships"));
-      Assert.AreEqual<DataTable?>(dataTable, (DataTable?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Structured, sqlParameter?.SqlDbType);
+      Assert.Equal<DataTable?>(dataTable, (DataTable?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.Structured, sqlParameter?.SqlDbType);
 
       command.Dispose();
       dataTable.Dispose();
@@ -609,10 +609,10 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@AttributesXml"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@AttributesXml"));
-      Assert.AreEqual<string?>(xml.ToString(), (string?)sqlParameter?.Value);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
+      Assert.Equal<string?>(xml.ToString(), (string?)sqlParameter?.Value);
+      Assert.Equal<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -636,11 +636,11 @@ namespace OnTopic.Tests {
 
       sqlParameter.Value        = 5;
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicId"));
-      Assert.AreEqual<int>(5, command.GetReturnCode("TopicId"));
-      Assert.AreEqual<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal<int>(5, command.GetReturnCode("TopicId"));
+      Assert.Equal<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -663,11 +663,11 @@ namespace OnTopic.Tests {
 
       var sqlParameter          = command.Parameters["@TopicId"];
 
-      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicId"));
-      Assert.AreEqual<int>(-1, command.GetReturnCode("TopicId"));
-      Assert.AreEqual<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal<int>(-1, command.GetReturnCode("TopicId"));
+      Assert.Equal<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 

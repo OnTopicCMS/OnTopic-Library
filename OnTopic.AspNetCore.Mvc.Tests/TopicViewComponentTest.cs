@@ -128,9 +128,9 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
-      Assert.AreEqual<string?>("/Web/", model?.NavigationRoot?.WebPath);
-      Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
+      Assert.Equal<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
+      Assert.Equal<string?>("/Web/", model?.NavigationRoot?.WebPath);
+      Assert.Equal<int?>(3, model?.NavigationRoot?.Children.Count);
 
     }
 
@@ -154,8 +154,8 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
-      Assert.AreEqual<string?>("/Configuration/", model?.NavigationRoot?.WebPath);
+      Assert.Equal<string?>(webPath, model?.CurrentWebPath);
+      Assert.Equal<string?>("/Configuration/", model?.NavigationRoot?.WebPath);
 
     }
 
@@ -201,9 +201,9 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
-      Assert.AreEqual<string?>("/Web/Web_3/", model?.NavigationRoot?.WebPath);
-      Assert.AreEqual<int?>(2, model?.NavigationRoot?.Children.Count);
+      Assert.Equal<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
+      Assert.Equal<string?>("/Web/Web_3/", model?.NavigationRoot?.WebPath);
+      Assert.Equal<int?>(2, model?.NavigationRoot?.Children.Count);
       Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }
@@ -229,7 +229,7 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
+      Assert.Equal<string?>(webPath, model?.CurrentWebPath);
       Assert.IsNull(model?.NavigationRoot);
 
     }
@@ -257,7 +257,7 @@ namespace OnTopic.Tests {
       var model = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(String.Empty, model?.CurrentWebPath);
+      Assert.Equal<string?>(String.Empty, model?.CurrentWebPath);
       Assert.IsNull(model?.NavigationRoot);
 
     }

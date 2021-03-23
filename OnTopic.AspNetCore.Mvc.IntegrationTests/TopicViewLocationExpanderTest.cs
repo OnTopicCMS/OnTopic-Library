@@ -73,8 +73,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>(viewLocation, content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>(viewLocation, content);
 
     }
 
@@ -111,8 +111,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>(viewLocation, content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>(viewLocation, content);
 
     }
 

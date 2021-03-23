@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _topicRepository.Load(11111);
 
-      Assert.AreEqual<int?>(11111, topic?.Id);
+      Assert.Equal<int?>(11111, topic?.Id);
 
     }
 
@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _cachedTopicRepository.Load(-2);
 
-      Assert.AreEqual<string?>("Root", topic?.GetUniqueKey());
+      Assert.Equal<string?>("Root", topic?.GetUniqueKey());
 
     }
 
@@ -115,7 +115,7 @@ namespace OnTopic.Tests {
       var topic                 = _cachedTopicRepository.Load(11111, version);
 
       Assert.IsTrue(topic?.VersionHistory.Contains(version));
-      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -138,7 +138,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.IsTrue(topic?.VersionHistory.Contains(version));
-      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -205,7 +205,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Equal<int>(0, root.Children.Count);
 
     }
 
@@ -241,7 +241,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Equal<int>(0, root.Children.Count);
 
     }
 
@@ -260,7 +260,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, false);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Equal<int>(0, root.Children.Count);
 
     }
 
@@ -284,8 +284,8 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
-      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
+      Assert.Equal<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
+      Assert.Equal<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
 
     }
 
@@ -309,7 +309,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, source1.Relationships.GetValues("Associations").Count);
+      Assert.Equal<int>(0, source1.Relationships.GetValues("Associations").Count);
 
     }
 
@@ -329,7 +329,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.Equal<int>(1, attributes.Count());
 
     }
 
@@ -371,7 +371,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Equal<int>(0, attributes.Count());
 
     }
 
@@ -390,7 +390,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.Equal<int>(1, attributes.Count());
 
     }
 
@@ -418,20 +418,20 @@ namespace OnTopic.Tests {
       var cleanIndexed          = _topicRepository.GetAttributesProxy(topic, false, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, dirtyExtended.Count());
-      Assert.AreEqual<string?>("Title", dirtyExtended.FirstOrDefault()?.Key);
+      Assert.Equal<int>(1, dirtyExtended.Count());
+      Assert.Equal<string?>("Title", dirtyExtended.FirstOrDefault()?.Key);
 
       //Expect IsHidden, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, dirtyIndexed.Count());
-      Assert.AreEqual<string?>("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
+      Assert.Equal<int>(1, dirtyIndexed.Count());
+      Assert.Equal<string?>("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
 
       //Expect Metatitle, since it's clean, and not mismatched
-      Assert.AreEqual<int>(1, cleanExtended.Count());
-      Assert.AreEqual<string?>("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
+      Assert.Equal<int>(1, cleanExtended.Count());
+      Assert.Equal<string?>("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
 
       //Expect Arbitrary, since it's arbitrary and it's length is less than 255
-      Assert.AreEqual<int>(1, cleanIndexed.Count());
-      Assert.AreEqual<string?>("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
+      Assert.Equal<int>(1, cleanIndexed.Count());
+      Assert.Equal<string?>("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
 
     }
 
@@ -453,7 +453,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Equal<int>(0, attributes.Count());
 
     }
 
@@ -474,7 +474,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Equal<int>(0, attributes.Count());
 
     }
 
@@ -581,7 +581,7 @@ namespace OnTopic.Tests {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
-      Assert.AreEqual<int>(15, contentTypes.Count);
+      Assert.Equal<int>(15, contentTypes.Count);
       Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
       Assert.IsNotNull(contentTypes.GetValue("Page"));
       Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
@@ -645,7 +645,7 @@ namespace OnTopic.Tests {
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
       Assert.IsNotNull(contentType);
-      Assert.AreEqual<Topic?>(contentType, newContentType);
+      Assert.Equal<Topic?>(contentType, newContentType);
 
     }
 
@@ -986,8 +986,8 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
       Assert.IsTrue(hasFired);
-      Assert.AreEqual<int?>(topicId, topic?.Id);
-      Assert.AreEqual<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
+      Assert.Equal<int?>(topicId, topic?.Id);
+      Assert.Equal<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 

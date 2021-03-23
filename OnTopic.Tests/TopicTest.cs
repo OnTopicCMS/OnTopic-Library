@@ -32,8 +32,8 @@ namespace OnTopic.Tests {
     public void Create_ReturnsTopic() {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
-      Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.ContentType, "Page");
+      Assert.Equal<string>(topic.Key, "Test");
+      Assert.Equal<string>(topic.ContentType, "Page");
     }
 
     /*==========================================================================================================================
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
 
       topic.Key                 = "New";
 
-      Assert.AreEqual<string>("New", topic.Key);
+      Assert.Equal<string>("New", topic.Key);
       Assert.IsTrue(topic.IsDirty("Key"));
       Assert.IsTrue(parent.Children.Contains("New"));
       Assert.IsFalse(parent.Children.Contains("Original"));
@@ -126,8 +126,8 @@ namespace OnTopic.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.AreEqual<Topic?>(parentTopic.Children["Child"], childTopic);
-      Assert.AreEqual<int>(5, childTopic.Parent.Id);
+      Assert.Equal<Topic?>(parentTopic.Children["Child"], childTopic);
+      Assert.Equal<int>(5, childTopic.Parent.Id);
 
     }
 
@@ -181,10 +181,10 @@ namespace OnTopic.Tests {
 
       childTopic.Parent         = targetParent;
 
-      Assert.AreEqual<Topic?>(targetParent.Children["ChildTopic"], childTopic);
+      Assert.Equal<Topic?>(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsTrue(targetParent.Children.Contains("ChildTopic"));
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
-      Assert.AreEqual<int>(10, childTopic.Parent.Id);
+      Assert.Equal<int>(10, childTopic.Parent.Id);
 
     }
 
@@ -204,8 +204,8 @@ namespace OnTopic.Tests {
       childTopic.Parent         = parentTopic;
       grandChildTopic.Parent    = childTopic;
 
-      Assert.AreEqual<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.GetUniqueKey());
-      Assert.AreEqual<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.GetWebPath());
+      Assert.Equal<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.GetUniqueKey());
+      Assert.Equal<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.GetWebPath());
 
     }
 
@@ -249,8 +249,8 @@ namespace OnTopic.Tests {
 
       titledTopic.Title         = "Titled Topic";
 
-      Assert.AreEqual<string>(untitledTopic.Title, "UntitledTopic");
-      Assert.AreEqual<string>(titledTopic.Title, "Titled Topic");
+      Assert.Equal<string>(untitledTopic.Title, "UntitledTopic");
+      Assert.Equal<string>(titledTopic.Title, "Titled Topic");
 
     }
 
@@ -268,7 +268,7 @@ namespace OnTopic.Tests {
 
       topic.LastModified        = lastModified;
 
-      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal<DateTime>(lastModified, topic.LastModified);
 
     }
 
@@ -287,7 +287,7 @@ namespace OnTopic.Tests {
 
       topic.VersionHistory.Add(lastModified);
 
-      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal<DateTime>(lastModified, topic.LastModified);
 
     }
 
@@ -306,7 +306,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("LastModified", lastModified.ToShortDateString());
 
-      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal<DateTime>(lastModified, topic.LastModified);
 
     }
 
@@ -329,8 +329,8 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = secondBaseTopic;
       topic.BaseTopic           = finalBaseTopic;
 
-      Assert.AreEqual<Topic?>(topic.BaseTopic, finalBaseTopic);
-      Assert.AreEqual<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
+      Assert.Equal<Topic?>(topic.BaseTopic, finalBaseTopic);
+      Assert.Equal<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 
@@ -351,8 +351,8 @@ namespace OnTopic.Tests {
       baseTopic.Id              = 5;
       topic.BaseTopic           = baseTopic;
 
-      Assert.AreEqual<Topic?>(topic.BaseTopic, baseTopic);
-      Assert.AreEqual<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
+      Assert.Equal<Topic?>(topic.BaseTopic, baseTopic);
+      Assert.Equal<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 

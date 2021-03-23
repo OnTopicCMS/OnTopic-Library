@@ -60,9 +60,9 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load();
 
-      Assert.AreEqual<int?>(2, rootTopic?.Children.Count);
-      Assert.AreEqual<string?>("Configuration", rootTopic?.Children.First().Key);
-      Assert.AreEqual<string?>("Web", rootTopic?.Children.Last().Key);
+      Assert.Equal<int?>(2, rootTopic?.Children.Count);
+      Assert.Equal<string?>("Configuration", rootTopic?.Children.First().Key);
+      Assert.Equal<string?>("Web", rootTopic?.Children.Last().Key);
 
     }
 
@@ -78,7 +78,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
       _                         = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
-      Assert.AreEqual<string?>("Page", topic?.Key);
+      Assert.Equal<string?>("Page", topic?.Key);
 
     }
 
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load(11111);
 
       Assert.IsNotNull(topic);
-      Assert.AreEqual<string>("Web_1_1_1_1", topic.Key);
+      Assert.Equal<string>("Web_1_1_1_1", topic.Key);
 
     }
 
@@ -143,13 +143,13 @@ namespace OnTopic.Tests {
       Contract.Assume(web);
       Contract.Assume(configuration);
 
-      Assert.AreEqual<int>(10000, web.Id);
-      Assert.AreEqual<int>(-1, configuration.Id);
+      Assert.Equal<int>(10000, web.Id);
+      Assert.Equal<int>(-1, configuration.Id);
 
       _topicRepository.Save(configuration);
 
       Assert.AreNotEqual<int>(-1, configuration.Id);
-      Assert.AreEqual<int>(-1, configuration.Children.First().Id);
+      Assert.Equal<int>(-1, configuration.Children.First().Id);
 
       _topicRepository.Save(configuration, true);
 
@@ -174,15 +174,15 @@ namespace OnTopic.Tests {
       Contract.Assume(destination);
       Contract.Assume(topic);
 
-      Assert.AreEqual<Topic?>(topic.Parent, source);
-      Assert.AreEqual<int>(2, destination.Children.Count);
-      Assert.AreEqual<int>(2, source.Children.Count);
+      Assert.Equal<Topic?>(topic.Parent, source);
+      Assert.Equal<int>(2, destination.Children.Count);
+      Assert.Equal<int>(2, source.Children.Count);
 
       _topicRepository.Move(topic, destination);
 
-      Assert.AreEqual<Topic?>(topic.Parent, destination);
-      Assert.AreEqual<int>(1, source.Children.Count);
-      Assert.AreEqual<int>(3, destination.Children.Count);
+      Assert.Equal<Topic?>(topic.Parent, destination);
+      Assert.Equal<int>(1, source.Children.Count);
+      Assert.Equal<int>(3, destination.Children.Count);
 
     }
 
@@ -203,16 +203,16 @@ namespace OnTopic.Tests {
       Contract.Assume(topic);
       Contract.Assume(sibling);
 
-      Assert.AreEqual<Topic?>(topic.Parent, parent);
-      Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
-      Assert.AreEqual<int>(2, parent.Children.Count);
+      Assert.Equal<Topic?>(topic.Parent, parent);
+      Assert.Equal<string>("Web_0_0", parent.Children.First().Key);
+      Assert.Equal<int>(2, parent.Children.Count);
 
       _topicRepository.Move(topic, parent, sibling);
 
-      Assert.AreEqual<Topic?>(topic.Parent, parent);
-      Assert.AreEqual<int>(2, parent.Children.Count);
-      Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
-      Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
+      Assert.Equal<Topic?>(topic.Parent, parent);
+      Assert.Equal<int>(2, parent.Children.Count);
+      Assert.Equal<string>("Web_0_1", parent.Children.First().Key);
+      Assert.Equal<string>("Web_0_0", parent.Children[1].Key);
 
     }
 
@@ -233,11 +233,11 @@ namespace OnTopic.Tests {
       Contract.Assume(topic);
       Contract.Assume(child);
 
-      Assert.AreEqual<int>(2, parent.Children.Count);
+      Assert.Equal<int>(2, parent.Children.Count);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(1, parent.Children.Count);
+      Assert.Equal<int>(1, parent.Children.Count);
 
     }
 

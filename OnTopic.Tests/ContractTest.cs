@@ -79,7 +79,7 @@ namespace OnTopic.Tests {
         Contract.Requires<ArgumentException>(false, errorMessage);
       }
       catch (ArgumentException ex) {
-        Assert.AreEqual<String>(errorMessage, ex.Message);
+        Assert.Equal<String>(errorMessage, ex.Message);
       }
 
     }

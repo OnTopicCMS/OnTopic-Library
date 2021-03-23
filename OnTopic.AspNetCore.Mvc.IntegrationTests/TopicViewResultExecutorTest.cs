@@ -53,8 +53,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -77,8 +77,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -99,8 +99,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -121,8 +121,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -143,8 +143,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal<string?>("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 
@@ -162,7 +162,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var uri = new Uri("/Web/MissingView/", UriKind.Relative);
       var response = await client.GetAsync(uri).ConfigureAwait(false);
 
-      Assert.AreEqual<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
+      Assert.Equal<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
 
     }
 

@@ -65,9 +65,9 @@ namespace OnTopic.Tests {
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
       greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.AreEqual<Topic?>(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
-      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.AreEqual<Topic?>(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
+      Assert.Equal<Topic?>(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
+      Assert.Equal<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
+      Assert.Equal<Topic?>(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
 
     }
 
@@ -87,7 +87,7 @@ namespace OnTopic.Tests {
 
       var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
-      Assert.AreEqual<Topic?>(childTopic, foundTopic);
+      Assert.Equal<Topic?>(childTopic, foundTopic);
 
     }
 
@@ -125,7 +125,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = greatGrandChildTopic.GetRootTopic();
 
-      Assert.AreEqual<Topic?>(parentTopic, rootTopic);
+      Assert.Equal<Topic?>(parentTopic, rootTopic);
 
     }
 
@@ -142,7 +142,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = topic.GetRootTopic();
 
-      Assert.AreEqual<Topic?>(topic, rootTopic);
+      Assert.Equal<Topic?>(topic, rootTopic);
 
     }
 
@@ -161,7 +161,7 @@ namespace OnTopic.Tests {
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
       Assert.IsNotNull(foundTopic);
-      Assert.AreEqual<Topic?>(parentTopic, foundTopic);
+      Assert.Equal<Topic?>(parentTopic, foundTopic);
 
     }
 
@@ -182,7 +182,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
-      Assert.AreEqual<Topic?>(greatGrandChildTopic2, foundTopic);
+      Assert.Equal<Topic?>(greatGrandChildTopic2, foundTopic);
 
     }
 
@@ -220,7 +220,7 @@ namespace OnTopic.Tests {
       var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
       Assert.IsNotNull(contentTypeDescriptor);
-      Assert.AreEqual<string>("Page", contentTypeDescriptor.Key);
+      Assert.Equal<string>("Page", contentTypeDescriptor.Key);
 
     }
 

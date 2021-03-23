@@ -325,8 +325,8 @@ namespace OnTopic.Tests {
 
       var key                   = types.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
 
-      Assert.AreEqual<string>("NewKey", topic.Key);
-      Assert.AreEqual<string?>("NewKey", key);
+      Assert.Equal<string>("NewKey", topic.Key);
+      Assert.Equal<string?>("NewKey", key);
 
     }
 
@@ -426,13 +426,13 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
-      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
       types.SetPropertyValue(topic, "LastModified", "2008-06-03");
-      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
       types.SetPropertyValue(topic, "LastModified", "06/03/2008");
-      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
     }
 
@@ -470,7 +470,7 @@ namespace OnTopic.Tests {
 
       types.SetMethodValue(source, "SetMethod", "123");
 
-      Assert.AreEqual<int>(123, source.GetMethod());
+      Assert.Equal<int>(123, source.GetMethod());
 
     }
 
@@ -489,7 +489,7 @@ namespace OnTopic.Tests {
 
       types.SetMethodValue(source, "SetMethod", "ABC");
 
-      Assert.AreEqual<int>(0, source.GetMethod());
+      Assert.Equal<int>(0, source.GetMethod());
 
     }
 
@@ -527,7 +527,7 @@ namespace OnTopic.Tests {
 
       types.SetMethodValue(source, "SetMethod", reference);
 
-      Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
+      Assert.Equal<TopicViewModel?>(reference, source.GetMethod());
 
     }
 
@@ -611,7 +611,7 @@ namespace OnTopic.Tests {
         types.SetPropertyValue(topic, "Key", "Key" + i);
       }
 
-      Assert.AreEqual<string>("Key" + (i-1), topic.Key);
+      Assert.Equal<string>("Key" + (i-1), topic.Key);
 
     }
 

@@ -36,7 +36,7 @@ namespace OnTopic.Tests {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
-      Assert.AreEqual<string>("Topic3", topics["Topic3"].Key);
+      Assert.Equal<string>("Topic3", topics["Topic3"].Key);
 
     }
 
@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
 
       var topicsCollection = new KeyedTopicCollection(topics);
 
-      Assert.AreEqual<int>(10, topicsCollection.Count);
+      Assert.Equal<int>(10, topicsCollection.Count);
 
     }
 
@@ -88,7 +88,7 @@ namespace OnTopic.Tests {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
 
-      Assert.AreEqual<int>(0, readOnlyCollection.Count);
+      Assert.Equal<int>(0, readOnlyCollection.Count);
 
     }
 
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
 
       collection.Add(topic);
 
-      Assert.AreEqual<Topic?>(topic, readOnlyCollection.GetValue(topic.Key));
+      Assert.Equal<Topic?>(topic, readOnlyCollection.GetValue(topic.Key));
 
     }
 
@@ -130,7 +130,7 @@ namespace OnTopic.Tests {
 
       collection.Add(topic);
 
-      Assert.AreEqual<Topic?>(topic, readOnlyCollection[topic.Key]);
+      Assert.Equal<Topic?>(topic, readOnlyCollection[topic.Key]);
 
     }
 
@@ -169,8 +169,8 @@ namespace OnTopic.Tests {
 
       var readOnlyCollection = topics.AsReadOnly();
 
-      Assert.AreEqual<int>(10, readOnlyCollection.Count);
-      Assert.AreEqual<string>("Topic0", readOnlyCollection.First().Key);
+      Assert.Equal<int>(10, readOnlyCollection.Count);
+      Assert.Equal<string>("Topic0", readOnlyCollection.First().Key);
 
     }
 
@@ -191,8 +191,8 @@ namespace OnTopic.Tests {
 
       var readOnlyCollection = topics.AsReadOnly();
 
-      Assert.AreEqual<int>(10, readOnlyCollection.Count);
-      Assert.AreEqual<string>("Topic0", readOnlyCollection.First().Key);
+      Assert.Equal<int>(10, readOnlyCollection.Count);
+      Assert.Equal<string>("Topic0", readOnlyCollection.First().Key);
 
     }
 

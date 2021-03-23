@@ -36,7 +36,7 @@ namespace OnTopic.Tests {
 
       parent.Relationships.SetValue("Friends", related);
 
-      Assert.AreEqual<Topic?>(parent.Relationships.GetValues("Friends").First(), related);
+      Assert.Equal<Topic?>(parent.Relationships.GetValues("Friends").First(), related);
 
     }
 
@@ -132,7 +132,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Friends", related);
 
-      Assert.AreEqual<Topic?>(related.IncomingRelationships.GetValues("Friends").First(), parent);
+      Assert.Equal<Topic?>(related.IncomingRelationships.GetValues("Friends").First(), parent);
 
     }
 
@@ -192,7 +192,7 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
-      Assert.AreEqual<int>(5, relationships.Keys.Count);
+      Assert.Equal<int>(5, relationships.Keys.Count);
       Assert.IsTrue(relationships.Keys.Contains("Relationship3"));
 
     }
@@ -220,8 +220,8 @@ namespace OnTopic.Tests {
         counter++;
       }
 
-      Assert.AreEqual<int>(5, readOnlyRelationships.Count);
-      Assert.AreEqual<int>(5, counter);
+      Assert.Equal<int>(5, readOnlyRelationships.Count);
+      Assert.Equal<int>(5, counter);
 
     }
 
@@ -244,8 +244,8 @@ namespace OnTopic.Tests {
       topics.Add(topic);
       multiMap.Add(keyValuesPair);
 
-      Assert.AreEqual<int>(1, readOnlyTopicMultiMap.Count);
-      Assert.AreEqual<Topic?>(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
+      Assert.Equal<int>(1, readOnlyTopicMultiMap.Count);
+      Assert.Equal<Topic?>(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
 
     }
 
@@ -266,9 +266,9 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
-      Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<string>("Related3", relationships.GetValues("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllValues().Count);
+      Assert.Equal<int>(5, relationships.Count);
+      Assert.Equal<string>("Related3", relationships.GetValues("Relationship3").First().Key);
+      Assert.Equal<int>(5, relationships.GetAllValues().Count);
 
     }
 
@@ -289,8 +289,8 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
       }
 
-      Assert.AreEqual<int>(5, relationships.Keys.Count);
-      Assert.AreEqual<int>(1, relationships.GetAllValues("ContentType3").Count);
+      Assert.Equal<int>(5, relationships.Keys.Count);
+      Assert.Equal<int>(1, relationships.GetAllValues("ContentType3").Count);
 
     }
 
