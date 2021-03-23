@@ -324,7 +324,7 @@ namespace OnTopic.Tests {
       Assert.Null(target?.NullableUrl);
 
       //The following should not be null since they map to non-nullable properties which will have default values
-      Assert.AreEqual(topic.Title, target?.Title);
+      Assert.Equal(topic.Title, target?.Title);
       Assert.Equal<bool?>(topic.IsHidden, target?.IsHidden);
       Assert.Equal<DateTime?>(topic.LastModified, target?.LastModified);
 
@@ -1011,7 +1011,7 @@ namespace OnTopic.Tests {
       Assert.NotNull(getRelatedTopic(target, "RelatedTopic2"));
       Assert.NotNull(getRelatedTopic(target, "RelatedTopic3"));
 
-      Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy?.Key);
+      Assert.Equal(relatedTopic3.Key, relatedTopic3copy?.Key);
 
       Topic? getRelatedTopic(RelatedEntityTopicViewModel? topic, string key)
         => topic?.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));

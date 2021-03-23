@@ -38,8 +38,8 @@ namespace OnTopic.Tests {
       var lookupServiceB        = new TopicViewModelLookupService();
       var compositeLookup       = new CompositeTypeLookupService(lookupServiceA, lookupServiceB);
 
-      Assert.AreEqual(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
-      Assert.AreEqual(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
+      Assert.Equal<Type?>(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
+      Assert.Equal<Type?>(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
       Assert.Null(compositeLookup.Lookup(nameof(Topic)));
 
     }
@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
       var lookupService         = new DynamicTopicViewModelLookupService();
       var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
-      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
+      Assert.Equal<Type?>(typeof(FallbackViewModel), topicViewModel);
 
     }
 
@@ -74,7 +74,7 @@ namespace OnTopic.Tests {
       var lookupService         = new FakeViewModelLookupService();
       var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
-      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
+      Assert.Equal<Type?>(typeof(FallbackViewModel), topicViewModel);
 
     }
 

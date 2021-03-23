@@ -257,7 +257,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -310,7 +310,7 @@ namespace OnTopic.Tests {
       var result = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
