@@ -25,7 +25,7 @@ namespace OnTopic.Collections.Specialized {
     /// <summary>
     ///   Constructs a new instance of a <see cref="TopicMultiMap"/> class.
     /// </summary>
-    public TopicMultiMap() {
+    public TopicMultiMap(): base(StringComparer.OrdinalIgnoreCase) {
 
     }
 

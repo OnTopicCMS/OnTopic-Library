@@ -183,7 +183,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="initialValue">The <typeparamref name="TItem"/> object which is being inserted.</param>
     internal bool Register(string itemKey, TItem? initialValue) {
       var type = (Type?)null;
-      if (!MemberDispatcher.SettableTypes.Contains(typeof(TValue))) {
+      if (!AttributeValueConverter.IsConvertible(typeof(TValue))) {
         type = typeof(TValue);
       }
       if (

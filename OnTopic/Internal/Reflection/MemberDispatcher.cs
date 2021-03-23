@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
@@ -21,7 +22,7 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     The <see cref="MemberDispatcher"/> allows properties and members to be looked up and called based on string
   ///     representations of both the member names as well as, optionally, the values. String values can be deserialized into
-  ///     various value formats supported by <see cref="SettableTypes"/>.
+  ///     various value formats supported by <see cref="AttributeValueConverter"/>.
   ///   </para>
   ///   <para>
   ///     For retrieving values, the typical workflow is for a caller to check either <see cref="HasGettableMethod(Type, String,
@@ -63,20 +64,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Initializes static properties on <see cref="MemberDispatcher"/>.
     /// </summary>
-    static MemberDispatcher() {
-      SettableTypes = new() {
-        typeof(bool),
-        typeof(bool?),
-        typeof(int),
-        typeof(int?),
-        typeof(double),
-        typeof(double?),
-        typeof(string),
-        typeof(DateTime),
-        typeof(DateTime?),
-        typeof(Uri)
-      };
-    }
+    static MemberDispatcher() {}
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -155,7 +143,7 @@ namespace OnTopic.Internal.Reflection {
       var valueObject = value;
 
       if (valueObject is string) {
-        valueObject = GetValueObject(property.PropertyType, value as string);
+        valueObject = AttributeValueConverter.Convert(value as string, property.PropertyType);
       }
 
       property.SetValue(target, valueObject);
@@ -275,7 +263,7 @@ namespace OnTopic.Internal.Reflection {
       var valueObject = value;
 
       if (valueObject is string) {
-        valueObject = GetValueObject(method.GetParameters().First().ParameterType, valueObject as string);
+        valueObject = AttributeValueConverter.Convert(valueObject as string, method.GetParameters().First().ParameterType);
       }
 
       method.Invoke(target, new object?[] { valueObject });
@@ -344,78 +332,17 @@ namespace OnTopic.Internal.Reflection {
     | METHOD: IS SETTABLE TYPE?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines whether a given type is settable, either assuming the list of <see cref="SettableTypes"/>, or provided a
-    ///   specific <paramref name="targetType"/>.
+    ///   Determines whether a given type is settable, either assuming the list of <see cref="AttributeValueConverter"/>, or
+    ///   provided a specific <paramref name="targetType"/>.
     /// </summary>
     private static bool IsSettableType(Type sourceType, Type? targetType = null) {
 
       if (targetType is not null) {
         return sourceType.IsAssignableFrom(targetType);
       }
-      return SettableTypes.Contains(sourceType);
+      return AttributeValueConverter.IsConvertible(sourceType);
 
     }
-
-    /*==========================================================================================================================
-    | METHOD: GET VALUE OBJECT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Converts a string value to an object of the target type.
-    /// </summary>
-    private static object? GetValueObject(Type type, string? value) {
-
-      var valueObject = (object?)null;
-
-      //Treat empty as null for non-strings, regardless of whether they’re nullable
-      if (!type.Equals(typeof(string)) && String.IsNullOrWhiteSpace(value)) {
-        return null;
-      }
-
-      if (value is null) return null;
-
-      if (type.Equals(typeof(string))) {
-        valueObject = value;
-      }
-      else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
-        if (value is "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase)) {
-          valueObject = true;
-        }
-        else if (value is "0" || value.Equals("false", StringComparison.OrdinalIgnoreCase)) {
-          valueObject = false;
-        }
-      }
-      else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
-        if (Int32.TryParse(value, out var intValue)) {
-          valueObject = intValue;
-        }
-      }
-      else if (type.Equals(typeof(double)) || type.Equals(typeof(double?))) {
-        if (Double.TryParse(value, out var doubleValue)) {
-          valueObject = doubleValue;
-        }
-      }
-      else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
-        if (DateTime.TryParse(value, out var date)) {
-          valueObject = date;
-        }
-      }
-      else if (type.Equals(typeof(Uri))) {
-        if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) {
-          valueObject = uri;
-        }
-      }
-
-      return valueObject;
-
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: SETTABLE TYPES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, Object?)"/>.
-    /// </summary>
-    internal static Collection<Type> SettableTypes { get; }
 
   } //Class
 } //Namespace

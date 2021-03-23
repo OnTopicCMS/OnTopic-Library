@@ -32,6 +32,21 @@ namespace OnTopic.Mapping.Internal {
     internal object MappedTopic { get; set; } = null!;
 
     /*==========================================================================================================================
+    | PROPERTY: IS INITIALIZING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Notes that the target type is currently being initialized.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="IsInitializing"/> property allows an entry to be pre-cached prior to the object being completed. This
+    ///   allows the <see cref="TopicMappingService"/> to detect circular references within the object initialization sequence.
+    ///   This is important because, unlikely property mapping where a cached reference can be returned, a circular reference
+    ///   in constructor mapping is expected to throw an exception. By registering that an object is being initialized, the
+    ///   <see cref="MappedTopicCache"/> is able to detect circuluar references during constructor mapping.
+    /// </remarks>
+    internal bool IsInitializing { get; set; }
+
+    /*==========================================================================================================================
     | PROPERTY: ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

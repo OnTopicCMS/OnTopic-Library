@@ -25,7 +25,7 @@ namespace OnTopic.Mapping.Annotations {
   ///     populate the <see cref="Associations"/> specified on the associated topics.
   ///   </para>
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class IncludeAttribute : Attribute {
 
     /*==========================================================================================================================

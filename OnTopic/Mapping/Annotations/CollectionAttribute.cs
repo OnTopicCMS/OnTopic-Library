@@ -29,7 +29,7 @@ namespace OnTopic.Mapping.Annotations {
   ///     IncomingRelationships"/>), which is not an uncommon scenario.
   ///   </para>
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class CollectionAttribute : Attribute {
 
     /*==========================================================================================================================

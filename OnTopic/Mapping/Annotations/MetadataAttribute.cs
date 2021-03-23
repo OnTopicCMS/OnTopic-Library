@@ -19,7 +19,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   strongly-typed reference to be created, thus pulling either a reference to a specific topic (in the case of a single
   ///   value property) or a collection of the metadata (in the case of a collection).
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class MetadataAttribute : Attribute {
 
     /*==========================================================================================================================

@@ -22,7 +22,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the target property name to be
   ///   decoupled from the source attribute key.
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
   public sealed class AttributeKeyAttribute : Attribute {
 
     /*==========================================================================================================================

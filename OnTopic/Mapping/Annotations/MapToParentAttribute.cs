@@ -31,7 +31,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   same property would instead be mapped to <c>FirstName</c>—which could potentially introduce conflicts if there is also a
   ///   <c>FirstName</c> property on the parent object.
   /// </example>
-  [AttributeUsage(AttributeTargets.Property, Inherited=true)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, Inherited=true)]
   public sealed class MapToParentAttribute : Attribute {
 
     /*==========================================================================================================================
