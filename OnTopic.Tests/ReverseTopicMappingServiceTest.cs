@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
@@ -22,6 +21,7 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

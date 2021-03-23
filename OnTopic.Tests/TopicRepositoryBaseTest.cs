@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
@@ -15,6 +14,7 @@ using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 

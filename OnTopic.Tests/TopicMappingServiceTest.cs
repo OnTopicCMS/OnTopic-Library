@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
@@ -27,6 +26,7 @@ using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

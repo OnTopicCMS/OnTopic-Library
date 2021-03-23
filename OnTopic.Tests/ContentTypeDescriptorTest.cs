@@ -6,8 +6,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 

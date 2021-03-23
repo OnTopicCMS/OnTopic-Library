@@ -3,15 +3,13 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.Data.Caching;
-using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using Xunit;
 
 namespace OnTopic.Tests {
 

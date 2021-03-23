@@ -6,10 +6,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
+using Xunit;
 
 namespace OnTopic.Tests {
 

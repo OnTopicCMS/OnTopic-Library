@@ -9,10 +9,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Associations;
 using OnTopic.Data.Sql;
 using OnTopic.Tests.Schemas;
+using Xunit;
 
 namespace OnTopic.Tests {
 

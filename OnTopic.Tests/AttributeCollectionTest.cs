@@ -7,11 +7,11 @@ using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Tests.Entities;
+using Xunit;
 
 namespace OnTopic.Tests {
 

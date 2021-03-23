@@ -5,11 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

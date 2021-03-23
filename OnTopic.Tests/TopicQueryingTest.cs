@@ -6,13 +6,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using Xunit;
 
 namespace OnTopic.Tests {
 

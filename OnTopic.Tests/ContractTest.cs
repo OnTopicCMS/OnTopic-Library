@@ -5,8 +5,8 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Internal.Diagnostics;
+using Xunit;
 
 namespace OnTopic.Tests {
 

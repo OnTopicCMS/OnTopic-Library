@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

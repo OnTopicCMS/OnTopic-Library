@@ -6,10 +6,9 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 

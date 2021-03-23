@@ -4,12 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Xunit;
 
 namespace OnTopic.Tests {
 

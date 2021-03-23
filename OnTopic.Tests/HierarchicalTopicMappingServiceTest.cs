@@ -5,9 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
@@ -15,6 +13,7 @@ using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

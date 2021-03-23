@@ -6,15 +6,14 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

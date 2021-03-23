@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Metadata;
 using OnTopic.TestDoubles;
+using Xunit;
 
 namespace OnTopic.Tests {
 

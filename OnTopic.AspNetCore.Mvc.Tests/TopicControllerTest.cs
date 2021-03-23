@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
@@ -19,6 +18,7 @@ using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

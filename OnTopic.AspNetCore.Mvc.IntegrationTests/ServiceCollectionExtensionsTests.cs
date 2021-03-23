@@ -4,12 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
