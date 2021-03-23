@@ -207,6 +207,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: CONSTRUCTOR: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and attempts to map a view model with a constructor containing a
+    ///   circular reference, and confirms that a <see cref="TopicMappingException"/> is correctly thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(TopicMappingException))]
+    public async Task Map_Constructor_ThrowsException() {
+
+      var topic                 = new Topic("Topic", "Constructed", null, 1);
+      var related               = new Topic("Related", "Constructed", null, 2);
+
+      topic.References.SetValue("TopicReference", related);
+      related.References.SetValue("TopicReference", topic);
+
+      await _mappingService.MapAsync<ConstructedTopicViewModel>(topic).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
