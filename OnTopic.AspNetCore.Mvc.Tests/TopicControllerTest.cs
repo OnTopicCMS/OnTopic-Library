@@ -98,7 +98,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.Equal<string?>("Child", model?.Title);
+      Assert.Equal("Child", model?.Title);
 
     }
 
@@ -118,7 +118,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result?.Permanent?? false);
-      Assert.Equal<string?>(_topic.GetWebPath(), result?.Url);
+      Assert.Equal(_topic.GetWebPath(), result?.Url);
 
     }
 

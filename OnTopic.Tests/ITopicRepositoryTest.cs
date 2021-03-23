@@ -61,8 +61,8 @@ namespace OnTopic.Tests {
       var rootTopic             = _topicRepository.Load();
 
       Assert.Equal<int?>(2, rootTopic?.Children.Count);
-      Assert.Equal<string?>("Configuration", rootTopic?.Children.First().Key);
-      Assert.Equal<string?>("Web", rootTopic?.Children.Last().Key);
+      Assert.Equal("Configuration", rootTopic?.Children.First().Key);
+      Assert.Equal("Web", rootTopic?.Children.Last().Key);
 
     }
 
@@ -78,7 +78,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
       _                         = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
-      Assert.Equal<string?>("Page", topic?.Key);
+      Assert.Equal("Page", topic?.Key);
 
     }
 
@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load(11111);
 
       Assert.IsNotNull(topic);
-      Assert.Equal<string>("Web_1_1_1_1", topic.Key);
+      Assert.Equal("Web_1_1_1_1", topic.Key);
 
     }
 
@@ -204,15 +204,15 @@ namespace OnTopic.Tests {
       Contract.Assume(sibling);
 
       Assert.Equal<Topic?>(topic.Parent, parent);
-      Assert.Equal<string>("Web_0_0", parent.Children.First().Key);
+      Assert.Equal("Web_0_0", parent.Children.First().Key);
       Assert.Equal<int>(2, parent.Children.Count);
 
       _topicRepository.Move(topic, parent, sibling);
 
       Assert.Equal<Topic?>(topic.Parent, parent);
       Assert.Equal<int>(2, parent.Children.Count);
-      Assert.Equal<string>("Web_0_1", parent.Children.First().Key);
-      Assert.Equal<string>("Web_0_0", parent.Children[1].Key);
+      Assert.Equal("Web_0_1", parent.Children.First().Key);
+      Assert.Equal("Web_0_0", parent.Children[1].Key);
 
     }
 

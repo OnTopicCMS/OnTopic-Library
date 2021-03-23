@@ -325,8 +325,8 @@ namespace OnTopic.Tests {
 
       var key                   = types.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
 
-      Assert.Equal<string>("NewKey", topic.Key);
-      Assert.Equal<string?>("NewKey", key);
+      Assert.Equal("NewKey", topic.Key);
+      Assert.Equal("NewKey", key);
 
     }
 
@@ -611,7 +611,7 @@ namespace OnTopic.Tests {
         types.SetPropertyValue(topic, "Key", "Key" + i);
       }
 
-      Assert.Equal<string>("Key" + (i-1), topic.Key);
+      Assert.Equal("Key" + (i-1), topic.Key);
 
     }
 

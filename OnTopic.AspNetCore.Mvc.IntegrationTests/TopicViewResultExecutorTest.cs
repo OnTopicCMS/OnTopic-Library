@@ -53,8 +53,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -77,8 +77,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -99,8 +99,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -121,8 +121,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -143,8 +143,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 

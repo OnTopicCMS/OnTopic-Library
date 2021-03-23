@@ -220,7 +220,7 @@ namespace OnTopic.Tests {
       var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
       Assert.IsNotNull(contentTypeDescriptor);
-      Assert.Equal<string>("Page", contentTypeDescriptor.Key);
+      Assert.Equal("Page", contentTypeDescriptor.Key);
 
     }
 

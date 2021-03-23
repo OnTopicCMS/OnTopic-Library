@@ -76,10 +76,10 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
-      Assert.Equal<string?>("Test", target?.Key);
-      Assert.Equal<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.Equal<string?>("Test Attribute", target?.Title);
-      Assert.Equal<string?>("Hello", target?.DefaultValue);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test Attribute", target?.Title);
+      Assert.Equal("Hello", target?.DefaultValue);
       Assert.Equal<bool?>(true, target?.IsRequired);
 
     }
@@ -106,10 +106,10 @@ namespace OnTopic.Tests {
       var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.Equal<string?>("Test", target?.Key);
-      Assert.Equal<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.Equal<string?>("Test Attribute", target?.Title);
-      Assert.Equal<string?>("Hello", target?.DefaultValue);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test Attribute", target?.Title);
+      Assert.Equal("Hello", target?.DefaultValue);
       Assert.Equal<bool?>(true, target?.IsRequired);
 
     }
@@ -146,13 +146,13 @@ namespace OnTopic.Tests {
 
       target                    = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
-      Assert.Equal<string?>("Test", target?.Key);
-      Assert.Equal<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.Equal<string?>("Test", target?.Title); //Should inherit from "Key" since it will be null
-      Assert.Equal<string?>("World", target?.DefaultValue);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test", target?.Title); //Should inherit from "Key" since it will be null
+      Assert.Equal("World", target?.DefaultValue);
       Assert.Equal<bool?>(false, target?.IsRequired);
       Assert.Equal<bool?>(false, target?.IsExtendedAttribute);
-      Assert.Equal<string?>("Original Description", target?.Attributes.GetValue("Description"));
+      Assert.Equal("Original Description", target?.Attributes.GetValue("Description"));
 
     }
 
@@ -176,8 +176,8 @@ namespace OnTopic.Tests {
       var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.Equal<string>("Test", target.Key);
-      Assert.Equal<string>("TextAttributeDescriptor", target.ContentType);
+      Assert.Equal("Test", target.Key);
+      Assert.Equal("TextAttributeDescriptor", target.ContentType);
 
     }
 
@@ -204,9 +204,9 @@ namespace OnTopic.Tests {
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.Equal<string?>("Jeremy", target.Attributes.GetValue("Name"));
-      Assert.Equal<string?>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
-      Assert.Equal<string?>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+      Assert.Equal("Jeremy", target.Attributes.GetValue("Name"));
+      Assert.Equal("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
+      Assert.Equal("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
 
     }
 
@@ -230,7 +230,7 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.Equal<string?>("Browser Title", target?.Attributes.GetValue("MetaTitle"));
+      Assert.Equal("Browser Title", target?.Attributes.GetValue("MetaTitle"));
 
     }
 
@@ -325,7 +325,7 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
       Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
       Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
-      Assert.Equal<string?>("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
+      Assert.Equal("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
       Assert.Null(target?.AttributeDescriptors.GetValue("Attribute4"));
 
     }
@@ -353,8 +353,8 @@ namespace OnTopic.Tests {
       var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target?.BaseTopic);
-      Assert.Equal<string?>("Title", target?.BaseTopic.Key);
-      Assert.Equal<string?>("Text", target?.EditorType);
+      Assert.Equal("Title", target?.BaseTopic.Key);
+      Assert.Equal("Text", target?.EditorType);
 
     }
 
@@ -490,7 +490,7 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.Equal<string?>("Default page description", target?.Attributes.GetValue("MetaDescription"));
+      Assert.Equal("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
     }
 

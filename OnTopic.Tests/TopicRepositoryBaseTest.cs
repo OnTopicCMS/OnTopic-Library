@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _cachedTopicRepository.Load(-2);
 
-      Assert.Equal<string?>("Root", topic?.GetUniqueKey());
+      Assert.Equal("Root", topic?.GetUniqueKey());
 
     }
 
@@ -419,19 +419,19 @@ namespace OnTopic.Tests {
 
       //Expect Title, even though it isn't IsDirty
       Assert.Equal<int>(1, dirtyExtended.Count());
-      Assert.Equal<string?>("Title", dirtyExtended.FirstOrDefault()?.Key);
+      Assert.Equal("Title", dirtyExtended.FirstOrDefault()?.Key);
 
       //Expect IsHidden, even though it isn't IsDirty
       Assert.Equal<int>(1, dirtyIndexed.Count());
-      Assert.Equal<string?>("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
+      Assert.Equal("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
 
       //Expect Metatitle, since it's clean, and not mismatched
       Assert.Equal<int>(1, cleanExtended.Count());
-      Assert.Equal<string?>("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
+      Assert.Equal("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
 
       //Expect Arbitrary, since it's arbitrary and it's length is less than 255
       Assert.Equal<int>(1, cleanIndexed.Count());
-      Assert.Equal<string?>("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
+      Assert.Equal("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
 
     }
 

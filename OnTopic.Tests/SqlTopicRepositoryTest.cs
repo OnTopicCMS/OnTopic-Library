@@ -98,7 +98,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(topic);
       Assert.Equal<int>(1, topic.Id);
-      Assert.Equal<string?>("Value", topic.Attributes.GetValue("Test"));
+      Assert.Equal("Value", topic.Attributes.GetValue("Test"));
 
     }
 
@@ -457,7 +457,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
-      Assert.Equal<string?>("Root", (string?)sqlParameter?.Value);
+      Assert.Equal("Root", (string?)sqlParameter?.Value);
       Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
@@ -482,7 +482,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
-      Assert.Equal<string?>(null, (string?)sqlParameter?.Value);
+      Assert.Equal(null, (string?)sqlParameter?.Value);
       Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
@@ -611,7 +611,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(1, command.Parameters.Count);
       Assert.IsTrue(command.Parameters.Contains("@AttributesXml"));
-      Assert.Equal<string?>(xml.ToString(), (string?)sqlParameter?.Value);
+      Assert.Equal(xml.ToString(), (string?)sqlParameter?.Value);
       Assert.Equal<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
 
       command.Dispose();

@@ -36,7 +36,7 @@ namespace OnTopic.Tests {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
-      Assert.Equal<string>("Topic3", topics["Topic3"].Key);
+      Assert.Equal("Topic3", topics["Topic3"].Key);
 
     }
 
@@ -170,7 +170,7 @@ namespace OnTopic.Tests {
       var readOnlyCollection = topics.AsReadOnly();
 
       Assert.Equal<int>(10, readOnlyCollection.Count);
-      Assert.Equal<string>("Topic0", readOnlyCollection.First().Key);
+      Assert.Equal("Topic0", readOnlyCollection.First().Key);
 
     }
 
@@ -192,7 +192,7 @@ namespace OnTopic.Tests {
       var readOnlyCollection = topics.AsReadOnly();
 
       Assert.Equal<int>(10, readOnlyCollection.Count);
-      Assert.Equal<string>("Topic0", readOnlyCollection.First().Key);
+      Assert.Equal("Topic0", readOnlyCollection.First().Key);
 
     }
 

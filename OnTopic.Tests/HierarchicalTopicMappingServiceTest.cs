@@ -85,7 +85,7 @@ namespace OnTopic.Tests {
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "Configuration");
 
       Assert.IsNotNull(rootTopic);
-      Assert.Equal<string>("Configuration", rootTopic.Key);
+      Assert.Equal("Configuration", rootTopic.Key);
 
     }
 
@@ -126,7 +126,7 @@ namespace OnTopic.Tests {
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(_topic, 2, "Configuration");
 
       Assert.IsNotNull(rootTopic);
-      Assert.Equal<string>("Web", rootTopic.Key);
+      Assert.Equal("Web", rootTopic.Key);
 
     }
 

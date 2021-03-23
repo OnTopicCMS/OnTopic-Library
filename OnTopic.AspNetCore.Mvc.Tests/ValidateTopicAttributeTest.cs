@@ -284,7 +284,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
-      Assert.Equal<string?>(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
+      Assert.Equal(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
 
     }
 

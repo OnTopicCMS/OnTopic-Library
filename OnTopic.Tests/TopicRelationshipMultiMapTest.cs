@@ -267,7 +267,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.Equal<int>(5, relationships.Count);
-      Assert.Equal<string>("Related3", relationships.GetValues("Relationship3").First().Key);
+      Assert.Equal("Related3", relationships.GetValues("Relationship3").First().Key);
       Assert.Equal<int>(5, relationships.GetAllValues().Count);
 
     }

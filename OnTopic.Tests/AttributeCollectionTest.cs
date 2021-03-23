@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     public void GetValue_CorrectValue_IsReturned() {
       var topic                 = TopicFactory.Create("Test", "Container");
       topic.View                = "Test";
-      Assert.Equal<string?>("Test", topic.Attributes.GetValue("View"));
+      Assert.Equal("Test", topic.Attributes.GetValue("View"));
     }
 
     /*==========================================================================================================================
@@ -55,8 +55,8 @@ namespace OnTopic.Tests {
 
       baseTopic.View            = "Test";
 
-      Assert.Equal<string?>("Test", topic.Attributes.GetValue("View"));
-      Assert.Equal<string>("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
+      Assert.Equal("Test", topic.Attributes.GetValue("View"));
+      Assert.Equal("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
       Assert.Null(topic.Attributes.GetValue("View", null, inheritFromBase: false));
 
     }
@@ -70,8 +70,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetValue_MissingValue_ReturnsDefault() {
       var topic = TopicFactory.Create("Test", "Container");
-      Assert.Equal<string?>(null, topic.Attributes.GetValue("InvalidAttribute"));
-      Assert.Equal<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
+      Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
+      Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
 
     /*==========================================================================================================================
@@ -414,7 +414,7 @@ namespace OnTopic.Tests {
     public void SetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
-      Assert.Equal<string?>("Bar", topic.Attributes.GetValue("Foo"));
+      Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
     }
 
     /*==========================================================================================================================
@@ -826,7 +826,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.Add(new("View", "NewKey", false));
 
-      Assert.Equal<string?>("NewKey", topic.View);
+      Assert.Equal("NewKey", topic.View);
 
     }
 
@@ -1049,7 +1049,7 @@ namespace OnTopic.Tests {
       topics[0].Attributes.SetValue("Foo", "Bar");
 
       Assert.Null(topics[4].Attributes.GetValue("Foo", null));
-      Assert.Equal<string?>("Bar", topics[7].Attributes.GetValue("Foo", true));
+      Assert.Equal("Bar", topics[7].Attributes.GetValue("Foo", true));
       Assert.AreNotEqual<string?>("Bar", topics[7].Attributes.GetValue("Foo", false));
 
     }
@@ -1073,7 +1073,7 @@ namespace OnTopic.Tests {
 
       topics[4].Attributes.SetValue("Foo", "Bar");
 
-      Assert.Equal<string?>("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
+      Assert.Equal("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
 
     }
 

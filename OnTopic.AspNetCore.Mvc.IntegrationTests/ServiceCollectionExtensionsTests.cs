@@ -53,8 +53,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 
@@ -75,8 +75,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Areas/Area/Views/ContentType/ContentType.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Areas/Area/Views/ContentType/ContentType.cshtml", content);
 
     }
 
@@ -97,8 +97,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Areas/Area/Views/Controller/AreaAction.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Areas/Area/Views/Controller/AreaAction.cshtml", content);
 
     }
 
@@ -119,8 +119,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -141,7 +141,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/xml", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("text/xml", response.Content.Headers.ContentType?.ToString());
       Assert.IsTrue(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
 
     }
@@ -163,8 +163,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.Equal<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 

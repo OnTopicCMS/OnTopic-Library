@@ -62,7 +62,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(currentTopic);
       Assert.Equal<Topic?>(topic, currentTopic);
-      Assert.Equal<string?>("Web_0_1_1", currentTopic?.Key);
+      Assert.Equal("Web_0_1_1", currentTopic?.Key);
 
     }
 
@@ -84,7 +84,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(currentTopic);
       Assert.Equal<Topic?>(topic, currentTopic);
-      Assert.Equal<string?>("Root", currentTopic?.Key);
+      Assert.Equal("Root", currentTopic?.Key);
 
     }
 

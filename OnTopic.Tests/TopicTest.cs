@@ -32,8 +32,8 @@ namespace OnTopic.Tests {
     public void Create_ReturnsTopic() {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
-      Assert.Equal<string>(topic.Key, "Test");
-      Assert.Equal<string>(topic.ContentType, "Page");
+      Assert.Equal(topic.Key, "Test");
+      Assert.Equal(topic.ContentType, "Page");
     }
 
     /*==========================================================================================================================
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
 
       topic.Key                 = "New";
 
-      Assert.Equal<string>("New", topic.Key);
+      Assert.Equal("New", topic.Key);
       Assert.IsTrue(topic.IsDirty("Key"));
       Assert.IsTrue(parent.Children.Contains("New"));
       Assert.IsFalse(parent.Children.Contains("Original"));
@@ -204,8 +204,8 @@ namespace OnTopic.Tests {
       childTopic.Parent         = parentTopic;
       grandChildTopic.Parent    = childTopic;
 
-      Assert.Equal<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.GetUniqueKey());
-      Assert.Equal<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.GetWebPath());
+      Assert.Equal("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.GetUniqueKey());
+      Assert.Equal("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.GetWebPath());
 
     }
 
@@ -249,8 +249,8 @@ namespace OnTopic.Tests {
 
       titledTopic.Title         = "Titled Topic";
 
-      Assert.Equal<string>(untitledTopic.Title, "UntitledTopic");
-      Assert.Equal<string>(titledTopic.Title, "Titled Topic");
+      Assert.Equal(untitledTopic.Title, "UntitledTopic");
+      Assert.Equal(titledTopic.Title, "Titled Topic");
 
     }
 
