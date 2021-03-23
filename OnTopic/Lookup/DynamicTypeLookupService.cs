@@ -33,6 +33,7 @@ namespace OnTopic.Lookup {
       var matchedTypes = AppDomain
         .CurrentDomain
         .GetAssemblies()
+        .Where(a => !a.FullName.StartsWith("Microsoft", StringComparison.Ordinal) && !a.FullName.StartsWith("System", StringComparison.Ordinal))
         .SelectMany(t => t.GetTypes())
         .Where(t => t.IsClass && predicate(t))
         .OrderBy(t => t.Namespace?.StartsWith("OnTopic", StringComparison.Ordinal))
