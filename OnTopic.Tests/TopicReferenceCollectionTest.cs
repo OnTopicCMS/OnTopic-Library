@@ -42,7 +42,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference);
 
       Assert.Equal<int>(1, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -63,7 +63,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference, false);
 
       Assert.Equal<int>(1, topic.References.Count);
-      Assert.IsFalse(topic.References.IsDirty());
+      Assert.False(topic.References.IsDirty());
 
     }
 
@@ -85,7 +85,7 @@ namespace OnTopic.Tests {
       topic.References.Remove("Reference");
 
       Assert.Equal<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -111,7 +111,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(0, topic.References.Count);
       Assert.Equal<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -132,7 +132,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("Reference", reference, false);
 
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -238,7 +238,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", null);
       topic.References.SetValue("Reference", null);
 
-      Assert.IsTrue(topic.References.Contains("Reference"));
+      Assert.True(topic.References.Contains("Reference"));
       Assert.Null(topic.References.GetValue("Reference"));
       Assert.Equal<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
 
@@ -282,8 +282,8 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.IsTrue(topic.IsDirty(true));
-      Assert.IsFalse(reference.IsDirty(true));
+      Assert.True(topic.IsDirty(true));
+      Assert.False(reference.IsDirty(true));
 
     }
 

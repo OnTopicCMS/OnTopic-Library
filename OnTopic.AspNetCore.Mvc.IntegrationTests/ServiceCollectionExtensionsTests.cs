@@ -142,7 +142,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       response.EnsureSuccessStatusCode();
 
       Assert.Equal("text/xml", response.Content.Headers.ContentType?.ToString());
-      Assert.IsTrue(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
+      Assert.True(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
 
     }
 

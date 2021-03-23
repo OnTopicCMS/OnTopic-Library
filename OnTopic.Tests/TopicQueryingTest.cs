@@ -278,7 +278,7 @@ namespace OnTopic.Tests {
         new Topic("Test", "Page")
       };
 
-      Assert.IsTrue(topics.AnyDirty());
+      Assert.True(topics.AnyDirty());
 
     }
 
@@ -296,7 +296,7 @@ namespace OnTopic.Tests {
         new Topic("Test", "Page", null, 1)
       };
 
-      Assert.IsFalse(topics.AnyDirty());
+      Assert.False(topics.AnyDirty());
 
     }
 
@@ -314,7 +314,7 @@ namespace OnTopic.Tests {
         new Topic("Test", "Page")
       };
 
-      Assert.IsTrue(topics.AnyNew());
+      Assert.True(topics.AnyNew());
 
     }
 
@@ -332,7 +332,7 @@ namespace OnTopic.Tests {
         new Topic("Test", "Page", null, 1)
       };
 
-      Assert.IsFalse(topics.AnyNew());
+      Assert.False(topics.AnyNew());
 
     }
 

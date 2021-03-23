@@ -155,7 +155,7 @@ namespace OnTopic.Tests {
 
       var target                = await _mappingService.MapAsync<ConvertPropertyViewModel>(topic).ConfigureAwait(false);
 
-      Assert.IsTrue(target?.BooleanAttribute);
+      Assert.True(target?.BooleanAttribute);
       Assert.Equal(topic.NumericAttribute.ToString(CultureInfo.InvariantCulture), target?.NumericAsStringAttribute);
 
     }
@@ -270,7 +270,7 @@ namespace OnTopic.Tests {
       Assert.Equal("Test", viewModel.Key);
       Assert.Equal("Parent", parentViewModel.Key);
       Assert.Equal("Grandparent", grandParentViewModel.Key);
-      Assert.IsTrue(grandParentViewModel.IsRoot);
+      Assert.True(grandParentViewModel.IsRoot);
       Assert.Null(grandParentViewModel.Parent);
 
     }
@@ -407,7 +407,7 @@ namespace OnTopic.Tests {
 
       var isSuccess             = cache.TryGetValue(topicId, viewModel.GetType(), out var result);
 
-      Assert.IsTrue(isSuccess);
+      Assert.True(isSuccess);
       Assert.Equal<object?>(viewModel, result?.MappedTopic);
 
     }
@@ -429,7 +429,7 @@ namespace OnTopic.Tests {
 
       var isSuccess             = cache.TryGetValue(topicId, typeof(TopicViewModel), out var result);
 
-      Assert.IsFalse(isSuccess);
+      Assert.False(isSuccess);
       Assert.Null(result);
 
     }
@@ -453,7 +453,7 @@ namespace OnTopic.Tests {
 
       var isSuccess             = cache.TryGetValue(1, newViewModel.GetType(), out var result);
 
-      Assert.IsTrue(isSuccess);
+      Assert.True(isSuccess);
       Assert.Equal<object?>(initialViewModel, result?.MappedTopic);
 
     }
@@ -474,7 +474,7 @@ namespace OnTopic.Tests {
 
       var isSuccess             = cache.TryGetValue(-1, typeof(EmptyViewModel), out var result);
 
-      Assert.IsFalse(isSuccess);
+      Assert.False(isSuccess);
       Assert.Null(result);
 
     }
@@ -496,7 +496,7 @@ namespace OnTopic.Tests {
 
       var isSuccess             = cache.TryGetValue(-1, typeof(object), out var result);
 
-      Assert.IsFalse(isSuccess);
+      Assert.False(isSuccess);
       Assert.Null(result);
       Assert.Null(result);
 
@@ -522,9 +522,9 @@ namespace OnTopic.Tests {
 
       cacheEntry.AddMissingAssociations(difference);
 
-      Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
-      Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
-      Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
+      Assert.True(difference.HasFlag(AssociationTypes.References));
+      Assert.False(difference.HasFlag(AssociationTypes.Children));
+      Assert.False(difference.HasFlag(AssociationTypes.Parents));
 
     }
 
@@ -717,7 +717,7 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(GetChildTopic(target?.Children, "ChildTopic2"));
       Assert.IsNotNull(GetChildTopic(target?.Children, "ChildTopic3"));
       Assert.IsNotNull(GetChildTopic(target?.Children, "ChildTopic4"));
-      Assert.IsTrue(((DescendentSpecializedTopicViewModel?)GetChildTopic(target?.Children, "ChildTopic4"))?.IsLeaf);
+      Assert.True(((DescendentSpecializedTopicViewModel?)GetChildTopic(target?.Children, "ChildTopic4"))?.IsLeaf);
       Assert.Null(GetChildTopic(target?.Children, "invalidChildTopic"));
       Assert.Null(GetChildTopic(target?.Children, "GrandchildTopic"));
       Assert.IsNotNull(GetChildTopic(
@@ -1237,7 +1237,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal("Default", target?.DefaultString);
       Assert.Equal<int?>(10, target?.DefaultInt);
-      Assert.IsTrue(target?.DefaultBool);
+      Assert.True(target?.DefaultBool);
 
     }
 

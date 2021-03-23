@@ -114,7 +114,7 @@ namespace OnTopic.Tests {
       var version               = DateTime.UtcNow.AddDays(-1);
       var topic                 = _cachedTopicRepository.Load(11111, version);
 
-      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.True(topic?.VersionHistory.Contains(version));
       Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
@@ -137,7 +137,7 @@ namespace OnTopic.Tests {
         _topicRepository.Rollback(topic, version);
       }
 
-      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.True(topic?.VersionHistory.Contains(version));
       Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
@@ -351,8 +351,8 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.IsFalse(attributes.Any(a => a.Key is "EmptyAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key is "NullAttribute"));
+      Assert.False(attributes.Any(a => a.Key is "EmptyAttribute"));
+      Assert.False(attributes.Any(a => a.Key is "NullAttribute"));
 
     }
 
@@ -495,7 +495,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -516,7 +516,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -536,8 +536,8 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any());
-      Assert.IsFalse(attributes.Any(a => a.Key is "Title"));
+      Assert.True(attributes.Any());
+      Assert.False(attributes.Any(a => a.Key is "Title"));
 
     }
 
@@ -563,9 +563,9 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
-      Assert.IsTrue(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
+      Assert.True(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.True(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
+      Assert.False(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
 
     }
 
@@ -704,7 +704,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(topic);
 
-      Assert.IsTrue(contentTypes.Contains(topic));
+      Assert.True(contentTypes.Contains(topic));
 
     }
 
@@ -753,7 +753,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(topic);
 
-      Assert.IsTrue(topic.VersionHistory.Count > 0);
+      Assert.True(topic.VersionHistory.Count > 0);
 
     }
 
@@ -773,7 +773,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(topic, true);
 
-      Assert.IsFalse(child.IsNew);
+      Assert.False(child.IsNew);
 
     }
 
@@ -855,7 +855,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(contentType);
 
-      Assert.IsFalse(contentTypes.Contains(contentType));
+      Assert.False(contentTypes.Contains(contentType));
 
     }
 
@@ -910,7 +910,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(newAttribute);
 
-      Assert.IsTrue(childContentType.AttributeDescriptors.Count > attributeCount);
+      Assert.True(childContentType.AttributeDescriptors.Count > attributeCount);
 
     }
 
@@ -937,7 +937,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(newAttribute);
 
-      Assert.IsTrue(childContentType.AttributeDescriptors.Count < attributeCount);
+      Assert.True(childContentType.AttributeDescriptors.Count < attributeCount);
 
     }
 
@@ -959,7 +959,7 @@ namespace OnTopic.Tests {
 
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 
@@ -985,7 +985,7 @@ namespace OnTopic.Tests {
 
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
       Assert.Equal<int?>(topicId, topic?.Id);
       Assert.Equal<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
 
@@ -1011,7 +1011,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Delete(topic);
       _cachedTopicRepository.TopicDeleted -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
@@ -1034,7 +1034,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicSaved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicSaveEventArgs eventArgs) => hasFired = true;
 
@@ -1059,7 +1059,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicRenamed -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicRenameEventArgs eventArgs) => hasFired = true;
 
@@ -1085,7 +1085,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicMoved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 
@@ -1109,7 +1109,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Move(topic, parent);
       _cachedTopicRepository.TopicMoved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 

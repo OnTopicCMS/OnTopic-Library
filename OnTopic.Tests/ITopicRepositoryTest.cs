@@ -259,7 +259,7 @@ namespace OnTopic.Tests {
       _topicRepository.TopicDeleted += eventHandler;
       _topicRepository.Delete(topic);
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 

@@ -177,9 +177,9 @@ namespace OnTopic.Tests {
       };
       parent.Children.Add(child);
 
-      Assert.IsTrue(child.IsSelected(child.WebPath));
-      Assert.IsTrue(parent.IsSelected(child.WebPath));
-      Assert.IsFalse(child.IsSelected(parent.WebPath));
+      Assert.True(child.IsSelected(child.WebPath));
+      Assert.True(parent.IsSelected(child.WebPath));
+      Assert.False(child.IsSelected(parent.WebPath));
 
     }
 
@@ -204,7 +204,7 @@ namespace OnTopic.Tests {
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.Equal("/Web/Web_3/", model?.NavigationRoot?.WebPath);
       Assert.Equal<int?>(2, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+      Assert.True(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }
 

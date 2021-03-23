@@ -41,8 +41,8 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(2, page.PermittedContentTypes.Count);
       Assert.Equal<int>(0, video.PermittedContentTypes.Count);
-      Assert.IsTrue(page.PermittedContentTypes.Contains(page));
-      Assert.IsTrue(page.PermittedContentTypes.Contains(video));
+      Assert.True(page.PermittedContentTypes.Contains(page));
+      Assert.True(page.PermittedContentTypes.Contains(video));
 
     }
 
@@ -72,11 +72,11 @@ namespace OnTopic.Tests {
       page.Relationships.SetValue("ContentTypes", slideshow);
 
       Assert.Equal<int>(2, page.PermittedContentTypes.Count);
-      Assert.IsTrue(page.PermittedContentTypes.Contains(video));
-      Assert.IsTrue(page.PermittedContentTypes.Contains(slideshow));
-      Assert.IsFalse(page.PermittedContentTypes.Contains(page));
-      Assert.IsTrue(initialCollection.Contains(page));
-      Assert.IsFalse(initialCollection.Contains(slideshow));
+      Assert.True(page.PermittedContentTypes.Contains(video));
+      Assert.True(page.PermittedContentTypes.Contains(slideshow));
+      Assert.False(page.PermittedContentTypes.Contains(page));
+      Assert.True(initialCollection.Contains(page));
+      Assert.False(initialCollection.Contains(slideshow));
 
     }
 
@@ -101,8 +101,8 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(1, page.AttributeDescriptors.Count);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
-      Assert.IsTrue(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.IsTrue(video.AttributeDescriptors.Contains(urlAttribute));
+      Assert.True(video.AttributeDescriptors.Contains(titleAttribute));
+      Assert.True(video.AttributeDescriptors.Contains(urlAttribute));
 
     }
 
@@ -135,11 +135,11 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(1, page.AttributeDescriptors.Count);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
-      Assert.IsTrue(video.AttributeDescriptors.Contains(descriptionAttribute));
-      Assert.IsTrue(video.AttributeDescriptors.Contains(urlAttribute));
-      Assert.IsFalse(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.IsTrue(initialCollection.Contains(titleAttribute));
-      Assert.IsFalse(initialCollection.Contains(descriptionAttribute));
+      Assert.True(video.AttributeDescriptors.Contains(descriptionAttribute));
+      Assert.True(video.AttributeDescriptors.Contains(urlAttribute));
+      Assert.False(video.AttributeDescriptors.Contains(titleAttribute));
+      Assert.True(initialCollection.Contains(titleAttribute));
+      Assert.False(initialCollection.Contains(descriptionAttribute));
 
     }
 
@@ -159,7 +159,7 @@ namespace OnTopic.Tests {
         contentType             = childContentType;
       }
 
-      Assert.IsTrue(contentType.IsTypeOf("Root"));
+      Assert.True(contentType.IsTypeOf("Root"));
 
     }
 
@@ -179,7 +179,7 @@ namespace OnTopic.Tests {
         contentType             = childContentType;
       }
 
-      Assert.IsFalse(contentType.IsTypeOf("DifferentRoot"));
+      Assert.False(contentType.IsTypeOf("DifferentRoot"));
 
     }
 
@@ -226,8 +226,8 @@ namespace OnTopic.Tests {
       contentTypeCollection.Refresh(rootContentType);
 
       Assert.Equal<int>(3, contentTypeCollection.Count);
-      Assert.IsTrue(contentTypeCollection.Contains(slideshowContentType));
-      Assert.IsFalse(contentTypeCollection.Contains(videoContentType));
+      Assert.True(contentTypeCollection.Contains(slideshowContentType));
+      Assert.False(contentTypeCollection.Contains(videoContentType));
 
     }
 

@@ -261,10 +261,10 @@ namespace OnTopic.Tests {
       var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
       Assert.Equal<int?>(3, target?.PermittedContentTypes.Count);
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[0]));
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[1]));
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[2]));
-      Assert.IsFalse(target?.PermittedContentTypes.Contains(contentTypes[3]));
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[0]));
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[1]));
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[2]));
+      Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
     }
 

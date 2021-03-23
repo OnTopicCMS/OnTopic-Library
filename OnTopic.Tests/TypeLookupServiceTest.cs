@@ -44,8 +44,8 @@ namespace OnTopic.Tests {
       var typeCollection        = new TypeCollection(topics);
 
       Assert.Equal<int>(2, typeCollection.Count);
-      Assert.IsTrue(typeCollection.Contains(typeof(CustomTopic)));
-      Assert.IsFalse(typeCollection.Contains(typeof(Topic)));
+      Assert.True(typeCollection.Contains(typeof(CustomTopic)));
+      Assert.False(typeCollection.Contains(typeof(Topic)));
 
     }
 
@@ -64,8 +64,8 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new DummyStaticTypeLookupService(topics);
 
-      Assert.IsFalse(lookupService.TryAdd(typeof(CustomTopic)));
-      Assert.IsTrue(lookupService.TryAdd(typeof(Topic)));
+      Assert.False(lookupService.TryAdd(typeof(CustomTopic)));
+      Assert.True(lookupService.TryAdd(typeof(Topic)));
 
     }
 

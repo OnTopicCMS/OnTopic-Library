@@ -54,7 +54,7 @@ namespace OnTopic.Tests {
       var parent                = TopicFactory.Create("Parent", "Page");
       var unrelated             = TopicFactory.Create("Unrelated", "Page");
 
-      Assert.IsFalse(parent.Relationships.Remove("Unrelated", unrelated));
+      Assert.False(parent.Relationships.Remove("Unrelated", unrelated));
 
     }
 
@@ -73,7 +73,7 @@ namespace OnTopic.Tests {
 
       multiMap.Add("Related", new("Test", "Page"));
 
-      Assert.IsFalse(multiMap.Remove("Related", unrelated));
+      Assert.False(multiMap.Remove("Related", unrelated));
 
     }
 
@@ -193,7 +193,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.Equal<int>(5, relationships.Keys.Count);
-      Assert.IsTrue(relationships.Keys.Contains("Relationship3"));
+      Assert.True(relationships.Keys.Contains("Relationship3"));
 
     }
 
@@ -310,7 +310,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related);
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -333,7 +333,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related);
 
-      Assert.IsFalse(relationships.IsDirty());
+      Assert.False(relationships.IsDirty());
 
     }
 
@@ -355,7 +355,7 @@ namespace OnTopic.Tests {
       relationships.SetValue("Related", related1);
       relationships.SetValue("Related", related2);
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -377,7 +377,7 @@ namespace OnTopic.Tests {
       relationships.MarkClean();
       relationships.Remove("Related", related);
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -397,8 +397,8 @@ namespace OnTopic.Tests {
 
       var isSuccessful          = relationships.Remove("Related", related);
 
-      Assert.IsFalse(isSuccessful);
-      Assert.IsFalse(relationships.IsDirty());
+      Assert.False(isSuccessful);
+      Assert.False(relationships.IsDirty());
 
     }
 
@@ -421,8 +421,8 @@ namespace OnTopic.Tests {
 
       var isSuccessful          = relationships.Remove("Related", missing);
 
-      Assert.IsFalse(isSuccessful);
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.False(isSuccessful);
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -444,7 +444,7 @@ namespace OnTopic.Tests {
       relationships.MarkClean();
       relationships.Clear("Related");
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -463,7 +463,7 @@ namespace OnTopic.Tests {
 
       relationships.Clear("Related");
 
-      Assert.IsFalse(relationships.IsDirty());
+      Assert.False(relationships.IsDirty());
 
     }
 
@@ -484,7 +484,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related, false);
 
-      Assert.IsFalse(relationships.IsDirty());
+      Assert.False(relationships.IsDirty());
 
     }
 
@@ -506,7 +506,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related, false);
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -528,7 +528,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related, false);
 
-      Assert.IsTrue(relationships.IsDirty());
+      Assert.True(relationships.IsDirty());
 
     }
 
@@ -551,8 +551,8 @@ namespace OnTopic.Tests {
 
       relationships.MarkClean("Related");
 
-      Assert.IsFalse(relationships.IsDirty());
-      Assert.IsFalse(relationships.IsDirty("Related"));
+      Assert.False(relationships.IsDirty());
+      Assert.False(relationships.IsDirty("Related"));
 
     }
 
@@ -576,8 +576,8 @@ namespace OnTopic.Tests {
       relationships.MarkClean();
       relationships.MarkClean("Related");
 
-      Assert.IsTrue(relationships.IsDirty());
-      Assert.IsTrue(relationships.IsDirty("Related"));
+      Assert.True(relationships.IsDirty());
+      Assert.True(relationships.IsDirty("Related"));
 
     }
 
@@ -602,8 +602,8 @@ namespace OnTopic.Tests {
       relationships.MarkClean();
       relationships.MarkClean("Related");
 
-      Assert.IsTrue(relationships.IsDirty());
-      Assert.IsTrue(relationships.IsDirty("Related"));
+      Assert.True(relationships.IsDirty());
+      Assert.True(relationships.IsDirty("Related"));
 
     }
 

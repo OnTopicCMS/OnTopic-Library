@@ -338,9 +338,9 @@ namespace OnTopic.Tests {
       topic.Attributes.SetBoolean("IsValue1", true);
       topic.Attributes.SetBoolean("IsValue2", false);
 
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1"));
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue2", true));
+      Assert.True(topic.Attributes.GetBoolean("IsValue1"));
+      Assert.True(topic.Attributes.GetBoolean("IsValue1", false));
+      Assert.False(topic.Attributes.GetBoolean("IsValue2", true));
 
     }
 
@@ -362,9 +362,9 @@ namespace OnTopic.Tests {
 
       baseTopic.Attributes.SetBoolean("IsValue1", true);
 
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1"));
-      Assert.IsTrue(childTopic.Attributes.GetBoolean("IsValue1", false, true));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue1", inheritFromBase: false));
+      Assert.True(topic.Attributes.GetBoolean("IsValue1"));
+      Assert.True(childTopic.Attributes.GetBoolean("IsValue1", false, true));
+      Assert.False(topic.Attributes.GetBoolean("IsValue1", inheritFromBase: false));
 
     }
 
@@ -381,9 +381,9 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("IsValue", "Invalid");
 
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue"));
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue", true));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue", false));
+      Assert.False(topic.Attributes.GetBoolean("IsValue"));
+      Assert.True(topic.Attributes.GetBoolean("IsValue", true));
+      Assert.False(topic.Attributes.GetBoolean("IsValue", false));
 
     }
 
@@ -398,9 +398,9 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey"));
-      Assert.IsTrue(topic.Attributes.GetBoolean("InvalidKey", true));
-      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey", false));
+      Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
+      Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
+      Assert.False(topic.Attributes.GetBoolean("InvalidKey", false));
 
     }
 
@@ -431,7 +431,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("Foo", "Baz");
 
-      Assert.IsTrue(topic.Attributes["Foo"].IsDirty);
+      Assert.True(topic.Attributes["Foo"].IsDirty);
 
     }
 
@@ -450,8 +450,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.Clear();
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsTrue(topic.Attributes.DeletedItems.Contains("Foo"));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.DeletedItems.Contains("Foo"));
 
     }
 
@@ -470,7 +470,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Fah", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar");
 
-      Assert.IsFalse(topic.Attributes["Fah"].IsDirty);
+      Assert.False(topic.Attributes["Fah"].IsDirty);
 
     }
 
@@ -488,7 +488,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -511,8 +511,8 @@ namespace OnTopic.Tests {
       topic.Attributes.MarkClean("Foo");
       topic.Attributes.MarkClean();
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsTrue(topic.Attributes.IsDirty(true));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty(true));
 
     }
 
@@ -531,8 +531,8 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsTrue(topic.Attributes.IsDirty(true));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty(true));
 
     }
 
@@ -552,9 +552,9 @@ namespace OnTopic.Tests {
       topic.Attributes.Remove("Foo");
       topic.Attributes.SetValue("Foo", "Bar", false);
 
-      Assert.IsFalse(topic.Attributes.IsDirty());
-      Assert.IsFalse(topic.Attributes.IsDirty(true));
-      Assert.IsFalse(topic.Attributes.DeletedItems.Contains("Foo"));
+      Assert.False(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty(true));
+      Assert.False(topic.Attributes.DeletedItems.Contains("Foo"));
 
     }
 
@@ -573,7 +573,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
-      Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty());
 
     }
 
@@ -592,7 +592,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -608,7 +608,7 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      Assert.IsFalse(topic.Attributes.IsDirty("MissingKey"));
+      Assert.False(topic.Attributes.IsDirty("MissingKey"));
 
     }
 
@@ -630,8 +630,8 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
       topic.Attributes.SetValue("LastModifiedBy", "System");
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsFalse(topic.Attributes.IsDirty(true));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty(true));
 
     }
 
@@ -688,7 +688,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.MarkClean();
 
-      Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty());
       Assert.Equal<int>(0, topic.Attributes.DeletedItems.Count);
 
     }
@@ -711,7 +711,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.MarkClean("Foo");
 
-      Assert.IsTrue(topic.Attributes.IsDirty("Foo"));
+      Assert.True(topic.Attributes.IsDirty("Foo"));
 
     }
 
@@ -731,7 +731,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean("Foo");
 
-      Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
+      Assert.False(topic.Attributes.IsDirty("Foo"));
 
     }
 
@@ -756,7 +756,7 @@ namespace OnTopic.Tests {
         }
       );
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -777,7 +777,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean();
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -862,7 +862,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetBoolean("BooleanAttribute", true);
 
-      Assert.IsTrue(topic.BooleanAttribute);
+      Assert.True(topic.BooleanAttribute);
 
     }
 
@@ -937,8 +937,8 @@ namespace OnTopic.Tests {
       var attribute             = new AttributeRecord("Test", "Value");
       var afterDate             = DateTime.UtcNow;
 
-      Assert.IsTrue(attribute.LastModified > beforeDate);
-      Assert.IsTrue(attribute.LastModified < afterDate);
+      Assert.True(attribute.LastModified > beforeDate);
+      Assert.True(attribute.LastModified < afterDate);
 
     }
 
@@ -985,8 +985,8 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("View", "NewerValue", false);
       topic.Attributes.TryGetValue("View", out var newerAttribute);
 
-      Assert.IsFalse(newAttribute?.IsDirty);
-      Assert.IsFalse(newerAttribute?.IsDirty);
+      Assert.False(newAttribute?.IsDirty);
+      Assert.False(newerAttribute?.IsDirty);
 
     }
 
@@ -1005,7 +1005,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Attribute", "");
 
-      Assert.IsFalse(topic.Attributes.Contains("Attribute"));
+      Assert.False(topic.Attributes.Contains("Attribute"));
 
     }
 
@@ -1025,7 +1025,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Attribute", "New Value");
       topic.Attributes.SetValue("Attribute", "");
 
-      Assert.IsTrue(topic.Attributes.Contains("Attribute"));
+      Assert.True(topic.Attributes.Contains("Attribute"));
 
     }
 

@@ -105,9 +105,9 @@ namespace OnTopic.Tests {
       topic.Key                 = "New";
 
       Assert.Equal("New", topic.Key);
-      Assert.IsTrue(topic.IsDirty("Key"));
-      Assert.IsTrue(parent.Children.Contains("New"));
-      Assert.IsFalse(parent.Children.Contains("Original"));
+      Assert.True(topic.IsDirty("Key"));
+      Assert.True(parent.Children.Contains("New"));
+      Assert.False(parent.Children.Contains("Original"));
 
     }
 
@@ -182,8 +182,8 @@ namespace OnTopic.Tests {
       childTopic.Parent         = targetParent;
 
       Assert.Equal<Topic?>(targetParent.Children["ChildTopic"], childTopic);
-      Assert.IsTrue(targetParent.Children.Contains("ChildTopic"));
-      Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
+      Assert.True(targetParent.Children.Contains("ChildTopic"));
+      Assert.False(sourceParent.Children.Contains("ChildTopic"));
       Assert.Equal<int>(10, childTopic.Parent.Id);
 
     }
@@ -226,12 +226,12 @@ namespace OnTopic.Tests {
       hiddenTopic.IsHidden      = true;
       disabledTopic.IsDisabled  = true;
 
-      Assert.IsFalse(hiddenTopic.IsVisible());
-      Assert.IsFalse(hiddenTopic.IsVisible(true));
-      Assert.IsFalse(disabledTopic.IsVisible());
-      Assert.IsTrue(disabledTopic.IsVisible(true));
-      Assert.IsTrue(visibleTopic.IsVisible());
-      Assert.IsTrue(visibleTopic.IsVisible(true));
+      Assert.False(hiddenTopic.IsVisible());
+      Assert.False(hiddenTopic.IsVisible(true));
+      Assert.False(disabledTopic.IsVisible());
+      Assert.True(disabledTopic.IsVisible(true));
+      Assert.True(visibleTopic.IsVisible());
+      Assert.True(visibleTopic.IsVisible(true));
 
     }
 
@@ -387,7 +387,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
 
-      Assert.IsTrue(topic.IsDirty());
+      Assert.True(topic.IsDirty());
 
     }
 
@@ -402,7 +402,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
 
-      Assert.IsFalse(topic.IsDirty());
+      Assert.False(topic.IsDirty());
 
     }
 
@@ -420,7 +420,7 @@ namespace OnTopic.Tests {
 
       topic.Key                 = "NewTopic";
 
-      Assert.IsTrue(topic.IsDirty());
+      Assert.True(topic.IsDirty());
 
     }
 
@@ -441,7 +441,7 @@ namespace OnTopic.Tests {
       topic.ContentType         = topic.ContentType;
       topic.Parent              = parent;
 
-      Assert.IsFalse(topic.IsDirty());
+      Assert.False(topic.IsDirty());
 
     }
 
@@ -463,8 +463,8 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Related", related);
       topic.Relationships.SetValue("Related", related);
 
-      Assert.IsTrue(topic.IsDirty(true));
-      Assert.IsTrue(topic.IsDirty("Related", true));
+      Assert.True(topic.IsDirty(true));
+      Assert.True(topic.IsDirty("Related", true));
 
     }
 
@@ -488,7 +488,7 @@ namespace OnTopic.Tests {
 
       topic.MarkClean(true);
 
-      Assert.IsFalse(topic.IsDirty(true));
+      Assert.False(topic.IsDirty(true));
 
     }
 
@@ -512,8 +512,8 @@ namespace OnTopic.Tests {
 
       topic.MarkClean("Related", true);
 
-      Assert.IsFalse(topic.IsDirty("Related", true));
-      Assert.IsFalse(topic.IsDirty(true));
+      Assert.False(topic.IsDirty("Related", true));
+      Assert.False(topic.IsDirty(true));
 
     }
 
@@ -535,8 +535,8 @@ namespace OnTopic.Tests {
       topic.MarkClean("Attribute", true);
       topic.MarkClean(true);
 
-      Assert.IsTrue(topic.IsDirty());
-      Assert.IsTrue(topic.IsDirty("Attribute", true));
+      Assert.True(topic.IsDirty());
+      Assert.True(topic.IsDirty("Attribute", true));
 
     }
 

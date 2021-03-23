@@ -117,7 +117,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(result);
-      Assert.IsTrue(result?.Permanent?? false);
+      Assert.True(result?.Permanent?? false);
       Assert.Equal(_topic.GetWebPath(), result?.Url);
 
     }
@@ -161,8 +161,8 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(model);
 
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -185,15 +185,15 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsFalse(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
 
-      Assert.IsTrue(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -217,15 +217,15 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(model);
 
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
 
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Attribute\">Value</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">Title</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<DataObject type=\"Relationships\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<DataObject type=\"References\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<Attribute name=\"Attribute\">Value</Attribute>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<Attribute name=\"Title\">Title</Attribute>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<DataObject type=\"Relationships\">", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<DataObject type=\"References\">", StringComparison.Ordinal));
+      Assert.True(model!.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", StringComparison.Ordinal));
 
     }
 
@@ -249,10 +249,10 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(model);
 
-      Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
 
     }
 

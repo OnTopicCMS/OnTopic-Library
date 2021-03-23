@@ -41,8 +41,8 @@ namespace OnTopic.Tests {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
-      Assert.IsTrue(properties.Contains("AttributeDescriptors")); //First class collection property
-      Assert.IsFalse(properties.Contains("InvalidPropertyName")); //Invalid property
+      Assert.True(properties.Contains("AttributeDescriptors")); //First class collection property
+      Assert.False(properties.Contains("InvalidPropertyName")); //Invalid property
 
     }
 
@@ -58,7 +58,7 @@ namespace OnTopic.Tests {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
-      Assert.IsTrue(properties.Contains("Key")); //Inherited string property
+      Assert.True(properties.Contains("Key")); //Inherited string property
 
     }
 
@@ -74,7 +74,7 @@ namespace OnTopic.Tests {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
-      Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+      Assert.False(properties.Contains("IsTypeOf")); //This is a method, not a property
 
     }
 
@@ -108,9 +108,9 @@ namespace OnTopic.Tests {
 
       var typeCollection        = new TypeMemberInfoCollection();
 
-      Assert.IsTrue(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
-      Assert.IsFalse(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
-      Assert.IsFalse(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
+      Assert.True(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.False(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.False(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
 
     }
 
@@ -127,10 +127,10 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher();
 
-      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
-      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
-      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
-      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+      Assert.True(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.False(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.False(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.True(dispatcher.HasGettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
 
     }
 
@@ -147,8 +147,8 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher(typeof(AttributeSetterAttribute));
 
-      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.Key)));
-      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.View)));
+      Assert.False(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.Key)));
+      Assert.True(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.View)));
 
     }
 
@@ -165,10 +165,10 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher();
 
-      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
-      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
-      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
-      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+      Assert.True(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.False(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.False(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.True(dispatcher.HasSettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
 
     }
 
@@ -185,11 +185,11 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher();
 
-      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
-      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
-      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
-      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod"));
-      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod", typeof(TopicViewModel)));
+      Assert.True(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
+      Assert.False(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
+      Assert.False(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
+      Assert.False(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod"));
+      Assert.True(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod", typeof(TopicViewModel)));
 
     }
 
@@ -209,8 +209,8 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher(typeof(DisplayNameAttribute));
 
-      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetAnnotatedMethod)));
-      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
+      Assert.True(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetAnnotatedMethod)));
+      Assert.False(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
 
     }
 
@@ -227,11 +227,11 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher();
 
-      Assert.IsTrue(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetMethod)));
-      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
-      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetComplexMethod)));
-      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetParametersMethod)));
-      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
+      Assert.True(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetMethod)));
+      Assert.False(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
+      Assert.False(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetComplexMethod)));
+      Assert.False(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetParametersMethod)));
+      Assert.False(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
 
     }
 
@@ -249,10 +249,10 @@ namespace OnTopic.Tests {
 
       var properties = types.GetMembers<PropertyInfo>(typeof(ContentTypeDescriptor));
 
-      Assert.IsTrue(properties.Contains("Key"));
-      Assert.IsTrue(properties.Contains("AttributeDescriptors"));
-      Assert.IsFalse(properties.Contains("IsTypeOf"));
-      Assert.IsFalse(properties.Contains("InvalidPropertyName"));
+      Assert.True(properties.Contains("Key"));
+      Assert.True(properties.Contains("AttributeDescriptors"));
+      Assert.False(properties.Contains("IsTypeOf"));
+      Assert.False(properties.Contains("InvalidPropertyName"));
 
     }
 
@@ -408,7 +408,7 @@ namespace OnTopic.Tests {
 
       types.SetPropertyValue(topic, "IsHidden", "1");
 
-      Assert.IsTrue(topic.IsHidden);
+      Assert.True(topic.IsHidden);
 
     }
 
