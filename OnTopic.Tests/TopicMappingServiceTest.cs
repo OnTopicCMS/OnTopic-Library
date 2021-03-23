@@ -213,7 +213,6 @@ namespace OnTopic.Tests {
     ///   circular reference, and confirms that a <see cref="TopicMappingException"/> is correctly thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(TopicMappingException))]
     public async Task Map_Constructor_ThrowsException() {
 
       var topic                 = new Topic("Topic", "Constructed", null, 1);
@@ -222,7 +221,9 @@ namespace OnTopic.Tests {
       topic.References.SetValue("TopicReference", related);
       related.References.SetValue("TopicReference", topic);
 
-      await _mappingService.MapAsync<ConstructedTopicViewModel>(topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<TopicMappingException>(async () =>
+        await _mappingService.MapAsync<ConstructedTopicViewModel>(topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -1197,12 +1198,13 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ValidationException))]
     public async Task Map_InvalidRequiredProperty_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "Required");
 
-      await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<ValidationException>(async () =>
+        await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -1213,12 +1215,13 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ValidationException))]
     public async Task Map_InvalidRequiredObject_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
-      await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<ValidationException>(async () =>
+        await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -1248,14 +1251,15 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ValidationException))]
     public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
-      await _mappingService.MapAsync<MinimumLengthPropertyTopicViewModel>(topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<ValidationException>(async () =>
+        await _mappingService.MapAsync<MinimumLengthPropertyTopicViewModel>(topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -1301,14 +1305,13 @@ namespace OnTopic.Tests {
     ///   </c>; throws an <see cref="ArgumentException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public async Task Map_FilterByInvalidAttribute_ThrowsExceptions() {
 
       var topic                 = TopicFactory.Create("Test", "FilteredInvalid");
 
-      var target = await _mappingService.MapAsync<FilteredInvalidTopicViewModel>(topic).ConfigureAwait(false);
-
-      Assert.Equal<int?>(2, target?.Children.Count);
+      await Assert.ThrowsAsync<ArgumentException>(async () =>
+        await _mappingService.MapAsync<FilteredInvalidTopicViewModel>(topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 

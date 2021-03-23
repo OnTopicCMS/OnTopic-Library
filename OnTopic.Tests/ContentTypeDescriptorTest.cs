@@ -240,13 +240,15 @@ namespace OnTopic.Tests {
     ///   which represents the root content type.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void ContentTypeDescriptorCollection_ConstructWithValues_ThrowsException() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentType", "ContentTypeDescriptor");
       var pageContentType       = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
       _                         = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
-      _                         = new ContentTypeDescriptorCollection(pageContentType);
+
+      Assert.Throws<InvalidOperationException>(() =>
+        new ContentTypeDescriptorCollection(pageContentType)
+      );
 
     }
 

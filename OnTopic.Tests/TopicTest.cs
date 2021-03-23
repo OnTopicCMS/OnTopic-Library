@@ -77,11 +77,13 @@ namespace OnTopic.Tests {
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Id_ChangeValue_ThrowsArgumentException() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
-      topic.Id                  = 124;
+
+      Assert.Throws<InvalidOperationException>(() =>
+        topic.Id = 124
+      );
 
     }
 
@@ -139,13 +141,14 @@ namespace OnTopic.Tests {
     ///   ArgumentOutOfRangeException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void Parent_SetToDescendant_ThrowsException() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
       var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor", parentTopic);
 
-      parentTopic.Parent        = childTopic;
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        parentTopic.Parent      = childTopic
+      );
 
     }
 
@@ -157,12 +160,14 @@ namespace OnTopic.Tests {
     ///   <see cref="Topic.Parent"/> and ensures that an <see cref="InvalidKeyException"/> is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidKeyException))]
     public void Parent_DuplicateKey_ThrowsException() {
 
       var parentTopic           = new Topic("Parent", "ContentTypeDescriptor");
       _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
-      _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+
+      Assert.Throws<InvalidKeyException>(() =>
+        _                       = new Topic("Child", "ContentTypeDescriptor", parentTopic)
+      );
 
     }
 

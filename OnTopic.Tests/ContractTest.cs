@@ -37,9 +37,10 @@ namespace OnTopic.Tests {
     ///   cref="ArgumentNullException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Requires_ConditionIsFalse_ThrowArgumentNullException()
-      => Contract.Requires(false, "The argument cannot be null");
+    public void Requires_ConditionIsFalse_ThrowArgumentNullException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Requires(false, "The argument cannot be null")
+      );
 
     /*==========================================================================================================================
     | TEST: REQUIRES: OBJECT EXISTS: THROW NO EXCEPTION
@@ -59,9 +60,10 @@ namespace OnTopic.Tests {
     ///   cref="ArgumentNullException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void Requires_ObjectIsNull_ThrowArgumentNullException() =>
-      Contract.Requires(null, "The argument cannot be null");
+      Assert.Throws<ArgumentNullException>(() =>
+        Contract.Requires(null, "The argument cannot be null")
+      );
 
     /*==========================================================================================================================
     | TEST: REQUIRES: MESSAGE EXISTS: THROW EXCEPTION WITH MESSAGE
@@ -79,7 +81,7 @@ namespace OnTopic.Tests {
         Contract.Requires<ArgumentException>(false, errorMessage);
       }
       catch (ArgumentException ex) {
-        Assert.Equal<String>(errorMessage, ex.Message);
+        Assert.Equal(errorMessage, ex.Message);
       }
 
     }
@@ -93,13 +95,11 @@ namespace OnTopic.Tests {
     ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public void Requires_InvalidConstructor_ThrowArgumentException() {
-
       var errorMessage = "The argument cannot be null";
-
-      Contract.Requires<NoMessageException>(false, errorMessage);
-
+      Assert.Throws<ArgumentException>(() =>
+        Contract.Requires<NoMessageException>(false, errorMessage)
+      );
     }
 
     /*==========================================================================================================================
@@ -120,9 +120,10 @@ namespace OnTopic.Tests {
     ///   cref="ArgumentNullException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Assume_ConditionIsFalse_ThrowArgumentNullException()
-      => Contract.Assume(false, "The argument cannot be null");
+    public void Assume_ConditionIsFalse_ThrowArgumentNullException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Assume(false, "The argument cannot be null")
+      );
 
     /*==========================================================================================================================
     | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION
@@ -132,9 +133,10 @@ namespace OnTopic.Tests {
     ///   <see cref="IndexOutOfRangeException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(IndexOutOfRangeException))]
-    public void Assume_ConditionIsFalse_ThrowCustomExpection()
-      => Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range");
+    public void Assume_ConditionIsFalse_ThrowCustomExpection() =>
+      Assert.Throws<IndexOutOfRangeException>(() =>
+        Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range")
+      );
 
     /*==========================================================================================================================
     | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION WITHOUT MESSAGE
@@ -144,9 +146,10 @@ namespace OnTopic.Tests {
     ///   <see cref="IndexOutOfRangeException"/> using the empty constructor, since no <c>errorMessage</c> is included.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(IndexOutOfRangeException))]
-    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage()
-      => Contract.Assume<IndexOutOfRangeException>(false);
+    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage() =>
+      Assert.Throws<IndexOutOfRangeException>(() =>
+        Contract.Assume<IndexOutOfRangeException>(false)
+      );
 
     /*==========================================================================================================================
     | TEST: ASSUME: OBJECT IS NULL: THROW INVALID OPERATION EXCEPTION
@@ -156,9 +159,10 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Assume_ObjectIsNull_ThrowInvalidOperationException()
-      => Contract.Assume(null, "The local runtime state is invalid.");
+    public void Assume_ObjectIsNull_ThrowInvalidOperationException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Assume(null, "The local runtime state is invalid.")
+      );
 
   } //Class
 } //Namespace

@@ -788,13 +788,14 @@ namespace OnTopic.Tests {
     ///   Attempts to violate the business logic by bypassing the property setter; ensures that business logic is enforced.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(InvalidKeyException),
-      "The topic allowed a view to be set via a back door, without routing it through the View property."
-    )]
     public void SetValue_InvalidValue_ThrowsException() {
+
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.SetValue("View", "# ?");
+
+      Assert.Throws<InvalidKeyException>(() =>
+        topic.Attributes.SetValue("View", "# ?")
+      );
+
     }
 
     /*==========================================================================================================================
@@ -805,11 +806,16 @@ namespace OnTopic.Tests {
     ///   value, and confirms that the expected <see cref="ArgumentException"/> is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public void SetValue_DuplicateValue_ThrowsException() {
+
       var topic = TopicFactory.Create("Test", "Container");
+
       topic.Attributes.Add(new("Test", "Original"));
-      topic.Attributes.Add(new("Test", "New"));
+
+      Assert.Throws<ArgumentException>(() =>
+        topic.Attributes.Add(new("Test", "New"))
+      );
+
     }
 
     /*==========================================================================================================================
@@ -873,15 +879,13 @@ namespace OnTopic.Tests {
     ///   Sets a numeric attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
     public void Add_NumericValueWithBusinessLogic_ThrowsException() {
 
       var topic = new CustomTopic("Test", "Page");
 
-      topic.Attributes.SetInteger("NumericAttribute", -1);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.Attributes.SetInteger("NumericAttribute", -1)
+      );
 
     }
 
@@ -911,15 +915,13 @@ namespace OnTopic.Tests {
     ///   Sets a <see cref="DateTime"/> attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
     public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
 
       var topic = new CustomTopic("Test", "Page");
 
-      topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue)
+      );
 
     }
 
@@ -950,13 +952,14 @@ namespace OnTopic.Tests {
     ///   SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that business logic is enforced.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(InvalidKeyException),
-      "The topic allowed a key to be set via a back door, without routing it through the View property."
-    )]
     public void Add_InvalidAttributeRecord_ThrowsException() {
+
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.Add(new("View", "# ?"));
+
+      Assert.Throws<InvalidKeyException>(() =>
+        topic.Attributes.Add(new("View", "# ?"))
+      );
+
     }
 
     /*==========================================================================================================================

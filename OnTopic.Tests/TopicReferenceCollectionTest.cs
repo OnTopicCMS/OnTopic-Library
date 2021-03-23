@@ -442,16 +442,14 @@ namespace OnTopic.Tests {
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
     public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
       var reference             = TopicFactory.Create("Reference", "Container");
 
-      topic.References.SetValue("TopicReference", reference);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.References.SetValue("TopicReference", reference)
+      );
 
     }
 
@@ -462,16 +460,14 @@ namespace OnTopic.Tests {
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
     public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
       var reference             = TopicFactory.Create("Reference", "Container");
 
-      topic.References.Add(new("TopicReference", reference));
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.References.Add(new("TopicReference", reference))
+      );
 
     }
 

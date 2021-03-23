@@ -95,23 +95,21 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void InvalidControllerType_ThrowsException() {
 
-      var validateFilter        = new ValidateTopicAttribute();
-      var controller            = new DummyController() {
+      using var controller      = new DummyController() {
         ControllerContext       = GetControllerContext()
       };
-      var context               = GetActionExecutingContext(controller);
 
-      try {
-        validateFilter.OnActionExecuting(context);
-      }
-      finally {
-        controller.Dispose();
-      }
+      var validateFilter        = new ValidateTopicAttribute();
+      var actionContext         = GetActionExecutingContext(controller);
+
+      Assert.Throws<InvalidOperationException>(() =>
+        validateFilter.OnActionExecuting(actionContext)
+      );
 
     }
+
     /*==========================================================================================================================
     | TEST: NULL TOPIC: RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -204,7 +202,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.AreEqual<int?>(403, result?.StatusCode);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 

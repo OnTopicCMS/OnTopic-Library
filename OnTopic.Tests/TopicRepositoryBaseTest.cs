@@ -150,9 +150,10 @@ namespace OnTopic.Tests {
     ///   confirms that an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void Load_FutureDate_ThrowsException() =>
-      _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
+      Assert.Throws<InvalidOperationException>(() =>
+        _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1))
+      );
 
     /*==========================================================================================================================
     | TEST: LOAD: OLD DATE: THROWS EXCEPTION
@@ -162,9 +163,10 @@ namespace OnTopic.Tests {
     ///   introduced and ensures that an exception is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void Load_OldDate_ThrowsException() =>
-      _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15));
+      Assert.Throws<InvalidOperationException>(() =>
+        _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15))
+      );
 
     /*==========================================================================================================================
     | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
@@ -173,7 +175,6 @@ namespace OnTopic.Tests {
     ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ReferentialIntegrityException))]
     public void Delete_BaseTopic_ThrowsException() {
 
       var root                  = TopicFactory.Create("Root", "Page");
@@ -183,7 +184,9 @@ namespace OnTopic.Tests {
 
       derivedTopic.BaseTopic    = child;
 
-      _topicRepository.Delete(topic, true);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Delete(topic, true)
+      );
 
     }
 
@@ -216,13 +219,14 @@ namespace OnTopic.Tests {
     ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ReferentialIntegrityException))]
     public void Delete_Descendants_ThrowsException() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       _                         = TopicFactory.Create("Child", "Page", topic);
 
-      _topicRepository.Delete(topic, false);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Delete(topic, false)
+      );
 
     }
 
@@ -806,10 +810,6 @@ namespace OnTopic.Tests {
     ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ReferentialIntegrityException),
-      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
-    )]
     public void Save_UnresolvedReference_ThrowsException() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
@@ -818,7 +818,9 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("Test", reference);
 
-      _topicRepository.Save(topic, true);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Save(topic, true)
+      );
 
     }
 
@@ -830,12 +832,10 @@ namespace OnTopic.Tests {
     ///   expected <see cref="ReferentialIntegrityException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(
-      typeof(ReferentialIntegrityException),
-      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
-    )]
     public void Save_InvalidContentType_ThrowsException() =>
-      _topicRepository.Save(new("Test", "InvalidContentType"));
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Save(new("Test", "InvalidContentType"))
+      );
 
     /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE

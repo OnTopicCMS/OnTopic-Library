@@ -145,14 +145,15 @@ namespace OnTopic.Tests {
     ///   Boolean?, Boolean)"/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void SetValue_IncomingRelationships_ThrowsException() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent, true);
 
-      relationships.SetValue("Friends", related);
+      Assert.Throws<InvalidOperationException>(() =>
+        relationships.SetValue("Friends", related)
+      );
 
     }
 
@@ -165,14 +166,15 @@ namespace OnTopic.Tests {
     ///   "/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void Remove_IncomingRelationships_ThrowsException() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent, true);
 
-      relationships.Remove("Friends", related);
+      Assert.Throws<InvalidOperationException>(() =>
+        relationships.Remove("Friends", related)
+      );
 
     }
 

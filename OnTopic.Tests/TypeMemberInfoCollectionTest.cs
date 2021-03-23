@@ -88,12 +88,13 @@ namespace OnTopic.Tests {
     ///   functions.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public void Add_DuplicateKey_ThrowsException() =>
-      new TypeMemberInfoCollection {
-        new(typeof(EmptyViewModel)),
-        new(typeof(EmptyViewModel))
-      };
+      Assert.Throws<ArgumentException>(() =>
+        new TypeMemberInfoCollection {
+          new(typeof(EmptyViewModel)),
+          new(typeof(EmptyViewModel))
+        }
+      );
 
     /*==========================================================================================================================
     | TEST: HAS MEMBER: PROPERTY INFO: RETURNS EXPECTED
@@ -445,13 +446,14 @@ namespace OnTopic.Tests {
     ///   />.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
+      Assert.Throws<InvalidOperationException>(() =>
+        types.SetPropertyValue(topic, "InvalidProperty", "Invalid")
+      );
 
     }
 
@@ -501,13 +503,14 @@ namespace OnTopic.Tests {
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method throws an exception.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void SetMethodValue_InvalidMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      types.SetMethodValue(source, "BogusMethod", "123");
+      Assert.Throws<InvalidOperationException>(() =>
+        types.SetMethodValue(source, "BogusMethod", "123")
+      );
 
     }
 
@@ -539,14 +542,15 @@ namespace OnTopic.Tests {
     ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="ArgumentException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new EmptyViewModel();
 
-      types.SetMethodValue(source, "SetMethod", reference);
+      Assert.Throws<ArgumentException>(() =>
+        types.SetMethodValue(source, "SetMethod", reference)
+      );
 
     }
 
@@ -558,13 +562,14 @@ namespace OnTopic.Tests {
     ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      types.SetMethodValue(source, "BogusMethod", new object());
+      Assert.Throws<InvalidOperationException>(() =>
+        types.SetMethodValue(source, "BogusMethod", new object())
+      );
 
     }
 

@@ -86,7 +86,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   locations as defined in <see cref="TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander
     ///   .AreaViewLocations"/>.
     /// </summary>
-    [Fact]
+    [Theory]
     [InlineData(                "AreaAction",                   "Controller/AreaAction.cshtml")]
     [InlineData(                "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
     [InlineData(                "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]

@@ -97,9 +97,10 @@ namespace OnTopic.Tests {
     ///   <c>currentTopic</c> or <c>defaultRoot</c> and ensures it throws an <see cref="ArgumentNullException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentNullException))]
     public void GetHierarchicalRoot_WithNullTopic_ThrowsException() =>
-      _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "");
+      Assert.Throws<ArgumentNullException>(() =>
+        _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "")
+      );
 
     /*==========================================================================================================================
     | TEST: GET HIERARCHICAL ROOT: WITH INVALID DEFAULT ROOT: TRHOWS EXCEPTION
@@ -109,9 +110,10 @@ namespace OnTopic.Tests {
     ///   <c>currentTopic</c> and throws an <see cref="ArgumentException"/> when it cannot identify the <c>defaultRoot</c>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void GetHierarchicalRoot_WithInvalidDefaultRoot_ThrowsException() =>
-      _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "InvalidDefaultRoot");
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "InvalidDefaultRoot")
+      );
 
     /*==========================================================================================================================
     | TEST: GET HIERARCHICAL ROOT: WITH DEEP TOPIC: RETURNS ROOT

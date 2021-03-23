@@ -277,7 +277,6 @@ namespace OnTopic.Tests {
     ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be located in the repository.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_Relationships_ThrowException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -290,7 +289,9 @@ namespace OnTopic.Tests {
         }
       );
 
-      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -397,7 +398,6 @@ namespace OnTopic.Tests {
     ///   cref="IAssociatedTopicBindingModel"/> is set to null.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_NullTopicReference_ThrowException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -406,7 +406,9 @@ namespace OnTopic.Tests {
         ContentType             = "AttributeDescriptor"
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -418,7 +420,6 @@ namespace OnTopic.Tests {
     ///   cref="IAssociatedTopicBindingModel.UniqueKey"/> is set to null.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_NullTopicReferenceKey_ThrowException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -428,7 +429,9 @@ namespace OnTopic.Tests {
         BaseTopic               = new()
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -441,7 +444,6 @@ namespace OnTopic.Tests {
     ///   />.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_TopicReferences_ThrowException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -452,7 +454,9 @@ namespace OnTopic.Tests {
         }
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -463,13 +467,14 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it is not set.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ValidationException))]
     public async Task Map_ValidRequiredProperty_IsMapped() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -501,7 +506,6 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ValidationException))]
     public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -510,7 +514,9 @@ namespace OnTopic.Tests {
         Title                   = "Hello World"
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync <ValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -522,13 +528,14 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidChildrenProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -540,7 +547,6 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidParentProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -549,7 +555,9 @@ namespace OnTopic.Tests {
         Parent                  = new("Test", "Page")
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -561,13 +569,14 @@ namespace OnTopic.Tests {
     ///   <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidAttribute_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -579,13 +588,14 @@ namespace OnTopic.Tests {
     ///   This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipBaseType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -598,13 +608,14 @@ namespace OnTopic.Tests {
     ///   />. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -617,13 +628,14 @@ namespace OnTopic.Tests {
     ///   cref="IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipListType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -636,13 +648,14 @@ namespace OnTopic.Tests {
     ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidNestedTopicListTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -655,13 +668,14 @@ namespace OnTopic.Tests {
     ///   IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
