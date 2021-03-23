@@ -582,9 +582,9 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
       Assert.Equal<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetValue("Page"));
-      Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
+      Assert.NotNull(contentTypes.GetValue("ContentTypeDescriptor"));
+      Assert.NotNull(contentTypes.GetValue("Page"));
+      Assert.NotNull(contentTypes.GetValue("LookupListItem"));
 
     }
 
@@ -606,7 +606,7 @@ namespace OnTopic.Tests {
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
 
       Assert.AreNotEqual<int>(contentTypeCount, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.Contains(newContentType));
+      Assert.NotNull(contentTypes.Contains(newContentType));
 
     }
 
@@ -622,7 +622,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Page");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNotNull(contentType);
+      Assert.NotNull(contentType);
 
     }
 
@@ -644,7 +644,7 @@ namespace OnTopic.Tests {
 
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNotNull(contentType);
+      Assert.NotNull(contentType);
       Assert.Equal<Topic?>(contentType, newContentType);
 
     }

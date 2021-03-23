@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
       Assert.Equal("Child", model?.Title);
 
     }
@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(result);
+      Assert.NotNull(result);
       Assert.True(result?.Permanent?? false);
       Assert.Equal(_topic.GetWebPath(), result?.Url);
 
@@ -137,7 +137,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(result);
+      Assert.NotNull(result);
       Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
 
     }
@@ -159,7 +159,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
       Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
       Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
@@ -184,7 +184,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
       Assert.False(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
@@ -215,7 +215,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
       Assert.True(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
       Assert.True(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
@@ -247,7 +247,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
       Assert.False(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
       Assert.False(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));

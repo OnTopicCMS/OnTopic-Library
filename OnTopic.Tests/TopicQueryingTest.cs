@@ -160,7 +160,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
-      Assert.IsNotNull(foundTopic);
+      Assert.NotNull(foundTopic);
       Assert.Equal<Topic?>(parentTopic, foundTopic);
 
     }
@@ -219,7 +219,7 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load(11111);
       var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
-      Assert.IsNotNull(contentTypeDescriptor);
+      Assert.NotNull(contentTypeDescriptor);
       Assert.Equal("Page", contentTypeDescriptor.Key);
 
     }

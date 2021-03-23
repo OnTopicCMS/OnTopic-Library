@@ -268,8 +268,8 @@ namespace OnTopic.Tests {
 
       var types = new MemberDispatcher();
 
-      Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key"));
-      Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+      Assert.NotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key"));
+      Assert.NotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
       Assert.Null(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName"));
 
     }
@@ -286,7 +286,7 @@ namespace OnTopic.Tests {
 
       var types = new MemberDispatcher();
 
-      Assert.IsNotNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath"));
+      Assert.NotNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath"));
       Assert.Null(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
 
     }
@@ -389,7 +389,7 @@ namespace OnTopic.Tests {
 
       types.SetPropertyValue(model, "NonNullableInteger", "ABC");
 
-      Assert.IsNotNull(model.NonNullableInteger);
+      Assert.NotNull(model.NonNullableInteger);
 
     }
 

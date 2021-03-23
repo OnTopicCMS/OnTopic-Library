@@ -123,8 +123,8 @@ namespace OnTopic.Tests {
         typeof(KeyOnlyTopicViewModel).IsAssignableFrom(t)
       );
 
-      Assert.IsNotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
-      Assert.IsNotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
+      Assert.NotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
+      Assert.NotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
       Assert.Null(lookupService.Lookup(nameof(EmptyViewModel)));
 
     }
