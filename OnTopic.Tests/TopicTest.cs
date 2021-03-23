@@ -32,8 +32,8 @@ namespace OnTopic.Tests {
     public void Create_ReturnsTopic() {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.NotNull(topic);
-      Assert.Equal(topic.Key, "Test");
-      Assert.Equal(topic.ContentType, "Page");
+      Assert.Equal("Test", topic.Key);
+      Assert.Equal("Page", topic.ContentType);
     }
 
     /*==========================================================================================================================
@@ -254,8 +254,8 @@ namespace OnTopic.Tests {
 
       titledTopic.Title         = "Titled Topic";
 
-      Assert.Equal(untitledTopic.Title, "UntitledTopic");
-      Assert.Equal(titledTopic.Title, "Titled Topic");
+      Assert.Equal("UntitledTopic", untitledTopic.Title);
+      Assert.Equal("Titled Topic", titledTopic.Title);
 
     }
 
