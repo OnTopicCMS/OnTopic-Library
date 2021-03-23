@@ -69,7 +69,6 @@ namespace OnTopic.Tests {
     ///   KeyedTopicCollection{T}"/> and confirms that a <see cref="ArgumentException"/> is correctly thrown.
     /// </summary>
     [Fact]
-    [ExpectedException(typeof(ArgumentException))]
     public void InsertItem_DuplicateKey_ThrowsException() =>
       Assert.Throws<ArgumentException>(() =>
         new KeyedTopicCollection {
@@ -90,7 +89,7 @@ namespace OnTopic.Tests {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
 
-      Assert.Equal<int>(0, readOnlyCollection.Count);
+      Assert.Empty(readOnlyCollection);
 
     }
 

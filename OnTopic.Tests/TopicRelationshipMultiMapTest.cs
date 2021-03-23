@@ -246,7 +246,7 @@ namespace OnTopic.Tests {
       topics.Add(topic);
       multiMap.Add(keyValuesPair);
 
-      Assert.Equal<int>(1, readOnlyTopicMultiMap.Count);
+      Assert.Single(readOnlyTopicMultiMap);
       Assert.Equal<Topic?>(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
 
     }
@@ -292,7 +292,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.Equal<int>(5, relationships.Keys.Count);
-      Assert.Equal<int>(1, relationships.GetAllValues("ContentType3").Count);
+      Assert.Single(relationships.GetAllValues("ContentType3"));
 
     }
 

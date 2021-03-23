@@ -40,7 +40,7 @@ namespace OnTopic.Tests {
       page.Relationships.SetValue("ContentTypes", video);
 
       Assert.Equal<int>(2, page.PermittedContentTypes.Count);
-      Assert.Equal<int>(0, video.PermittedContentTypes.Count);
+      Assert.Empty(video.PermittedContentTypes);
       Assert.True(page.PermittedContentTypes.Contains(page));
       Assert.True(page.PermittedContentTypes.Contains(video));
 
@@ -99,7 +99,7 @@ namespace OnTopic.Tests {
       var videoAttributes       = new ContentTypeDescriptor("Attributes", "List", video);
       var urlAttribute          = new AttributeDescriptor("Url", "AttributeDescriptor", videoAttributes);
 
-      Assert.Equal<int>(1, page.AttributeDescriptors.Count);
+      Assert.Single(page.AttributeDescriptors);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
       Assert.True(video.AttributeDescriptors.Contains(titleAttribute));
       Assert.True(video.AttributeDescriptors.Contains(urlAttribute));
@@ -133,7 +133,7 @@ namespace OnTopic.Tests {
       pageAttributes.Children.Remove(titleAttribute);
       page.ResetAttributeDescriptors();
 
-      Assert.Equal<int>(1, page.AttributeDescriptors.Count);
+      Assert.Single(page.AttributeDescriptors);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
       Assert.True(video.AttributeDescriptors.Contains(descriptionAttribute));
       Assert.True(video.AttributeDescriptors.Contains(urlAttribute));

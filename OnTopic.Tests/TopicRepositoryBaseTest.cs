@@ -208,7 +208,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Equal<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -245,7 +245,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Equal<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -264,7 +264,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, false);
 
-      Assert.Equal<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -288,8 +288,8 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Equal<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
-      Assert.Equal<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
+      Assert.Empty(associated.IncomingRelationships.GetValues("Related"));
+      Assert.Empty(associated.IncomingRelationships.GetValues("Referenced"));
 
     }
 
@@ -313,7 +313,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Equal<int>(0, source1.Relationships.GetValues("Associations").Count);
+      Assert.Empty(source1.Relationships.GetValues("Associations"));
 
     }
 
@@ -333,7 +333,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.Equal<int>(1, attributes.Count());
+      Assert.Single(attributes);
 
     }
 
@@ -375,7 +375,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.Equal<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 
@@ -394,7 +394,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.Equal<int>(1, attributes.Count());
+      Assert.Single(attributes);
 
     }
 
@@ -422,19 +422,19 @@ namespace OnTopic.Tests {
       var cleanIndexed          = _topicRepository.GetAttributesProxy(topic, false, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.Equal<int>(1, dirtyExtended.Count());
+      Assert.Single(dirtyExtended);
       Assert.Equal("Title", dirtyExtended.FirstOrDefault()?.Key);
 
       //Expect IsHidden, even though it isn't IsDirty
-      Assert.Equal<int>(1, dirtyIndexed.Count());
+      Assert.Single(dirtyIndexed);
       Assert.Equal("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
 
       //Expect Metatitle, since it's clean, and not mismatched
-      Assert.Equal<int>(1, cleanExtended.Count());
+      Assert.Single(cleanExtended);
       Assert.Equal("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
 
       //Expect Arbitrary, since it's arbitrary and it's length is less than 255
-      Assert.Equal<int>(1, cleanIndexed.Count());
+      Assert.Single(cleanIndexed);
       Assert.Equal("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
 
     }
@@ -457,7 +457,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      Assert.Equal<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 
@@ -478,7 +478,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      Assert.Equal<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 

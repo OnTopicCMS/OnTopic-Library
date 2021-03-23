@@ -689,7 +689,7 @@ namespace OnTopic.Tests {
       topic.Attributes.MarkClean();
 
       Assert.False(topic.Attributes.IsDirty());
-      Assert.Equal<int>(0, topic.Attributes.DeletedItems.Count);
+      Assert.Empty(topic.Attributes.DeletedItems);
 
     }
 

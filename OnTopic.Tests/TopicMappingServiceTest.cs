@@ -194,7 +194,7 @@ namespace OnTopic.Tests {
       Assert.NotNull(target?.TopicReference);
       Assert.NotNull(target?.Relationships);
       Assert.Equal<int?>(5, target?.OptionalValue);
-      Assert.Equal<int?>(1, target?.Relationships?.Count);
+      Assert.Single(target?.Relationships);
 
       Assert.Equal("Bar", target?.TopicReference?.ScalarValue);
 
@@ -599,7 +599,7 @@ namespace OnTopic.Tests {
 
       var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(1, target?.Cousins.Count);
+      Assert.Single(target?.Cousins);
       Assert.NotNull(GetChildTopic(target?.Cousins, "Cousin1"));
       Assert.Null(GetChildTopic(target?.Cousins, "Cousin2"));
 
@@ -638,7 +638,7 @@ namespace OnTopic.Tests {
 
       var target = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(1, target?.RelationshipAlias.Count);
+      Assert.Single(target?.RelationshipAlias);
       Assert.NotNull(GetChildTopic(target?.RelationshipAlias, "IncomingRelation"));
 
     }
@@ -660,7 +660,7 @@ namespace OnTopic.Tests {
       Assert.Equal<int?>(2, target?.PermittedContentTypes.Count);
 
       //Ensure custom collections are not recursively followed without instruction
-      Assert.Equal<int?>(0, target?.PermittedContentTypes.FirstOrDefault()?.PermittedContentTypes.Count?? 0);
+      Assert.Empty(target?.PermittedContentTypes.FirstOrDefault()?.PermittedContentTypes);
 
     }
 
@@ -827,7 +827,7 @@ namespace OnTopic.Tests {
 
       var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(1, target?.Relationships.Count);
+      Assert.Single(target?.Relationships);
       Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.Relationships.FirstOrDefault()?.GetType());
 
     }
@@ -949,10 +949,10 @@ namespace OnTopic.Tests {
       Assert.Equal<int?>(3, cousinTarget?.Children.Count);
 
       //Because Cousins is not set to recurse over Cousins, its cousins should NOT be set (even though there is one cousin)
-      Assert.Equal<int?>(0, cousinTarget?.Cousins.Count);
+      Assert.Empty(cousinTarget?.Cousins);
 
       //Because Children is not set to recurse over Children, the grandchildren of a cousin should NOT be set
-      Assert.Equal<int?>(0, distantCousinTarget?.Children.Count);
+      Assert.Empty(distantCousinTarget?.Children);
 
     }
 
@@ -1168,7 +1168,7 @@ namespace OnTopic.Tests {
       var target                = await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.Equal<ModelType?>(topic.ModelType, target?.ModelType);
-      Assert.Equal<int?>(1, target?.VersionHistory?.Count);
+      Assert.Single(target?.VersionHistory);
 
     }
 
@@ -1383,7 +1383,7 @@ namespace OnTopic.Tests {
 
       var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(1, target?.Children.Count);
+      Assert.Single(target?.Children);
 
     }
     /*==========================================================================================================================

@@ -181,7 +181,7 @@ namespace OnTopic.Tests {
       _topicRepository.Move(topic, destination);
 
       Assert.Equal<Topic?>(topic.Parent, destination);
-      Assert.Equal<int>(1, source.Children.Count);
+      Assert.Single(source.Children);
       Assert.Equal<int>(3, destination.Children.Count);
 
     }
@@ -237,7 +237,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Equal<int>(1, parent.Children.Count);
+      Assert.Single(parent.Children);
 
     }
 
