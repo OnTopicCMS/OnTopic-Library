@@ -195,7 +195,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.Equal<int>(5, relationships.Keys.Count);
-      Assert.True(relationships.Keys.Contains("Relationship3"));
+      Assert.Contains("Relationship3", relationships.Keys);
 
     }
 

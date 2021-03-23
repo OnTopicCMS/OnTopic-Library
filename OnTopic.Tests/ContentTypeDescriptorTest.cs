@@ -41,8 +41,8 @@ namespace OnTopic.Tests {
 
       Assert.Equal<int>(2, page.PermittedContentTypes.Count);
       Assert.Empty(video.PermittedContentTypes);
-      Assert.True(page.PermittedContentTypes.Contains(page));
-      Assert.True(page.PermittedContentTypes.Contains(video));
+      Assert.Contains(page, page.PermittedContentTypes);
+      Assert.Contains(video, page.PermittedContentTypes);
 
     }
 
@@ -72,11 +72,11 @@ namespace OnTopic.Tests {
       page.Relationships.SetValue("ContentTypes", slideshow);
 
       Assert.Equal<int>(2, page.PermittedContentTypes.Count);
-      Assert.True(page.PermittedContentTypes.Contains(video));
-      Assert.True(page.PermittedContentTypes.Contains(slideshow));
-      Assert.False(page.PermittedContentTypes.Contains(page));
-      Assert.True(initialCollection.Contains(page));
-      Assert.False(initialCollection.Contains(slideshow));
+      Assert.Contains(video, page.PermittedContentTypes);
+      Assert.Contains(slideshow, page.PermittedContentTypes);
+      Assert.DoesNotContain(page, page.PermittedContentTypes);
+      Assert.Contains(page, initialCollection);
+      Assert.DoesNotContain(slideshow, initialCollection);
 
     }
 
@@ -101,8 +101,8 @@ namespace OnTopic.Tests {
 
       Assert.Single(page.AttributeDescriptors);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
-      Assert.True(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.True(video.AttributeDescriptors.Contains(urlAttribute));
+      Assert.Contains(titleAttribute, video.AttributeDescriptors);
+      Assert.Contains(urlAttribute, video.AttributeDescriptors);
 
     }
 
@@ -135,11 +135,11 @@ namespace OnTopic.Tests {
 
       Assert.Single(page.AttributeDescriptors);
       Assert.Equal<int>(2, video.AttributeDescriptors.Count);
-      Assert.True(video.AttributeDescriptors.Contains(descriptionAttribute));
-      Assert.True(video.AttributeDescriptors.Contains(urlAttribute));
-      Assert.False(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.True(initialCollection.Contains(titleAttribute));
-      Assert.False(initialCollection.Contains(descriptionAttribute));
+      Assert.Contains(descriptionAttribute, video.AttributeDescriptors);
+      Assert.Contains(urlAttribute, video.AttributeDescriptors);
+      Assert.DoesNotContain(titleAttribute, video.AttributeDescriptors);
+      Assert.Contains(titleAttribute, initialCollection);
+      Assert.DoesNotContain(descriptionAttribute, initialCollection);
 
     }
 
@@ -226,8 +226,8 @@ namespace OnTopic.Tests {
       contentTypeCollection.Refresh(rootContentType);
 
       Assert.Equal<int>(3, contentTypeCollection.Count);
-      Assert.True(contentTypeCollection.Contains(slideshowContentType));
-      Assert.False(contentTypeCollection.Contains(videoContentType));
+      Assert.Contains(slideshowContentType, contentTypeCollection);
+      Assert.DoesNotContain(videoContentType, contentTypeCollection);
 
     }
 

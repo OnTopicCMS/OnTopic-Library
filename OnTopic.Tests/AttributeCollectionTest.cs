@@ -451,7 +451,7 @@ namespace OnTopic.Tests {
       topic.Attributes.Clear();
 
       Assert.True(topic.Attributes.IsDirty());
-      Assert.True(topic.Attributes.DeletedItems.Contains("Foo"));
+      Assert.Contains("Foo", topic.Attributes.DeletedItems);
 
     }
 
@@ -554,7 +554,7 @@ namespace OnTopic.Tests {
 
       Assert.False(topic.Attributes.IsDirty());
       Assert.False(topic.Attributes.IsDirty(true));
-      Assert.False(topic.Attributes.DeletedItems.Contains("Foo"));
+      Assert.Contains("Foo", topic.Attributes.DeletedItems);
 
     }
 

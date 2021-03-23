@@ -44,8 +44,8 @@ namespace OnTopic.Tests {
       var typeCollection        = new TypeCollection(topics);
 
       Assert.Equal<int>(2, typeCollection.Count);
-      Assert.True(typeCollection.Contains(typeof(CustomTopic)));
-      Assert.False(typeCollection.Contains(typeof(Topic)));
+      Assert.Contains(typeof(CustomTopic), typeCollection);
+      Assert.DoesNotContain(typeof(Topic), typeCollection);
 
     }
 
