@@ -388,13 +388,8 @@ namespace OnTopic.Tests {
     ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
     /// </summary>
     [Fact]
-    public void IsDirty_NewTopic_ReturnsTrue() {
-
-      var topic                 = new Topic("Topic", "Page");
-
-      Assert.True(topic.IsDirty());
-
-    }
+    public void IsDirty_NewTopic_ReturnsTrue() =>
+      Assert.True(new Topic("Topic", "Page").IsDirty());
 
     /*==========================================================================================================================
     | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
@@ -403,13 +398,8 @@ namespace OnTopic.Tests {
     ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
     /// </summary>
     [Fact]
-    public void IsDirty_ExistingTopic_ReturnsFalse() {
-
-      var topic                 = new Topic("Topic", "Page", null, 1);
-
-      Assert.False(topic.IsDirty());
-
-    }
+    public void IsDirty_ExistingTopic_ReturnsFalse() =>
+      Assert.False(new Topic("Topic", "Page", null, 1).IsDirty());
 
     /*==========================================================================================================================
     | IS DIRTY: CHANGE KEY: RETURNS TRUE
@@ -419,15 +409,12 @@ namespace OnTopic.Tests {
     ///   Boolean)"/> returns <c>true</c>.
     /// </summary>
     [Fact]
-    public void IsDirty_ChangeKey_ReturnsTrue() {
-
-      var topic                 = new Topic("Topic", "Page", null, 1) {
-        Key                     = "NewTopic"
-      };
-
-      Assert.True(topic.IsDirty());
-
-    }
+    public void IsDirty_ChangeKey_ReturnsTrue() =>
+      Assert.True(
+        new Topic("Topic", "Page", null, 1) {
+          Key                     = "NewTopic"
+        }.IsDirty()
+      );
 
     /*==========================================================================================================================
     | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN

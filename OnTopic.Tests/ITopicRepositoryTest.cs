@@ -92,6 +92,7 @@ namespace OnTopic.Tests {
 
       Assert.Equal("Page", topic?.Key);
 
+      //Revert state
       _topicRepository.Delete(child);
 
     }
@@ -103,13 +104,8 @@ namespace OnTopic.Tests {
     ///   Loads invalid topic key and ensures a null is returned.
     /// </summary>
     [Fact]
-    public void Load_InvalidUniqueKey_ReturnsTopic() {
-
-      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType");
-
-      Assert.Null(topic);
-
-    }
+    public void Load_InvalidUniqueKey_ReturnsTopic() =>
+      Assert.Null(_topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType"));
 
     /*==========================================================================================================================
     | TEST: LOAD: VALID TOPIC ID: RETURNS CORRECT TOPIC
@@ -134,13 +130,8 @@ namespace OnTopic.Tests {
     ///   Loads topic by an incorrect ID and ensures it a null is returned.
     /// </summary>
     [Fact]
-    public void Load_InvalidTopicId_ReturnsNull() {
-
-      var topic                 = _topicRepository.Load(9999999);
-
-      Assert.Null(topic);
-
-    }
+    public void Load_InvalidTopicId_ReturnsNull() =>
+      Assert.Null(_topicRepository.Load(9999999));
 
     /*==========================================================================================================================
     | TEST: SAVE

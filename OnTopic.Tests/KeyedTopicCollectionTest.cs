@@ -145,13 +145,8 @@ namespace OnTopic.Tests {
     ///   invalid <see cref="Topic.Key"/>.
     /// </summary>
     [Fact]
-    public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsNull() {
-
-      var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
-
-      Assert.Null(readOnlyCollection.GetValue("InvalidKey"));
-
-    }
+    public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsNull() =>
+      Assert.Null(new ReadOnlyKeyedTopicCollection().GetValue("InvalidKey"));
 
     /*==========================================================================================================================
     | TEST: AS READ ONLY: RETURNS READ ONLY KEYED TOPIC COLLECTION

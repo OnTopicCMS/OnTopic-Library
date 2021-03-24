@@ -77,13 +77,8 @@ namespace OnTopic.Tests {
     ///   confirms that no topic is returned.
     /// </summary>
     [Fact]
-    public void Load_InvalidTopicId_ReturnsExpectedTopic() {
-
-      var topic                 = _topicRepository.Load(11113);
-
-      Assert.Null(topic);
-
-    }
+    public void Load_InvalidTopicId_ReturnsExpectedTopic() =>
+     Assert.Null(_topicRepository.Load(11113));
 
     /*==========================================================================================================================
     | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
@@ -93,13 +88,8 @@ namespace OnTopic.Tests {
     ///   confirms that the root topic is returned.
     /// </summary>
     [Fact]
-    public void Load_NegativeTopicId_ReturnsRootTopic() {
-
-      var topic                 = _cachedTopicRepository.Load(-2);
-
-      Assert.Equal("Root", topic?.GetUniqueKey());
-
-    }
+    public void Load_NegativeTopicId_ReturnsRootTopic() =>
+      Assert.Equal("Root", _cachedTopicRepository.Load(-2)?.GetUniqueKey());
 
     /*==========================================================================================================================
     | TEST: LOAD: VALID DATE: RETURNS TOPIC
