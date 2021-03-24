@@ -142,23 +142,17 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save() {
 
-      var web                   = _topicRepository.Load("Root:Web");
-      var configuration         = _topicRepository.Load("Root:Configuration");
+      var topic                 = new Topic("Test", "Page");
+      var child                 = new Topic("Child", "Page", topic);
 
-      Contract.Assume(web);
-      Contract.Assume(configuration);
+      _topicRepository.Save(topic);
 
-      Assert.Equal<int>(10000, web.Id);
-      Assert.Equal<int>(-1, configuration.Id);
+      Assert.NotEqual<int>(-1, topic.Id);
+      Assert.Equal<int>(-1, child.Id);
 
-      _topicRepository.Save(configuration);
+      _topicRepository.Save(topic, true);
 
-      Assert.NotEqual<int>(-1, configuration.Id);
-      Assert.Equal<int>(-1, configuration.Children.First().Id);
-
-      _topicRepository.Save(configuration, true);
-
-      Assert.NotEqual<int>(-1, configuration.Children.First().Id);
+      Assert.NotEqual<int>(-1, child.Id);
 
     }
 
