@@ -268,7 +268,7 @@ namespace OnTopic.Tests {
       Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
       //Revert state
-      topic.Relationships.Remove("ContentTypes", contentTypes[4]);
+      _topicRepository.Delete(topic);
 
     }
 
