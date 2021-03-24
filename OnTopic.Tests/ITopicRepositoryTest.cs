@@ -85,17 +85,8 @@ namespace OnTopic.Tests {
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
     [Fact]
-    public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
-
-      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var child                 = new Topic("Child", "ContentType", topic, Int32.MaxValue);
-
-      Assert.Equal("Page", topic?.Key);
-
-      //Revert state
-      _topicRepository.Delete(child);
-
-    }
+    public void Load_ValidUniqueKey_ReturnsCorrectTopic() =>
+      Assert.Equal("Page", _topicRepository.Load("Root:Configuration:ContentTypes:Page")?.Key);
 
     /*==========================================================================================================================
     | TEST: LOAD: INVALID UNIQUE KEY: RETURNS NULL
