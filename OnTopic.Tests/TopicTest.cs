@@ -99,13 +99,12 @@ namespace OnTopic.Tests {
     ///   Topic.Key"/> changed. We have code that will handle that, however.
     /// </remarks>
     [Fact]
-    #pragma warning disable IDE0017 // Simplify object initialization
     public void Key_ChangeValue_UpdatesParent() {
 
       var parent                = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 1);
-      var topic                 = new ContentTypeDescriptor("Original", "ContentTypeDescriptor", parent, 2);
-
-      topic.Key                 = "New";
+      var topic                 = new ContentTypeDescriptor("Original", "ContentTypeDescriptor", parent, 2) {
+        Key                     = "New"
+      };
 
       Assert.Equal("New", topic.Key);
       Assert.True(topic.IsDirty("Key"));
@@ -113,7 +112,6 @@ namespace OnTopic.Tests {
       Assert.False(parent.Children.Contains("Original"));
 
     }
-    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: PARENT: SET VALUE: UPDATES PARENT
@@ -180,14 +178,13 @@ namespace OnTopic.Tests {
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [Fact]
-    #pragma warning disable IDE0017 // Simplify object initialization
     public void Parent_ChangeValue_UpdatesParent() {
 
       var sourceParent          = new ContentTypeDescriptor("SourceParent", "ContentTypeDescriptor", null, 5);
       var targetParent          = new ContentTypeDescriptor("TargetParent", "ContentTypeDescriptor", null, 10);
-      var childTopic            = new ContentTypeDescriptor("ChildTopic", "ContentTypeDescriptor", sourceParent);
-
-      childTopic.Parent         = targetParent;
+      var childTopic            = new ContentTypeDescriptor("ChildTopic", "ContentTypeDescriptor", sourceParent) {
+        Parent                  = targetParent
+      };
 
       Assert.Equal<Topic?>(targetParent.Children["ChildTopic"], childTopic);
       Assert.True(targetParent.Children.Contains("ChildTopic"));
@@ -195,7 +192,6 @@ namespace OnTopic.Tests {
       Assert.Equal<int>(10, childTopic.Parent.Id);
 
     }
-    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: UNIQUE KEY: RETURNS UNIQUE KEY
@@ -423,17 +419,15 @@ namespace OnTopic.Tests {
     ///   Boolean)"/> returns <c>true</c>.
     /// </summary>
     [Fact]
-    #pragma warning disable IDE0017 // Simplify object initialization
     public void IsDirty_ChangeKey_ReturnsTrue() {
 
-      var topic                 = new Topic("Topic", "Page", null, 1);
-
-      topic.Key                 = "NewTopic";
+      var topic                 = new Topic("Topic", "Page", null, 1) {
+        Key                     = "NewTopic"
+      };
 
       Assert.True(topic.IsDirty());
 
     }
-    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
