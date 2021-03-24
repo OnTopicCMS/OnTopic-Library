@@ -20,7 +20,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   including the query string, HTTP request headers, <see cref="Topic.View"/>, etc. This test evaluates those to ensure
   ///   that views are being correctly identified based on these criteria.
   /// </summary>
-  public class TopicViewResultExecutorTest: IDisposable {
+  [Collection("Web Application")]
+  public class TopicViewResultExecutorTest: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -33,8 +34,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewResultExecutorTest"/>.
     /// </summary>
-    public TopicViewResultExecutorTest() {
-      _factory = new WebApplicationFactory<Startup>();
+    public TopicViewResultExecutorTest(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -164,24 +165,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       Assert.Equal<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }

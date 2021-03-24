@@ -20,7 +20,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   path conventions. This test evaluates those to ensure that view locations are being correctly evaluated based on those
   ///   conventions.
   /// </summary>
-  public class TopicViewLocationExpanderTest: IDisposable {
+  [Collection("Web Application")]
+  public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -33,8 +34,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
     /// </summary>
-    public TopicViewLocationExpanderTest() {
-      _factory = new WebApplicationFactory<Startup>();
+    public TopicViewLocationExpanderTest(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -114,24 +115,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.Equal(viewLocation, content);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }

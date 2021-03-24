@@ -19,7 +19,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   The <see cref="ServiceCollectionExtensions"/> are responsible, primarily, for establishing routes based on the <see cref
   ///   ="IEndpointRouteBuilder"/> interface. These integration tests validate that those routes are operating as expected.
   /// </summary>
-  public class ServiceCollectionExtensionsTests: IDisposable {
+  [Collection("Web Application")]
+  public class ServiceCollectionExtensionsTests: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -32,8 +33,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
     /// </summary>
-    public ServiceCollectionExtensionsTests() {
-      _factory = new WebApplicationFactory<Startup>();
+    public ServiceCollectionExtensionsTests(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -166,24 +167,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }
