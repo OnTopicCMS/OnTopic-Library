@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Internal;
@@ -22,7 +21,7 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.Entities;
-using OnTopic.Tests.TestDoubles;
+using OnTopic.Tests.Fixtures;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
 using OnTopic.ViewModels;
@@ -37,12 +36,12 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicMappingService"/> using local DTOs.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicMappingServiceTest {
+  [Xunit.Collection("Shared Repository")]
+  public class TopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITypeLookupService              _typeLookupService;
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _mappingService;
 
@@ -58,21 +57,18 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public TopicMappingServiceTest() {
+    public TopicMappingServiceTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Create composite topic lookup service
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _typeLookupService        = new CompositeTypeLookupService(
-        new TopicViewModelLookupService(),
-        new FakeViewModelLookupService()
-      );
+      Contract.Requires(fixture, nameof(fixture));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Assemble dependencies
+      | Set services
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
-      _mappingService           = new TopicMappingService(new DummyTopicRepository(), _typeLookupService);
+      _topicRepository          = fixture.CachedTopicRepository;
+      _mappingService           = fixture.MappingService;
 
     }
 
@@ -790,7 +786,6 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_MapAs_ReturnsTopicReference() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       Contract.Assume(topicReference);
@@ -799,7 +794,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("TopicReference", topicReference);
 
-      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
       Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference?.GetType());
@@ -816,7 +811,6 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_MapAs_ReturnsRelationships() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var relatedTopic          = _topicRepository.Load(11111);
 
       Contract.Assume(relatedTopic);
@@ -825,7 +819,7 @@ namespace OnTopic.Tests {
 
       topic.Relationships.SetValue("Relationships", relatedTopic);
 
-      var target = (MapAsTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.Single(target?.Relationships);
       Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.Relationships.FirstOrDefault()?.GetType());
@@ -842,7 +836,6 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_TopicReferencesAsAttribute_ReturnsMappedModel() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       Contract.Assume(topicReference);
@@ -851,7 +844,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetInteger("TopicReferenceId", topicReference.Id);
 
-      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (TopicReferenceTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
       Assert.Equal(topicReference.Key, target?.TopicReference?.Key);
@@ -867,14 +860,13 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_TopicReferences_ReturnsMappedModel() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
 
       topic.References.SetValue("TopicReference", topicReference);
 
-      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (TopicReferenceTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
       Assert.Equal(topicReference?.Key, target?.TopicReference?.Key);
@@ -890,8 +882,6 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_TopicReferences_SkipsDisabled() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
-
       var topic                 = TopicFactory.Create("Test", "TopicReference");
       var topicReference        = TopicFactory.Create("Reference", "Page");
 
@@ -899,7 +889,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("TopicReference", topicReference);
 
-      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (TopicReferenceTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.Null(target?.TopicReference);
 
@@ -1029,10 +1019,9 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
-      var target                = (MetadataLookupTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (MetadataLookupTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.Equal<int?>(5, target?.Categories.Count);
 

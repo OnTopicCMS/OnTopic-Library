@@ -8,10 +8,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Collections;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.Tests.Fixtures;
 using Xunit;
 
 namespace OnTopic.Tests {
@@ -23,7 +25,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicExtensions"/> class.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicQueryingTest {
+  public class TopicQueryingTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -42,8 +44,18 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public TopicQueryingTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public TopicQueryingTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository = fixture.CachedTopicRepository;
+
     }
 
     /*==========================================================================================================================

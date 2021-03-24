@@ -20,6 +20,7 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
+using OnTopic.Tests.Fixtures;
 using OnTopic.ViewModels;
 using Xunit;
 
@@ -32,7 +33,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class ReverseTopicMappingServiceTest {
+  public class ReverseTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -51,8 +52,18 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ReverseTopicMappingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public ReverseTopicMappingServiceTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository = fixture.CachedTopicRepository;
+
     }
 
     /*==========================================================================================================================

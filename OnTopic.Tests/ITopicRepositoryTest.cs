@@ -11,6 +11,7 @@ using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.Tests.Fixtures;
 using Xunit;
 
 namespace OnTopic.Tests {
@@ -26,7 +27,7 @@ namespace OnTopic.Tests {
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  public class ITopicRepositoryTest {
+  public class ITopicRepositoryTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -45,8 +46,18 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ITopicRepositoryTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public ITopicRepositoryTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository = fixture.CachedTopicRepository;
+
     }
 
     /*==========================================================================================================================
@@ -193,7 +204,7 @@ namespace OnTopic.Tests {
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
     [Fact]
-    public void Move_ToNewSibling_ConirmedMove() {
+    public void Move_ToNewSibling_ConfirmedMove() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_0");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
@@ -264,7 +275,6 @@ namespace OnTopic.Tests {
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
     }
-
 
   } //Class
 } //Namespace
