@@ -165,29 +165,16 @@ namespace OnTopic.Tests {
     [Fact]
     public void Move_ToNewParent_ConfirmedMove() {
 
-      var source                = _topicRepository.Load("Root:Web:Web_0");
-      var destination           = _topicRepository.Load("Root:Web:Web_1");
-      var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
-
-      Contract.Assume(source);
-      Contract.Assume(destination);
-      Contract.Assume(sibling);
-      Contract.Assume(topic);
-
-      Assert.Equal<Topic?>(topic.Parent, source);
-      Assert.Equal<int>(2, destination.Children.Count);
-      Assert.Equal<int>(2, source.Children.Count);
+      var source                = new Topic("OriginalParent", "Page");
+      var destination           = new Topic("NewParent", "Page");
+      var topic                 = new Topic("Topic", "Page", source);
+      _                         = new Topic("Sibling", "Page", source);
 
       _topicRepository.Move(topic, destination);
 
       Assert.Equal<Topic?>(topic.Parent, destination);
       Assert.Single(source.Children);
-      Assert.Equal<int>(3, destination.Children.Count);
-
-      //Revert state
-      _topicRepository.Move(topic, source);
-      _topicRepository.Move(sibling, source);
+      Assert.Single(destination.Children);
 
     }
 
@@ -200,27 +187,16 @@ namespace OnTopic.Tests {
     [Fact]
     public void Move_ToNewSibling_ConfirmedMove() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_0");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
-      var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
-
-      Contract.Assume(parent);
-      Contract.Assume(topic);
-      Contract.Assume(sibling);
-
-      Assert.Equal<Topic?>(topic.Parent, parent);
-      Assert.Equal("Web_0_0", parent.Children.First().Key);
-      Assert.Equal<int>(2, parent.Children.Count);
+      var parent                = new Topic("OriginalParent", "Page");
+      var topic                 = new Topic("Topic", "Page", parent);
+      var sibling               = new Topic("Sibling", "Page", parent);
 
       _topicRepository.Move(topic, parent, sibling);
 
       Assert.Equal<Topic?>(topic.Parent, parent);
       Assert.Equal<int>(2, parent.Children.Count);
-      Assert.Equal("Web_0_1", parent.Children.First().Key);
-      Assert.Equal("Web_0_0", parent.Children[1].Key);
-
-      //Revert state
-      _topicRepository.Move(topic, parent);
+      Assert.Equal("Sibling", parent.Children.First().Key);
+      Assert.Equal("Topic", parent.Children[1].Key);
 
     }
 
@@ -233,23 +209,13 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_Topic_Removed() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
-      var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
-
-      Contract.Assume(parent);
-      Contract.Assume(topic);
-      Contract.Assume(child);
-
-      Assert.Equal<int>(2, parent.Children.Count);
+      var parent                = new Topic("OriginalParent", "Page");
+      var topic                 = new Topic("Topic", "Page", parent);
+      _                         = new Topic("child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.Single(parent.Children);
-
-      //Revert state
-      parent.Children.Add(topic);
-      _topicRepository.Save(topic);
+      Assert.Empty(parent.Children);
 
     }
 
