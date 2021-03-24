@@ -21,7 +21,7 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
   ///   <see cref="SitemapController"/>.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  class TestTopicRepository: DummyTopicRepository {
+  public class TestTopicRepository: DummyTopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES

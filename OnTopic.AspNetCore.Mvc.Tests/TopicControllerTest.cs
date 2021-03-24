@@ -30,7 +30,7 @@ namespace OnTopic.Tests {
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicControllerTest {
+  public class TopicControllerTest: IClassFixture<TestTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -53,12 +53,12 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicControllerTest() {
+    public TopicControllerTest(TestTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new TestTopicRepository());
+      _topicRepository          = new CachedTopicRepository(topicRepository);
       _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
