@@ -12,6 +12,7 @@ using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.Tests.Fixtures;
 using OnTopic.ViewModels;
 using Xunit;
 
@@ -24,13 +25,12 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="HierarchicalTopicMappingService{T}"/>.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class HierarchicalTopicMappingServiceTest {
+  public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
-    readonly                    ITopicMappingService            _topicMappingService;
     readonly                    Topic                           _topic;
 
     /*==========================================================================================================================
@@ -51,22 +51,26 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public HierarchicalTopicMappingServiceTest() {
+    public HierarchicalTopicMappingServiceTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
-      _topic                    = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
-      _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
+      _topicRepository          = fixture.CachedTopicRepository;
+      _topic                    =  _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish hierarchical topic mapping service
       \-----------------------------------------------------------------------------------------------------------------------*/
       _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
         new HierarchicalTopicMappingService<NavigationTopicViewModel>(
-          _topicRepository,
-          _topicMappingService
+          fixture.TopicRepository,
+          fixture.MappingService
         )
       );
 
@@ -194,6 +198,10 @@ namespace OnTopic.Tests {
 
       Assert.NotNull(viewModel);
       Assert.Single(viewModel?.Children);
+
+      //Revert state
+      rootTopic.IsDisabled      = false;
+      disabledTopic.IsDisabled  = false;
 
     }
 
