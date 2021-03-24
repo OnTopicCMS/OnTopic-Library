@@ -37,7 +37,7 @@ namespace OnTopic.Tests {
   /// </summary>
   [ExcludeFromCodeCoverage]
   [Xunit.Collection("Shared Repository")]
-  public class TopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
+  public class TopicMappingServiceTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

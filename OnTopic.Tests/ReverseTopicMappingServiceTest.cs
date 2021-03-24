@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
   /// </summary>
   [ExcludeFromCodeCoverage]
   [Xunit.Collection("Shared Repository")]
-  public class ReverseTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
+  public class ReverseTopicMappingServiceTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

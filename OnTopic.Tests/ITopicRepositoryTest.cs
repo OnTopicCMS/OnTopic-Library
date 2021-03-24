@@ -27,7 +27,8 @@ namespace OnTopic.Tests {
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  public class ITopicRepositoryTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
+  [Collection("Shared Repository")]
+  public class ITopicRepositoryTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
