@@ -278,8 +278,10 @@ namespace OnTopic.Tests {
       Assert.True(target?.PermittedContentTypes.Contains(contentTypes[2]));
       Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
-    }
+      //Revert state
+      topic.Relationships.Remove("ContentTypes", contentTypes[4]);
 
+    }
 
     /*==========================================================================================================================
     | TEST: MAP: RELATIONSHIPS: THROW EXCEPTION
