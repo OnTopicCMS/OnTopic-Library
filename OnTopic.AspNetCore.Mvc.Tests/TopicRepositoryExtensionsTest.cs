@@ -20,7 +20,8 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicRepositoryExtensions"/> class.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicRepositoryExtensionsTest {
+  [Collection("Data Tests")]
+  public class TopicRepositoryExtensionsTest: IClassFixture<StubTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -39,8 +40,8 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public TopicRepositoryExtensionsTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public TopicRepositoryExtensionsTest(StubTopicRepository topicRepository) {
+      _topicRepository = new CachedTopicRepository(topicRepository);
     }
 
     /*==========================================================================================================================

@@ -31,7 +31,8 @@ namespace OnTopic.Tests {
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicViewComponentTest {
+  [Collection("Data Tests")]
+  public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -59,12 +60,12 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicViewComponentTest() {
+    public TopicViewComponentTest(StubTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
+      _topicRepository          = new CachedTopicRepository(topicRepository);
       _topic                    = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
