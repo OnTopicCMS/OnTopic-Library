@@ -4,12 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -23,7 +23,6 @@ namespace OnTopic.Tests {
   ///   SetValue(String, TValue, Boolean?, DateTime?)"/>, and the cross-referencing of reciprocal values in the <see cref="
   ///   Topic.IncomingRelationships"/> property.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicReferenceCollectionTest {
 
@@ -34,16 +33,16 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.Single(topic.References);
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -55,16 +54,16 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is not set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_NewReference_NotDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page", null, 2);
 
       topic.References.SetValue("Reference", reference, false);
 
-      Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsFalse(topic.References.IsDirty());
+      Assert.Single(topic.References);
+      Assert.False(topic.References.IsDirty());
 
     }
 
@@ -76,17 +75,17 @@ namespace OnTopic.Tests {
     ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.RemoveItem(Int32)"/>, and confirms that <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Remove_ExistingReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference, false);
       topic.References.Remove("Reference");
 
-      Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.Empty(topic.References);
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -100,19 +99,19 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set. Also confirms that items are correctly removed
     ///   from recipricol <see cref="Topic.IncomingRelationships"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Clear_ExistingReferences_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.Add(new("Reference1", reference, false));
       topic.References.Add(new("Reference2", null, false));
       topic.References.Clear();
 
-      Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.Empty(topic.References);
+      Assert.Empty(reference.IncomingRelationships.GetValues("Reference"));
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -125,15 +124,15 @@ namespace OnTopic.Tests {
     ///   </c>, confirming that <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> remains <c>true</c>
     ///   since the target <see cref="Topic"/> is unsaved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewTopic_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference, false);
 
-      Assert.IsTrue(topic.References.IsDirty());
+      Assert.True(topic.References.IsDirty());
 
     }
 
@@ -145,15 +144,15 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that
     ///   <see cref="Topic.IncomingRelationships"/> reference is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_IncomingRelationshipSet() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual<int>(1, reference.IncomingRelationships.GetValues("Reference").Count);
+      Assert.Single(reference.IncomingRelationships.GetValues("Reference"));
 
     }
 
@@ -171,11 +170,11 @@ namespace OnTopic.Tests {
     ///   Topic.IncomingRelationships"/> is removed, the second to ensure that the attempt to call <see cref="Topic.
     ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/> is <c>null</c>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.Add(new("Reference1", reference, false));
       topic.References.Add(new("Reference2", null, false));
@@ -183,7 +182,7 @@ namespace OnTopic.Tests {
       topic.References.Remove("Reference1");
       topic.References.Remove("Reference2");
 
-      Assert.AreEqual<int>(0, reference.IncomingRelationships.GetValues("Reference").Count);
+      Assert.Empty(reference.IncomingRelationships.GetValues("Reference"));
 
     }
 
@@ -197,19 +196,19 @@ namespace OnTopic.Tests {
     ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.IncomingRelationships"/> are
     ///   correctly updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ExistingReference_TopicUpdated() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
-      var newReference          = TopicFactory.Create("NewReference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
+      var newReference          = new Topic("NewReference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", newReference);
 
-      Assert.AreEqual(newReference, topic.References.GetValue("Reference"));
-      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
-      Assert.AreEqual<int?>(1, newReference.IncomingRelationships.GetValues("Reference")?.Count);
+      Assert.Equal<Topic?>(newReference, topic.References.GetValue("Reference"));
+      Assert.Empty(reference.IncomingRelationships.GetValues("Reference"));
+      Assert.Single(newReference.IncomingRelationships.GetValues("Reference"));
 
     }
 
@@ -229,19 +228,19 @@ namespace OnTopic.Tests {
     ///   the attempt to call <see cref="Topic.IncomingRelationships"/> isn't disrupted by the fact that the <see cref="
     ///   TrackedRecord{T}.Value"/> will now be <c>null</c>.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void SetValue_ExistingReference_IncomingRelationshipsUpdates() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
       topic.References.SetValue("Reference", null);
 
-      Assert.IsTrue(topic.References.Contains("Reference"));
-      Assert.IsNull(topic.References.GetValue("Reference"));
-      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
+      Assert.True(topic.References.Contains("Reference"));
+      Assert.Null(topic.References.GetValue("Reference"));
+      Assert.Equal<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
 
     }
 
@@ -254,17 +253,17 @@ namespace OnTopic.Tests {
     ///   reference with a null value using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String,
     ///   TValue, Boolean?, DateTime?)"/>, and confirms that the <see cref="Topic"/> reference is correctly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_NullReference_TopicRemoved() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
 
-      Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsNull(topic.References.GetValue("Reference"));
+      Assert.Single(topic.References);
+      Assert.Null(topic.References.GetValue("Reference"));
 
     }
 
@@ -275,16 +274,16 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
     ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/> is correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NewReference_TopicIsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page", null, 2);
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.IsTrue(topic.IsDirty(true));
-      Assert.IsFalse(reference.IsDirty(true));
+      Assert.True(topic.IsDirty(true));
+      Assert.False(reference.IsDirty(true));
 
     }
 
@@ -296,15 +295,15 @@ namespace OnTopic.Tests {
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the <see
     ///   cref="Topic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_ExistingReference_ReturnsTopic() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual(reference, topic.References.GetValue("Reference"));
+      Assert.Equal<Topic?>(reference, topic.References.GetValue("Reference"));
 
     }
 
@@ -316,15 +315,15 @@ namespace OnTopic.Tests {
     ///   <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null
     ///   </c> if an incorrect <c>referencedKey</c> is entered.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_MissingReference_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.IsNull(topic.References.GetValue("MissingReference"));
+      Assert.Null(topic.References.GetValue("MissingReference"));
 
     }
 
@@ -337,18 +336,18 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the related topic reference, inheriting from both
     ///   <see cref="Topic.Parent"/> and <see cref="Topic.BaseTopic"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReference_ReturnsTopic() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", parentTopic);
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var parentTopic           = new Topic("Parent", "Page");
+      var topic                 = new Topic("Topic", "Page", parentTopic);
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       parentTopic.BaseTopic     = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual(reference, topic.References.GetValue("Reference", true));
+      Assert.Equal<Topic?>(reference, topic.References.GetValue("Reference", true));
 
     }
 
@@ -361,17 +360,17 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if an incorrect <c>referencedKey</c> is
     ///   entered.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReference_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.IsNull(topic.References.GetValue("MissingReference", true));
+      Assert.Null(topic.References.GetValue("MissingReference", true));
 
     }
 
@@ -384,17 +383,17 @@ namespace OnTopic.Tests {
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if <c>inheritFromBase</c> is set to
     ///   <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetTopic_InheritedReferenceWithoutInheritance_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.IsNull(topic.References.GetValue("Reference", null, false, false));
+      Assert.Null(topic.References.GetValue("Reference", null, false, false));
 
     }
 
@@ -405,15 +404,15 @@ namespace OnTopic.Tests {
     ///   Sets a topic reference on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_TopicReferenceWithBusinessLogic_IsReturned() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("TopicReference", reference);
 
-      Assert.AreEqual<Topic?>(reference, topic.TopicReference);
+      Assert.Equal<Topic?>(reference, topic.TopicReference);
 
     }
 
@@ -423,16 +422,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance, then sets it to null, ensuring that it is correctly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_TopicReferenceWithBusinessLogic_RemovedReference() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("BaseTopic", reference);
       topic.References.SetValue("BaseTopic", null);
 
-      Assert.IsNull(topic.TopicReference);
+      Assert.Null(topic.TopicReference);
 
     }
 
@@ -442,17 +441,15 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
+    [Fact]
     public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Container");
+      var reference             = new Topic("Reference", "Container");
 
-      topic.References.SetValue("TopicReference", reference);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.References.SetValue("TopicReference", reference)
+      );
 
     }
 
@@ -462,17 +459,15 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
+    [Fact]
     public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Container");
+      var reference             = new Topic("Reference", "Container");
 
-      topic.References.Add(new("TopicReference", reference));
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.References.Add(new("TopicReference", reference))
+      );
 
     }
 

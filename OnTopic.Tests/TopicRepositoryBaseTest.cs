@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
@@ -15,6 +14,7 @@ using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -27,7 +27,6 @@ namespace OnTopic.Tests {
   /// <remarks>
   ///   These tests evaluate features that are specific to the <see cref="TopicRepository"/> class.
   /// </remarks>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TopicRepositoryBaseTest {
 
@@ -61,12 +60,12 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a valid <see cref="Topic.Id"/> and
     ///   confirms that the expected topic is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidTopicId_ReturnsExpectedTopic() {
 
       var topic                 = _topicRepository.Load(11111);
 
-      Assert.AreEqual<int?>(11111, topic?.Id);
+      Assert.Equal<int?>(11111, topic?.Id);
 
     }
 
@@ -77,14 +76,9 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with an invalid <see cref="Topic.Id"/> and
     ///   confirms that no topic is returned.
     /// </summary>
-    [TestMethod]
-    public void Load_InvalidTopicId_ReturnsExpectedTopic() {
-
-      var topic                 = _topicRepository.Load(11113);
-
-      Assert.IsNull(topic);
-
-    }
+    [Fact]
+    public void Load_InvalidTopicId_ReturnsExpectedTopic() =>
+     Assert.Null(_topicRepository.Load(11113));
 
     /*==========================================================================================================================
     | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
@@ -93,14 +87,9 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a negative <see cref="Topic.Id"/> and
     ///   confirms that the root topic is returned.
     /// </summary>
-    [TestMethod]
-    public void Load_NegativeTopicId_ReturnsRootTopic() {
-
-      var topic                 = _cachedTopicRepository.Load(-2);
-
-      Assert.AreEqual<string?>("Root", topic?.GetUniqueKey());
-
-    }
+    [Fact]
+    public void Load_NegativeTopicId_ReturnsRootTopic() =>
+      Assert.Equal("Root", _cachedTopicRepository.Load(-2)?.GetUniqueKey());
 
     /*==========================================================================================================================
     | TEST: LOAD: VALID DATE: RETURNS TOPIC
@@ -109,14 +98,14 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
     ///   with that date is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidDate_ReturnsTopic() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
       var topic                 = _cachedTopicRepository.Load(11111, version);
 
-      Assert.IsTrue(topic?.VersionHistory.Contains(version));
-      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.True(topic?.VersionHistory.Contains(version));
+      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -127,7 +116,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
     ///   LastModified"/> value is updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Rollback_Topic_UpdatesLastModified() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
@@ -138,8 +127,8 @@ namespace OnTopic.Tests {
         _topicRepository.Rollback(topic, version);
       }
 
-      Assert.IsTrue(topic?.VersionHistory.Contains(version));
-      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.True(topic?.VersionHistory.Contains(version));
+      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -150,10 +139,11 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
     ///   confirms that an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Fact]
     public void Load_FutureDate_ThrowsException() =>
-      _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
+      Assert.Throws<InvalidOperationException>(() =>
+        _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1))
+      );
 
     /*==========================================================================================================================
     | TEST: LOAD: OLD DATE: THROWS EXCEPTION
@@ -162,10 +152,11 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
     ///   introduced and ensures that an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Fact]
     public void Load_OldDate_ThrowsException() =>
-      _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15));
+      Assert.Throws<InvalidOperationException>(() =>
+        _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15))
+      );
 
     /*==========================================================================================================================
     | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
@@ -173,18 +164,19 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(ReferentialIntegrityException))]
+    [Fact]
     public void Delete_BaseTopic_ThrowsException() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Page", root);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var derivedTopic          = new Topic("Derived", "Page", root) {
+        BaseTopic               = child
+      };
 
-      derivedTopic.BaseTopic    = child;
-
-      _topicRepository.Delete(topic, true);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Delete(topic, true)
+      );
 
     }
 
@@ -194,19 +186,19 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic which another topic within the graph derives from. Expects success.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_InternallyDerivedTopic_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derived               = TopicFactory.Create("Derived", "Page", topic);
-
-      derived.BaseTopic         = child;
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      _                         = new Topic("Derived", "Page", topic) {
+        BaseTopic               = child
+      };
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -216,14 +208,15 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(ReferentialIntegrityException))]
+    [Fact]
     public void Delete_Descendants_ThrowsException() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      _                         = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Topic", "Page");
+      _                         = new Topic("Child", "Page", topic);
 
-      _topicRepository.Delete(topic, false);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Delete(topic, false)
+      );
 
     }
 
@@ -233,16 +226,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_DescendantsWithRecursive_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      _                         = TopicFactory.Create("Child", "Page", topic);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      _                         = new Topic("Child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -252,16 +245,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_NestedTopics_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      _                         = TopicFactory.Create("Child", "List", topic);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      _                         = new Topic("Child", "List", topic);
 
       _topicRepository.Delete(topic, false);
 
-      Assert.AreEqual<int>(0, root.Children.Count);
+      Assert.Empty(root.Children);
 
     }
 
@@ -272,21 +265,21 @@ namespace OnTopic.Tests {
     ///   Deletes a topic with outgoing relationships and topic references. Additionally, deletes those associations from the
     ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_Relationships_DeleteRelationships() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var associated            = TopicFactory.Create("Associated", "Page", root);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var associated            = new Topic("Associated", "Page", root);
 
       child.Relationships.SetValue("Related", associated);
       child.References.SetValue("Referenced", associated);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
-      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
+      Assert.Empty(associated.IncomingRelationships.GetValues("Related"));
+      Assert.Empty(associated.IncomingRelationships.GetValues("Referenced"));
 
     }
 
@@ -296,21 +289,21 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_IncomingRelationships_DeleteAssociations() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var source1               = TopicFactory.Create("Source1", "Page", root);
-      var source2               = TopicFactory.Create("Source2", "Page", root);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var source1               = new Topic("Source1", "Page", root);
+      var source2               = new Topic("Source2", "Page", root);
 
       source1.Relationships.SetValue("Associations", child);
       source2.References.SetValue("Associations", child);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, source1.Relationships.GetValues("Associations").Count);
+      Assert.Empty(source1.Relationships.GetValues("Associations"));
 
     }
 
@@ -321,16 +314,16 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
     ///   cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.Single(attributes);
 
     }
 
@@ -342,18 +335,18 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
     ///   be skipped.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_EmptyAttributes_Skips() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("EmptyAttribute", "");
       topic.Attributes.SetValue("NullAttribute", null);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.IsFalse(attributes.Any(a => a.Key is "EmptyAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key is "NullAttribute"));
+      Assert.DoesNotContain(attributes, a => a.Key is "EmptyAttribute");
+      Assert.DoesNotContain(attributes, a => a.Key is "NullAttribute");
 
     }
 
@@ -363,16 +356,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_IndexedAttributes_ReturnsIndexedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 
@@ -382,16 +375,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributes_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.Single(attributes);
 
     }
 
@@ -403,10 +396,10 @@ namespace OnTopic.Tests {
     ///   cref="AttributeRecord"/> to be returned even if it's <i>not</i> <see cref="TrackedRecord{T}.IsDirty"/> <i>but</i> its
     ///   <see cref="AttributeRecord.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
 
       topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
       topic.Attributes.SetValue("IsHidden", "0", markDirty: false, isExtendedAttribute: true);
@@ -419,20 +412,20 @@ namespace OnTopic.Tests {
       var cleanIndexed          = _topicRepository.GetAttributesProxy(topic, false, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, dirtyExtended.Count());
-      Assert.AreEqual<string?>("Title", dirtyExtended.FirstOrDefault()?.Key);
+      Assert.Single(dirtyExtended);
+      Assert.Equal("Title", dirtyExtended.FirstOrDefault()?.Key);
 
       //Expect IsHidden, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, dirtyIndexed.Count());
-      Assert.AreEqual<string?>("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
+      Assert.Single(dirtyIndexed);
+      Assert.Equal("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
 
       //Expect Metatitle, since it's clean, and not mismatched
-      Assert.AreEqual<int>(1, cleanExtended.Count());
-      Assert.AreEqual<string?>("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
+      Assert.Single(cleanExtended);
+      Assert.Equal("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
 
       //Expect Arbitrary, since it's arbitrary and it's length is less than 255
-      Assert.AreEqual<int>(1, cleanIndexed.Count());
-      Assert.AreEqual<string?>("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
+      Assert.Single(cleanIndexed);
+      Assert.Equal("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
 
     }
 
@@ -445,16 +438,16 @@ namespace OnTopic.Tests {
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 
@@ -465,17 +458,17 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of attributes from a topic, filtering by <c>excludeLastModified</c>. Confirms that <see
     ///   cref="AttributeRecord"/>s are not returned which start with <c>LastModified</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetDateTime("LastModified", DateTime.Now);
       topic.Attributes.SetValue("LastModifiedBy", "Unit Tests");
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      Assert.AreEqual<int>(0, attributes.Count());
+      Assert.Empty(attributes);
 
     }
 
@@ -487,16 +480,16 @@ namespace OnTopic.Tests {
     ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("ArbitraryAttribute", "Value");
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
 
     }
 
@@ -508,16 +501,16 @@ namespace OnTopic.Tests {
     ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
 
     }
 
@@ -528,17 +521,17 @@ namespace OnTopic.Tests {
     ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="ContentTypeDescriptor"/> but not the <see cref="Topic"/> are returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetUnmatchedAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
 
       topic.Attributes.SetValue("Title", "Title");
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any());
-      Assert.IsFalse(attributes.Any(a => a.Key is "Title"));
+      Assert.True(attributes.Any());
+      Assert.DoesNotContain(attributes, a => a.Key is "Title");
 
     }
 
@@ -551,10 +544,10 @@ namespace OnTopic.Tests {
     ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
     ///   the database.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetUnmatchedAttributes_EmptyArbitraryAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 1);
 
       topic.Attributes.SetValue("ArbitraryAttribute", "Value");
       topic.Attributes.SetValue("ArbitraryAttribute", "");
@@ -564,9 +557,9 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
-      Assert.IsTrue(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
+      Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
+      Assert.Contains(attributes, a => a.Key is "YetAnotherArbitraryAttribute");
+      Assert.DoesNotContain(attributes, a => a.Key is "AnotherArbitraryAttribute");
 
     }
 
@@ -577,15 +570,15 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
     ///   the expected number (2) are present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptors_ReturnsContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
-      Assert.AreEqual<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetValue("Page"));
-      Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
+      Assert.Equal<int>(15, contentTypes.Count);
+      Assert.NotNull(contentTypes.GetValue("ContentTypeDescriptor"));
+      Assert.NotNull(contentTypes.GetValue("Page"));
+      Assert.NotNull(contentTypes.GetValue("LookupListItem"));
 
     }
 
@@ -596,18 +589,18 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> alongside a separate
     ///   topic graph and ensures the two are properly merged.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptors_WithTopicGraph_ReturnsMergedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var rootContentType       = contentTypes["ContentTypes"];
-      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var newContentType        = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
       var contentTypeCount      = contentTypes.Count;
 
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
 
-      Assert.AreNotEqual<int>(contentTypeCount, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.Contains(newContentType));
+      Assert.NotEqual<int>(contentTypeCount, contentTypes.Count);
+      Assert.Contains(newContentType, contentTypes);
 
     }
 
@@ -617,13 +610,13 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to retrieve a specific <see cref="ContentTypeDescriptor"/> by its <see cref="Topic.Key"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetValidContentType_ReturnsContentType() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNotNull(contentType);
+      Assert.NotNull(contentType);
 
     }
 
@@ -634,19 +627,19 @@ namespace OnTopic.Tests {
     ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> that hasn't yet been persisted to the data store. Instead,
     ///   attempts to retrieve it from the <see cref="Topic"/>'s graph.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
 
       var rootTopic             = _topicRepository.Load("Root");
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var rootContentType       = contentTypes.GetValue("ContentTypes");
-      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
-      var topic                 = TopicFactory.Create("Test", "NewContentType", rootTopic);
+      var newContentType        = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var topic                 = new Topic("Test", "NewContentType", rootTopic);
 
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNotNull(contentType);
-      Assert.AreEqual<Topic?>(contentType, newContentType);
+      Assert.NotNull(contentType);
+      Assert.Equal<Topic?>(contentType, newContentType);
 
     }
 
@@ -658,18 +651,18 @@ namespace OnTopic.Tests {
     ///   root content type at <c>Root:Configuration:ContentTypes</c>. In this case, it should return <c>null</c>. This will
     ///   typically only occur when initializing a new database, and is an unexpected condition.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
 
       var topicRepository       = new StubTopicRepository();
       var configuration         = topicRepository.Load("Root:Configuration");
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topicRepository.Delete(configuration!, true);
 
       var contentType           = topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNull(contentType);
+      Assert.Null(contentType);
 
     }
 
@@ -679,13 +672,13 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to retrieve an invalid <see cref="ContentTypeDescriptor"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetContentTypeDescriptor_GetInvalidContentType_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Test", "InvalidContentType");
+      var topic                 = new Topic("Test", "InvalidContentType");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
-      Assert.IsNull(contentType);
+      Assert.Null(contentType);
 
     }
 
@@ -697,15 +690,15 @@ namespace OnTopic.Tests {
     ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that it is
     ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var topic                 = TopicFactory.Create("NewContentType", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor");
 
       _topicRepository.Save(topic);
 
-      Assert.IsTrue(contentTypes.Contains(topic));
+      Assert.Contains(topic, contentTypes);
 
     }
 
@@ -717,7 +710,7 @@ namespace OnTopic.Tests {
     ///   "ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -735,7 +728,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(contentTypesRoot, true);
 
-      Assert.AreNotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
+      Assert.NotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
 
     }
 
@@ -746,15 +739,15 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> and confirms that the <see cref="Topic.VersionHistory"/> is correctly updated with a
     ///   new version.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_NewTopic_UpdatesVersionHistory() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var topic                 = new Topic("Test", "Page", parent);
 
       _topicRepository.Save(topic);
 
-      Assert.IsTrue(topic.VersionHistory.Count > 0);
+      Assert.True(topic.VersionHistory.Count > 0);
 
     }
 
@@ -765,16 +758,16 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with a child <see cref="Topic"/> and confirms that the <see cref="Topic.Id"/> of the
     ///   child <see cref="Topic"/> is correctly updated.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_IsRecursive_SavesChild() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Test", "Page", parent);
+      var child                 = new Topic("Child", "Page", topic);
 
       _topicRepository.Save(topic, true);
 
-      Assert.IsFalse(child.IsNew);
+      Assert.False(child.IsNew);
 
     }
 
@@ -786,12 +779,12 @@ namespace OnTopic.Tests {
     ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedRecordCollection{TItem,
     ///   TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_UnresolvedReference_Resolves() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var reference             = TopicFactory.Create("Reference", "Page", topic);
+      var topic                 = new Topic("Test", "Page", parent);
+      var reference             = new Topic("Reference", "Page", topic);
 
       topic.References.SetValue("Test", reference);
 
@@ -806,20 +799,18 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws the
     ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ReferentialIntegrityException),
-      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
-    )]
+    [Fact]
     public void Save_UnresolvedReference_ThrowsException() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var reference             = TopicFactory.Create("Reference", "Page", parent);
+      var topic                 = new Topic("Test", "Page", parent);
+      var reference             = new Topic("Reference", "Page", parent);
 
       topic.References.SetValue("Test", reference);
 
-      _topicRepository.Save(topic, true);
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Save(topic, true)
+      );
 
     }
 
@@ -830,13 +821,11 @@ namespace OnTopic.Tests {
     ///   Saves a new <see cref="Topic"/> with an invalid <see cref="Topic.ContentType"/> and confirms that it throws the
     ///   expected <see cref="ReferentialIntegrityException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ReferentialIntegrityException),
-      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
-    )]
+    [Fact]
     public void Save_InvalidContentType_ThrowsException() =>
-      _topicRepository.Save(new("Test", "InvalidContentType"));
+      Assert.Throws<ReferentialIntegrityException>(() =>
+        _topicRepository.Save(new("Test", "InvalidContentType"))
+      );
 
     /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
@@ -846,7 +835,7 @@ namespace OnTopic.Tests {
     ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Delete(Topic, Boolean)"/>, and ensures that it
     ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -856,7 +845,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(contentType);
 
-      Assert.IsFalse(contentTypes.Contains(contentType));
+      Assert.DoesNotContain(contentType, contentTypes);
 
     }
 
@@ -869,7 +858,7 @@ namespace OnTopic.Tests {
     ///   that it is immediately reflected in the <see cref="TopicRepository"/> cache of <see
     ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
@@ -882,7 +871,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(contactContentType, pageContentType);
 
-      Assert.AreNotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
+      Assert.NotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
 
     }
 
@@ -894,24 +883,24 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor"/> to the parent. Ensures that the <see cref="ContentTypeDescriptor.AttributeDescriptors"/>
     ///   of the child reflects the change.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_AttributeDescriptor_UpdatesContentType() {
 
-      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
-      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var attributeList         = new Topic("Attributes", "List", contentType);
+      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType);
 
       Contract.Assume(childContentType);
 
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
+      var newAttribute          = new BooleanAttributeDescriptor("NewAttribute", "BooleanAttributeDescriptor", attributeList);
 
       Contract.Assume(newAttribute);
 
       _topicRepository.Save(newAttribute);
 
-      Assert.IsTrue(childContentType.AttributeDescriptors.Count > attributeCount);
+      Assert.True(childContentType.AttributeDescriptors.Count > attributeCount);
 
     }
 
@@ -923,13 +912,13 @@ namespace OnTopic.Tests {
     ///   cref="AttributeDescriptor"/> to the parent, then immediately deletes it. Ensures that the <see
     ///   cref="ContentTypeDescriptor.AttributeDescriptors"/> of the child reflects the change.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
 
-      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
-      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
-      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var attributeList         = new Topic("Attributes", "List", contentType);
+      var newAttribute          = new BooleanAttributeDescriptor("NewAttribute", "BooleanAttributeDescriptor", attributeList);
+      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType);
 
       Contract.Assume(childContentType);
       Contract.Assume(newAttribute);
@@ -938,7 +927,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(newAttribute);
 
-      Assert.IsTrue(childContentType.AttributeDescriptors.Count < attributeCount);
+      Assert.True(childContentType.AttributeDescriptors.Count < attributeCount);
 
     }
 
@@ -949,7 +938,7 @@ namespace OnTopic.Tests {
     ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean)"/> and ensures that the <see cref="
     ///   ITopicRepository.TopicLoaded"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_TopicLoadedEvent_IsRaised() {
 
       var hasFired              = false;
@@ -960,7 +949,7 @@ namespace OnTopic.Tests {
 
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 
@@ -973,7 +962,7 @@ namespace OnTopic.Tests {
     ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
     ///   ITopicRepository.TopicLoaded"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
 
       var hasFired              = false;
@@ -986,9 +975,9 @@ namespace OnTopic.Tests {
 
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
-      Assert.IsTrue(hasFired);
-      Assert.AreEqual<int?>(topicId, topic?.Id);
-      Assert.AreEqual<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
+      Assert.True(hasFired);
+      Assert.Equal<int?>(topicId, topic?.Id);
+      Assert.Equal<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 
@@ -1001,10 +990,10 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
     ///   TopicDeleted"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_TopicDeletedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var hasFired              = false;
 
       _cachedTopicRepository.Save(topic);
@@ -1012,7 +1001,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Delete(topic);
       _cachedTopicRepository.TopicDeleted -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
@@ -1025,17 +1014,17 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved"
     ///   /> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicSavedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var hasFired              = false;
 
       _cachedTopicRepository.TopicSaved += eventHandler;
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicSaved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicSaveEventArgs eventArgs) => hasFired = true;
 
@@ -1048,10 +1037,10 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
     ///   "/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicRenamedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var hasFired              = false;
 
       topic.Key                 = "New";
@@ -1060,7 +1049,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicRenamed -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicRenameEventArgs eventArgs) => hasFired = true;
 
@@ -1073,11 +1062,11 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
     ///   TopicMoved"/> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save_TopicMovedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
-      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var topic                 = new Topic("Test", "Page", null, 1);
+      var parent                = new Topic("Products", "Page", null, 2);
       var hasFired              = false;
 
       topic.Parent              = parent;
@@ -1086,7 +1075,7 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.Save(topic);
       _cachedTopicRepository.TopicMoved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 
@@ -1099,18 +1088,18 @@ namespace OnTopic.Tests {
     ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
     ///   /> event is raised.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_TopicMovedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
-      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var topic                 = new Topic("Test", "Page", null, 1);
+      var parent                = new Topic("Products", "Page", null, 2);
       var hasFired              = false;
 
       _cachedTopicRepository.TopicMoved += eventHandler;
       _cachedTopicRepository.Move(topic, parent);
       _cachedTopicRepository.TopicMoved -= eventHandler;
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 

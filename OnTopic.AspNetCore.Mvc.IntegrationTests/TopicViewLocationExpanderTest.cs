@@ -6,9 +6,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
@@ -20,8 +20,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   path conventions. This test evaluates those to ensure that view locations are being correctly evaluated based on those
   ///   conventions.
   /// </summary>
-  [TestClass]
-  public class TopicViewLocationExpanderTest: IDisposable {
+  [Collection("Web Application")]
+  public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -34,8 +34,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
     /// </summary>
-    public TopicViewLocationExpanderTest() {
-      _factory = new WebApplicationFactory<Startup>();
+    public TopicViewLocationExpanderTest(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -45,19 +45,19 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref="
     ///   TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
     /// </summary>
-    [TestMethod]
-    [DataRow(                   "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
-    [DataRow(                   "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
-    [DataRow(                   "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
-    [DataRow(                   "AreaContentTypesSharedView",   "ContentTypes/Shared/AreaContentTypesSharedView.cshtml")]
-    [DataRow(                   "AreaContentTypesFallbackView", "ContentTypes/AreaContentTypesFallbackView.cshtml")]
-    [DataRow(                   "AreaSharedView",               "Shared/AreaSharedView.cshtml")]
-    [DataRow(                   "ContentTypeView",              "ContentType/ContentTypeView.cshtml")]
-    [DataRow(                   "ContentTypeSharedView",        "ContentType/Shared/ContentTypeSharedView.cshtml")]
-    [DataRow(                   "ContentTypesView",             "ContentTypes/ContentType.ContentTypesView.cshtml")]
-    [DataRow(                   "ContentTypesSharedView",       "ContentTypes/Shared/ContentTypesSharedView.cshtml")]
-    [DataRow(                   "ContentTypesFallbackView",     "ContentTypes/ContentTypesFallbackView.cshtml")]
-    [DataRow(                   "SharedView",                   "Shared/SharedView.cshtml")]
+    [Theory]
+    [InlineData(                "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
+    [InlineData(                "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
+    [InlineData(                "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
+    [InlineData(                "AreaContentTypesSharedView",   "ContentTypes/Shared/AreaContentTypesSharedView.cshtml")]
+    [InlineData(                "AreaContentTypesFallbackView", "ContentTypes/AreaContentTypesFallbackView.cshtml")]
+    [InlineData(                "AreaSharedView",               "Shared/AreaSharedView.cshtml")]
+    [InlineData(                "ContentTypeView",              "ContentType/ContentTypeView.cshtml")]
+    [InlineData(                "ContentTypeSharedView",        "ContentType/Shared/ContentTypeSharedView.cshtml")]
+    [InlineData(                "ContentTypesView",             "ContentTypes/ContentType.ContentTypesView.cshtml")]
+    [InlineData(                "ContentTypesSharedView",       "ContentTypes/Shared/ContentTypesSharedView.cshtml")]
+    [InlineData(                "ContentTypesFallbackView",     "ContentTypes/ContentTypesFallbackView.cshtml")]
+    [InlineData(                "SharedView",                   "Shared/SharedView.cshtml")]
     public async Task ExpandViewLocations_Views(string viewName, string viewLocation) {
 
       if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
@@ -74,8 +74,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>(viewLocation, content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal(viewLocation, content);
 
     }
 
@@ -87,15 +87,15 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   locations as defined in <see cref="TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander
     ///   .AreaViewLocations"/>.
     /// </summary>
-    [TestMethod]
-    [DataRow(                   "AreaAction",                   "Controller/AreaAction.cshtml")]
-    [DataRow(                   "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
-    [DataRow(                   "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]
-    [DataRow(                   "AreaSharedFallbackAction",     "Shared/AreaSharedFallbackAction.cshtml")]
-    [DataRow(                   "Action",                       "Controller/Action.cshtml")]
-    [DataRow(                   "FallbackAction",               "FallbackAction.cshtml")]
-    [DataRow(                   "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
-    [DataRow(                   "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
+    [Theory]
+    [InlineData(                "AreaAction",                   "Controller/AreaAction.cshtml")]
+    [InlineData(                "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
+    [InlineData(                "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]
+    [InlineData(                "AreaSharedFallbackAction",     "Shared/AreaSharedFallbackAction.cshtml")]
+    [InlineData(                "Action",                       "Controller/Action.cshtml")]
+    [InlineData(                "FallbackAction",               "FallbackAction.cshtml")]
+    [InlineData(                "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
+    [InlineData(                "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
     public async Task ExpandViewLocations_Actions(string viewName, string viewLocation) {
 
       if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
@@ -112,27 +112,9 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>(viewLocation, content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal(viewLocation, content);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }

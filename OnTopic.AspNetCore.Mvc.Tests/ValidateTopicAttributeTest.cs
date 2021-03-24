@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Metadata;
 using OnTopic.TestDoubles;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -26,7 +26,6 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="ValidateTopicAttribute"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ValidateTopicAttributeTest {
 
@@ -95,31 +94,29 @@ namespace OnTopic.Tests {
     ///   Ensures that a controller that doesn't derive from <see cref="TopicController"/> throws a <see
     ///   cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Fact]
     public void InvalidControllerType_ThrowsException() {
 
-      var validateFilter        = new ValidateTopicAttribute();
-      var controller            = new DummyController() {
+      using var controller      = new DummyController() {
         ControllerContext       = GetControllerContext()
       };
-      var context               = GetActionExecutingContext(controller);
 
-      try {
-        validateFilter.OnActionExecuting(context);
-      }
-      finally {
-        controller.Dispose();
-      }
+      var validateFilter        = new ValidateTopicAttribute();
+      var actionContext         = GetActionExecutingContext(controller);
+
+      Assert.Throws<InvalidOperationException>(() =>
+        validateFilter.OnActionExecuting(actionContext)
+      );
 
     }
+
     /*==========================================================================================================================
     | TEST: NULL TOPIC: RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NullTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
@@ -130,7 +127,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(NotFoundObjectResult));
+      Assert.IsType<NotFoundObjectResult>(context.Result);
 
     }
 
@@ -140,11 +137,11 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DisabledTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -154,7 +151,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedResult));
+      Assert.IsType<UnauthorizedResult>(context.Result);
 
     }
 
@@ -165,11 +162,11 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> contains
     ///   a <c>Url</c> attribute.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicWithUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -179,7 +176,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.IsType<RedirectResult>(context.Result);
 
     }
 
@@ -190,11 +187,11 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NestedTopic_List_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "List");
+      var topic                 = new Topic("Key", "List");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -204,8 +201,8 @@ namespace OnTopic.Tests {
 
       var result                = context.Result as StatusCodeResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.NotNull(result);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -216,12 +213,12 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void NestedTopic_Item_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var list                  = TopicFactory.Create("Key", "List");
-      var topic                 = TopicFactory.Create("Item", "Page", list);
+      var list                  = new Topic("Key", "List");
+      var topic                 = new Topic("Item", "Page", list);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -231,8 +228,8 @@ namespace OnTopic.Tests {
 
       var result                = context.Result as StatusCodeResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.NotNull(result);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -243,11 +240,11 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Container_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Item", "Container");
+      var topic                 = new Topic("Item", "Container");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -257,8 +254,8 @@ namespace OnTopic.Tests {
 
       var result                = context.Result as StatusCodeResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.NotNull(result);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -269,23 +266,22 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void PageGroupTopic_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "PageGroup");
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Key", "PageGroup");
+      var child                 = new Topic("Child", "Page", topic);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
-
-      TopicFactory.Create("Home", "Page", topic);
+      _                         = new Topic("Home", "Page", topic);
 
       validateFilter.OnActionExecuting(context);
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
-      Assert.AreEqual<string?>(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
+      Assert.IsType<RedirectResult>(context.Result);
+      Assert.Equal(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
 
     }
 
@@ -296,11 +292,11 @@ namespace OnTopic.Tests {
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c> with no <see cref="Topic.Children"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void PageGroupTopic_Empty_ReturnsRedirect() {
 
       var validateFilter = new ValidateTopicAttribute();
-      var topic = TopicFactory.Create("Key", "PageGroup");
+      var topic = new Topic("Key", "PageGroup");
       var controller = GetTopicController(topic);
       var context = GetActionExecutingContext(controller);
 
@@ -310,8 +306,8 @@ namespace OnTopic.Tests {
 
       var result = context.Result as StatusCodeResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(403, result?.StatusCode);
+      Assert.NotNull(result);
+      Assert.Equal<int?>(403, result?.StatusCode);
 
     }
 
@@ -327,21 +323,20 @@ namespace OnTopic.Tests {
     ///   define a <see cref="HttpRequest.Path"/>. As a result, if no other condition is met, the canonical condition should
     ///   always be tripped as part of these unit tests.
     /// </remarks>
-    [TestMethod]
+    [Fact]
     public void CanonicalUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
-
-      TopicFactory.Create("Home", "Page", topic);
+      _                         = new Topic("Home", "Page", topic);
 
       validateFilter.OnActionExecuting(context);
 
       controller.Dispose();
 
-      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.IsType<RedirectResult>(context.Result);
 
     }
 

@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -23,7 +23,6 @@ namespace OnTopic.Tests {
   ///   StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
   ///   and the underlying <see cref="TypeCollection"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class TypeLookupServiceTest {
 
@@ -34,7 +33,7 @@ namespace OnTopic.Tests {
     ///   Initializes a new <see cref="TypeCollection"/> with a list of <see cref="Type"/> objects, including a duplicate.
     ///   Confirms that only the unique values are provided.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TypeCollection_Constructor_ContainsUniqueTypes() {
 
       var topics = new List<Type> {
@@ -44,9 +43,9 @@ namespace OnTopic.Tests {
       };
       var typeCollection        = new TypeCollection(topics);
 
-      Assert.AreEqual<int>(2, typeCollection.Count);
-      Assert.IsTrue(typeCollection.Contains(typeof(CustomTopic)));
-      Assert.IsFalse(typeCollection.Contains(typeof(Topic)));
+      Assert.Equal<int>(2, typeCollection.Count);
+      Assert.Contains(typeof(CustomTopic), typeCollection);
+      Assert.DoesNotContain(typeof(Topic), typeCollection);
 
     }
 
@@ -57,7 +56,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.TryAdd(Type)"/> to
     ///   ensure it correctly adds new items, but not duplicate items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_TryAdd_ReturnsExpected() {
 
       var topics = new List<Type> {
@@ -65,8 +64,8 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new DummyStaticTypeLookupService(topics);
 
-      Assert.IsFalse(lookupService.TryAdd(typeof(CustomTopic)));
-      Assert.IsTrue(lookupService.TryAdd(typeof(Topic)));
+      Assert.False(lookupService.TryAdd(typeof(CustomTopic)));
+      Assert.True(lookupService.TryAdd(typeof(Topic)));
 
     }
 
@@ -77,7 +76,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.Lookup(String[])"/>
     ///   to ensure it correctly falls back to subsequent items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_Lookup_ReturnsFallback() {
 
       var topics = new List<Type> {
@@ -86,7 +85,7 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new StaticTypeLookupService(topics);
 
-      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
+      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
 
     }
 
@@ -97,7 +96,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.AddOrReplace(Type)"/>
     ///   to ensure it correctly adds new items, but and replaces duplicate items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void StaticLookupService_AddOrReplace_ReturnsExpected() {
 
       var lookupService         = new DummyStaticTypeLookupService();
@@ -105,7 +104,7 @@ namespace OnTopic.Tests {
       lookupService.AddOrReplace(typeof(System.Diagnostics.Contracts.Contract));
       lookupService.AddOrReplace(typeof(Internal.Diagnostics.Contract));
 
-      Assert.AreEqual<Type?>(typeof(Internal.Diagnostics.Contract), lookupService.Lookup(nameof(Internal.Diagnostics.Contract)));
+      Assert.Equal<Type?>(typeof(Internal.Diagnostics.Contract), lookupService.Lookup(nameof(Internal.Diagnostics.Contract)));
 
     }
 
@@ -116,7 +115,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
     ///   StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTypeLookupService_Predicate_ReturnsExpected() {
 
       var lookupService         = new DynamicTypeLookupService(t =>
@@ -124,9 +123,9 @@ namespace OnTopic.Tests {
         typeof(KeyOnlyTopicViewModel).IsAssignableFrom(t)
       );
 
-      Assert.IsNotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
-      Assert.IsNotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
-      Assert.IsNull(lookupService.Lookup(nameof(EmptyViewModel)));
+      Assert.NotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
+      Assert.NotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
+      Assert.Null(lookupService.Lookup(nameof(EmptyViewModel)));
 
     }
 
@@ -137,7 +136,7 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="CompositeTypeLookupService"/> and calls <see cref="CompositeTypeLookupService.Lookup(String[]
     ///   )"/> to ensure it correctly falls back to each <see cref="ITypeLookupService"/> implementation.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void CompositeTypeLookupService_Lookup_ReturnsFallback() {
 
       var lookupService1        = new StaticTypeLookupService(
@@ -158,9 +157,9 @@ namespace OnTopic.Tests {
 
       var lookupService         = new CompositeTypeLookupService(lookupService1, lookupService2);
 
-      Assert.AreEqual<Type?>(typeof(System.Diagnostics.Contracts.Contract), lookupService.Lookup("Contract"));
-      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing", "FallbackViewModel"));
-      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing")?? typeof(FallbackViewModel));
+      Assert.Equal<Type?>(typeof(System.Diagnostics.Contracts.Contract), lookupService.Lookup("Contract"));
+      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing", "FallbackViewModel"));
+      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing")?? typeof(FallbackViewModel));
 
     }
 
@@ -171,7 +170,7 @@ namespace OnTopic.Tests {
     ///   Tests the <see cref="DefaultTopicLookupService"/> to ensure it correctly identifies not only the built-in models, but
     ///   also an additional model injected via the constructor.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DefaultTopicLookupService_Lookup_ReturnsExpected() {
 
       var topics = new List<Type> {
@@ -179,9 +178,9 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new DefaultTopicLookupService(topics);
 
-      Assert.AreEqual<Type?>(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));
-      Assert.AreEqual<Type?>(typeof(CustomTopic), lookupService.Lookup(nameof(CustomTopic)));
-      Assert.IsNull(lookupService.Lookup("TextAttributeDescriptor"));
+      Assert.Equal<Type?>(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));
+      Assert.Equal<Type?>(typeof(CustomTopic), lookupService.Lookup(nameof(CustomTopic)));
+      Assert.Null(lookupService.Lookup("TextAttributeDescriptor"));
 
     }
 
@@ -192,13 +191,13 @@ namespace OnTopic.Tests {
     ///   Tests the <see cref="DynamicTopicBindingModelLookupService"/> to ensure it correctly identifies binding models that
     ///   are defined as part of the test project.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTopicBindingModelLookupService_Lookup_ReturnsExpected() {
 
       var lookupService         = new DynamicTopicBindingModelLookupService();
 
-      Assert.AreEqual<Type?>(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
-      Assert.IsNull(lookupService.Lookup("MissingTopicBindingModel"));
+      Assert.Equal<Type?>(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
+      Assert.Null(lookupService.Lookup("MissingTopicBindingModel"));
 
     }
 

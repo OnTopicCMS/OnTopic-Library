@@ -5,11 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -20,7 +20,6 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, including the
   ///   <see cref="StaticTypeLookupService"/> and <see cref="DynamicTypeLookupService"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ITypeLookupServiceTest {
 
@@ -32,16 +31,16 @@ namespace OnTopic.Tests {
     ///   confirms that it returns the expected <see cref="Type"/> for a <see cref="ITypeLookupService.Lookup(String[])"/>
     ///   query.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Composite_LookupValidType_ReturnsType() {
 
       var lookupServiceA        = new FakeViewModelLookupService();
       var lookupServiceB        = new TopicViewModelLookupService();
       var compositeLookup       = new CompositeTypeLookupService(lookupServiceA, lookupServiceB);
 
-      Assert.AreEqual(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
-      Assert.AreEqual(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
-      Assert.IsNull(compositeLookup.Lookup(nameof(Topic)));
+      Assert.Equal<Type?>(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
+      Assert.Equal<Type?>(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
+      Assert.Null(compositeLookup.Lookup(nameof(Topic)));
 
     }
 
@@ -52,13 +51,13 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="DynamicTopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
     ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DynamicTopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new DynamicTopicViewModelLookupService();
       var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
-      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
+      Assert.Equal<Type?>(typeof(FallbackViewModel), topicViewModel);
 
     }
 
@@ -69,13 +68,13 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
     ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new FakeViewModelLookupService();
       var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
-      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
+      Assert.Equal<Type?>(typeof(FallbackViewModel), topicViewModel);
 
     }
 

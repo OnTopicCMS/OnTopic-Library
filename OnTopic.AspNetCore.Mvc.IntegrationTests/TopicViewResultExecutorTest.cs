@@ -6,10 +6,9 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
@@ -21,8 +20,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   including the query string, HTTP request headers, <see cref="Topic.View"/>, etc. This test evaluates those to ensure
   ///   that views are being correctly identified based on these criteria.
   /// </summary>
-  [TestClass]
-  public class TopicViewResultExecutorTest: IDisposable {
+  [Collection("Web Application")]
+  public class TopicViewResultExecutorTest: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -35,8 +34,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewResultExecutorTest"/>.
     /// </summary>
-    public TopicViewResultExecutorTest() {
-      _factory = new WebApplicationFactory<Startup>();
+    public TopicViewResultExecutorTest(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -45,7 +44,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a query string parameter to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task QueryString_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -55,8 +54,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -66,7 +65,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a request header to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Header_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -79,8 +78,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -90,7 +89,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a specified action to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Action_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -101,8 +100,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -112,7 +111,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Constructs a test with a specified <see cref="Topic.View"/> to ensure that the expected view is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Topic_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -123,8 +122,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -135,7 +134,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Constructs a test with without a view specified to ensure that the expected default view is returned based on the <see
     ///   cref="Topic.ContentType"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task ContentType_ReturnsExpectedView() {
 
       var client                = _factory.CreateClient();
@@ -145,8 +144,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 
@@ -157,33 +156,15 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Constructs a test without a view and without a default implementation for the <see cref="Topic.ContentType"/> and
     ///   ensures that an <see cref="HttpStatusCode.InternalServerError"/> is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MissingView_ReturnsInternalServerError() {
 
       var client = _factory.CreateClient();
       var uri = new Uri("/Web/MissingView/", UriKind.Relative);
       var response = await client.GetAsync(uri).ConfigureAwait(false);
 
-      Assert.AreEqual<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
+      Assert.Equal<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }

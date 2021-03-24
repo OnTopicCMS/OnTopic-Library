@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
@@ -21,7 +20,9 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
+using OnTopic.Tests.Fixtures;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -31,14 +32,15 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
+  [Xunit.Collection("Shared Repository")]
   public class ReverseTopicMappingServiceTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
+    readonly                    IReverseTopicMappingService     _mappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -52,8 +54,19 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ReverseTopicMappingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public ReverseTopicMappingServiceTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = fixture.CachedTopicRepository;
+      _mappingService           = new ReverseTopicMappingService(_topicRepository);
+
     }
 
     /*==========================================================================================================================
@@ -63,10 +76,8 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values by specifying an explicit
     ///   type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_Generic_ReturnsNewTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
@@ -75,13 +86,13 @@ namespace OnTopic.Tests {
         IsRequired              = true
       };
 
-      var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string?>("Test", target?.Key);
-      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.AreEqual<string?>("Test Attribute", target?.Title);
-      Assert.AreEqual<string?>("Hello", target?.DefaultValue);
-      Assert.AreEqual<bool?>(true, target?.IsRequired);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test Attribute", target?.Title);
+      Assert.Equal("Hello", target?.DefaultValue);
+      Assert.Equal<bool?>(true, target?.IsRequired);
 
     }
 
@@ -92,10 +103,8 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values by allowing it to
     ///   dynamically determine the instance type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_Dynamic_ReturnsNewTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
@@ -104,14 +113,14 @@ namespace OnTopic.Tests {
         IsRequired              = true
       };
 
-      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target);
-      Assert.AreEqual<string?>("Test", target?.Key);
-      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.AreEqual<string?>("Test Attribute", target?.Title);
-      Assert.AreEqual<string?>("Hello", target?.DefaultValue);
-      Assert.AreEqual<bool?>(true, target?.IsRequired);
+      Assert.NotNull(target);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test Attribute", target?.Title);
+      Assert.Equal("Hello", target?.DefaultValue);
+      Assert.Equal<bool?>(true, target?.IsRequired);
 
     }
 
@@ -122,10 +131,8 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values on an existing object,
     ///   ensuring that all mapped values are overwritten, and unmapped valued are not.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_Existing_ReturnsUpdatedTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
@@ -134,7 +141,7 @@ namespace OnTopic.Tests {
         IsRequired              = false
       };
 
-      var target                = (TextAttributeDescriptor?)TopicFactory.Create("Test", "TextAttributeDescriptor");
+      var target                = new TextAttributeDescriptor("Test", "TextAttributeDescriptor");
 
       Contract.Assume(target);
 
@@ -145,15 +152,15 @@ namespace OnTopic.Tests {
 
       target.Attributes.SetValue("Description", "Original Description");
 
-      target                    = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+      target                    = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
-      Assert.AreEqual<string?>("Test", target?.Key);
-      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
-      Assert.AreEqual<string?>("Test", target?.Title); //Should inherit from "Key" since it will be null
-      Assert.AreEqual<string?>("World", target?.DefaultValue);
-      Assert.AreEqual<bool?>(false, target?.IsRequired);
-      Assert.AreEqual<bool?>(false, target?.IsExtendedAttribute);
-      Assert.AreEqual<string?>("Original Description", target?.Attributes.GetValue("Description"));
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
+      Assert.Equal("Test", target?.Title); //Should inherit from "Key" since it will be null
+      Assert.Equal("World", target?.DefaultValue);
+      Assert.Equal<bool?>(false, target?.IsRequired);
+      Assert.Equal<bool?>(false, target?.IsExtendedAttribute);
+      Assert.Equal("Original Description", target?.Attributes.GetValue("Description"));
 
     }
 
@@ -164,21 +171,19 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests mapping a binding model that's based on a C# 9.0
     ///   record type.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_Record_ReturnsNewTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new RecordTopicBindingModel() {
         Key                     = "Test",
         ContentType             = "TextAttributeDescriptor"
       };
 
-      var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target);
-      Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
+      Assert.NotNull(target);
+      Assert.Equal("Test", target?.Key);
+      Assert.Equal("TextAttributeDescriptor", target?.ContentType);
 
     }
 
@@ -188,10 +193,8 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting values from complex objects.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_ComplexObject_ReturnsFlattenedTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new MapToParentTopicBindingModel {
         Key                     = "Test",
@@ -202,12 +205,12 @@ namespace OnTopic.Tests {
       bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
       bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
 
-      var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (Topic?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target);
-      Assert.AreEqual<string?>("Jeremy", target.Attributes.GetValue("Name"));
-      Assert.AreEqual<string?>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
-      Assert.AreEqual<string?>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+      Assert.NotNull(target);
+      Assert.Equal("Jeremy", target?.Attributes.GetValue("Name"));
+      Assert.Equal("AlternateContact@Ignia.com", target?.Attributes.GetValue("AlternateEmail"));
+      Assert.Equal("BillingContact@Ignia.com", target?.Attributes.GetValue("BillingContactEmail"));
 
     }
 
@@ -218,10 +221,8 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully derives values from the key
     ///   specified by <see cref="AttributeKeyAttribute"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_AlternateAttributeKey_ReturnsMappedTopic() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new PageTopicBindingModel("Test") {
         ContentType             = "Page",
@@ -229,9 +230,9 @@ namespace OnTopic.Tests {
         BrowserTitle            = "Browser Title"
       };
 
-      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string?>("Browser Title", target?.Attributes.GetValue("MetaTitle"));
+      Assert.Equal("Browser Title", target?.Attributes.GetValue("MetaTitle"));
 
     }
 
@@ -241,13 +242,12 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the relationships.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_Relationships_ReturnsMappedTopic() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
 
       topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
@@ -259,16 +259,18 @@ namespace OnTopic.Tests {
         );
       }
 
-      var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int?>(3, target?.PermittedContentTypes.Count);
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[0]));
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[1]));
-      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[2]));
-      Assert.IsFalse(target?.PermittedContentTypes.Contains(contentTypes[3]));
+      Assert.Equal<int?>(3, target?.PermittedContentTypes.Count);
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[0]));
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[1]));
+      Assert.True(target?.PermittedContentTypes.Contains(contentTypes[2]));
+      Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
+
+      //Revert state
+      _topicRepository.Delete(topic);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: MAP: RELATIONSHIPS: THROW EXCEPTION
@@ -277,13 +279,11 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the
     ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be located in the repository.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_Relationships_ThrowException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
-      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
 
       bindingModel.ContentTypes.Add(
         new() {
@@ -291,7 +291,9 @@ namespace OnTopic.Tests {
         }
       );
 
-      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -302,32 +304,31 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_NestedTopics_ReturnsMappedTopic() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
 
       bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute1"));
       bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute2"));
       bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute3") { DefaultValue = "New Value" });
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
-      var attributes            = TopicFactory.Create("Attributes", "List", topic);
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+      var attributes            = new Topic("Attributes", "List", topic);
 
-      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttributeDescriptor", attributes);
-      _                         = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
+      var attribute3            = new TextAttributeDescriptor("Attribute3", "TextAttributeDescriptor", attributes);
+      _                         = new TextAttributeDescriptor("Attribute4", "TextAttributeDescriptor", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 
-      var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int?>(3, target?.AttributeDescriptors.Count);
-      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
-      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
-      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
-      Assert.AreEqual<string?>("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
-      Assert.IsNull(target?.AttributeDescriptors.GetValue("Attribute4"));
+      Assert.Equal<int?>(3, target?.AttributeDescriptors.Count);
+      Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
+      Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
+      Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
+      Assert.Equal("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
+      Assert.Null(target?.AttributeDescriptors.GetValue("Attribute4"));
 
     }
 
@@ -337,10 +338,9 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully maps referenced topics.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_TopicReferences_ReturnsMappedTopic() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
 
       Contract.Assume(topic);
@@ -351,11 +351,11 @@ namespace OnTopic.Tests {
         }
       };
 
-      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target?.BaseTopic);
-      Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
-      Assert.AreEqual<string?>("Text", target?.EditorType);
+      Assert.NotNull(target?.BaseTopic);
+      Assert.Equal("Title", target?.BaseTopic?.Key);
+      Assert.Equal("Text", target?.EditorType);
 
     }
 
@@ -366,10 +366,9 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly ovewrite any topic references if
     ///   the <see cref="IAssociatedTopicBindingModel"/> has a <see cref="IAssociatedTopicBindingModel.UniqueKey"/> set to null.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_NullTopicReference_Delete() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
       var baseTopic             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
 
@@ -384,9 +383,9 @@ namespace OnTopic.Tests {
         }
       };
 
-      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.IsNull(topic.BaseTopic);
+      Assert.Null(topic.BaseTopic);
 
     }
 
@@ -397,17 +396,16 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the <see
     ///   cref="IAssociatedTopicBindingModel"/> is set to null.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_NullTopicReference_ThrowException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("AttributeDescriptor") {
         ContentType             = "AttributeDescriptor"
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -418,18 +416,17 @@ namespace OnTopic.Tests {
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the <see
     ///   cref="IAssociatedTopicBindingModel.UniqueKey"/> is set to null.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_NullTopicReferenceKey_ThrowException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("AttributeDescriptor") {
         ContentType             = "AttributeDescriptor",
         BaseTopic               = new()
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -441,11 +438,8 @@ namespace OnTopic.Tests {
     ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be resolved in the supplied <see cref="ITopicRepository"
     ///   />.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_TopicReferences_ThrowException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("Test") {
         BaseTopic               = new() {
@@ -453,7 +447,9 @@ namespace OnTopic.Tests {
         }
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -463,14 +459,14 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it is not set.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(ValidationException))]
+    [Fact]
     public async Task Map_ValidRequiredProperty_IsMapped() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<ValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -480,18 +476,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Maps a content type that has default properties. Ensures that each is set appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_NullProperty_MapsDefaultValue() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new PageTopicBindingModel("Test") {
         Title                   = "Required Title"
       };
 
-      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string?>("Default page description", target?.Attributes.GetValue("MetaDescription"));
+      Assert.Equal("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
     }
 
@@ -501,17 +495,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(ValidationException))]
+    [Fact]
     public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new MinimumLengthPropertyTopicBindingModel("Test") {
         Title                   = "Hello World"
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync <ValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -522,14 +515,14 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has children property. This is invalid, and expected to throw an <see
     ///   cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidChildrenProperty_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -540,17 +533,16 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has parent property. This is invalid, and expected to throw an <see
     ///   cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidParentProperty_ThrowsInvalidOperationException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new InvalidParentTopicBindingModel("Test") {
         Parent                  = new("Test", "Page")
       };
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -561,14 +553,14 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has a property that doesn't map to any attributes. This is invalid, and expected to throw an
     ///   <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidAttribute_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -579,14 +571,14 @@ namespace OnTopic.Tests {
     ///   Maps a content type that has a relationship whose type doesn't implement <see cref="IAssociatedTopicBindingModel"/>.
     ///   This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidRelationshipBaseType_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -598,14 +590,14 @@ namespace OnTopic.Tests {
     ///   "CollectionType.NestedTopics"/>, even though the property is associated with a <see cref="CollectionType.Relationship"
     ///   />. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidRelationshipType_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -617,14 +609,14 @@ namespace OnTopic.Tests {
     ///   cref="Dictionary{TKey, TValue}"/>, even though relationships are expected to return a type implementing <see
     ///   cref="IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidRelationshipListType_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -636,14 +628,14 @@ namespace OnTopic.Tests {
     ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref="
     ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidNestedTopicListTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -655,14 +647,14 @@ namespace OnTopic.Tests {
     ///   TopicViewModel"/>, even though references are expected to return a type implementing <see cref="
     ///   IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(MappingModelValidationException))]
+    [Fact]
     public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
 
-      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
+        await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
+      ).ConfigureAwait(false);
 
     }
 
@@ -674,18 +666,16 @@ namespace OnTopic.Tests {
     ///   is also decorated with the <see cref="DisableMappingAttribute"/>, which should prevent the <see
     ///   cref="ReverseTopicMappingService"/> from validating or mapping the property.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Map_DisabledProperty_IsNotMapped() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new DisabledAttributeTopicBindingModel("Test") {
         UnmappedAttribute       = "Hello World"
       };
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNull(target?.Attributes.GetValue("UnmappedAttribute", null));
+      Assert.Null(target?.Attributes.GetValue("UnmappedAttribute", null));
 
     }
 

@@ -4,12 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
@@ -20,8 +19,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   The <see cref="ServiceCollectionExtensions"/> are responsible, primarily, for establishing routes based on the <see cref
   ///   ="IEndpointRouteBuilder"/> interface. These integration tests validate that those routes are operating as expected.
   /// </summary>
-  [TestClass]
-  public class ServiceCollectionExtensionsTests: IDisposable {
+  [Collection("Web Application")]
+  public class ServiceCollectionExtensionsTests: IClassFixture<WebApplicationFactory<Startup>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -34,8 +33,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
     /// </summary>
-    public ServiceCollectionExtensionsTests() {
-      _factory = new WebApplicationFactory<Startup>();
+    public ServiceCollectionExtensionsTests(WebApplicationFactory<Startup> factory) {
+      _factory = factory;
     }
 
     /*==========================================================================================================================
@@ -45,7 +44,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRoute(IEndpointRouteBuilder, String,
     ///   String, String)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -55,8 +54,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
     }
 
@@ -67,7 +66,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicAreaRoute(IEndpointRouteBuilder)"/>
     ///   and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicAreaRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -77,8 +76,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Areas/Area/Views/ContentType/ContentType.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Areas/Area/Views/ContentType/ContentType.cshtml", content);
 
     }
 
@@ -89,7 +88,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
     ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapDefaultAreaControllerRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -99,8 +98,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Areas/Area/Views/Controller/AreaAction.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Areas/Area/Views/Controller/AreaAction.cshtml", content);
 
     }
 
@@ -111,7 +110,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
     ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapImplicitAreaControllerRoute_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -121,8 +120,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
 
     }
 
@@ -133,7 +132,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicSitemap(IEndpointRouteBuilder)"/> and
     ///   confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicSitemap_RespondsToRequest() {
 
       var client                = _factory.CreateClient();
@@ -143,8 +142,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/xml", response.Content.Headers.ContentType?.ToString());
-      Assert.IsTrue(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
+      Assert.Equal("text/xml", response.Content.Headers.ContentType?.ToString());
+      Assert.True(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
 
     }
 
@@ -155,7 +154,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRedirect(IEndpointRouteBuilder)"/>
     ///   and confirms that it responds appropriately.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task MapTopicRedirect_RedirectsRequest() {
 
       var client                = _factory.CreateClient();
@@ -165,27 +164,9 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       response.EnsureSuccessStatusCode();
 
-      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
 
-    }
-
-    /*==========================================================================================================================
-    | DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc/>
-    protected virtual void Dispose(bool disposing) {
-      if (disposing) {
-        if (_factory != null) {
-          _factory.Dispose();
-        }
-      }
     }
 
   }

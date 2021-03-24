@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
@@ -19,6 +18,7 @@ using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -29,9 +29,8 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicController"/>, and other <see cref="Controller"/> classes that are part of
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
-  public class TopicControllerTest {
+  public class TopicControllerTest: IClassFixture<TestTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -54,12 +53,12 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicControllerTest() {
+    public TopicControllerTest(TestTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new TestTopicRepository());
+      _topicRepository          = new CachedTopicRepository(topicRepository);
       _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
@@ -86,7 +85,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task TopicController_IndexAsync_ReturnsTopicViewResult() {
 
       var controller            = new TopicController(_topicRepository, _topicMappingService) {
@@ -98,8 +97,8 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.AreEqual<string?>("Child", model?.Title);
+      Assert.NotNull(model);
+      Assert.Equal("Child", model?.Title);
 
     }
 
@@ -109,7 +108,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
 
       var controller            = new RedirectController(_topicRepository);
@@ -117,9 +116,9 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(result);
-      Assert.IsTrue(result?.Permanent?? false);
-      Assert.AreEqual<string?>(_topic.GetWebPath(), result?.Url);
+      Assert.NotNull(result);
+      Assert.True(result?.Permanent?? false);
+      Assert.Equal(_topic.GetWebPath(), result?.Url);
 
     }
 
@@ -130,7 +129,7 @@ namespace OnTopic.Tests {
     ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action with an invalid <see cref="Topic.Id"/> and
     ///   confirms that a <see cref="NotFoundResult"/> is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
 
       var controller            = new RedirectController(_topicRepository);
@@ -138,8 +137,8 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(result);
-      Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+      Assert.NotNull(result);
+      Assert.IsType<NotFoundObjectResult>(result);
 
     }
 
@@ -149,7 +148,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ReturnsSitemapXml() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -160,10 +159,10 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model!, StringComparison.Ordinal);
 
     }
 
@@ -174,7 +173,7 @@ namespace OnTopic.Tests {
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
     ///   properly excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ExcludesContentTypes() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -185,16 +184,16 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.IsFalse(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
 
-      Assert.IsTrue(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -205,7 +204,7 @@ namespace OnTopic.Tests {
     ///   Triggers the extended action of the <see cref="SitemapController.Extended(Boolean)" /> action and ensures that the
     ///   results include the expected attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Extended_IncludesAttributes() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -216,17 +215,17 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+      Assert.Contains("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model, StringComparison.Ordinal);
 
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Attribute\">Value</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">Title</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<DataObject type=\"Relationships\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<DataObject type=\"References\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+      Assert.Contains("<Attribute name=\"Attribute\">Value</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Title\">Title</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"Relationships\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"References\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
 
     }
 
@@ -237,7 +236,7 @@ namespace OnTopic.Tests {
     ///   Triggers the index action of the <see cref="SitemapController.Extended(Boolean)" /> action and verifies that it
     ///   properly excludes e.g. the <c>Body</c> and <c>IsHidden</c> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ExcludesAttributes() {
 
       var controller            = new SitemapController(_topicRepository) {
@@ -248,12 +247,12 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
+      Assert.NotNull(model);
 
-      Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
 
     }
 

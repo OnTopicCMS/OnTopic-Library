@@ -6,8 +6,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -19,7 +19,6 @@ namespace OnTopic.Tests {
   ///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref="
   ///   AttributeDescriptorCollection"/>.
   /// </summary>
-  [TestClass]
   [ExcludeFromCodeCoverage]
   public class ContentTypeDescriptorTest {
 
@@ -31,7 +30,7 @@ namespace OnTopic.Tests {
     ///   PermittedContentTypes"/> returns all <see cref="ContentTypeDescriptor"/> instances from the associated <c>ContentTypes
     ///   </c> collection in <see cref="Topic.Relationships"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_PermittedContentTypes_ReturnsCollection() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -40,10 +39,10 @@ namespace OnTopic.Tests {
       page.Relationships.SetValue("ContentTypes", page);
       page.Relationships.SetValue("ContentTypes", video);
 
-      Assert.AreEqual<int>(2, page.PermittedContentTypes.Count);
-      Assert.AreEqual<int>(0, video.PermittedContentTypes.Count);
-      Assert.IsTrue(page.PermittedContentTypes.Contains(page));
-      Assert.IsTrue(page.PermittedContentTypes.Contains(video));
+      Assert.Equal<int>(2, page.PermittedContentTypes.Count);
+      Assert.Empty(video.PermittedContentTypes);
+      Assert.Contains(page, page.PermittedContentTypes);
+      Assert.Contains(video, page.PermittedContentTypes);
 
     }
 
@@ -56,7 +55,7 @@ namespace OnTopic.Tests {
     ///   <c>ContentTypes</c> collection in <see cref="Topic.Relationships"/> after calling <see cref="ContentTypeDescriptor.
     ///   ResetPermittedContentTypes"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_ResetPermittedContentTypes_ReturnsUpdated() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -72,12 +71,12 @@ namespace OnTopic.Tests {
       page.Relationships.Remove("ContentTypes", page);
       page.Relationships.SetValue("ContentTypes", slideshow);
 
-      Assert.AreEqual<int>(2, page.PermittedContentTypes.Count);
-      Assert.IsTrue(page.PermittedContentTypes.Contains(video));
-      Assert.IsTrue(page.PermittedContentTypes.Contains(slideshow));
-      Assert.IsFalse(page.PermittedContentTypes.Contains(page));
-      Assert.IsTrue(initialCollection.Contains(page));
-      Assert.IsFalse(initialCollection.Contains(slideshow));
+      Assert.Equal<int>(2, page.PermittedContentTypes.Count);
+      Assert.Contains(video, page.PermittedContentTypes);
+      Assert.Contains(slideshow, page.PermittedContentTypes);
+      Assert.DoesNotContain(page, page.PermittedContentTypes);
+      Assert.Contains(page, initialCollection);
+      Assert.DoesNotContain(slideshow, initialCollection);
 
     }
 
@@ -89,7 +88,7 @@ namespace OnTopic.Tests {
     ///   AttributeDescriptors"/> returns all <see cref="AttributeDescriptor"/> instances from the associated <c>Attributes</c>
     ///   collection in <see cref="Topic.Relationships"/>, as well as those from each <see cref="Topic.Parent"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_AttributeDescriptors_ReturnsInherited() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -100,10 +99,10 @@ namespace OnTopic.Tests {
       var videoAttributes       = new ContentTypeDescriptor("Attributes", "List", video);
       var urlAttribute          = new AttributeDescriptor("Url", "AttributeDescriptor", videoAttributes);
 
-      Assert.AreEqual<int>(1, page.AttributeDescriptors.Count);
-      Assert.AreEqual<int>(2, video.AttributeDescriptors.Count);
-      Assert.IsTrue(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.IsTrue(video.AttributeDescriptors.Contains(urlAttribute));
+      Assert.Single(page.AttributeDescriptors);
+      Assert.Equal<int>(2, video.AttributeDescriptors.Count);
+      Assert.Contains(titleAttribute, video.AttributeDescriptors);
+      Assert.Contains(urlAttribute, video.AttributeDescriptors);
 
     }
 
@@ -116,7 +115,7 @@ namespace OnTopic.Tests {
     ///   </c>collection in <see cref="Topic.Relationships"/>, as well as those from each <see cref="Topic.Parent"/>, after
     ///   calling <see cref="ContentTypeDescriptor.ResetAttributeDescriptors()"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptor_ResetAttributeDescriptors_ReturnsUpdated() {
 
       var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
@@ -134,13 +133,13 @@ namespace OnTopic.Tests {
       pageAttributes.Children.Remove(titleAttribute);
       page.ResetAttributeDescriptors();
 
-      Assert.AreEqual<int>(1, page.AttributeDescriptors.Count);
-      Assert.AreEqual<int>(2, video.AttributeDescriptors.Count);
-      Assert.IsTrue(video.AttributeDescriptors.Contains(descriptionAttribute));
-      Assert.IsTrue(video.AttributeDescriptors.Contains(urlAttribute));
-      Assert.IsFalse(video.AttributeDescriptors.Contains(titleAttribute));
-      Assert.IsTrue(initialCollection.Contains(titleAttribute));
-      Assert.IsFalse(initialCollection.Contains(descriptionAttribute));
+      Assert.Single(page.AttributeDescriptors);
+      Assert.Equal<int>(2, video.AttributeDescriptors.Count);
+      Assert.Contains(descriptionAttribute, video.AttributeDescriptors);
+      Assert.Contains(urlAttribute, video.AttributeDescriptors);
+      Assert.DoesNotContain(titleAttribute, video.AttributeDescriptors);
+      Assert.Contains(titleAttribute, initialCollection);
+      Assert.DoesNotContain(descriptionAttribute, initialCollection);
 
     }
 
@@ -151,7 +150,7 @@ namespace OnTopic.Tests {
     ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
     ///   types.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsTypeOf_DerivedContentType_ReturnsTrue() {
 
       var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
@@ -160,7 +159,7 @@ namespace OnTopic.Tests {
         contentType             = childContentType;
       }
 
-      Assert.IsTrue(contentType.IsTypeOf("Root"));
+      Assert.True(contentType.IsTypeOf("Root"));
 
     }
 
@@ -171,7 +170,7 @@ namespace OnTopic.Tests {
     ///   Associates a new topic with several content types, and confirms that the topic is not reported as a type of a content
     ///   type that is not in that chain.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsTypeOf_InvalidContentType_ReturnsFalse() {
 
       var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
@@ -180,7 +179,7 @@ namespace OnTopic.Tests {
         contentType             = childContentType;
       }
 
-      Assert.IsFalse(contentType.IsTypeOf("DifferentRoot"));
+      Assert.False(contentType.IsTypeOf("DifferentRoot"));
 
     }
 
@@ -191,7 +190,7 @@ namespace OnTopic.Tests {
     ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
     ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptorCollection_ConstructWithValues_ReturnsValues() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
@@ -200,7 +199,7 @@ namespace OnTopic.Tests {
 
       var contentTypeCollection = new ContentTypeDescriptorCollection(rootContentType);
 
-      Assert.AreEqual<int>(3, contentTypeCollection.Count);
+      Assert.Equal<int>(3, contentTypeCollection.Count);
 
     }
 
@@ -211,7 +210,7 @@ namespace OnTopic.Tests {
     ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
     ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ContentTypeDescriptorCollection_Refresh_ReturnsUpdated() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
@@ -226,9 +225,9 @@ namespace OnTopic.Tests {
 
       contentTypeCollection.Refresh(rootContentType);
 
-      Assert.AreEqual<int>(3, contentTypeCollection.Count);
-      Assert.IsTrue(contentTypeCollection.Contains(slideshowContentType));
-      Assert.IsFalse(contentTypeCollection.Contains(videoContentType));
+      Assert.Equal<int>(3, contentTypeCollection.Count);
+      Assert.Contains(slideshowContentType, contentTypeCollection);
+      Assert.DoesNotContain(videoContentType, contentTypeCollection);
 
     }
 
@@ -240,14 +239,16 @@ namespace OnTopic.Tests {
     ///   that an exception is thrown if the <see cref="Topic.Key"/> is not set to the expected value of <c>ContentTypes</c>,
     ///   which represents the root content type.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Fact]
     public void ContentTypeDescriptorCollection_ConstructWithValues_ThrowsException() {
 
       var rootContentType       = new ContentTypeDescriptor("ContentType", "ContentTypeDescriptor");
       var pageContentType       = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
       _                         = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
-      _                         = new ContentTypeDescriptorCollection(pageContentType);
+
+      Assert.Throws<InvalidOperationException>(() =>
+        new ContentTypeDescriptorCollection(pageContentType)
+      );
 
     }
 
