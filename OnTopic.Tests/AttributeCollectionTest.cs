@@ -32,8 +32,9 @@ namespace OnTopic.Tests {
     /// </summary>
     [Fact]
     public void GetValue_CorrectValue_IsReturned() {
-      var topic                 = TopicFactory.Create("Test", "Container");
-      topic.View                = "Test";
+      var topic                 = new Topic("Test", "Container") {
+        View                    = "Test"
+      };
       Assert.Equal("Test", topic.Attributes.GetValue("View"));
     }
 
@@ -47,9 +48,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetValue_InheritedValue_IsReturned() {
 
-      var baseTopic             = TopicFactory.Create("Base", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
 
       topic.BaseTopic           = baseTopic;
 
@@ -69,7 +70,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [Fact]
     public void GetValue_MissingValue_ReturnsDefault() {
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
       Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
       Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
@@ -84,7 +85,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetValue_EmptyValue_ReturnsNull() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(new("EmptyValue", ""));
 
@@ -101,7 +102,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetInteger_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetInteger("Number1", 1);
 
@@ -119,9 +120,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetInteger_InheritedValue_IsReturned() {
 
-      var baseTopic             = TopicFactory.Create("Base", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
 
       topic.BaseTopic           = baseTopic;
 
@@ -142,7 +143,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetInteger_IncorrectValue_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -160,7 +161,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetInteger_IncorrectKey_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.Equal<int>(0, topic.Attributes.GetInteger("InvalidKey"));
       Assert.Equal<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
@@ -176,7 +177,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDouble_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetDouble("Number1", 1);
 
@@ -194,9 +195,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDouble_InheritedValue_IsReturned() {
 
-      var baseTopic             = TopicFactory.Create("Base", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
 
       topic.BaseTopic           = baseTopic;
 
@@ -217,7 +218,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDouble_IncorrectValue_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -235,7 +236,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDouble_IncorrectKey_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.Equal<double>(0, topic.Attributes.GetDouble("InvalidKey"));
       Assert.Equal<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
@@ -251,7 +252,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDateTime_CorrectValue_IsReturned() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
 
       topic.Attributes.SetDateTime("DateTime1", dateTime1);
@@ -270,9 +271,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDateTime_InheritedValue_IsReturned() {
 
-      var baseTopic             = TopicFactory.Create("Base", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
       var dateTime1             = new DateTime(1976, 10, 15);
 
       topic.BaseTopic           = baseTopic;
@@ -294,7 +295,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDateTime_IncorrectValue_ReturnsDefault() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
 
       topic.Attributes.SetValue("DateTime2", "IncorrectValue");
@@ -313,7 +314,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetDateTime_IncorrectKey_ReturnsDefault() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
       var dateTime2             = new DateTime(1981, 06, 03);
 
@@ -333,7 +334,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetBoolean_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetBoolean("IsValue1", true);
       topic.Attributes.SetBoolean("IsValue2", false);
@@ -354,9 +355,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetBoolean_InheritedValue_IsReturned() {
 
-      var baseTopic             = TopicFactory.Create("Base", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
 
       topic.BaseTopic           = baseTopic;
 
@@ -377,7 +378,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetBoolean_IncorrectValue_ReturnDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("IsValue", "Invalid");
 
@@ -396,7 +397,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetBoolean_IncorrectKey_ReturnDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
       Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
@@ -412,7 +413,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [Fact]
     public void SetValue_CorrectValue_IsReturned() {
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
     }
@@ -426,7 +427,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_ValueChanged_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("Foo", "Baz");
@@ -444,7 +445,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Clear_ExistingValues_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -465,7 +466,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_ValueUnchanged_IsNotDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Fah", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar");
@@ -484,7 +485,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_DirtyValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
 
@@ -504,7 +505,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_IsNew_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -526,7 +527,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_DeletedValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
@@ -546,7 +547,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_UndeletedValues_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
@@ -569,7 +570,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_NoDirtyValues_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -588,7 +589,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_IsNew_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -606,7 +607,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MissingKey_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.False(topic.Attributes.IsDirty("MissingKey"));
 
@@ -624,7 +625,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_ExcludeLastModified_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
@@ -646,7 +647,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
-      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var topic                 = new Topic("Test", "Container", null, 1);
       var firstVersion          = DateTime.Now.AddDays(5);
       var secondVersion         = DateTime.Now.AddDays(10);
       var thirdVersion          = DateTime.Now.AddDays(15);
@@ -679,7 +680,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.SetValue("Baz", "Foo");
@@ -705,7 +706,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkClean_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
 
@@ -726,7 +727,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean("Foo");
@@ -746,7 +747,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(
         new() {
@@ -772,7 +773,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean();
@@ -790,7 +791,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_InvalidValue_ThrowsException() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.Throws<InvalidKeyException>(() =>
         topic.Attributes.SetValue("View", "# ?")
@@ -808,7 +809,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_DuplicateValue_ThrowsException() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(new("Test", "Original"));
 
@@ -828,7 +829,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_ValidAttributeRecord_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(new("View", "NewKey", false));
 
@@ -954,7 +955,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_InvalidAttributeRecord_ThrowsException() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       Assert.Throws<InvalidKeyException>(() =>
         topic.Attributes.Add(new("View", "# ?"))
@@ -973,9 +974,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_WithBusinessLogic_MaintainsIsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic                 = new Topic("Test", "Container", null, 1) {
+        View                    = "Test"
+      };
 
-      topic.View = "Test";
       topic.Attributes.TryGetValue("View", out var originalValue);
 
       Contract.Assume(originalValue);
@@ -1004,7 +1006,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_EmptyAttributeRecord_Skips() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Attribute", "");
 
@@ -1023,7 +1025,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_EmptyAttributeRecord_Replaces() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Attribute", "New Value");
       topic.Attributes.SetValue("Attribute", "");
@@ -1044,7 +1046,7 @@ namespace OnTopic.Tests {
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
       }
@@ -1069,7 +1071,7 @@ namespace OnTopic.Tests {
       var topics = new Topic[5];
 
       for (var i = 0; i <= 4; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }
@@ -1092,7 +1094,7 @@ namespace OnTopic.Tests {
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }

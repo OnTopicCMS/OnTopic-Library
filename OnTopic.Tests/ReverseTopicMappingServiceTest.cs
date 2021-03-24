@@ -145,7 +145,7 @@ namespace OnTopic.Tests {
         IsRequired              = false
       };
 
-      var target                = (TextAttributeDescriptor?)TopicFactory.Create("Test", "TextAttributeDescriptor");
+      var target                = new TextAttributeDescriptor("Test", "TextAttributeDescriptor");
 
       Contract.Assume(target);
 
@@ -258,7 +258,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
 
       topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
@@ -293,7 +293,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
-      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
 
       bindingModel.ContentTypes.Add(
         new() {
@@ -324,11 +324,11 @@ namespace OnTopic.Tests {
       bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute2"));
       bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute3") { DefaultValue = "New Value" });
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
-      var attributes            = TopicFactory.Create("Attributes", "List", topic);
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+      var attributes            = new Topic("Attributes", "List", topic);
 
-      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttributeDescriptor", attributes);
-      _                         = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
+      var attribute3            = new TextAttributeDescriptor("Attribute3", "TextAttributeDescriptor", attributes);
+      _                         = new TextAttributeDescriptor("Attribute4", "TextAttributeDescriptor", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 

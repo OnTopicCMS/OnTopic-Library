@@ -320,7 +320,7 @@ namespace OnTopic.Tests {
     public void SetPropertyValue_Key_SetsValue() {
 
       var types                 = new MemberDispatcher();
-      var topic                 = TopicFactory.Create("Test", "ContentType");
+      var topic                 = new Topic("Test", "ContentType");
 
       types.SetPropertyValue(topic, "Key", "NewKey");
 
@@ -405,7 +405,7 @@ namespace OnTopic.Tests {
     public void SetPropertyValue_Boolean_SetsValue() {
 
       var types                 = new MemberDispatcher();
-      var topic                 = TopicFactory.Create("Test", "ContentType");
+      var topic                 = new Topic("Test", "ContentType");
 
       types.SetPropertyValue(topic, "IsHidden", "1");
 
@@ -424,7 +424,7 @@ namespace OnTopic.Tests {
     public void SetPropertyValue_DateTime_SetsValue() {
 
       var types                 = new MemberDispatcher();
-      var topic                 = TopicFactory.Create("Test", "ContentType");
+      var topic                 = new Topic("Test", "ContentType");
 
       types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
       Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
@@ -449,7 +449,7 @@ namespace OnTopic.Tests {
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
-      var topic                 = TopicFactory.Create("Test", "ContentType");
+      var topic                 = new Topic("Test", "ContentType");
 
       Assert.Throws<InvalidOperationException>(() =>
         types.SetPropertyValue(topic, "InvalidProperty", "Invalid")
@@ -609,7 +609,7 @@ namespace OnTopic.Tests {
 
       var totalIterations = 1;
       var types = new MemberDispatcher();
-      var topic = TopicFactory.Create("Test", "ContentType");
+      var topic = new Topic("Test", "ContentType");
 
       int i;
       for (i = 0; i < totalIterations; i++) {

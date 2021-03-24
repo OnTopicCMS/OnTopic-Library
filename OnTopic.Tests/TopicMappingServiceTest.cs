@@ -81,7 +81,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Generic_ReturnsNewModel() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
@@ -103,7 +103,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Generic_ReturnsNewRecord() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       var target                = await _mappingService.MapAsync<RecordTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -121,7 +121,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Dynamic_ReturnsNewModel() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
@@ -233,7 +233,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_DisabledProperty_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Test", "DisableMapping");
+      var topic                 = new Topic("Test", "DisableMapping");
 
       var viewModel             = await _mappingService.MapAsync<DisableMappingTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -251,9 +251,9 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Parents_ReturnsAscendents() {
 
-      var grandParent           = TopicFactory.Create("Grandparent", "AscendentSpecialized");
-      var parent                = TopicFactory.Create("Parent", "Ascendent", grandParent);
-      var topic                 = TopicFactory.Create("Test", "Ascendent", parent);
+      var grandParent           = new Topic("Grandparent", "AscendentSpecialized");
+      var parent                = new Topic("Parent", "Ascendent", grandParent);
+      var topic                 = new Topic("Test", "Ascendent", parent);
 
       grandParent.Attributes.SetValue("IsRoot", "1");
 
@@ -282,9 +282,9 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_InheritAttribute_InheritsValue() {
 
-      var grandParent           = TopicFactory.Create("Grandparent", "Page");
-      var parent                = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic                 = TopicFactory.Create("Test", "InheritedProperty", parent);
+      var grandParent           = new Topic("Grandparent", "Page");
+      var parent                = new Topic("Parent", "Page", grandParent);
+      var topic                 = new Topic("Test", "InheritedProperty", parent);
 
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
@@ -306,7 +306,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_NullablePropertiesWithInvalidValues_ReturnsNullOrDefault() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topic.Attributes.SetValue("NullableInteger", "A");
       topic.Attributes.SetValue("NullableBoolean", "43");
@@ -337,7 +337,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_NullablePropertiesWithInvalidValues_ReturnsValues() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topic.Attributes.SetValue("NullableString", "Hello World.");
       topic.Attributes.SetValue("NullableInteger", "43");
@@ -375,7 +375,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_AlternateAttributeKey_ReturnsMappedModel() {
 
-      var topic                 = TopicFactory.Create("Test", "PropertyAlias");
+      var topic                 = new Topic("Test", "PropertyAlias");
 
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
@@ -556,10 +556,10 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Relationships_ReturnsMappedModel() {
 
-      var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
-      var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
-      var relatedTopic3         = TopicFactory.Create("Sibling", "Relation");
-      var topic                 = TopicFactory.Create("Test", "Relation");
+      var relatedTopic1         = new Topic("Cousin1", "Relation");
+      var relatedTopic2         = new Topic("Cousin2", "Relation");
+      var relatedTopic3         = new Topic("Sibling", "Relation");
+      var topic                 = new Topic("Test", "Relation");
 
       topic.Relationships.SetValue("Cousins", relatedTopic1);
       topic.Relationships.SetValue("Cousins", relatedTopic2);
@@ -583,9 +583,9 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Relationships_SkipsDisabled() {
 
-      var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
-      var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
-      var topic                 = TopicFactory.Create("Test", "Relation");
+      var relatedTopic1         = new Topic("Cousin1", "Relation");
+      var relatedTopic2         = new Topic("Cousin2", "Relation");
+      var topic                 = new Topic("Test", "Relation");
 
       topic.Relationships.SetValue("Cousins", relatedTopic1);
       topic.Relationships.SetValue("Cousins", relatedTopic2);
@@ -618,11 +618,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_AlternateRelationship_ReturnsCorrectRelationship() {
 
-      var outgoingRelation      = TopicFactory.Create("OutgoingRelation", "KeyOnly");
-      var incomingRelation      = TopicFactory.Create("IncomingRelation", "KeyOnly");
-      var ambiguousRelation     = TopicFactory.Create("AmbiguousRelation", "KeyOnly");
+      var outgoingRelation      = new Topic("OutgoingRelation", "KeyOnly");
+      var incomingRelation      = new Topic("IncomingRelation", "KeyOnly");
+      var ambiguousRelation     = new Topic("AmbiguousRelation", "KeyOnly");
 
-      var topic                 = TopicFactory.Create("Test", "AmbiguousRelation");
+      var topic                 = new Topic("Test", "AmbiguousRelation");
 
       //Set outgoing relationships
       topic.Relationships.SetValue("RelationshipAlias", ambiguousRelation);
@@ -669,11 +669,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_NestedTopics_ReturnsMappedModel() {
 
-      var topic                 = TopicFactory.Create("Test", "Nested");
-      var topicList             = TopicFactory.Create("Categories", "List", topic);
-      _                         = TopicFactory.Create("ChildTopic", "KeyOnly", topic);
-      _                         = TopicFactory.Create("NestedTopic1", "KeyOnly", topicList);
-      _                         = TopicFactory.Create("NestedTopic2", "KeyOnly", topicList);
+      var topic                 = new Topic("Test", "Nested");
+      var topicList             = new Topic("Categories", "List", topic);
+      _                         = new Topic("ChildTopic", "KeyOnly", topic);
+      _                         = new Topic("NestedTopic1", "KeyOnly", topicList);
+      _                         = new Topic("NestedTopic2", "KeyOnly", topicList);
 
       topicList.IsHidden        = true;
 
@@ -697,13 +697,13 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Children_ReturnsMappedModel() {
 
-      var topic                 = TopicFactory.Create("Test", "Descendent");
-      _                         = TopicFactory.Create("ChildTopic1", "Descendent", topic);
-      _                         = TopicFactory.Create("ChildTopic2", "Descendent", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Descendent", topic);
-      var childTopic4           = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", topic);
-      _                         = TopicFactory.Create("invalidChildTopic", "KeyOnly", topic);
-      _                         = TopicFactory.Create("GrandchildTopic", "Descendent", childTopic3);
+      var topic                 = new Topic("Test", "Descendent");
+      _                         = new Topic("ChildTopic1", "Descendent", topic);
+      _                         = new Topic("ChildTopic2", "Descendent", topic);
+      var childTopic3           = new Topic("ChildTopic3", "Descendent", topic);
+      var childTopic4           = new Topic("ChildTopic4", "DescendentSpecialized", topic);
+      _                         = new Topic("invalidChildTopic", "KeyOnly", topic);
+      _                         = new Topic("GrandchildTopic", "Descendent", childTopic3);
 
       childTopic4.Attributes.SetBoolean("IsLeaf", true);
 
@@ -733,10 +733,10 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Children_SkipsDisabled() {
 
-      var topic                 = TopicFactory.Create("Test", "Descendent");
-      _                         = TopicFactory.Create("ChildTopic1", "Descendent", topic);
-      _                         = TopicFactory.Create("ChildTopic2", "Descendent", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Descendent", topic);
+      var topic                 = new Topic("Test", "Descendent");
+      _                         = new Topic("ChildTopic1", "Descendent", topic);
+      _                         = new Topic("ChildTopic2", "Descendent", topic);
+      var childTopic3           = new Topic("ChildTopic3", "Descendent", topic);
 
       topic.IsDisabled          = true;
       childTopic3.IsDisabled    = true;
@@ -761,7 +761,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_MapToParent_ReturnsMappedModel() {
 
-      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+      var topic                 = new Topic("Test", "FlattenChildren");
 
       topic.Attributes.SetValue("PrimaryKey", "Primary Key");
       topic.Attributes.SetValue("AlternateKey", "Alternate Key");
@@ -790,7 +790,7 @@ namespace OnTopic.Tests {
 
       Contract.Assume(topicReference);
 
-      var topic                 = TopicFactory.Create("Test", "MapAs");
+      var topic                 = new Topic("Test", "MapAs");
 
       topic.References.SetValue("TopicReference", topicReference);
 
@@ -815,7 +815,7 @@ namespace OnTopic.Tests {
 
       Contract.Assume(relatedTopic);
 
-      var topic                 = TopicFactory.Create("Test", "MapAs");
+      var topic                 = new Topic("Test", "MapAs");
 
       topic.Relationships.SetValue("Relationships", relatedTopic);
 
@@ -840,7 +840,7 @@ namespace OnTopic.Tests {
 
       Contract.Assume(topicReference);
 
-      var topic                 = TopicFactory.Create("Test", "TopicReference");
+      var topic                 = new Topic("Test", "TopicReference");
 
       topic.Attributes.SetInteger("TopicReferenceId", topicReference.Id);
 
@@ -862,7 +862,7 @@ namespace OnTopic.Tests {
 
       var topicReference        = _topicRepository.Load(11111);
 
-      var topic                 = TopicFactory.Create("Test", "TopicReference");
+      var topic                 = new Topic("Test", "TopicReference");
 
       topic.References.SetValue("TopicReference", topicReference);
 
@@ -882,10 +882,10 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_TopicReferences_SkipsDisabled() {
 
-      var topic                 = TopicFactory.Create("Test", "TopicReference");
-      var topicReference        = TopicFactory.Create("Reference", "Page");
-
-      topicReference.IsDisabled = true;
+      var topic                 = new Topic("Test", "TopicReference");
+      var topicReference        = new Topic("Reference", "Page") {
+        IsDisabled              = true
+      };
 
       topic.References.SetValue("TopicReference", topicReference);
 
@@ -906,21 +906,21 @@ namespace OnTopic.Tests {
     public async Task Map_RecursiveRelationships_ReturnsGraph() {
 
       //Self
-      var topic                 = TopicFactory.Create("Test", "Relation");
+      var topic                 = new Topic("Test", "Relation");
 
       //First cousins
-      var cousinTopic1          = TopicFactory.Create("CousinTopic1", "Relation");
-      var cousinTopic2          = TopicFactory.Create("CousinTopic2", "Relation");
-      var cousinTopic3          = TopicFactory.Create("CousinTopic3", "RelationWithChildren");
+      var cousinTopic1          = new Topic("CousinTopic1", "Relation");
+      var cousinTopic2          = new Topic("CousinTopic2", "Relation");
+      var cousinTopic3          = new Topic("CousinTopic3", "RelationWithChildren");
 
       //First cousins once removed
-      _                         = TopicFactory.Create("ChildTopic1", "RelationWithChildren", cousinTopic3);
-      _                         = TopicFactory.Create("ChildTopic2", "RelationWithChildren", cousinTopic3);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "RelationWithChildren", cousinTopic3);
+      _                         = new Topic("ChildTopic1", "RelationWithChildren", cousinTopic3);
+      _                         = new Topic("ChildTopic2", "RelationWithChildren", cousinTopic3);
+      var childTopic3           = new Topic("ChildTopic3", "RelationWithChildren", cousinTopic3);
 
       //Other cousins
-      var secondCousin          = TopicFactory.Create("SecondCousin", "Relation");
-      _                         = TopicFactory.Create("CousinOnceRemoved", "Relation", childTopic3);
+      var secondCousin          = new Topic("SecondCousin", "Relation");
+      _                         = new Topic("CousinOnceRemoved", "Relation", childTopic3);
 
       //Set first cousins
       topic.Relationships.SetValue("Cousins", cousinTopic1);
@@ -957,12 +957,12 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_Slideshow_ReturnsDerivedViewModels() {
 
-      var topic                 = TopicFactory.Create("Test", "Slideshow");
-      var slides                = TopicFactory.Create("ContentItems", "List", topic);
-      _                         = TopicFactory.Create("ChildTopic1", "Slide", slides);
-      _                         = TopicFactory.Create("ChildTopic2", "Slide", slides);
-      _                         = TopicFactory.Create("ChildTopic3", "Slide", slides);
-      _                         = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
+      var topic                 = new Topic("Test", "Slideshow");
+      var slides                = new Topic("ContentItems", "List", topic);
+      _                         = new Topic("ChildTopic1", "Slide", slides);
+      _                         = new Topic("ChildTopic2", "Slide", slides);
+      _                         = new Topic("ChildTopic3", "Slide", slides);
+      _                         = new Topic("ChildTopic4", "ContentItem", slides);
 
       var target                = await _mappingService.MapAsync<SlideshowTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -984,10 +984,10 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_TopicEntities_ReturnsTopics() {
 
-      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "KeyOnly");
-      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "KeyOnly");
-      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "KeyOnly");
-      var topic                 = TopicFactory.Create("Test", "RelatedEntity");
+      var relatedTopic1         = new Topic("RelatedTopic1", "KeyOnly");
+      var relatedTopic2         = new Topic("RelatedTopic2", "KeyOnly");
+      var relatedTopic3         = new Topic("RelatedTopic3", "KeyOnly");
+      var topic                 = new Topic("Test", "RelatedEntity");
 
       topic.Relationships.SetValue("RelatedTopics", relatedTopic1);
       topic.Relationships.SetValue("RelatedTopics", relatedTopic2);
@@ -1019,7 +1019,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
-      var topic                 = TopicFactory.Create("Test", "MetadataLookup");
+      var topic                 = new Topic("Test", "MetadataLookup");
 
       var target                = (MetadataLookupTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
@@ -1038,8 +1038,8 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CachedTopic_ReturnsSameReference() {
 
-      var topic                 = TopicFactory.Create("Test", "Redundant", 1);
-      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+      var topic                 = new Topic("Test", "Redundant", null, 1);
+      var child                 = new Topic("ChildTopic", "RedundantItem", topic, 2);
 
       child.References.SetValue("Reference", topic);
 
@@ -1062,8 +1062,8 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CachedTopic_ReturnsProgressiveReference() {
 
-      var topic                 = TopicFactory.Create("Test", "Progressive", 1);
-      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+      var topic                 = new Topic("Test", "Progressive", null, 1);
+      var child                 = new Topic("ChildTopic", "RedundantItem", topic, 2);
 
       child.References.SetValue("Reference", topic);
 
@@ -1084,8 +1084,8 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CircularReference_ReturnsCachedParent() {
 
-      var topic                 = TopicFactory.Create("Test", "Circular", 1);
-      _                         = TopicFactory.Create("ChildTopic", "Circular", topic, 2);
+      var topic                 = new Topic("Test", "Circular", null, 1);
+      _                         = new Topic("ChildTopic", "Circular", topic, 2);
 
       var mappedTopic           = await _mappingService.MapAsync<CircularTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -1103,11 +1103,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FilterByCollectionType_ReturnsFilteredCollection() {
 
-      var topic                 = TopicFactory.Create("Test", "Descendent");
-      _                         = TopicFactory.Create("ChildTopic1", "Descendent", topic);
-      _                         = TopicFactory.Create("ChildTopic2", "DescendentSpecialized", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "DescendentSpecialized", topic);
-      _                         = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", childTopic3);
+      var topic                 = new Topic("Test", "Descendent");
+      _                         = new Topic("ChildTopic1", "Descendent", topic);
+      _                         = new Topic("ChildTopic2", "DescendentSpecialized", topic);
+      var childTopic3           = new Topic("ChildTopic3", "DescendentSpecialized", topic);
+      _                         = new Topic("ChildTopic4", "DescendentSpecialized", childTopic3);
 
       var target                = await _mappingService.MapAsync<DescendentTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -1130,9 +1130,9 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_GetterMethods_MapMethodOutput() {
 
-      var topic                 = TopicFactory.Create("Topic", "Sample");
-      var childTopic            = TopicFactory.Create("Child", "Page", topic);
-      var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
+      var topic                 = new Topic("Topic", "Sample");
+      var childTopic            = new Topic("Child", "Page", topic);
+      var grandChildTopic       = new Topic("GrandChild", "Index", childTopic);
 
       var target = await _mappingService.MapAsync<IndexTopicViewModel>(grandChildTopic).ConfigureAwait(false);
 
@@ -1150,7 +1150,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CompatibleProperties_MapObjectReference() {
 
-      var topic                 = (TextAttributeDescriptor)TopicFactory.Create("Attribute", "TextAttributeDescriptor");
+      var topic                 = new TextAttributeDescriptor("Attribute", "TextAttributeDescriptor");
 
       topic.VersionHistory.Add(new(1976, 10, 15, 9, 30, 00));
 
@@ -1170,7 +1170,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_ValidRequiredProperty_IsMapped() {
 
-      var topic                 = TopicFactory.Create("Topic", "Required");
+      var topic                 = new Topic("Topic", "Required");
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
@@ -1189,7 +1189,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_InvalidRequiredProperty_ThrowsValidationException() {
 
-      var topic                 = TopicFactory.Create("Topic", "Required");
+      var topic                 = new Topic("Topic", "Required");
 
       await Assert.ThrowsAsync<ValidationException>(async () =>
         await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false)
@@ -1206,7 +1206,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_InvalidRequiredObject_ThrowsValidationException() {
 
-      var topic                 = TopicFactory.Create("Topic", "RequiredObject");
+      var topic                 = new Topic("Topic", "RequiredObject");
 
       await Assert.ThrowsAsync<ValidationException>(async () =>
         await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false)
@@ -1223,7 +1223,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_NullProperty_MapsDefaultValue() {
 
-      var topic                 = TopicFactory.Create("Topic", "DefaultValue");
+      var topic                 = new Topic("Topic", "DefaultValue");
 
       var target                = await _mappingService.MapAsync<DefaultValueTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -1242,7 +1242,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
 
-      var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
+      var topic                 = new Topic("Topic", "MinimumLengthProperty");
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
@@ -1263,11 +1263,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FilterByAttribute_ReturnsFilteredCollection() {
 
-      var topic                 = TopicFactory.Create("Test", "Filtered");
-      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
-      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+      var topic                 = new Topic("Test", "Filtered");
+      var childTopic1           = new Topic("ChildTopic1", "Page", topic);
+      var childTopic2           = new Topic("ChildTopic2", "Index", topic);
+      var childTopic3           = new Topic("ChildTopic3", "Page", topic);
+      var childTopic4           = new Topic("ChildTopic4", "Page", childTopic3);
 
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
@@ -1296,7 +1296,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FilterByInvalidAttribute_ThrowsExceptions() {
 
-      var topic                 = TopicFactory.Create("Test", "FilteredInvalid");
+      var topic                 = new Topic("Test", "FilteredInvalid");
 
       await Assert.ThrowsAsync<ArgumentException>(async () =>
         await _mappingService.MapAsync<FilteredInvalidTopicViewModel>(topic).ConfigureAwait(false)
@@ -1315,11 +1315,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
 
-      var topic                 = TopicFactory.Create("Test", "Filtered");
-      _                         = TopicFactory.Create("ChildTopic1", "Page", topic);
-      _                         = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
-      _                         = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+      var topic                 = new Topic("Test", "Filtered");
+      _                         = new Topic("ChildTopic1", "Page", topic);
+      _                         = new Topic("ChildTopic2", "Index", topic);
+      var childTopic3           = new Topic("ChildTopic3", "Page", topic);
+      _                         = new Topic("ChildTopic4", "Page", childTopic3);
 
       var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -1337,12 +1337,12 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FlattenAttribute_ReturnsFlatCollection() {
 
-      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+      var topic                 = new Topic("Test", "FlattenChildren");
 
       for (var i = 0; i < 5; i++) {
-        var childTopic          = TopicFactory.Create("Child" + i, "Page", topic);
+        var childTopic          = new Topic("Child" + i, "Page", topic);
         for (var j = 0; j < 5; j++) {
-          TopicFactory.Create("GrandChild" + i + j, "FlattenChildren", childTopic);
+          _ = new Topic("GrandChild" + i + j, "FlattenChildren", childTopic);
         }
       }
 
@@ -1362,11 +1362,11 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_FlattenAttribute_ExcludeTopics() {
 
-      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
-      var childTopic            = TopicFactory.Create("Child", "FlattenChildren", topic);
-      var grandChildTopic       = TopicFactory.Create("Grandchild", "FlattenChildren", childTopic);
-      var listTopic             = TopicFactory.Create("List", "List", childTopic);
-      _                         = TopicFactory.Create("Nested", "FlattenChildren", listTopic);
+      var topic                 = new Topic("Test", "FlattenChildren");
+      var childTopic            = new Topic("Child", "FlattenChildren", topic);
+      var grandChildTopic       = new Topic("Grandchild", "FlattenChildren", childTopic);
+      var listTopic             = new Topic("List", "List", childTopic);
+      _                         = new Topic("Nested", "FlattenChildren", listTopic);
 
       grandChildTopic.IsDisabled = true;
 
@@ -1387,7 +1387,7 @@ namespace OnTopic.Tests {
 
       var cachedMappingService = new CachedTopicMappingService(_mappingService);
 
-      var topic = TopicFactory.Create("Test", "Filtered", 5);
+      var topic = new Topic("Test", "Filtered", null, 5);
 
       var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
       var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
@@ -1408,7 +1408,7 @@ namespace OnTopic.Tests {
 
       var cachedMappingService = new CachedTopicMappingService(_mappingService);
 
-      var topic = TopicFactory.Create("Test", "Filtered", 5);
+      var topic = new Topic("Test", "Filtered", null, 5);
 
       var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
       var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);

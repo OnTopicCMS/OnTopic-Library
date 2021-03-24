@@ -234,21 +234,21 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = TopicFactory.Create("Root", "Container", 900);
+      var rootTopic = new Topic("Root", "Container", null, 900);
       var currentAttributeId = 800;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
-      var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
+      var configuration = new Topic("Configuration", "Container", rootTopic);
+      var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration);
 
       addAttribute(contentTypes, "Key", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "ContentType", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "Title", "TextAttributeDescriptor", true, true);
       addAttribute(contentTypes, "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
-      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
       addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
@@ -258,7 +258,7 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
-      var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
       addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
@@ -270,7 +270,7 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
       TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
-      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+      var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
@@ -280,7 +280,7 @@ namespace OnTopic.TestDoubles {
       pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
       pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
 
-      var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
+      var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(contactContentType, "Name", isExtended: false);
       addAttribute(contactContentType, "AlternateEmail", isExtended: false);
@@ -296,13 +296,13 @@ namespace OnTopic.TestDoubles {
         bool isExtended         = true,
         bool isRequired         = false
       ) {
-        var container = contentType.Children.GetValue("Attributes");
+        var container           = contentType.Children.GetValue("Attributes");
         if (container is null) {
-          container = TopicFactory.Create("Attributes", "List", contentType);
+          container             = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
-        attribute.IsRequired = isRequired;
+        var attribute           = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
+        attribute.IsRequired    = isRequired;
         attribute.IsExtendedAttribute = isExtended;
         return attribute;
       }
@@ -310,12 +310,12 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var metadata = TopicFactory.Create("Metadata", "Container", configuration);
-      var categories = TopicFactory.Create("Categories", "Lookup", metadata);
-      var lookup = TopicFactory.Create("LookupList", "List", categories);
+      var metadata = new Topic("Metadata", "Container", configuration);
+      var categories = new Topic("Categories", "Lookup", metadata);
+      var lookup = new Topic("LookupList", "List", categories);
 
       for (var i=1; i<=5; i++) {
-        TopicFactory.Create("Category" + i, "LookupListItem", lookup);
+        _ = new Topic("Category" + i, "LookupListItem", lookup);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -325,10 +325,10 @@ namespace OnTopic.TestDoubles {
 
       CreateFakeData(web, 2, 3);
 
-      var pageGroup             = TopicFactory.Create("Web_3", "PageGroup", web);
-      _                         = TopicFactory.Create("Web_3_0", "Page", pageGroup);
-      var childPage             = TopicFactory.Create("Web_3_1", "Page", pageGroup);
-      var leafPage              = TopicFactory.Create("Web_3_1_0", "Page", childPage);
+      var pageGroup             = new Topic("Web_3", "PageGroup", web);
+      _                         = new Topic("Web_3_0", "Page", pageGroup);
+      var childPage             = new Topic("Web_3_1", "Page", pageGroup);
+      var leafPage              = new Topic("Web_3_1_0", "Page", childPage);
 
       leafPage.Attributes.SetValue("NavigationRoot", "Configuration");
 
@@ -347,7 +347,7 @@ namespace OnTopic.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
+        var topic = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
         if (depth > 0) {

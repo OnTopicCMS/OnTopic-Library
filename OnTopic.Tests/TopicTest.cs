@@ -79,7 +79,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Id_ChangeValue_ThrowsArgumentException() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 123);
 
       Assert.Throws<InvalidOperationException>(() =>
         topic.Id = 124
@@ -99,10 +99,11 @@ namespace OnTopic.Tests {
     ///   Topic.Key"/> changed. We have code that will handle that, however.
     /// </remarks>
     [Fact]
+    #pragma warning disable IDE0017 // Simplify object initialization
     public void Key_ChangeValue_UpdatesParent() {
 
-      var parent                = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
-      var topic                 = TopicFactory.Create("Original", "ContentTypeDescriptor", parent, 2);
+      var parent                = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 1);
+      var topic                 = new ContentTypeDescriptor("Original", "ContentTypeDescriptor", parent, 2);
 
       topic.Key                 = "New";
 
@@ -112,6 +113,7 @@ namespace OnTopic.Tests {
       Assert.False(parent.Children.Contains("Original"));
 
     }
+    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: PARENT: SET VALUE: UPDATES PARENT
@@ -122,8 +124,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Parent_SetValue_UpdatesParent() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
-      var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
+      var parentTopic           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var childTopic            = new ContentTypeDescriptor("Child", "ContentTypeDescriptor");
 
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
@@ -143,8 +145,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Parent_SetToDescendant_ThrowsException() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
-      var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor", parentTopic);
+      var parentTopic           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var childTopic            = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", parentTopic);
 
       Assert.Throws<ArgumentOutOfRangeException>(() =>
         parentTopic.Parent      = childTopic
@@ -178,11 +180,12 @@ namespace OnTopic.Tests {
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [Fact]
+    #pragma warning disable IDE0017 // Simplify object initialization
     public void Parent_ChangeValue_UpdatesParent() {
 
-      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor", 5);
-      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor", 10);
-      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor", sourceParent);
+      var sourceParent          = new ContentTypeDescriptor("SourceParent", "ContentTypeDescriptor", null, 5);
+      var targetParent          = new ContentTypeDescriptor("TargetParent", "ContentTypeDescriptor", null, 10);
+      var childTopic            = new ContentTypeDescriptor("ChildTopic", "ContentTypeDescriptor", sourceParent);
 
       childTopic.Parent         = targetParent;
 
@@ -192,6 +195,7 @@ namespace OnTopic.Tests {
       Assert.Equal<int>(10, childTopic.Parent.Id);
 
     }
+    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: UNIQUE KEY: RETURNS UNIQUE KEY
@@ -202,9 +206,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void UniqueKey_ReturnsUniqueKey() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page");
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page");
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page");
+      var parentTopic           = new Topic("ParentTopic", "Page");
+      var childTopic            = new Topic("ChildTopic", "Page");
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page");
 
       childTopic.Parent         = parentTopic;
       grandChildTopic.Parent    = childTopic;
@@ -224,9 +228,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsVisible_ReturnsExpectedValue() {
 
-      var hiddenTopic           = TopicFactory.Create("HiddenTopic", "Page");
-      var disabledTopic         = TopicFactory.Create("DisabledTopic", "Page");
-      var visibleTopic          = TopicFactory.Create("VisibleTopic", "Page");
+      var hiddenTopic           = new Topic("HiddenTopic", "Page");
+      var disabledTopic         = new Topic("DisabledTopic", "Page");
+      var visibleTopic          = new Topic("VisibleTopic", "Page");
 
       hiddenTopic.IsHidden      = true;
       disabledTopic.IsDisabled  = true;
@@ -249,8 +253,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Title_NullValue_ReturnsKey() {
 
-      var untitledTopic         = TopicFactory.Create("UntitledTopic", "Page");
-      var titledTopic           = TopicFactory.Create("TitledTopic", "Page");
+      var titledTopic           = new Topic("TitledTopic", "Page");
+      var untitledTopic         = new Topic("UntitledTopic", "Page");
 
       titledTopic.Title         = "Titled Topic";
 
@@ -268,7 +272,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void LastModified_UpdateLastModified_ReturnsExpectedValue() {
 
-      var topic                 = TopicFactory.Create("Topic1", "Page");
+      var topic                 = new Topic("Topic1", "Page");
       var lastModified          = new DateTime(1976, 10, 15);
 
       topic.LastModified        = lastModified;
@@ -286,7 +290,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void LastModified_UpdateVersionHistory_ReturnsExpectedValue() {
 
-      var topic                 = TopicFactory.Create("Topic2", "Page");
+      var topic                 = new Topic("Topic2", "Page");
 
       var lastModified          = new DateTime(1976, 10, 15);
 
@@ -305,7 +309,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void LastModified_UpdateValue_ReturnsExpectedValue() {
 
-      var topic                 = TopicFactory.Create("Topic3", "Page");
+      var topic                 = new Topic("Topic3", "Page");
 
       var lastModified          = new DateTime(1976, 10, 15);
 
@@ -325,10 +329,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void BaseTopic_UpdateValue_ReturnsExpectedValue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var firstBaseTopic        = TopicFactory.Create("BaseTopic", "Page");
-      var secondBaseTopic       = TopicFactory.Create("BaseTopic", "Page", 1);
-      var finalBaseTopic        = TopicFactory.Create("BaseTopic", "Page", 2);
+      var topic                 = new Topic("Topic", "Page");
+      var firstBaseTopic        = new Topic("BaseTopic", "Page");
+      var secondBaseTopic       = new Topic("BaseTopic", "Page", null, 1);
+      var finalBaseTopic        = new Topic("BaseTopic", "Page", null, 2);
 
       topic.BaseTopic           = firstBaseTopic;
       topic.BaseTopic           = secondBaseTopic;
@@ -349,8 +353,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void BaseTopic_ResavedValue_ReturnsExpectedValue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("BaseTopic", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("BaseTopic", "Page");
 
       topic.BaseTopic           = baseTopic;
       baseTopic.Id              = 5;
@@ -371,8 +375,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void BaseTopic_SetToNull_RemovesValue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("BaseTopic", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("BaseTopic", "Page");
 
       topic.BaseTopic           = baseTopic;
       topic.BaseTopic           = null;
@@ -390,7 +394,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_NewTopic_ReturnsTrue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = new Topic("Topic", "Page");
 
       Assert.True(topic.IsDirty());
 
@@ -405,7 +409,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_ExistingTopic_ReturnsFalse() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var topic                 = new Topic("Topic", "Page", null, 1);
 
       Assert.False(topic.IsDirty());
 
@@ -419,15 +423,17 @@ namespace OnTopic.Tests {
     ///   Boolean)"/> returns <c>true</c>.
     /// </summary>
     [Fact]
+    #pragma warning disable IDE0017 // Simplify object initialization
     public void IsDirty_ChangeKey_ReturnsTrue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var topic                 = new Topic("Topic", "Page", null, 1);
 
       topic.Key                 = "NewTopic";
 
       Assert.True(topic.IsDirty());
 
     }
+    #pragma warning restore IDE0017 // Simplify object initialization
 
     /*==========================================================================================================================
     | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
@@ -439,8 +445,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_ExistingValue_RemainsClean() {
 
-      var parent                = TopicFactory.Create("Parent", "Page", 1);
-      var topic                 = TopicFactory.Create("Topic", "Page", parent, 2);
+      var parent                = new Topic("Parent", "Page", null, 1);
+      var topic                 = new Topic("Topic", "Page", parent, 2);
 
       topic.Key                 = topic.Key;
       topic.ContentType         = topic.ContentType;
@@ -461,8 +467,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_ChangeCollections_ReturnsTrue() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var related               = TopicFactory.Create("Related", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var related               = new Topic("Related", "Page", null, 2);
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);
@@ -484,8 +490,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void MarkClean_ChangeCollections_ResetIsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var related               = TopicFactory.Create("Related", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var related               = new Topic("Related", "Page", null, 2);
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);
@@ -508,8 +514,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void MarkClean_IncludeCollections_ResetsIsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var related               = TopicFactory.Create("Related", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var related               = new Topic("Related", "Page", null, 2);
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);
@@ -533,7 +539,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void MarkClean_NewTopic_RemainsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = new Topic("Topic", "Page");
 
       topic.Attributes.SetValue("Attribute", "Test");
 

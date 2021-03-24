@@ -36,8 +36,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_NewReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
@@ -57,8 +57,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_NewReference_NotDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page", null, 2);
 
       topic.References.SetValue("Reference", reference, false);
 
@@ -78,8 +78,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_ExistingReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference, false);
       topic.References.Remove("Reference");
@@ -102,8 +102,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Clear_ExistingReferences_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.Add(new("Reference1", reference, false));
       topic.References.Add(new("Reference2", null, false));
@@ -127,8 +127,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_NewTopic_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference, false);
 
@@ -147,8 +147,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_NewReference_IncomingRelationshipSet() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
@@ -173,8 +173,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.Add(new("Reference1", reference, false));
       topic.References.Add(new("Reference2", null, false));
@@ -199,9 +199,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_ExistingReference_TopicUpdated() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
-      var newReference          = TopicFactory.Create("NewReference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
+      var newReference          = new Topic("NewReference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", newReference);
@@ -231,8 +231,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_ExistingReference_IncomingRelationshipsUpdates() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
@@ -256,8 +256,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_NullReference_TopicRemoved() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
@@ -277,8 +277,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Add_NewReference_TopicIsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page", 1);
-      var reference             = TopicFactory.Create("Reference", "Page", 2);
+      var topic                 = new Topic("Topic", "Page", null, 1);
+      var reference             = new Topic("Reference", "Page", null, 2);
 
       topic.References.SetValue("Reference", reference);
 
@@ -298,8 +298,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTopic_ExistingReference_ReturnsTopic() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
@@ -318,8 +318,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTopic_MissingReference_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
 
@@ -339,10 +339,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTopic_InheritedReference_ReturnsTopic() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", parentTopic);
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var parentTopic           = new Topic("Parent", "Page");
+      var topic                 = new Topic("Topic", "Page", parentTopic);
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       parentTopic.BaseTopic     = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
@@ -363,9 +363,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTopic_InheritedReference_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
@@ -386,9 +386,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTopic_InheritedReferenceWithoutInheritance_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var baseTopic             = TopicFactory.Create("Base", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = new Topic("Topic", "Page");
+      var baseTopic             = new Topic("Base", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
@@ -408,7 +408,7 @@ namespace OnTopic.Tests {
     public void Add_TopicReferenceWithBusinessLogic_IsReturned() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("TopicReference", reference);
 
@@ -426,7 +426,7 @@ namespace OnTopic.Tests {
     public void Add_TopicReferenceWithBusinessLogic_RemovedReference() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var reference             = new Topic("Reference", "Page");
 
       topic.References.SetValue("BaseTopic", reference);
       topic.References.SetValue("BaseTopic", null);
@@ -445,7 +445,7 @@ namespace OnTopic.Tests {
     public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Container");
+      var reference             = new Topic("Reference", "Container");
 
       Assert.Throws<ArgumentOutOfRangeException>(() =>
         topic.References.SetValue("TopicReference", reference)
@@ -463,7 +463,7 @@ namespace OnTopic.Tests {
     public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
 
       var topic                 = new CustomTopic("Test", "Page");
-      var reference             = TopicFactory.Create("Reference", "Container");
+      var reference             = new Topic("Reference", "Container");
 
       Assert.Throws<ArgumentOutOfRangeException>(() =>
         topic.References.Add(new("TopicReference", reference))

@@ -31,8 +31,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_CreatesRelationship() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
 
       parent.Relationships.SetValue("Friends", related);
 
@@ -51,8 +51,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_InvalidRelationshipKey_ReturnsFalse() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var unrelated             = TopicFactory.Create("Unrelated", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var unrelated             = new Topic("Unrelated", "Page");
 
       Assert.False(parent.Relationships.Remove("Unrelated", unrelated));
 
@@ -69,7 +69,7 @@ namespace OnTopic.Tests {
     public void Remove_InvalidTopicKey_ReturnsFalse() {
 
       var multiMap              = new TopicMultiMap();
-      var unrelated             = TopicFactory.Create("Unrelated", "Page");
+      var unrelated             = new Topic("Unrelated", "Page");
 
       multiMap.Add("Related", new("Test", "Page"));
 
@@ -86,8 +86,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_RemovesRelationship() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
 
       parent.Relationships.SetValue("Friends", related);
       parent.Relationships.Remove("Friends", related);
@@ -106,8 +106,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_RemovesIncomingRelationship() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       relationships.SetValue("Friends", related);
@@ -126,8 +126,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_CreatesIncomingRelationship() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       relationships.SetValue("Friends", related);
@@ -147,8 +147,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_IncomingRelationships_ThrowsException() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent, true);
 
       Assert.Throws<InvalidOperationException>(() =>
@@ -168,8 +168,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_IncomingRelationships_ThrowsException() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var parent                = new Topic("Parent", "Page");
+      var related               = new Topic("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent, true);
 
       Assert.Throws<InvalidOperationException>(() =>
@@ -187,11 +187,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_UpdatesKeyCount() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
+      var parent                = new Topic("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
+        relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
       }
 
       Assert.Equal<int>(5, relationships.Keys.Count);
@@ -261,11 +261,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAllValues_ReturnsAllTopics() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
+      var parent                = new Topic("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
+        relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
       }
 
       Assert.Equal<int>(5, relationships.Count);
@@ -284,11 +284,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAllValues_ContentTypes_ReturnsAllContentTypes() {
 
-      var parent                = TopicFactory.Create("Parent", "Page");
+      var parent                = new Topic("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
+        relationships.SetValue("Relationship" + i, new Topic("Related" + i, "ContentType" + i));
       }
 
       Assert.Equal<int>(5, relationships.Keys.Count);
@@ -306,9 +306,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetTopic_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related);
 
@@ -326,9 +326,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_IsDuplicate_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page", 2);
+      var related               = new Topic("Topic", "Page", null, 2);
 
       relationships.SetValue("Related", related);
       relationships.MarkClean();
@@ -349,10 +349,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetSetValue_IsDuplicate_StaysDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related1              = TopicFactory.Create("Topic", "Page");
-      var related2              = TopicFactory.Create("Topic", "Page");
+      var related1              = new Topic("Topic", "Page");
+      var related2              = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related1);
       relationships.SetValue("Related", related2);
@@ -371,9 +371,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related);
       relationships.MarkClean();
@@ -393,9 +393,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_MissingTopic_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       var isSuccessful          = relationships.Remove("Related", related);
 
@@ -414,10 +414,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void Remove_MissingTopic_StaysDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic1", "Page");
-      var missing               = TopicFactory.Create("Topic2", "Page");
+      var related               = new Topic("Topic1", "Page");
+      var missing               = new Topic("Topic2", "Page");
 
       relationships.SetValue("Related", related);
 
@@ -438,9 +438,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Clear_ExistingTopics_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related);
       relationships.MarkClean();
@@ -460,7 +460,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Clear_NoTopics_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
 
       relationships.Clear("Related");
@@ -480,9 +480,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_MarkNotDirty_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page", 2);
+      var related               = new Topic("Topic", "Page", null, 2);
 
       relationships.SetValue("Related", related, false);
 
@@ -502,9 +502,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_NewParent_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page", 1);
+      var related               = new Topic("Topic", "Page", null, 1);
 
       relationships.SetValue("Related", related, false);
 
@@ -524,9 +524,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void SetValue_NewTopic_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related, false);
 
@@ -545,9 +545,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page", 2);
+      var related               = new Topic("Topic", "Page", null, 2);
 
       relationships.SetValue("Related", related);
 
@@ -569,9 +569,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkClean_ReturnsTrue() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page", 2);
+      var related               = new Topic("Topic", "Page", null, 2);
 
       relationships.SetValue("Related", related, false);
 
@@ -595,9 +595,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void IsDirty_MarkCleanWithNewTopic_ReturnsTrue() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = new Topic("Topic", "Page");
 
       relationships.SetValue("Related", related, false);
 

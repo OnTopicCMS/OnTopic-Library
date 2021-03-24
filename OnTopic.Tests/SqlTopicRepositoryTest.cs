@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
       using var topics          = new TopicsDataTable();
       using var attributes      = new AttributesDataTable();
 
-      var topic                 = TopicFactory.Create("Root", "Container", 1);
+      var topic                 = new Topic("Root", "Container", null, 1);
 
       topic.Attributes.SetValue("Test", "Initial Value");
 
@@ -232,7 +232,7 @@ namespace OnTopic.Tests {
       using var empty           = new AttributesDataTable();
       using var references      = new TopicReferencesDataTable();
 
-      var referenceTopic        = TopicFactory.Create("Web", "Container", 2);
+      var referenceTopic        = new Topic("Web", "Container", null, 2);
 
       topics.AddRow(1, "Root", "Container", null);
       references.AddRow(1, "Test", 2);
@@ -264,7 +264,7 @@ namespace OnTopic.Tests {
       using var empty           = new AttributesDataTable();
       using var references      = new TopicReferencesDataTable();
 
-      var referenceTopic        = TopicFactory.Create("Web", "Container", 1);
+      var referenceTopic        = new Topic("Web", "Container", null, 1);
 
       referenceTopic.References.SetValue("Reference", referenceTopic);
 
@@ -319,9 +319,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
 
-      var topic                 = TopicFactory.Create("Test", "Container", 1);
-      var child                 = TopicFactory.Create("Child", "Container", topic, 2);
-      var related               = TopicFactory.Create("Related", "Container", topic, 3);
+      var topic                 = new Topic("Test", "Container", null, 1);
+      var child                 = new Topic("Child", "Container", topic, 2);
+      var related               = new Topic("Related", "Container", topic, 3);
 
       child.Relationships.SetValue("Test", related);
 

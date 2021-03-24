@@ -177,12 +177,12 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_BaseTopic_ThrowsException() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Page", root);
-
-      derivedTopic.BaseTopic    = child;
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var derivedTopic          = new Topic("Derived", "Page", root) {
+        BaseTopic               = child
+      };
 
       Assert.Throws<ReferentialIntegrityException>(() =>
         _topicRepository.Delete(topic, true)
@@ -199,12 +199,12 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_InternallyDerivedTopic_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derived               = TopicFactory.Create("Derived", "Page", topic);
-
-      derived.BaseTopic         = child;
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      _                         = new Topic("Derived", "Page", topic) {
+        BaseTopic               = child
+      };
 
       _topicRepository.Delete(topic, true);
 
@@ -221,8 +221,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_Descendants_ThrowsException() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      _                         = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Topic", "Page");
+      _                         = new Topic("Child", "Page", topic);
 
       Assert.Throws<ReferentialIntegrityException>(() =>
         _topicRepository.Delete(topic, false)
@@ -239,9 +239,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_DescendantsWithRecursive_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      _                         = TopicFactory.Create("Child", "Page", topic);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      _                         = new Topic("Child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
@@ -258,9 +258,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_NestedTopics_Succeeds() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      _                         = TopicFactory.Create("Child", "List", topic);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      _                         = new Topic("Child", "List", topic);
 
       _topicRepository.Delete(topic, false);
 
@@ -278,10 +278,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_Relationships_DeleteRelationships() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var associated            = TopicFactory.Create("Associated", "Page", root);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var associated            = new Topic("Associated", "Page", root);
 
       child.Relationships.SetValue("Related", associated);
       child.References.SetValue("Referenced", associated);
@@ -302,11 +302,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_IncomingRelationships_DeleteAssociations() {
 
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-      var source1               = TopicFactory.Create("Source1", "Page", root);
-      var source2               = TopicFactory.Create("Source2", "Page", root);
+      var root                  = new Topic("Root", "Page");
+      var topic                 = new Topic("Topic", "Page", root);
+      var child                 = new Topic("Child", "Page", topic);
+      var source1               = new Topic("Source1", "Page", root);
+      var source2               = new Topic("Source2", "Page", root);
 
       source1.Relationships.SetValue("Associations", child);
       source2.References.SetValue("Associations", child);
@@ -327,7 +327,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
@@ -348,7 +348,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_EmptyAttributes_Skips() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("EmptyAttribute", "");
       topic.Attributes.SetValue("NullAttribute", null);
@@ -369,7 +369,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_IndexedAttributes_ReturnsIndexedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
@@ -388,7 +388,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ExtendedAttributes_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title");
 
@@ -409,7 +409,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
 
       topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
       topic.Attributes.SetValue("IsHidden", "0", markDirty: false, isExtendedAttribute: true);
@@ -451,7 +451,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
 
@@ -471,7 +471,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetDateTime("LastModified", DateTime.Now);
       topic.Attributes.SetValue("LastModifiedBy", "Unit Tests");
@@ -493,7 +493,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("ArbitraryAttribute", "Value");
 
@@ -514,7 +514,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = new Topic("Test", "ContentTypes");
 
       topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
 
@@ -534,7 +534,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetUnmatchedAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
 
       topic.Attributes.SetValue("Title", "Title");
 
@@ -557,7 +557,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetUnmatchedAttributes_EmptyArbitraryAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 1);
 
       topic.Attributes.SetValue("ArbitraryAttribute", "Value");
       topic.Attributes.SetValue("ArbitraryAttribute", "");
@@ -604,7 +604,7 @@ namespace OnTopic.Tests {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var rootContentType       = contentTypes["ContentTypes"];
-      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var newContentType        = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
       var contentTypeCount      = contentTypes.Count;
 
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
@@ -623,7 +623,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetContentTypeDescriptor_GetValidContentType_ReturnsContentType() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
       Assert.NotNull(contentType);
@@ -643,8 +643,8 @@ namespace OnTopic.Tests {
       var rootTopic             = _topicRepository.Load("Root");
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var rootContentType       = contentTypes.GetValue("ContentTypes");
-      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
-      var topic                 = TopicFactory.Create("Test", "NewContentType", rootTopic);
+      var newContentType        = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var topic                 = new Topic("Test", "NewContentType", rootTopic);
 
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
@@ -666,7 +666,7 @@ namespace OnTopic.Tests {
 
       var topicRepository       = new StubTopicRepository();
       var configuration         = topicRepository.Load("Root:Configuration");
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
 
       topicRepository.Delete(configuration!, true);
 
@@ -685,7 +685,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetContentTypeDescriptor_GetInvalidContentType_ReturnsNull() {
 
-      var topic                 = TopicFactory.Create("Test", "InvalidContentType");
+      var topic                 = new Topic("Test", "InvalidContentType");
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
       Assert.Null(contentType);
@@ -704,7 +704,7 @@ namespace OnTopic.Tests {
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var topic                 = TopicFactory.Create("NewContentType", "ContentTypeDescriptor");
+      var topic                 = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor");
 
       _topicRepository.Save(topic);
 
@@ -753,7 +753,7 @@ namespace OnTopic.Tests {
     public void Save_NewTopic_UpdatesVersionHistory() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var topic                 = new Topic("Test", "Page", parent);
 
       _topicRepository.Save(topic);
 
@@ -772,8 +772,8 @@ namespace OnTopic.Tests {
     public void Save_IsRecursive_SavesChild() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Test", "Page", parent);
+      var child                 = new Topic("Child", "Page", topic);
 
       _topicRepository.Save(topic, true);
 
@@ -793,8 +793,8 @@ namespace OnTopic.Tests {
     public void Save_UnresolvedReference_Resolves() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var reference             = TopicFactory.Create("Reference", "Page", topic);
+      var topic                 = new Topic("Test", "Page", parent);
+      var reference             = new Topic("Reference", "Page", topic);
 
       topic.References.SetValue("Test", reference);
 
@@ -813,8 +813,8 @@ namespace OnTopic.Tests {
     public void Save_UnresolvedReference_ThrowsException() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
-      var reference             = TopicFactory.Create("Reference", "Page", parent);
+      var topic                 = new Topic("Test", "Page", parent);
+      var reference             = new Topic("Reference", "Page", parent);
 
       topic.References.SetValue("Test", reference);
 
@@ -896,15 +896,15 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save_AttributeDescriptor_UpdatesContentType() {
 
-      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
-      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var attributeList         = new Topic("Attributes", "List", contentType);
+      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType);
 
       Contract.Assume(childContentType);
 
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
+      var newAttribute          = new BooleanAttributeDescriptor("NewAttribute", "BooleanAttributeDescriptor", attributeList);
 
       Contract.Assume(newAttribute);
 
@@ -925,10 +925,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
 
-      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
-      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
-      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
+      var attributeList         = new Topic("Attributes", "List", contentType);
+      var newAttribute          = new BooleanAttributeDescriptor("NewAttribute", "BooleanAttributeDescriptor", attributeList);
+      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType);
 
       Contract.Assume(childContentType);
       Contract.Assume(newAttribute);
@@ -1003,7 +1003,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Delete_TopicDeletedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var hasFired              = false;
 
       _cachedTopicRepository.Save(topic);
@@ -1027,7 +1027,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save_TopicSavedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var hasFired              = false;
 
       _cachedTopicRepository.TopicSaved += eventHandler;
@@ -1050,7 +1050,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save_TopicRenamedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var topic                 = new Topic("Test", "Page", null, 1);
       var hasFired              = false;
 
       topic.Key                 = "New";
@@ -1075,8 +1075,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save_TopicMovedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
-      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var topic                 = new Topic("Test", "Page", null, 1);
+      var parent                = new Topic("Products", "Page", null, 2);
       var hasFired              = false;
 
       topic.Parent              = parent;
@@ -1101,8 +1101,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void Move_TopicMovedEvent_IsRaised() {
 
-      var topic                 = TopicFactory.Create("Test", "Page", 1);
-      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var topic                 = new Topic("Test", "Page", null, 1);
+      var parent                = new Topic("Products", "Page", null, 2);
       var hasFired              = false;
 
       _cachedTopicRepository.TopicMoved += eventHandler;

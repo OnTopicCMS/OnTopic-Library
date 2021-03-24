@@ -68,11 +68,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void FindAllByAttribute_ReturnsCorrectTopics() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", childTopic, 20);
-      var grandNieceTopic       = TopicFactory.Create("GrandNieceTopic", "Page", childTopic, 3);
-      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page", childTopic, 20);
+      var grandNieceTopic       = new Topic("GrandNieceTopic", "Page", childTopic, 3);
+      var greatGrandChildTopic  = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       grandChildTopic.Attributes.SetValue("Foo", "Baz");
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
@@ -93,10 +93,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void FindFirstParent_ReturnsCorrectTopic() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", childTopic, 20);
-      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page", childTopic, 20);
+      var greatGrandChildTopic  = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
@@ -113,8 +113,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void FindFirstParent_ReturnsNull() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
 
       var foundTopic            = childTopic.FindFirstParent(t => t.Id is 10);
 
@@ -131,10 +131,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetRootTopic_ReturnsRootTopic() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", childTopic, 20);
-      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page", childTopic, 20);
+      var greatGrandChildTopic  = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       var rootTopic             = greatGrandChildTopic.GetRootTopic();
 
@@ -151,7 +151,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetRootTopic_ReturnsCurrentTopic() {
 
-      var topic                 = TopicFactory.Create("ParentTopic", "Page", 1);
+      var topic                 = new Topic("ParentTopic", "Page", null, 1);
 
       var rootTopic             = topic.GetRootTopic();
 
@@ -168,8 +168,8 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetByUniqueKey_RootKey_ReturnsRootTopic() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      _                         = TopicFactory.Create("ChildTopic", "Page", parentTopic, 2);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      _                         = new Topic("ChildTopic", "Page", parentTopic, 2);
 
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
@@ -187,11 +187,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetByUniqueKey_ValidKey_ReturnsTopic() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", childTopic, 20);
-      var greatGrandChildTopic1 = TopicFactory.Create("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
-      var greatGrandChildTopic2 = TopicFactory.Create("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page", childTopic, 20);
+      var greatGrandChildTopic1 = new Topic("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
+      var greatGrandChildTopic2 = new Topic("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
 
       var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
@@ -209,10 +209,10 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetByUniqueKey_InvalidKey_ReturnsNull() {
 
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", childTopic, 20);
-      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
+      var parentTopic           = new Topic("ParentTopic", "Page", null, 1);
+      var childTopic            = new Topic("ChildTopic", "Page", parentTopic, 5);
+      var grandChildTopic       = new Topic("GrandChildTopic", "Page", childTopic, 20);
+      var greatGrandChildTopic  = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
@@ -248,7 +248,7 @@ namespace OnTopic.Tests {
     public void GetContentType_InvalidContentType_ReturnsNull() {
 
       var parentTopic           = _topicRepository.Load(11111);
-      var topic                 = TopicFactory.Create("Test", "NonExistent", parentTopic);
+      var topic                 = new Topic("Test", "NonExistent", parentTopic);
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
       Assert.Null(contentTypeDescriptor);
@@ -273,7 +273,7 @@ namespace OnTopic.Tests {
     public void GetContentType_InvalidType_ReturnsNull() {
 
       var parentTopic           = _topicRepository.Load(11111);
-      var topic                 = TopicFactory.Create("Test", "Title", parentTopic);
+      var topic                 = new Topic("Test", "Title", parentTopic);
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
       Assert.Null(contentTypeDescriptor);

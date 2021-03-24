@@ -33,7 +33,7 @@ namespace OnTopic.Tests {
       var topics = new KeyedTopicCollection();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
+        topics.Add(new("Topic" + i, "Page"));
       }
 
       Assert.Equal("Topic3", topics["Topic3"].Key);
@@ -52,7 +52,7 @@ namespace OnTopic.Tests {
       var topics = new List<Topic>();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
+        topics.Add(new("Topic" + i, "Page"));
       }
 
       var topicsCollection = new KeyedTopicCollection(topics);
@@ -165,7 +165,7 @@ namespace OnTopic.Tests {
       var topics = new KeyedTopicCollection();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
+        topics.Add(new("Topic" + i, "Page"));
       }
 
       var readOnlyCollection = topics.AsReadOnly();
@@ -187,7 +187,7 @@ namespace OnTopic.Tests {
       var topics = new TopicCollection();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
+        topics.Add(new("Topic" + i, "Page"));
       }
 
       var readOnlyCollection = topics.AsReadOnly();

@@ -141,7 +141,7 @@ namespace OnTopic.Tests {
     public void DisabledTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -166,7 +166,7 @@ namespace OnTopic.Tests {
     public void TopicWithUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -191,7 +191,7 @@ namespace OnTopic.Tests {
     public void NestedTopic_List_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "List");
+      var topic                 = new Topic("Key", "List");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -217,8 +217,8 @@ namespace OnTopic.Tests {
     public void NestedTopic_Item_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var list                  = TopicFactory.Create("Key", "List");
-      var topic                 = TopicFactory.Create("Item", "Page", list);
+      var list                  = new Topic("Key", "List");
+      var topic                 = new Topic("Item", "Page", list);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -244,7 +244,7 @@ namespace OnTopic.Tests {
     public void Container_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Item", "Container");
+      var topic                 = new Topic("Item", "Container");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -270,12 +270,11 @@ namespace OnTopic.Tests {
     public void PageGroupTopic_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "PageGroup");
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var topic                 = new Topic("Key", "PageGroup");
+      var child                 = new Topic("Child", "Page", topic);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
-
-      TopicFactory.Create("Home", "Page", topic);
+      _                         = new Topic("Home", "Page", topic);
 
       validateFilter.OnActionExecuting(context);
 
@@ -297,7 +296,7 @@ namespace OnTopic.Tests {
     public void PageGroupTopic_Empty_ReturnsRedirect() {
 
       var validateFilter = new ValidateTopicAttribute();
-      var topic = TopicFactory.Create("Key", "PageGroup");
+      var topic = new Topic("Key", "PageGroup");
       var controller = GetTopicController(topic);
       var context = GetActionExecutingContext(controller);
 
@@ -328,11 +327,10 @@ namespace OnTopic.Tests {
     public void CanonicalUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
-      var topic                 = TopicFactory.Create("Key", "Page");
+      var topic                 = new Topic("Key", "Page");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
-
-      TopicFactory.Create("Home", "Page", topic);
+      _                         = new Topic("Home", "Page", topic);
 
       validateFilter.OnActionExecuting(context);
 
