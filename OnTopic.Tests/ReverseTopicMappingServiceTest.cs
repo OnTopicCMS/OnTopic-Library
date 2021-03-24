@@ -33,6 +33,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
   [ExcludeFromCodeCoverage]
+  [Xunit.Collection("Shared Repository")]
   public class ReverseTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================

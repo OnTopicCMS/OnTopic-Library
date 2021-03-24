@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
@@ -25,6 +24,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="HierarchicalTopicMappingService{T}"/>.
   /// </summary>
   [ExcludeFromCodeCoverage]
+  [Xunit.Collection("Shared Repository")]
   public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================

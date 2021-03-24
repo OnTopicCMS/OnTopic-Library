@@ -25,6 +25,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicExtensions"/> class.
   /// </summary>
   [ExcludeFromCodeCoverage]
+  [Xunit.Collection("Shared Repository")]
   public class TopicQueryingTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
