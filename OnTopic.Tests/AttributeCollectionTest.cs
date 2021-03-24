@@ -70,9 +70,12 @@ namespace OnTopic.Tests {
     /// </summary>
     [Fact]
     public void GetValue_MissingValue_ReturnsDefault() {
+
       var topic = new Topic("Test", "Container");
+
       Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
       Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
+
     }
 
     /*==========================================================================================================================
