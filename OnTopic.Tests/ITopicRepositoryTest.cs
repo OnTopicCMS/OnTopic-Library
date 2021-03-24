@@ -87,9 +87,11 @@ namespace OnTopic.Tests {
     public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      _                         = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
+      var child                 = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
       Assert.Equal("Page", topic?.Key);
+
+      _topicRepository.Delete(child);
 
     }
 
@@ -179,10 +181,12 @@ namespace OnTopic.Tests {
 
       var source                = _topicRepository.Load("Root:Web:Web_0");
       var destination           = _topicRepository.Load("Root:Web:Web_1");
+      var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
 
       Contract.Assume(source);
       Contract.Assume(destination);
+      Contract.Assume(sibling);
       Contract.Assume(topic);
 
       Assert.Equal<Topic?>(topic.Parent, source);
@@ -194,6 +198,10 @@ namespace OnTopic.Tests {
       Assert.Equal<Topic?>(topic.Parent, destination);
       Assert.Single(source.Children);
       Assert.Equal<int>(3, destination.Children.Count);
+
+      //Revert state
+      _topicRepository.Move(topic, source);
+      _topicRepository.Move(sibling, source);
 
     }
 
@@ -225,6 +233,9 @@ namespace OnTopic.Tests {
       Assert.Equal("Web_0_1", parent.Children.First().Key);
       Assert.Equal("Web_0_0", parent.Children[1].Key);
 
+      //Revert state
+      _topicRepository.Move(topic, parent);
+
     }
 
     /*==========================================================================================================================
@@ -249,6 +260,10 @@ namespace OnTopic.Tests {
       _topicRepository.Delete(topic, true);
 
       Assert.Single(parent.Children);
+
+      //Revert state
+      parent.Children.Add(topic);
+      _topicRepository.Save(topic);
 
     }
 

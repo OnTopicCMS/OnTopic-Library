@@ -252,6 +252,9 @@ namespace OnTopic.Tests {
 
       Assert.Null(contentTypeDescriptor);
 
+      //Revert state
+      _topicRepository.Delete(topic);
+
     }
 
     /*==========================================================================================================================
@@ -273,6 +276,9 @@ namespace OnTopic.Tests {
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
       Assert.Null(contentTypeDescriptor);
+
+      //Revert state
+      _topicRepository.Delete(topic);
 
     }
 
