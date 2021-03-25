@@ -108,5 +108,23 @@ namespace OnTopic.Tests {
     public void Convert_FromString_Fails(Type type) =>
       Assert.Null(AttributeValueConverter.Convert("ABC", type));
 
+
+    /*==========================================================================================================================
+    | TEST: CONVERT: FROM VALUE TYPE: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Passes a valid <paramref name="input"/> into <see cref="AttributeValueConverter.Convert(Object?)"/> and confirms that
+    ///   the result matches the <paramref name="expected"/> string.
+    /// </summary>
+    [Theory]
+    [InlineData(                "String",                       "String")]
+    [InlineData(                true,                           "1")]
+    [InlineData(                false,                          "0")]
+    [InlineData(                1,                              "1")]
+    [InlineData(                null,                           null)]
+    [InlineData(                typeof(string),                 "System.String")]
+    public void Convert_FromValueType_Succeeds(object input, string? expected) =>
+      Assert.Equal(expected, AttributeValueConverter.Convert(input));
+
   } //Class
 } //Namespace
