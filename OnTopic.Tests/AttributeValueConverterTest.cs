@@ -77,5 +77,18 @@ namespace OnTopic.Tests {
     public void Convert_DateTime_Succeeds(string? input) =>
       Assert.Equal(new DateTime(1976, 10, 15, 1, 2, 3), AttributeValueConverter.Convert(input, typeof(DateTime)));
 
+    /*==========================================================================================================================
+    | TEST: CONVERT: URI: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Passes a valid input string into <see cref="AttributeValueConverter.Convert(String?, Type)"/> and confirms that the
+    ///   result matches the expected <see cref="Uri"/> value.
+    /// </summary>
+    [Fact]
+    public void Convert_Uri_Succeeds() {
+      Assert.Equal("/OnTopicCMS/", ((Uri?)AttributeValueConverter.Convert("https://www.github.com/OnTopicCMS/", typeof(Uri)))?.LocalPath);
+      Assert.False(((Uri?)AttributeValueConverter.Convert("/OnTopicCMS/", typeof(Uri)))?.IsAbsoluteUri);
+    }
+
   } //Class
 } //Namespace
