@@ -369,7 +369,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && typeof(IList).IsAssignableFrom(parameter.ParameterType)) {
+      if (value is null && IsList(parameter.ParameterType)) {
         return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
       }
       else if (configuration.MapToParent) {
@@ -451,7 +451,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, property.PropertyType, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
 
-      if (value is null && typeof(IList).IsAssignableFrom(property.PropertyType)) {
+      if (value is null && IsList(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
       }
       else if (configuration.MapToParent) {
@@ -536,7 +536,7 @@ namespace OnTopic.Mapping {
       else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
         value = GetScalarValue(source, configuration);
       }
-      else if (typeof(IList).IsAssignableFrom(targetType)) {
+      else if (IsList(targetType)) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
@@ -621,6 +621,16 @@ namespace OnTopic.Mapping {
     }
 
     /*==========================================================================================================================
+    | PRIVATE: IS LIST?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a type, determines whether it's a list that is recognized by the <see cref="TopicMappingService"/>.
+    /// </summary>
+    /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
+    private static bool IsList(Type targetType) =>
+      typeof(IList).IsAssignableFrom(targetType);
+
+    /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -637,7 +647,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(targetType)) {
+      if (!IsList(targetType)) {
         return (IList?)null;
       }
 
@@ -713,7 +723,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
+      if (!IsList(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
