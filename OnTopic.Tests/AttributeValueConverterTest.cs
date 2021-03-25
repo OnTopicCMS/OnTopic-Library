@@ -90,5 +90,23 @@ namespace OnTopic.Tests {
       Assert.False(((Uri?)AttributeValueConverter.Convert("/OnTopicCMS/", typeof(Uri)))?.IsAbsoluteUri);
     }
 
+    /*==========================================================================================================================
+    | TEST: CONVERT: VALUE: FAILS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Passes an invalid value into <see cref="AttributeValueConverter.Convert(String?, Type)"/> based on a <paramref name="
+    ///   type"/> and confirms that the result is <c>null</c>.
+    /// </summary>
+    [Theory]
+    [InlineData(                typeof(int))]
+    [InlineData(                typeof(bool))]
+    [InlineData(                typeof(DateTime))]
+    [InlineData(                typeof(int?))]
+    [InlineData(                typeof(bool?))]
+    [InlineData(                typeof(DateTime?))]
+    [InlineData(                typeof(object))]
+    public void Convert_Value_Fails(Type type) =>
+      Assert.Null(AttributeValueConverter.Convert("ABC", type));
+
   } //Class
 } //Namespace
