@@ -63,5 +63,19 @@ namespace OnTopic.Tests {
     public void Convert_Value_Succeeds(Type type, string? input, object? expected) =>
       Assert.Equal(expected, AttributeValueConverter.Convert(input, type));
 
+    /*==========================================================================================================================
+    | TEST: CONVERT: DATE/TIME: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Passes a valid valid <paramref name="input"/> string into <see cref="AttributeValueConverter.Convert(String?, Type)"/>
+    ///   and confirms that the result matches the expected <see cref="DateTime"/> value.
+    /// </summary>
+    [Theory]
+    [InlineData(                "1976-10-15 01:02:03")]
+    [InlineData(                "October 15, 1976 01:02:03 AM")]
+    [InlineData(                "15 Oct 1976 01:02:03")]
+    public void Convert_DateTime_Succeeds(string? input) =>
+      Assert.Equal(new DateTime(1976, 10, 15, 1, 2, 3), AttributeValueConverter.Convert(input, typeof(DateTime)));
+
   } //Class
 } //Namespace
