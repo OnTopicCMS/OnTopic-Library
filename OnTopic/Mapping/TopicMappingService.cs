@@ -626,9 +626,31 @@ namespace OnTopic.Mapping {
     /// <summary>
     ///   Given a type, determines whether it's a list that is recognized by the <see cref="TopicMappingService"/>.
     /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     To qualify, the <paramref name="targetType"/> must either implement <see cref="IList"/>, or it must be of type <see
+    ///     cref="IEnumerable{T}"/>, <see cref="ICollection{T}"/>, or <see cref="IList{T}"/>—any of which, if null, will be
+    ///     instantiated as a new <see cref="List{T}"/>.
+    ///   </para>
+    ///   <para>
+    ///     It is technically possible for the <paramref name="targetType"/> to implement one of the interfaces, such as <see
+    ///     cref="IList{T}"/>, while the assigned reference type is not compatible with the <see cref="IList"/> interface
+    ///     required by e.g. <see cref="PopulateTargetCollectionAsync(IList{Topic}, IList, ItemConfiguration, MappedTopicCache)"
+    ///     />. Detecting this requires looping through the interface implementations which is comparatively more costly given
+    ///     the number of times <see cref="IsList(Type)"/> gets called. In practice, collections that implement e.g. <see cref="
+    ///     IList{T}"/> are expected to also support <see cref="IList"/>. If they don't, however, the mapping will throw an
+    ///     exception since the assigned value will not be castable to an <see cref="IList"/>.
+    ///   </para>
+    /// </remarks>
     /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
     private static bool IsList(Type targetType) =>
-      typeof(IList).IsAssignableFrom(targetType);
+      typeof(IList).IsAssignableFrom(targetType) ||
+      targetType.IsGenericType &&
+      (
+        targetType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+        targetType.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+        targetType.GetGenericTypeDefinition() == typeof(IList<>)
+      );
 
     /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
