@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 | Declare and define attributes used in the compiling of the finished assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
+[assembly: CLSCompliant(false)]
 [assembly: Guid("27632801-bfe3-41d9-8678-3c4bbe45e6c9")]
 
 /*==============================================================================================================================

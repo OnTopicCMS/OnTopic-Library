@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OnTopic.AspNetCore.Mvc.Controllers;
@@ -41,7 +42,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers {
     ///   Exposes a method which will, by default, be associated with views named <c>Accordion</c>.
     /// </summary>
     /// <returns>A view associated with the <c>Accordion</c> action.</returns>
-    public IActionResult Accordion() => TopicView(new(), CurrentTopic?.View);
+    public IActionResult Accordion() => TopicView(new(), CurrentTopic!.View);
 
   } //Class
 } //Namespace

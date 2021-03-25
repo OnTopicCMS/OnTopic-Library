@@ -369,7 +369,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && typeof(IList).IsAssignableFrom(parameter.ParameterType)) {
+      if (value is null && IsList(parameter.ParameterType)) {
         return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
       }
       else if (configuration.MapToParent) {
@@ -451,7 +451,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, property.PropertyType, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
 
-      if (value is null && typeof(IList).IsAssignableFrom(property.PropertyType)) {
+      if (value is null && IsList(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
       }
       else if (configuration.MapToParent) {
@@ -536,7 +536,7 @@ namespace OnTopic.Mapping {
       else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
         value = GetScalarValue(source, configuration);
       }
-      else if (typeof(IList).IsAssignableFrom(targetType)) {
+      else if (IsList(targetType)) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
@@ -621,6 +621,38 @@ namespace OnTopic.Mapping {
     }
 
     /*==========================================================================================================================
+    | PRIVATE: IS LIST?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a type, determines whether it's a list that is recognized by the <see cref="TopicMappingService"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     To qualify, the <paramref name="targetType"/> must either implement <see cref="IList"/>, or it must be of type <see
+    ///     cref="IEnumerable{T}"/>, <see cref="ICollection{T}"/>, or <see cref="IList{T}"/>—any of which, if null, will be
+    ///     instantiated as a new <see cref="List{T}"/>.
+    ///   </para>
+    ///   <para>
+    ///     It is technically possible for the <paramref name="targetType"/> to implement one of the interfaces, such as <see
+    ///     cref="IList{T}"/>, while the assigned reference type is not compatible with the <see cref="IList"/> interface
+    ///     required by e.g. <see cref="PopulateTargetCollectionAsync(IList{Topic}, IList, ItemConfiguration, MappedTopicCache)"
+    ///     />. Detecting this requires looping through the interface implementations which is comparatively more costly given
+    ///     the number of times <see cref="IsList(Type)"/> gets called. In practice, collections that implement e.g. <see cref="
+    ///     IList{T}"/> are expected to also support <see cref="IList"/>. If they don't, however, the mapping will throw an
+    ///     exception since the assigned value will not be castable to an <see cref="IList"/>.
+    ///   </para>
+    /// </remarks>
+    /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
+    private static bool IsList(Type targetType) =>
+      typeof(IList).IsAssignableFrom(targetType) ||
+      targetType.IsGenericType &&
+      (
+        targetType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+        targetType.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+        targetType.GetGenericTypeDefinition() == typeof(IList<>)
+      );
+
+    /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -637,7 +669,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(targetType)) {
+      if (!IsList(targetType)) {
         return (IList?)null;
       }
 
@@ -649,19 +681,18 @@ namespace OnTopic.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle types that don't implement IList
+      | Handle types that don't implement IList or IEnumerable
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (targetType != typeof(IList<>)) {
+      if (!targetType.IsGenericType) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to create generic list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var constructor           = targetType.GetConstructor(Array.Empty<Type>());
       var parameters            = targetType.GetGenericArguments();
 
-      if (constructor is null || parameters.Length != 1) {
+      if (parameters.Length != 1) {
         return null;
       }
 
@@ -713,7 +744,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
+      if (!IsList(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
