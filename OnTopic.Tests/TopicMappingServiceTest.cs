@@ -202,6 +202,37 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: GENERIC: INITIALIZES COLLECTIONS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and attempts to map a view model whose collections are not initialized
+    ///   in order to confirm that it can successfully initialize them.
+    /// </summary>
+    [Fact]
+    public async Task Map_Generic_InitializesCollections() {
+
+      var topic                 = new Topic("Topic", "NullCollection", null, 1);
+      var reference             = new Topic("Reference", "KeyOnly", null, 2);
+
+      topic.Relationships.SetValue("Collection", reference);
+
+      var result                = await _mappingService.MapAsync<NullCollectionTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.NotNull(result?.NullCollection);
+      Assert.NotNull(result?.NullICollection);
+      Assert.NotNull(result?.NullIList);
+      Assert.NotNull(result?.NullIEnumerable);
+      Assert.NotNull(result?.NullTypedCollection);
+
+      Assert.NotEmpty(result?.NullCollection);
+      Assert.NotEmpty(result?.NullICollection);
+      Assert.NotEmpty(result?.NullIList);
+      Assert.NotEmpty(result?.NullIEnumerable);
+      Assert.NotEmpty(result?.NullTypedCollection);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: CONSTRUCTOR: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
