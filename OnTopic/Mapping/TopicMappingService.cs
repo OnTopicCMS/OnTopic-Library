@@ -659,19 +659,18 @@ namespace OnTopic.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle types that don't implement IList
+      | Handle types that don't implement IList or IEnumerable
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (targetType != typeof(IList<>)) {
+      if (!targetType.IsGenericType) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to create generic list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var constructor           = targetType.GetConstructor(Array.Empty<Type>());
       var parameters            = targetType.GetGenericArguments();
 
-      if (constructor is null || parameters.Length != 1) {
+      if (parameters.Length != 1) {
         return null;
       }
 
