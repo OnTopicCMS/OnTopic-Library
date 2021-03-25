@@ -139,5 +139,19 @@ namespace OnTopic.Tests {
     public void Convert_FromDateTime_Succeeds() =>
       Assert.Equal("10/15/1976 01:02:03", AttributeValueConverter.Convert(new DateTime(1976, 10, 15, 1, 2, 3)));
 
+    /*==========================================================================================================================
+    | TEST: CONVERT: FROM URI: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="Uri"/> based on the <paramref name="input"/> and confirms <see cref="AttributeValueConverter
+    ///   .Convert(object?)"/> returns the expected <see cref="String"/> value.
+    /// </summary>
+    [Theory]
+    [InlineData(                "https://www.github.com/OnTopicCMS")]
+    [InlineData(                "https://github.com/OnTopicCMS/OnTopic-Library/issues?q=is%3Aopen+is%3Aissue+no%3Amilestone")]
+    [InlineData(                "/OnTopicCMS/")]
+    public void Convert_FromUri_Succeeds(string input) =>
+      Assert.Equal(input, AttributeValueConverter.Convert(new Uri(input, UriKind.RelativeOrAbsolute)));
+
   } //Class
 } //Namespace
