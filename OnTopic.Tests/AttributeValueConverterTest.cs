@@ -74,6 +74,7 @@ namespace OnTopic.Tests {
     [InlineData(                "1976-10-15 01:02:03")]
     [InlineData(                "October 15, 1976 01:02:03 AM")]
     [InlineData(                "15 Oct 1976 01:02:03")]
+    [InlineData(                "10/15/1976 01:02:03 AM")]
     public void Convert_ToDateTime_Succeeds(string? input) =>
       Assert.Equal(new DateTime(1976, 10, 15, 1, 2, 3), AttributeValueConverter.Convert(input, typeof(DateTime)));
 
