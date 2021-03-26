@@ -47,6 +47,8 @@ We maintain 99+% coverage on all core libraries via a combination of unit tests 
 - **[`OnTopic.AspNetCore.Mvc.IntegrationTests`](OnTopic.AspNetCore.Mvc.IntegrationTests)**: xUnit.net integration tests for the `OnTopic.AspNetCore.Mvc` implementation.
 - **[`OnTopic.Data.Sql.Database.Tests`](OnTopic.Data.Sql.Database.Tests)**: SQL Server Data Tools (SSDT) unit tests for evaluating the functionality of stored procedures and functions against a local SQL Server database.
 
+> _Note:_ The one gap in our testing is the `OnTopic.Data.Sql` library, which doesn't currently have integration tests. That said, the underlying stored procedures it calls into are covered by the SSDT tests. Additionally, the extension methods it relies on, which contain most of the business logic, are well covered.
+
 ### Editor
 - **[`OnTopic.Editor.AspNetCore`](https://github.com/OnTopicCMS/OnTopic-Editor-AspNetCore/)**: ASP.NET Core implementation of the editor interface. Supports both ASP.NET Core 3.x and ASP.NET Core 5.x.
 - **[`OnTopic.Data.Transfer`](https://github.com/OnTopicCMS/OnTopic-Data-Transfer/)**: .NET Standard library for serializing and deserializing `Topic` entities into a data interchange format which can be used to import or export topic graphs via JSON.
