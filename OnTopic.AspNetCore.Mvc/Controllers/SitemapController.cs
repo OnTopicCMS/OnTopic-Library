@@ -84,6 +84,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       "IsDisabled",
       "ParentID",               //Legacy, but exposed for avoid leacking legacy data
       "TopicID",                //Legacy, but exposed for avoid leacking legacy data
+      "ContentType",            //Legacy, but exposed for avoid leacking legacy data
       "IsHidden",
       "NoIndex",
       "SortOrder"
