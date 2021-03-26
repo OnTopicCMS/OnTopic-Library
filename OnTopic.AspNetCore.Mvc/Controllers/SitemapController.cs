@@ -196,8 +196,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Attributes.GetBoolean("NoIndex")) return topics;
-      if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
       if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +220,9 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       );
       if (
         !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
-        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url"))
+        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url")) &&
+        !topic.Attributes.GetBoolean("NoIndex") &&
+        !topic.Attributes.GetBoolean("IsDisabled")
       ) {
         topics.Add(topicElement);
       }
