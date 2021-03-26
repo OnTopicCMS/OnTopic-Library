@@ -40,9 +40,11 @@ Fundamentally, OnTopic is based on structured schemas ("Content Types") which ca
 - **[`OnTopic.AspNetCore.Mvc`](OnTopic.AspNetCore.Mvc/README.md)**: ASP.NET Core implementation, including a default [`TopicController`](OnTopic.AspNetCore.Mvc/Controllers/TopicController.cs), allowing templates to be created using `*.cshtml` pages and _view components_. Supports both ASP.NET Core 3.x and ASP.NET Core 5.x.
 - **[`OnTopic.ViewModels`](OnTopic.ViewModels/README.md)**: Standard view models using C# 9 records for exposing factory-default schemas of shared content types. These can be extended, overwritten, or ignored entirely by the presentation layer implementation; they are provided for convenience.
 
-### Unit Tests
-- **[`OnTopic.Tests`](OnTopic.Tests)**: .NET Unit Tests, broken down by target class.
-- **[`OnTopic.AspNetCore.Mvc.Tests`](OnTopic.AspNetCore.Mvc.Tests)**: .NET Unit Tests for the `OnTopic.AspNetCore.Mvc` implementation.
+### Tests
+We maintain 99+% coverage on all core libraries via a combination of unit tests (for e.g. `OnTopic`) and integration tests (for e.g. `OnTopic.AspNetCore.Mvc`). 
+- **[`OnTopic.Tests`](OnTopic.Tests)**: xUnit.net Tests, broken down by target class.
+- **[`OnTopic.AspNetCore.Mvc.Tests`](OnTopic.AspNetCore.Mvc.Tests)**: xUnit.net Tests for the `OnTopic.AspNetCore.Mvc` implementation.
+- **[`OnTopic.AspNetCore.Mvc.IntegrationTests`](OnTopic.AspNetCore.Mvc.IntegrationTests)**: xUnit.net integration tests for the `OnTopic.AspNetCore.Mvc` implementation.
 - **[`OnTopic.Data.Sql.Database.Tests`](OnTopic.Data.Sql.Database.Tests)**: SQL Server Data Tools (SSDT) unit tests for evaluating the functionality of stored procedures and functions against a local SQL Server database.
 
 ### Editor
