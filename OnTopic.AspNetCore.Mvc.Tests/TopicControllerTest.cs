@@ -189,11 +189,11 @@ namespace OnTopic.Tests {
       Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
-      Assert.False(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
 
       Assert.True(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
 
     }
 
