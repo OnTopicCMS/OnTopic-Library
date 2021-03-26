@@ -1,7 +1,7 @@
 ﻿# Topic View Models
 The `OnTopic.ViewModels` assembly includes default implementations of basic view models which map to the stock content types that ship with OnTopic. These can optionally be used or extended by client implementations.
 
-[![OnTopic.ViewModels package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/b22ec8a0-3966-4dc8-8bf5-69e6264dabd1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=b22ec8a0-3966-4dc8-8bf5-69e6264dabd1&preferRelease=true)
+[![OnTopic.ViewModels package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/b22ec8a0-3966-4dc8-8bf5-69e6264dabd1/Badge)](https://www.nuget.org/packages/OnTopic.ViewModels/)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
 ![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
 
