@@ -373,7 +373,10 @@ namespace OnTopic.Data.Sql {
       | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      areAttributesDirty        = areAttributesDirty || extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+      areAttributesDirty        =
+        areAttributesDirty      ||
+        indexedAttributeList.Any(a => a.IsExtendedAttribute == true) ||
+        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
 
       var isDirty               =
         isTopicDirty            ||
