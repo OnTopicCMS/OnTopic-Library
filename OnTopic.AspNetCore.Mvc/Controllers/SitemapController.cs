@@ -197,6 +197,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        topic.ContentType.Equals("Container", StringComparison.OrdinalIgnoreCase) &&
+        topic.Attributes.GetBoolean("NoIndex")
+      ) return topics;
       if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
