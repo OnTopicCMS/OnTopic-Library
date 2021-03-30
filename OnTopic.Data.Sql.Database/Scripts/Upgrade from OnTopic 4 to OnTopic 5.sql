@@ -139,6 +139,34 @@ WHERE	AttributeKey		LIKE '%ID'
 PRINT('Migrated core attributes');
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- MIGRATE RELATIONSHIP VERSIONS
+--------------------------------------------------------------------------------------------------------------------------------
+-- In OnTopic 5, relationships are now versioned. This means that when a topic is rolled back, it will now remove relationships
+-- that were introduced after that version. Since relationships weren't previously versioned, that means that their version
+-- needs to be set to earliest version of the target topic, to prevent rollbacks from deleting relationships of an indeterminate
+-- date.
+--------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating relationship versions...');
+
+ALTER TABLE	[dbo].[Relationships]
+ADD	[Version]		DATETIME2(7)	NULL
+
+UPDATE	Relationships
+SET	Version		= FirstVersion
+FROM	Relationships
+CROSS APPLY (
+  SELECT	TOP 1
+	Version		AS FirstVersion
+  FROM	ExtendedAttributes
+  WHERE	TopicID		= Relationships.Source_TopicID
+  ORDER BY	Version		ASC
+)	AS		Attributes
+WHERE	FirstVersion		IS NOT NULL
+
+PRINT('Migrated relationship versions...');
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE DERIVED TOPICS
 --------------------------------------------------------------------------------------------------------------------------------
 -- The above migration to topic references includes the DerivedTopic. To better clarify the purpose and intent of that
