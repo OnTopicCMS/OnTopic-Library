@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections;
 
 namespace OnTopic.ViewModels {
@@ -26,6 +27,11 @@ namespace OnTopic.ViewModels {
   ///     are supplied for convenience to model factory default settings for out-of-the-box content types.
   ///   </para>
   /// </remarks>
+  [Obsolete(
+    "There should not be a need for a LookupListItem view model. If these must be referenced, prefer using e.g. [MapAs()] " +
+    "to specify a common view model.",
+    false
+  )]
   public record ListTopicViewModel: ContentItemTopicViewModel {
 
   } //Class

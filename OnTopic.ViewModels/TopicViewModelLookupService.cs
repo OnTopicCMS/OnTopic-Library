@@ -50,9 +50,17 @@ namespace OnTopic.ViewModels {
       \-----------------------------------------------------------------------------------------------------------------------*/
       TryAdd(typeof(ItemTopicViewModel));
       TryAdd(typeof(ContentItemTopicViewModel));
-      TryAdd(typeof(ListTopicViewModel));
       TryAdd(typeof(LookupListItemTopicViewModel));
       TryAdd(typeof(SlideTopicViewModel));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add obsolete types
+      >-------------------------------------------------------------------------------------------------------------------------
+      | These will be removed in the next major version of OnTopic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+#pragma warning disable CS0618 // Type or member is obsolete
+      TryAdd(typeof(ListTopicViewModel));
+      #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add support types
