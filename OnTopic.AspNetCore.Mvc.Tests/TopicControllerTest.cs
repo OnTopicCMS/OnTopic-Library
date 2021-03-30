@@ -189,13 +189,38 @@ namespace OnTopic.Tests {
       Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
-      Assert.False(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
       Assert.False(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
 
       Assert.True(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
 
     }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES CONTAINER DESCENDANTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
+    ///   properly excludes the children of <c>Container</c> topics that are marked as <c>NoIndex</c>.
+    /// </summary>
+    [Fact]
+    public void SitemapController_Index_ExcludesContainerDescendants() {
+
+      var controller = new SitemapController(_topicRepository) {
+        ControllerContext = new(_context)
+      };
+      var result = controller.Extended(true) as ContentResult;
+      var model = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("NoIndexContainer/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndexContainerChild/</loc>", StringComparison.Ordinal));
+
+    }
+
 
     /*==========================================================================================================================
     | TEST: SITEMAP CONTROLLER: EXTENDED: INCLUDES ATTRIBUTES

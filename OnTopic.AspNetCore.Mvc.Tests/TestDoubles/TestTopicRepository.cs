@@ -66,6 +66,8 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
       var redirectPage          = new Topic("Redirect", "Page", webTopic);
       var noIndexPage           = new Topic("NoIndex", "Page", webTopic);
       _                         = new Topic("NoIndexChild", "Page", noIndexPage);
+      var noIndexContainer      = new Topic("NoIndexContainer", "Container", webTopic);
+      _                         = new Topic("NoIndexContainerChild", "Page", noIndexContainer);
       var disabledPage          = new Topic("Disabled", "Page", webTopic);
       var pageGroup             = new Topic("PageGroup", "PageGroup", rootTopic);
       _                         = new Topic("PageGroupChild", "Page", pageGroup);
@@ -92,6 +94,9 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
       redirectPage.Attributes.SetValue("Url", "https://www.ignia.com/");
       noIndexPage.Attributes.SetBoolean("NoIndex", true);
       disabledPage.Attributes.SetBoolean("IsDisabled", true);
+
+      //Excluded descendants
+      noIndexContainer.Attributes.SetBoolean("NoIndex", true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return data
