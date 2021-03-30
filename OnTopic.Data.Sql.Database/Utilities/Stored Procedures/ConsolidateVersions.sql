@@ -94,6 +94,32 @@ WHERE	Version		> @StartDate
   AND	Version		< @EndDate
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- CREATE CONSOLIDATED TOPIC REFERENCES RECORD
+--------------------------------------------------------------------------------------------------------------------------------
+;WITH	TopicReferenceVersions
+AS (
+  SELECT	Version,
+	RowNumber		= ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID
+	  ORDER BY		Version		DESC
+	)
+  FROM	TopicReferences
+  WHERE	Version		> @StartDate
+    AND	Version		<= @EndDate
+)
+UPDATE	TopicReferenceVersions
+SET	Version		= @EndDate
+WHERE	RowNumber		= 1
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE CONSOLIDATED TOPIC REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	TopicReferences
+WHERE	Version		> @StartDate
+  AND	Version		< @EndDate
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- COMMIT TRANSACTION
 --------------------------------------------------------------------------------------------------------------------------------
 IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
