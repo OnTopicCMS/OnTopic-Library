@@ -41,7 +41,7 @@ IF (@StartDate IS NULL)
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT TOPIC ATTRIBUTES
+-- CREATE CONSOLIDATED TOPIC ATTRIBUTE RECORD
 --------------------------------------------------------------------------------------------------------------------------------
 ;WITH	TopicAttributes
 AS (
@@ -68,7 +68,7 @@ WHERE	Version		> @StartDate
   AND	Version		< @EndDate
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT EXTENDED ATTRIBUTES
+-- CREATE CONSOLIDATED EXTENDED ATTRIBUTES RECORD
 --------------------------------------------------------------------------------------------------------------------------------
 ;WITH	TopicExtendedAttributes
 AS (
@@ -86,10 +86,64 @@ SET	Version		= @EndDate
 WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
--- DELETE CONSOLIDATED ATTRIBUTES
+-- DELETE CONSOLIDATED EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE
 FROM	ExtendedAttributes
+WHERE	Version		> @StartDate
+  AND	Version		< @EndDate
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- CREATE CONSOLIDATED RELATIONSHIPS RECORD
+--------------------------------------------------------------------------------------------------------------------------------
+;WITH	TopicRelationships
+AS (
+  SELECT	Version,
+	RowNumber		= ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID,
+			RelationshipKey,
+			Target_TopicID
+	  ORDER BY		Version		DESC
+	)
+  FROM	Relationships
+  WHERE	Version		> @StartDate
+    AND	Version		<= @EndDate
+)
+UPDATE	TopicRelationships
+SET	Version		= @EndDate
+WHERE	RowNumber		= 1
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE CONSOLIDATED RELATIONSHIPS
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Relationships
+WHERE	Version		> @StartDate
+  AND	Version		< @EndDate
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- CREATE CONSOLIDATED TOPIC REFERENCES RECORD
+--------------------------------------------------------------------------------------------------------------------------------
+;WITH	TopicReferenceVersions
+AS (
+  SELECT	Version,
+	RowNumber		= ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID
+	  ORDER BY		Version		DESC
+	)
+  FROM	TopicReferences
+  WHERE	Version		> @StartDate
+    AND	Version		<= @EndDate
+)
+UPDATE	TopicReferenceVersions
+SET	Version		= @EndDate
+WHERE	RowNumber		= 1
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE CONSOLIDATED TOPIC REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	TopicReferences
 WHERE	Version		> @StartDate
   AND	Version		< @EndDate
 

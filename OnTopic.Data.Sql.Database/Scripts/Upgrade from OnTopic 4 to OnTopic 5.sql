@@ -119,15 +119,17 @@ CREATE
 TABLE	[dbo].[TopicReferences] (
 	  [Source_TopicID]	INT	NOT NULL,
 	  [ReferenceKey]	VARCHAR(128)	NOT NULL,
-	  [Target_TopicID]	INT	NOT NULL
+	  [Target_TopicID]	INT	NOT NULL,
+	  [Version]		DATETIME2(7)	NULL
 );
 
 INSERT
 INTO	TopicReferences
-SELECT	AttributeIndex.TopicID,
+SELECT	Attributes.TopicID,
 	SUBSTRING(AttributeKey, 0, LEN(AttributeKey)-1),
-	AttributeValue
-FROM	AttributeIndex
+	AttributeValue,
+	Version
+FROM	Attributes
 JOIN	Topics
   ON	Topics.TopicID		= CONVERT(INT, AttributeValue)
 WHERE	AttributeKey		LIKE '%ID'
@@ -135,6 +137,34 @@ WHERE	AttributeKey		LIKE '%ID'
   AND	Topics.TopicID		IS NOT NULL
 
 PRINT('Migrated core attributes');
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- MIGRATE RELATIONSHIP VERSIONS
+--------------------------------------------------------------------------------------------------------------------------------
+-- In OnTopic 5, relationships are now versioned. This means that when a topic is rolled back, it will now remove relationships
+-- that were introduced after that version. Since relationships weren't previously versioned, that means that their version
+-- needs to be set to earliest version of the target topic, to prevent rollbacks from deleting relationships of an indeterminate
+-- date.
+--------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating relationship versions...');
+
+ALTER TABLE	[dbo].[Relationships]
+ADD	[Version]		DATETIME2(7)	NULL
+
+UPDATE	Relationships
+SET	Version		= FirstVersion
+FROM	Relationships
+CROSS APPLY (
+  SELECT	TOP 1
+	Version		AS FirstVersion
+  FROM	ExtendedAttributes
+  WHERE	TopicID		= Relationships.Source_TopicID
+  ORDER BY	Version		ASC
+)	AS		Attributes
+WHERE	FirstVersion		IS NOT NULL
+
+PRINT('Migrated relationship versions...');
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE DERIVED TOPICS
