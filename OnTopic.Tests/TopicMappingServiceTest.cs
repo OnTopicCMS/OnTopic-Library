@@ -1265,6 +1265,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: EMPTY ATTRIBUTE: RETAINS INITIAL VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a model that has initialized properties. Ensures that those are retained if the source values are empty.
+    /// </summary>
+    [Fact]
+    public async Task Map_EmptyAttribute_RetainsInitialValue() {
+
+      var topic                 = new Topic("Topic", "Initialized");
+
+      topic.Attributes.SetValue("InitializedValue", "Initial Value");
+      topic.Attributes.SetValue("InitializedValue", "");
+
+      var target                = await _mappingService.MapAsync<InitializedTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.Equal("Original Value", target?.InitializedValue);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: EXCEEDS MINIMUM VALUE: THROWS VALIDATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

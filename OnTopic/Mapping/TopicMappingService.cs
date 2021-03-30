@@ -469,7 +469,7 @@ namespace OnTopic.Mapping {
       else if (value != null && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         _typeCache.SetPropertyValue(target, configuration.Property.Name, value);
       }
-      else if (_typeCache.HasSettableProperty(target.GetType(), property.Name, property.PropertyType)) {
+      else if (value != null && _typeCache.HasSettableProperty(target.GetType(), property.Name, property.PropertyType)) {
         _typeCache.SetPropertyValue(target, configuration.Property.Name, value);
       }
 
