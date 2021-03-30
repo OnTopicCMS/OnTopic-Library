@@ -119,15 +119,17 @@ CREATE
 TABLE	[dbo].[TopicReferences] (
 	  [Source_TopicID]	INT	NOT NULL,
 	  [ReferenceKey]	VARCHAR(128)	NOT NULL,
-	  [Target_TopicID]	INT	NOT NULL
+	  [Target_TopicID]	INT	NOT NULL,
+	  [Version]		DATETIME2(7)	NULL
 );
 
 INSERT
 INTO	TopicReferences
-SELECT	AttributeIndex.TopicID,
+SELECT	Attributes.TopicID,
 	SUBSTRING(AttributeKey, 0, LEN(AttributeKey)-1),
-	AttributeValue
-FROM	AttributeIndex
+	AttributeValue,
+	Version
+FROM	Attributes
 JOIN	Topics
   ON	Topics.TopicID		= CONVERT(INT, AttributeValue)
 WHERE	AttributeKey		LIKE '%ID'
