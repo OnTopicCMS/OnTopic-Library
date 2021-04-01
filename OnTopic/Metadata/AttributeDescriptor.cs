@@ -168,7 +168,7 @@ namespace OnTopic.Metadata {
     /// </remarks>
     [ExcludeFromCodeCoverage]
     public string? DefaultValue {
-      get => Attributes.GetValue("DefaultValue", "");
+      get => Attributes.GetValue("DefaultValue", null);
       set => SetAttributeValue("DefaultValue", value);
     }
 
