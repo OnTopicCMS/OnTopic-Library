@@ -1129,5 +1129,30 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MOVE: SAME LOCATION: EVENT NOT RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref="
+    ///   ITopicRepository.TopicMoved"/> event is not raised.
+    /// </summary>
+    [Fact]
+    public void Move_SameLocation_EventNotRaised() {
+
+      var parent                = new Topic("Parent", "Page", null, 1);
+      var sibling               = new Topic("Sibling", "Page", parent, 2);
+      var topic                 = new Topic("Test", "Page", parent, 3);
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Move(topic, parent, sibling);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
+
+      Assert.False(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+    }
+
   } //Class
 } //Namespace
