@@ -327,6 +327,7 @@ namespace OnTopic.Repositories {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isNew                 = topic.IsNew;
+      var areRelationshipsDirty = topic.Relationships.IsDirty();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
@@ -405,7 +406,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If content type, and relationships have been updated, refresh permitted content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (asContentType is not null && asContentType.Relationships.IsDirty()) {
+      if (asContentType is not null && areRelationshipsDirty) {
         asContentType.ResetPermittedContentTypes();
       }
 

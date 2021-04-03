@@ -234,21 +234,21 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = new Topic("Root", "Container", null, 900);
       var currentAttributeId = 800;
+      var rootTopic = new Topic("Root", "Container", null, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = new Topic("Configuration", "Container", rootTopic);
-      var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration);
+      var configuration = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
+      var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
 
       addAttribute(contentTypes, "Key", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "ContentType", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "Title", "TextAttributeDescriptor", true, true);
       addAttribute(contentTypes, "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
-      var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
       addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
@@ -258,7 +258,7 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
-      var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
       addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
@@ -270,21 +270,22 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
       TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
-      var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes);
+      var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
       addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
       addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
-
-      var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes);
+      var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(contactContentType, "Name", isExtended: false);
       addAttribute(contactContentType, "AlternateEmail", isExtended: false);
       addAttribute(contactContentType, "BillingContactEmail", isExtended: false);
+
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contactContentType);
+      contactContentType.Relationships.SetValue("ContentTypes", pageContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
@@ -310,9 +311,9 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var metadata = new Topic("Metadata", "Container", configuration);
-      var categories = new Topic("Categories", "Lookup", metadata);
-      var lookup = new Topic("LookupList", "List", categories);
+      var metadata              = new Topic("Metadata", "Container", configuration, currentAttributeId++);
+      var categories            = new Topic("Categories", "Lookup", metadata, currentAttributeId++);
+      var lookup                = new Topic("LookupList", "List", categories, currentAttributeId++);
 
       for (var i=1; i<=5; i++) {
         _ = new Topic("Category" + i, "LookupListItem", lookup);
@@ -325,10 +326,10 @@ namespace OnTopic.TestDoubles {
 
       CreateFakeData(web, 2, 3);
 
-      var pageGroup             = new Topic("Web_3", "PageGroup", web);
-      _                         = new Topic("Web_3_0", "Page", pageGroup);
-      var childPage             = new Topic("Web_3_1", "Page", pageGroup);
-      var leafPage              = new Topic("Web_3_1_0", "Page", childPage);
+      var pageGroup             = new Topic("Web_3", "PageGroup", web, currentAttributeId++);
+      _                         = new Topic("Web_3_0", "Page", pageGroup, currentAttributeId++);
+      var childPage             = new Topic("Web_3_1", "Page", pageGroup, currentAttributeId++);
+      var leafPage              = new Topic("Web_3_1_0", "Page", childPage, currentAttributeId++);
 
       leafPage.Attributes.SetValue("NavigationRoot", "Configuration");
 
