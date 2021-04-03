@@ -277,14 +277,15 @@ namespace OnTopic.TestDoubles {
       addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
       addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
-
       var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(contactContentType, "Name", isExtended: false);
       addAttribute(contactContentType, "AlternateEmail", isExtended: false);
       addAttribute(contactContentType, "BillingContactEmail", isExtended: false);
+
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contactContentType);
+      contactContentType.Relationships.SetValue("ContentTypes", pageContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function

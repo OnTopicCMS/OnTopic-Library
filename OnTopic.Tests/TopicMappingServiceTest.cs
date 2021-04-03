@@ -680,14 +680,16 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CustomCollection_ReturnsCollection() {
 
-      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
+      var topic                 = (ContentTypeDescriptor)_topicRepository.Load("Root:Configuration:ContentTypes:Page");
       var target                = await _mappingService.MapAsync<ContentTypeDescriptorTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.Equal<int?>(8, target?.AttributeDescriptors.Count);
       Assert.Equal<int?>(2, target?.PermittedContentTypes.Count);
 
       //Ensure custom collections are not recursively followed without instruction
-      Assert.Empty(target?.PermittedContentTypes.FirstOrDefault()?.PermittedContentTypes);
+      Assert.NotEqual<Topic?>(topic, topic?.PermittedContentTypes.LastOrDefault());
+      Assert.NotEmpty(topic?.PermittedContentTypes.LastOrDefault()?.PermittedContentTypes);
+      Assert.Empty(target?.PermittedContentTypes.LastOrDefault()?.PermittedContentTypes);
 
     }
 
