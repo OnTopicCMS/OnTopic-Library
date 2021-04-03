@@ -198,6 +198,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
+        topic.Attributes.GetBoolean("IsPrivateBranch") ||
         topic.ContentType.Equals("Container", StringComparison.OrdinalIgnoreCase) &&
         topic.Attributes.GetBoolean("NoIndex")
       ) return topics;
