@@ -266,6 +266,15 @@ namespace OnTopic.Repositories {
     public override sealed void Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        topic.Parent is null || !topic.Parent.IsNew,
+        $"The parent of '{topic.GetUniqueKey()}' is not saved. Topics can only be saved once their parent is saved."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
       var version               = DateTime.UtcNow;
