@@ -223,6 +223,11 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public override Topic? Load(Topic topic, DateTime version) {
       Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        !topic.IsNew,
+        $"The version '{version}' of '{topic.GetUniqueKey()}' cannot be loaded. Topics must be saved in order to load " +
+        $"previous versions."
+      );
       return Load(topic.Id, version, topic);
     }
 
