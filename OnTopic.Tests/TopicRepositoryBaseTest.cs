@@ -850,6 +850,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MOVE: AFTER SIBLING: SET CORRECTLY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Moves a <see cref="Topic"/> after a sibling in another parent, and ensures it is set correctly.
+    /// </summary>
+    [Fact]
+    public void Move_AfterSibling_SetCorrectly() {
+
+      var source                = new Topic("Source", "Page");
+      var topic                 = new Topic("Test", "Page", source);
+      var target                = new Topic("Target", "Page");
+      var sibling               = new Topic("Sibling", "Page", target);
+      var olderSibling          = new Topic("OlderSibling", "Page", target);
+
+      _topicRepository.Move(topic, target, sibling);
+
+      Assert.Equal<Topic?>(target, topic.Parent);
+      Assert.Equal<int>(0, target.Children.IndexOf(sibling));
+      Assert.Equal<int>(1, target.Children.IndexOf(topic));
+      Assert.Equal<int>(2, target.Children.IndexOf(olderSibling));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MOVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -1100,6 +1124,31 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.TopicMoved -= eventHandler;
 
       Assert.True(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MOVE: SAME LOCATION: EVENT NOT RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref="
+    ///   ITopicRepository.TopicMoved"/> event is not raised.
+    /// </summary>
+    [Fact]
+    public void Move_SameLocation_EventNotRaised() {
+
+      var parent                = new Topic("Parent", "Page", null, 1);
+      var sibling               = new Topic("Sibling", "Page", parent, 2);
+      var topic                 = new Topic("Test", "Page", parent, 3);
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Move(topic, parent, sibling);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
+
+      Assert.False(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 

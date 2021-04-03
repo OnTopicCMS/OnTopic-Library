@@ -492,6 +492,7 @@ namespace OnTopic.Repositories {
       if (
         sibling is not null &&
         topic.Parent is not null &&
+        topic.Parent == target &&
         topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
         return;
       }
