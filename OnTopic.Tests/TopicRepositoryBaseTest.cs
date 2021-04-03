@@ -910,9 +910,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Save_AttributeDescriptor_UpdatesContentType() {
 
-      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
-      var attributeList         = new Topic("Attributes", "List", contentType);
-      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType);
+      var contentType           = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor", null, 1);
+      var attributeList         = new Topic("Attributes", "List", contentType, 2);
+      var childContentType      = new ContentTypeDescriptor("Child", "ContentTypeDescriptor", contentType, 3);
 
       Contract.Assume(childContentType);
 
@@ -924,7 +924,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(newAttribute);
 
-      Assert.True(childContentType.AttributeDescriptors.Count > attributeCount);
+      Assert.Equal<int>(attributeCount+1, childContentType.AttributeDescriptors.Count);
 
     }
 
