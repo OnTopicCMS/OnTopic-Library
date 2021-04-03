@@ -207,11 +207,11 @@ namespace OnTopic.Tests {
     [Fact]
     public void SitemapController_Index_ExcludesContainerDescendants() {
 
-      var controller = new SitemapController(_topicRepository) {
-        ControllerContext = new(_context)
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
       };
-      var result = controller.Extended(true) as ContentResult;
-      var model = result?.Content as string;
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
 
       controller.Dispose();
 
@@ -221,6 +221,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES PRIVATE BRANCHES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
+    ///   properly excludes the topics that are marked as <c>IsPrivateBranch</c>, including their descendants.
+    /// </summary>
+    [Fact]
+    public void SitemapController_Index_ExcludesPrivateBranches() {
+
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
+      };
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("PrivateBranch/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("PrivateBranchChild/</loc>", StringComparison.Ordinal));
+
+    }
 
     /*==========================================================================================================================
     | TEST: SITEMAP CONTROLLER: EXTENDED: INCLUDES ATTRIBUTES

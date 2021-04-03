@@ -68,6 +68,8 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
       _                         = new Topic("NoIndexChild", "Page", noIndexPage);
       var noIndexContainer      = new Topic("NoIndexContainer", "Container", webTopic);
       _                         = new Topic("NoIndexContainerChild", "Page", noIndexContainer);
+      var privateBranch         = new Topic("PrivateBranch", "Page", webTopic);
+      _                         = new Topic("PrivateBranchChild", "Page", privateBranch);
       var disabledPage          = new Topic("Disabled", "Page", webTopic);
       var pageGroup             = new Topic("PageGroup", "PageGroup", rootTopic);
       _                         = new Topic("PageGroupChild", "Page", pageGroup);
@@ -97,6 +99,7 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
 
       //Excluded descendants
       noIndexContainer.Attributes.SetBoolean("NoIndex", true);
+      privateBranch.Attributes.SetBoolean("IsPrivateBranch", true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return data
