@@ -440,6 +440,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: CLEAR: NON-NULLABLE VALUE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an attribute on a topic instance with an valid value, and then attempts to clear all attributes. Ensures that the
+    ///   business logic is enforced by throwing an exception on the non-nullable property.
+    /// </summary>
+    [Fact]
+    public void Clear_NonNullableValueWithBusinessLogic_ThrowsException() {
+
+      var topic = new CustomTopic("Test", "Page");
+
+      topic.NonNullableAttribute = "Test";
+
+      Assert.Throws<ArgumentNullException>(() =>
+        topic.Attributes.Clear()
+      );
+
+    }
+
+    /*==========================================================================================================================
     | TEST: CLEAR: EXISTING VALUES: IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
