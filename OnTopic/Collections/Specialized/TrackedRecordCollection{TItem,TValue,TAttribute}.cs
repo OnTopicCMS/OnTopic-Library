@@ -472,10 +472,11 @@ namespace OnTopic.Collections.Specialized {
       | Ignore if null
       >-------------------------------------------------------------------------------------------------------------------------
       | ###NOTE JJC20200501: Null or empty values are treated as deletions, and are not persisted to the data store. With
-      | existing values, these are written to ensure that the collection is marked as IsDirty, thus allowing previous values to
-      | be overwritten. Non-existent values, however, should simply be ignored.
+      | existing values, these are written to DeletedItems to ensure the collection is marked as IsDirty, thus allowing previous
+      | values to be overwritten. Non-existent values should simply be ignored, however; we shouldn't delete what doesn't exist.
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (value is null || String.IsNullOrEmpty(value.ToString())) {
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -507,8 +508,8 @@ namespace OnTopic.Collections.Specialized {
       /*------------------------------------------------------------------------------------------------------------------------
       | Persist item to collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (updatedItem is null) {
-        return;
+      if (updatedItem.Value is null) {
+        Remove(key);
       }
       else if (originalItem is not null) {
         this[IndexOf(originalItem)] = updatedItem;
