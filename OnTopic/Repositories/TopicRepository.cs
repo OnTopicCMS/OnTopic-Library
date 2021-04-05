@@ -223,6 +223,11 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public override Topic? Load(Topic topic, DateTime version) {
       Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        !topic.IsNew,
+        $"The version '{version}' of '{topic.GetUniqueKey()}' cannot be loaded. Topics must be saved in order to load " +
+        $"previous versions."
+      );
       return Load(topic.Id, version, topic);
     }
 
@@ -259,6 +264,15 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     public override sealed void Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        topic.Parent is null || !topic.Parent.IsNew,
+        $"The parent of '{topic.GetUniqueKey()}' is not saved. Topics can only be saved once their parent is saved."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
@@ -501,7 +515,9 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      MoveTopic(topic, target, sibling);
+      if (!topic.IsNew && !target.IsNew && !sibling.IsNew) {
+        MoveTopic(topic, target, sibling);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
@@ -595,7 +611,9 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      DeleteTopic(topic);
+      if (!topic.IsNew) {
+        DeleteTopic(topic);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
