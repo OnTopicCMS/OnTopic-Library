@@ -1085,23 +1085,17 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map referenced topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicDto = (object?)null;
-      try {
-        if (configuration.MapAs != null) {
-          topicDto = await MapAsync(source, configuration.MapAs, configuration.IncludeAssociations, cache).ConfigureAwait(false);
-        }
-        else {
-          topicDto = await MapAsync(source, configuration.IncludeAssociations, cache).ConfigureAwait(false);
-        }
-      }
-      catch (InvalidTypeException) {
-        //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
+      var topicDto              = (object?)null;
+      var mappingType           = GetValidatedMappingType(configuration.MapAs, targetType)?? GetValidatedMappingType(source, targetType);
+
+      if (mappingType is not null) {
+        topicDto = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicDto is null || !targetType.IsAssignableFrom(topicDto.GetType())) {
+      if (topicDto is null) {
         return null;
       }
 
