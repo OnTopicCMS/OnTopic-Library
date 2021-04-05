@@ -220,7 +220,7 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, updates the
     ///   reference using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
     ///   DateTime?)"/> with a <c>null</c> value, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.
-    ///   IncomingRelationships"/> are correctly updated.
+    ///   IncomingRelationships"/> are correctly removed.
     /// </summary>
     /// <remarks>
     ///   This calls <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)
@@ -238,7 +238,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", null);
       topic.References.SetValue("Reference", null);
 
-      Assert.True(topic.References.Contains("Reference"));
+      Assert.False(topic.References.Contains("Reference"));
       Assert.Null(topic.References.GetValue("Reference"));
       Assert.Equal<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
 
@@ -262,7 +262,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
 
-      Assert.Single(topic.References);
+      Assert.Empty(topic.References);
       Assert.Null(topic.References.GetValue("Reference"));
 
     }

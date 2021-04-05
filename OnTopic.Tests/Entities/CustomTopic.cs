@@ -84,6 +84,22 @@ namespace OnTopic.Tests.Entities {
     }
 
     /*==========================================================================================================================
+    | NON-NULLABLE ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a property which does not permit null values as a means of ensuring the business logic is enforced when
+    ///   removing values.
+    /// </summary>
+    [AttributeSetter]
+    public string NonNullableAttribute {
+      get => Attributes.GetValue("NonNullableAttribute")?? "";
+      set {
+        Contract.Requires(value, nameof(value));
+        SetAttributeValue("NonNullableAttribute", value.ToString(CultureInfo.InvariantCulture));
+      }
+    }
+
+    /*==========================================================================================================================
     | DATE/TIME ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
