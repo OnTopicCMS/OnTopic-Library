@@ -515,7 +515,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!topic.IsNew && !target.IsNew && !sibling.IsNew) {
+      if (!topic.IsNew && !target.IsNew && !(sibling?.IsNew?? true)) {
         MoveTopic(topic, target, sibling);
       }
 

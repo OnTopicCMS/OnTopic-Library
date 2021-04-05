@@ -978,13 +978,11 @@ namespace OnTopic.Mapping {
         }
 
         //Map child topic to target DTO
-        var childDto = (object)childTopic;
+        var childDto            = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
-          if (configuration.MapAs != null) {
-            taskQueue.Add(MapAsync(childTopic, configuration.MapAs, configuration.IncludeAssociations, cache));
-          }
-          else {
-            taskQueue.Add(MapAsync(childTopic, configuration.IncludeAssociations, cache));
+          var mappingType       = GetValidatedMappingType(configuration.MapAs, listType)?? GetValidatedMappingType(childTopic, listType);
+          if (mappingType is not null) {
+            taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache));
           }
         }
         else {
@@ -1009,7 +1007,7 @@ namespace OnTopic.Mapping {
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
       void AddToList(object dto) {
-        if (dto is not null && listType.IsAssignableFrom(dto.GetType())) {
+        if (dto is not null) {
           try {
             targetList.Add(dto);
           }
@@ -1021,6 +1019,34 @@ namespace OnTopic.Mapping {
       }
 
     }
+
+    /*==========================================================================================================================
+    | PRIVATE: GET VALIDATED MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <paramref name="sourceTopic"/> <see cref="Topic"/>, identifies the target model type associated with it and
+    ///   validates it against the <paramref name="expectedType"/>.
+    /// </summary>
+    /// <param name="sourceTopic">The source <see cref="Topic"/> that the target type should be inferred from.</param>
+    /// <param name="expectedType">The expected <see cref="Type"/> that the inferred type must be compatible with.</param>
+    /// <returns>The inferred target type, if valid, otherwise null.</returns>
+    private Type? GetValidatedMappingType(Topic sourceTopic, Type expectedType) =>
+      GetValidatedMappingType(
+        _typeLookupService.Lookup($"{sourceTopic.ContentType}TopicViewModel", $"{sourceTopic.ContentType}ViewModel"),
+        expectedType
+      );
+
+    /// <summary>
+    ///   Given a <paramref name="mappingType"/> <see cref="Type"/>, validates it against the <paramref name="expectedType"/>.
+    ///   If it is compatible, returns the <paramref name="mappingType"/>. Otherwise, returns null.
+    /// </summary>
+    /// <param name="mappingType">The source <see cref="Type"/> that should be validated.</param>
+    /// <param name="expectedType">
+    ///   The expected <see cref="Type"/> that the <paramref name="mappingType"/> must be compatible with.
+    /// </param>
+    /// <returns>The <paramref name="mappingType"/>, if valid, otherwise null.</returns>
+    private static Type? GetValidatedMappingType(Type? mappingType, Type expectedType) =>
+      expectedType.IsAssignableFrom(mappingType)? mappingType : null;
 
     /*==========================================================================================================================
     | PRIVATE: GET TOPIC REFERENCE
@@ -1059,23 +1085,17 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map referenced topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicDto = (object?)null;
-      try {
-        if (configuration.MapAs != null) {
-          topicDto = await MapAsync(source, configuration.MapAs, configuration.IncludeAssociations, cache).ConfigureAwait(false);
-        }
-        else {
-          topicDto = await MapAsync(source, configuration.IncludeAssociations, cache).ConfigureAwait(false);
-        }
-      }
-      catch (InvalidTypeException) {
-        //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
+      var topicDto              = (object?)null;
+      var mappingType           = GetValidatedMappingType(configuration.MapAs, targetType)?? GetValidatedMappingType(source, targetType);
+
+      if (mappingType is not null) {
+        topicDto = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicDto is null || !targetType.IsAssignableFrom(topicDto.GetType())) {
+      if (topicDto is null) {
         return null;
       }
 
