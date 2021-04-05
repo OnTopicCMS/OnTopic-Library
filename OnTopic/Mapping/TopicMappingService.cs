@@ -978,13 +978,11 @@ namespace OnTopic.Mapping {
         }
 
         //Map child topic to target DTO
-        var childDto = (object)childTopic;
+        var childDto            = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
-          if (configuration.MapAs != null) {
-            taskQueue.Add(MapAsync(childTopic, configuration.MapAs, configuration.IncludeAssociations, cache));
-          }
-          else {
-            taskQueue.Add(MapAsync(childTopic, configuration.IncludeAssociations, cache));
+          var mappingType       = GetValidatedMappingType(configuration.MapAs, listType)?? GetValidatedMappingType(childTopic, listType);
+          if (mappingType is not null) {
+            taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache));
           }
         }
         else {
@@ -1009,7 +1007,7 @@ namespace OnTopic.Mapping {
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
       void AddToList(object dto) {
-        if (dto is not null && listType.IsAssignableFrom(dto.GetType())) {
+        if (dto is not null) {
           try {
             targetList.Add(dto);
           }
