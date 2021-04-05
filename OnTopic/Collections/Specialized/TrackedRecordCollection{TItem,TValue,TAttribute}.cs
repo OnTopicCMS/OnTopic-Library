@@ -632,7 +632,7 @@ namespace OnTopic.Collections.Specialized {
     ///   attributes to be handled individually.
     /// </remarks>
     protected override void ClearItems() {
-      foreach (var item in Items) {
+      foreach (var item in Items.ToList()) {
         Remove(item);
       }
       base.ClearItems();
