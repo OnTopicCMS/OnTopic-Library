@@ -1023,6 +1023,34 @@ namespace OnTopic.Mapping {
     }
 
     /*==========================================================================================================================
+    | PRIVATE: GET VALIDATED MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <paramref name="sourceTopic"/> <see cref="Topic"/>, identifies the target model type associated with it and
+    ///   validates it against the <paramref name="expectedType"/>.
+    /// </summary>
+    /// <param name="sourceTopic">The source <see cref="Topic"/> that the target type should be inferred from.</param>
+    /// <param name="expectedType">The expected <see cref="Type"/> that the inferred type must be compatible with.</param>
+    /// <returns>The inferred target type, if valid, otherwise null.</returns>
+    private Type? GetValidatedMappingType(Topic sourceTopic, Type expectedType) =>
+      GetValidatedMappingType(
+        _typeLookupService.Lookup($"{sourceTopic.ContentType}TopicViewModel", $"{sourceTopic.ContentType}ViewModel"),
+        expectedType
+      );
+
+    /// <summary>
+    ///   Given a <paramref name="mappingType"/> <see cref="Type"/>, validates it against the <paramref name="expectedType"/>.
+    ///   If it is compatible, returns the <paramref name="mappingType"/>. Otherwise, returns null.
+    /// </summary>
+    /// <param name="mappingType">The source <see cref="Type"/> that should be validated.</param>
+    /// <param name="expectedType">
+    ///   The expected <see cref="Type"/> that the <paramref name="mappingType"/> must be compatible with.
+    /// </param>
+    /// <returns>The <paramref name="mappingType"/>, if valid, otherwise null.</returns>
+    private static Type? GetValidatedMappingType(Type? mappingType, Type expectedType) =>
+      expectedType.IsAssignableFrom(mappingType)? mappingType : null;
+
+    /*==========================================================================================================================
     | PRIVATE: GET TOPIC REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
