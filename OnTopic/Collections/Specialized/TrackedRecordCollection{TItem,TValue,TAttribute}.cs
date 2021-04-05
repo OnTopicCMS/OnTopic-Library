@@ -606,11 +606,15 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
-      var trackedRecord = this[index];
-      if (!AssociatedTopic.IsNew) {
-        DeletedItems.Add(trackedRecord.Key);
+      var trackedRecord = this[index] with {
+        Value = null
+      };
+      if (_topicPropertyDispatcher.Enforce(trackedRecord.Key, trackedRecord)) {
+        if (!AssociatedTopic.IsNew) {
+          DeletedItems.Add(trackedRecord.Key);
+        }
+        base.RemoveItem(index);
       }
-      base.RemoveItem(index);
     }
 
     /*==========================================================================================================================
