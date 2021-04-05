@@ -625,12 +625,15 @@ namespace OnTopic.Collections.Specialized {
     ///   it is appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="TrackedRecord{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
-    ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
+    ///   In order to ensure any business logic is enforced, <see cref="ClearItems()"/> loops through every <see cref="
+    ///   TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> and explicitly calls <see
+    ///   cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/>. This is slower, but ensures that any state tracking and null
+    ///   validation that occurs in the properties is maintained. Fortunately, this is a rare use case; we typically expect
+    ///   attributes to be handled individually.
     /// </remarks>
     protected override void ClearItems() {
-      if (!AssociatedTopic.IsNew) {
-        DeletedItems.AddRange(Items.Select(a => a.Key));
+      foreach (var item in Items) {
+        Remove(item);
       }
       base.ClearItems();
     }
