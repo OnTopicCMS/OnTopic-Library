@@ -449,9 +449,9 @@ namespace OnTopic.Tests {
     [Fact]
     public void Clear_NonNullableValueWithBusinessLogic_ThrowsException() {
 
-      var topic = new CustomTopic("Test", "Page");
-
-      topic.NonNullableAttribute = "Test";
+      var topic                 = new CustomTopic("Test", "Page") {
+        NonNullableAttribute    = "Test"
+      };
 
       Assert.Throws<ArgumentNullException>(() =>
         topic.Attributes.Clear()

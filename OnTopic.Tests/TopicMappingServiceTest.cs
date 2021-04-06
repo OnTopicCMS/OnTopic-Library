@@ -680,7 +680,7 @@ namespace OnTopic.Tests {
     [Fact]
     public async Task Map_CustomCollection_ReturnsCollection() {
 
-      var topic                 = (ContentTypeDescriptor)_topicRepository.Load("Root:Configuration:ContentTypes:Page");
+      var topic                 = (ContentTypeDescriptor?)_topicRepository.Load("Root:Configuration:ContentTypes:Page");
       var target                = await _mappingService.MapAsync<ContentTypeDescriptorTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.Equal<int?>(8, target?.AttributeDescriptors.Count);
