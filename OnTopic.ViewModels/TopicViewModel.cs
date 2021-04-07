@@ -9,8 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Models;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 namespace OnTopic.ViewModels {
 
   /*============================================================================================================================
@@ -36,29 +34,29 @@ namespace OnTopic.ViewModels {
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? Key { get; init; }
+    [Required]
+    public string Key { get; init; } = default!;
 
     /*==========================================================================================================================
     | CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? ContentType { get; init; }
+    [Required]
+    public string ContentType { get; init; } = default!;
 
     /*==========================================================================================================================
     | UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? UniqueKey { get; init; }
+    [Required]
+    public string UniqueKey { get; init; } = default!;
 
     /*==========================================================================================================================
     | WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? WebPath { get; init; }
+    [Required]
+    public string WebPath { get; init; } = default!;
 
     /*==========================================================================================================================
     | VIEW
@@ -70,8 +68,8 @@ namespace OnTopic.ViewModels {
     | TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? Title { get; init; }
+    [Required]
+    public string Title { get; init; } = default!;
 
     /*==========================================================================================================================
     | IS HIDDEN?
@@ -108,5 +106,3 @@ namespace OnTopic.ViewModels {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

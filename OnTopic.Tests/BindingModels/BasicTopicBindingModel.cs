@@ -7,8 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using OnTopic.Models;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 namespace OnTopic.Tests.BindingModels {
 
   /*============================================================================================================================
@@ -29,13 +27,11 @@ namespace OnTopic.Tests.BindingModels {
       ContentType = contentType;
     }
 
-    [Required, NotNull, DisallowNull]
-    public string? Key { get; init; }
+    [Required]
+    public string Key { get; init; } = default!;
 
-    [Required, NotNull, DisallowNull]
-    public string? ContentType { get; init; }
+    [Required]
+    public string ContentType { get; init; } = default!;
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
