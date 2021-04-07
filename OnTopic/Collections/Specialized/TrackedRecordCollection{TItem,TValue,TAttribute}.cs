@@ -461,6 +461,9 @@ namespace OnTopic.Collections.Specialized {
         else if (originalItem.Value != value) {
           markAsDirty = true;
         }
+        else if (!version.HasValue) {
+          return;
+        }
         updatedItem             = originalItem with {
           Value                 = value,
           IsDirty               = markAsDirty,
