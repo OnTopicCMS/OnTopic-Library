@@ -6,7 +6,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Models;
 
 namespace OnTopic.ViewModels {
