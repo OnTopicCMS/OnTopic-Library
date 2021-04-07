@@ -7,8 +7,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 namespace OnTopic.ViewModels {
 
   /*============================================================================================================================
@@ -30,8 +28,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to a video to display on the page.
     /// </summary>
-    [Required, NotNull, DisallowNull]
-    public Uri? VideoUrl { get; init; }
+    [Required]
+    public Uri VideoUrl { get; init; } = default!;
 
     /*==========================================================================================================================
     | POSTER URL
@@ -43,5 +41,3 @@ namespace OnTopic.ViewModels {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
