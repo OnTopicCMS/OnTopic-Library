@@ -37,13 +37,13 @@ FROM	Attributes
 LEFT JOIN	Attributes Unmatched
   ON	Attributes.TopicID = Unmatched.TopicID
   AND	Attributes.Version = Unmatched.Version
-  AND	Attributes.AttributeKey != Unmatched.AttributeKey
+  AND	Unmatched.AttributeKey NOT LIKE 'LastModified%'
 LEFT JOIN	ExtendedAttributes UnmatchedExtended
   ON	Attributes.TopicID = UnmatchedExtended.TopicID
   AND	Attributes.Version = UnmatchedExtended.Version
 WHERE	Unmatched.AttributeKey IS NULL
   AND	UnmatchedExtended.TopicID IS NULL
-  AND	Attributes.AttributeKey = 'LastModified'
+  AND 	Attributes.AttributeKey LIKE 'LastModified%'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CHECK FINAL VALUES
