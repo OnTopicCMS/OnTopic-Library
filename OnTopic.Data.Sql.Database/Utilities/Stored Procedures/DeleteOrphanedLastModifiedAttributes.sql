@@ -41,8 +41,16 @@ LEFT JOIN	Attributes Unmatched
 LEFT JOIN	ExtendedAttributes UnmatchedExtended
   ON	Attributes.TopicID = UnmatchedExtended.TopicID
   AND	Attributes.Version = UnmatchedExtended.Version
+LEFT JOIN	Relationships UnmatchedRelationships
+  ON	Attributes.TopicID = UnmatchedRelationships.Source_TopicID
+  AND	Attributes.Version = UnmatchedRelationships.Version
+LEFT JOIN	TopicReferences UnmatchedReferences
+  ON	Attributes.TopicID = UnmatchedReferences.Source_TopicID
+  AND	Attributes.Version = UnmatchedReferences.Version
 WHERE	Unmatched.AttributeKey IS NULL
   AND	UnmatchedExtended.TopicID IS NULL
+  AND	UnmatchedRelationships.Source_TopicID IS NULL
+  AND	UnmatchedReferences.Source_TopicID IS NULL
   AND 	Attributes.AttributeKey LIKE 'LastModified%'
 
 --------------------------------------------------------------------------------------------------------------------------------
