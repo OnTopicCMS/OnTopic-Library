@@ -458,7 +458,7 @@ namespace OnTopic.Collections.Specialized {
         else if (markDirty.HasValue) {
           markAsDirty = markDirty.Value;
         }
-        else if (originalItem.Value != value) {
+        else if (!originalItem.Value?.Equals(value)?? false) {
           markAsDirty = true;
         }
         else if (!version.HasValue) {
