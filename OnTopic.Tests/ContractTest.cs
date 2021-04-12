@@ -4,8 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Internal.Diagnostics;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -15,7 +16,7 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="Contract"/> class.
   /// </summary>
-  [TestClass]
+  [ExcludeFromCodeCoverage]
   public class ContractTest {
 
     /*==========================================================================================================================
@@ -24,7 +25,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Tests a true condition using the <see cref="Contract"/> class, and validates that it correctly does nothing.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Requires_ConditionIsTrue_ThrowNoException()
       => Contract.Requires(true, "The argument cannot be null");
 
@@ -35,10 +36,11 @@ namespace OnTopic.Tests {
     ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly returns an <see
     ///   cref="ArgumentNullException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Requires_ConditionIsFalse_ThrowArgumentNullException()
-      => Contract.Requires(false, "The argument cannot be null");
+    [Fact]
+    public void Requires_ConditionIsFalse_ThrowArgumentNullException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Requires(false, "The argument cannot be null")
+      );
 
     /*==========================================================================================================================
     | TEST: REQUIRES: OBJECT EXISTS: THROW NO EXCEPTION
@@ -46,7 +48,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Tests a non-null argument using the <see cref="Contract"/> class, and validates that it correctly does nothing.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Requires_ObjectExists_ThrowNoException() =>
       Contract.Requires(new object(), "The argument cannot be null");
 
@@ -57,10 +59,11 @@ namespace OnTopic.Tests {
     ///   Tests a null argument using the <see cref="Contract"/> class, and validates that it correctly returns an <see
     ///   cref="ArgumentNullException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
+    [Fact]
     public void Requires_ObjectIsNull_ThrowArgumentNullException() =>
-      Contract.Requires(null, "The argument cannot be null");
+      Assert.Throws<ArgumentNullException>(() =>
+        Contract.Requires(null, "The argument cannot be null")
+      );
 
     /*==========================================================================================================================
     | TEST: REQUIRES: MESSAGE EXISTS: THROW EXCEPTION WITH MESSAGE
@@ -69,7 +72,7 @@ namespace OnTopic.Tests {
     ///   Tests a null argument using the <see cref="Contract"/> class, and validates that it correctly returns an <see
     ///   cref="ArgumentNullException"/> with the expected <see cref="ArgumentException.Message"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Requires_MessageExists_ThrowExceptionWithMessage() {
 
       var errorMessage = "The argument cannot be null";
@@ -78,9 +81,25 @@ namespace OnTopic.Tests {
         Contract.Requires<ArgumentException>(false, errorMessage);
       }
       catch (ArgumentException ex) {
-        Assert.AreEqual<String>(errorMessage, ex.Message);
+        Assert.Equal(errorMessage, ex.Message);
       }
 
+    }
+
+    /*==========================================================================================================================
+    | TEST: REQUIRES: INVALID CONSTRUCTOR: THROW ARGUMENT EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref="
+    ///   NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
+    ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
+    /// </summary>
+    [Fact]
+    public void Requires_InvalidConstructor_ThrowArgumentException() {
+      var errorMessage = "The argument cannot be null";
+      Assert.Throws<ArgumentException>(() =>
+        Contract.Requires<NoMessageException>(false, errorMessage)
+      );
     }
 
     /*==========================================================================================================================
@@ -89,7 +108,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Tests a true condition using the <see cref="Contract"/> class, and validates that it correctly does nothing.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Assume_ConditionIsTrue_ThrowNoException()
       => Contract.Assume(true, "The argument cannot be null");
 
@@ -100,10 +119,37 @@ namespace OnTopic.Tests {
     ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly returns an <see
     ///   cref="ArgumentNullException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Assume_ConditionIsFalse_ThrowArgumentNullException()
-      => Contract.Assume(false, "The argument cannot be null");
+    [Fact]
+    public void Assume_ConditionIsFalse_ThrowArgumentNullException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Assume(false, "The argument cannot be null")
+      );
+
+    /*==========================================================================================================================
+    | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
+    ///   <see cref="IndexOutOfRangeException"/>.
+    /// </summary>
+    [Fact]
+    public void Assume_ConditionIsFalse_ThrowCustomExpection() =>
+      Assert.Throws<IndexOutOfRangeException>(() =>
+        Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range")
+      );
+
+    /*==========================================================================================================================
+    | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION WITHOUT MESSAGE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
+    ///   <see cref="IndexOutOfRangeException"/> using the empty constructor, since no <c>errorMessage</c> is included.
+    /// </summary>
+    [Fact]
+    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage() =>
+      Assert.Throws<IndexOutOfRangeException>(() =>
+        Contract.Assume<IndexOutOfRangeException>(false)
+      );
 
     /*==========================================================================================================================
     | TEST: ASSUME: OBJECT IS NULL: THROW INVALID OPERATION EXCEPTION
@@ -112,10 +158,11 @@ namespace OnTopic.Tests {
     ///   Tests a null assignment using the <see cref="Contract"/> class, and validates that it correctly returns an <see
     ///   cref="InvalidOperationException"/>.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void Assume_ObjectIsNull_ThrowInvalidOperationException()
-      => Contract.Assume(null, "The local runtime state is invalid.");
+    [Fact]
+    public void Assume_ObjectIsNull_ThrowInvalidOperationException() =>
+      Assert.Throws<InvalidOperationException>(() =>
+        Contract.Assume(null, "The local runtime state is invalid.")
+      );
 
   } //Class
 } //Namespace

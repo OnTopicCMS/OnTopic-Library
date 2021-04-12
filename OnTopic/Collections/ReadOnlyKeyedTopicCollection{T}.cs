@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections {
@@ -31,7 +32,6 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
     public ReadOnlyKeyedTopicCollection(IList<T>? innerCollection = null) : base(innerCollection?? new List<T>()) {
-      Contract.Requires(innerCollection, "innerCollection should not be null");
       _innerCollection = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
     }
 
@@ -45,6 +45,7 @@ namespace OnTopic.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    [ExcludeFromCodeCoverage]
     [Obsolete("This is effectively satisfied by the related overload, and has been removed.", true)]
     public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) => throw new NotImplementedException();
 
@@ -63,6 +64,7 @@ namespace OnTopic.Collections {
     }
 
     /// <inheritdoc cref="GetValue(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetTopic() method has been renamed to GetValue().", true)]
     public T? GetTopic(string key) => GetValue(key);
 

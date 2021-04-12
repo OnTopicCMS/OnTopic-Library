@@ -25,6 +25,7 @@ namespace OnTopic.Collections {
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
   ///   the <see cref="AttributeValueCollection"/> class.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The AttributeValueCollection class has been renamed to AttributeCollection.", true)]
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 

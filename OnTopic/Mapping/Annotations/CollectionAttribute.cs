@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -28,8 +29,8 @@ namespace OnTopic.Mapping.Annotations {
   ///     IncomingRelationships"/>), which is not an uncommon scenario.
   ///   </para>
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class CollectionAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+  public sealed class CollectionAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

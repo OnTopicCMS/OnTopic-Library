@@ -103,6 +103,7 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
+    [ExcludeFromCodeCoverage]
     [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", true)]
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
       => SetContentTypeDescriptors(contentTypeDescriptors);
@@ -222,6 +223,11 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public override Topic? Load(Topic topic, DateTime version) {
       Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        !topic.IsNew,
+        $"The version '{version}' of '{topic.GetUniqueKey()}' cannot be loaded. Topics must be saved in order to load " +
+        $"previous versions."
+      );
       return Load(topic.Id, version, topic);
     }
 
@@ -258,6 +264,15 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     public override sealed void Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentException>(
+        topic.Parent is null || !topic.Parent.IsNew,
+        $"The parent of '{topic.GetUniqueKey()}' is not saved. Topics can only be saved once their parent is saved."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
@@ -326,6 +341,7 @@ namespace OnTopic.Repositories {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isNew                 = topic.IsNew;
+      var areRelationshipsDirty = topic.Relationships.IsDirty();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
@@ -404,7 +420,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If content type, and relationships have been updated, refresh permitted content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (asContentType is not null && asContentType.Relationships.IsDirty()) {
+      if (asContentType is not null && areRelationshipsDirty) {
         asContentType.ResetPermittedContentTypes();
       }
 
@@ -420,16 +436,16 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Reset original key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.OriginalKey = null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Raise event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
         OnTopicRenamed(new(topic, topic.Key, topic.OriginalKey));
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Reset original key
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.OriginalKey = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
@@ -491,6 +507,7 @@ namespace OnTopic.Repositories {
       if (
         sibling is not null &&
         topic.Parent is not null &&
+        topic.Parent == target &&
         topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
         return;
       }
@@ -498,7 +515,9 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      MoveTopic(topic, target, sibling);
+      if (!topic.IsNew && !target.IsNew && !(sibling?.IsNew?? true)) {
+        MoveTopic(topic, target, sibling);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
@@ -592,7 +611,9 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      DeleteTopic(topic);
+      if (!topic.IsNew) {
+        DeleteTopic(topic);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
@@ -620,7 +641,7 @@ namespace OnTopic.Repositories {
       | Remove references
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var descendantTopic in descendantTopics) {
-        foreach (var reference in descendantTopic.References) {
+        foreach (var reference in descendantTopic.References.ToList()) {
           if (reference.Value is not null && !descendantTopics.Contains(reference.Value)) {
             descendantTopic.References.Remove(reference.Key);
           }
@@ -753,19 +774,16 @@ namespace OnTopic.Repositories {
 
         //Skip if attribute's isDirty flag doesn't match the callers preference. Alternatively, if the IsExtendedAttribute value
         //doesn't match the source, as this implies the storage location has changed, and the attribute should be treated as
-        //isDirty.
-        if (
-          isDirty is null ||
-          attributeValue.IsDirty == isDirty ||
-          isDirty == IsExtendedAttributeMismatch(attribute, attributeValue)
-        ) {
+        //isDirty implicitly.
+        var isAttributeDirty    = IsExtendedAttributeMismatch(attribute, attributeValue) || attributeValue.IsDirty;
+        if (isDirty is null || isDirty.Value == isAttributeDirty) {
         }
         else {
           continue;
         }
 
-        //Add the attribute based on the isExtendedAttribute paramter. Add all parameters if isExtendedAttribute is null. Assume
-        //an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
+        //Add the attribute based on the isExtendedAttribute parameter. Add all parameters if isExtendedAttribute is null.
+        //Assume an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
         //characters.
         if (isExtendedAttribute?.Equals(attribute?.IsExtendedAttribute?? attributeValue.Value.Length > 255)?? true) {
           attributes.Add(attributeValue);

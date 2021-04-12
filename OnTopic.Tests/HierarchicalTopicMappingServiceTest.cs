@@ -4,15 +4,16 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
-using OnTopic.Mapping;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.Tests.Fixtures;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -22,14 +23,14 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="HierarchicalTopicMappingService{T}"/>.
   /// </summary>
-  [TestClass]
-  public class HierarchicalTopicMappingServiceTest {
+  [ExcludeFromCodeCoverage]
+  [Xunit.Collection("Shared Repository")]
+  public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
-    readonly                    ITopicMappingService            _topicMappingService;
     readonly                    Topic                           _topic;
 
     /*==========================================================================================================================
@@ -50,26 +51,73 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public HierarchicalTopicMappingServiceTest() {
+    public HierarchicalTopicMappingServiceTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
-      _topic                    = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
-      _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
+      _topicRepository          = fixture.CachedTopicRepository;
+      _topic                    =  _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish hierarchical topic mapping service
       \-----------------------------------------------------------------------------------------------------------------------*/
       _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
         new HierarchicalTopicMappingService<NavigationTopicViewModel>(
-          _topicRepository,
-          _topicMappingService
+          fixture.TopicRepository,
+          fixture.MappingService
         )
       );
 
     }
+
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH NULL TOPIC: RETURNS DEFAULT ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> and ensures it falls back to the <c>defaultRoot</c>.
+    /// </summary>
+    [Fact]
+    public void GetHierarchicalRoot_WithNullTopic_ReturnsDefaultRoot() {
+
+      var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "Configuration");
+
+      Assert.NotNull(rootTopic);
+      Assert.Equal("Configuration", rootTopic?.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH NULL TOPIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> or <c>defaultRoot</c> and ensures it throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
+    [Fact]
+    public void GetHierarchicalRoot_WithNullTopic_ThrowsException() =>
+      Assert.Throws<ArgumentNullException>(() =>
+        _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "")
+      );
+
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH INVALID DEFAULT ROOT: TRHOWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> and throws an <see cref="ArgumentException"/> when it cannot identify the <c>defaultRoot</c>.
+    /// </summary>
+    [Fact]
+    public void GetHierarchicalRoot_WithInvalidDefaultRoot_ThrowsException() =>
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "InvalidDefaultRoot")
+      );
 
     /*==========================================================================================================================
     | TEST: GET HIERARCHICAL ROOT: WITH DEEP TOPIC: RETURNS ROOT
@@ -78,13 +126,13 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with a deeply
     ///   nested topic and ensures that it returns the expected root.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetHierarchicalRoot_WithDeepTopic_ReturnsRoot() {
 
       var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(_topic, 2, "Configuration");
 
-      Assert.IsNotNull(rootTopic);
-      Assert.AreEqual<string>("Web", rootTopic.Key);
+      Assert.NotNull(rootTopic);
+      Assert.Equal("Web", rootTopic?.Key);
 
     }
 
@@ -95,15 +143,15 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   and ensures that the expected data is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
-      Assert.IsNotNull(viewModel);
-      Assert.AreEqual<int>(3, viewModel.Children.Count);
-      Assert.AreEqual<int>(0, viewModel.Children[0].Children.Count);
+      Assert.NotNull(viewModel);
+      Assert.Equal<int?>(3, viewModel?.Children.Count);
+      Assert.Empty(viewModel?.Children[0].Children);
 
     }
 
@@ -114,7 +162,7 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   with a <c>validationDelegate</c> and ensures that it correctly trims the topic graph.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithValidationDelegate_ExcludesTopics() {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
@@ -122,9 +170,9 @@ namespace OnTopic.Tests {
         .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith("1", StringComparison.Ordinal))
         .ConfigureAwait(false);
 
-      Assert.IsNotNull(viewModel);
-      Assert.AreEqual<int>(1, viewModel.Children.Count);
-      Assert.AreEqual<int>(1, viewModel.Children[0].Children.Count);
+      Assert.NotNull(viewModel);
+      Assert.Single(viewModel?.Children);
+      Assert.Single(viewModel?.Children[0].Children);
 
     }
 
@@ -135,19 +183,25 @@ namespace OnTopic.Tests {
     ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
     ///   with a <see cref="Topic.IsDisabled"/> topic in the graph, and ensures it is not returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task GetViewModel_WithDisabled_ExcludesDisabled() {
 
       var rootTopic             = _topicRepository.Load("Root:Web:Web_3")!;
       var disabledTopic         = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+
+      Contract.Assume(disabledTopic);
 
       rootTopic.IsDisabled      = true;
       disabledTopic.IsDisabled  = true;
 
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
-      Assert.IsNotNull(viewModel);
-      Assert.AreEqual<int>(1, viewModel.Children.Count);
+      Assert.NotNull(viewModel);
+      Assert.Single(viewModel?.Children);
+
+      //Revert state
+      rootTopic.IsDisabled      = false;
+      disabledTopic.IsDisabled  = false;
 
     }
 

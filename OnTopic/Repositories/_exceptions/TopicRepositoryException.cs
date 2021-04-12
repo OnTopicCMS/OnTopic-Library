@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
@@ -25,6 +26,7 @@ namespace OnTopic.Repositories {
   ///   any of these more concrete exceptions.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class TopicRepositoryException : DbException {
 
     /*==========================================================================================================================

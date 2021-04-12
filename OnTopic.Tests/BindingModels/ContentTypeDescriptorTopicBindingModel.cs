@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class ContentTypeDescriptorTopicBindingModel : BasicTopicBindingModel {
 
-    public ContentTypeDescriptorTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
+    public ContentTypeDescriptorTopicBindingModel(string key) : base(key, "ContentTypeDescriptor") { }
 
     public Collection<AssociatedTopicBindingModel> ContentTypes { get; } = new();
 

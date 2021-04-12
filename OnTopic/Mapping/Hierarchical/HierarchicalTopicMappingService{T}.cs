@@ -85,11 +85,7 @@ namespace OnTopic.Mapping.Hierarchical {
       | Handle default, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is null) {
-        if (String.IsNullOrEmpty(defaultRoot)) {
-          throw new ArgumentNullException(
-            $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
-          );
-        }
+        Contract.Assume<ArgumentNullException>(!String.IsNullOrEmpty(defaultRoot), nameof(defaultRoot));
         navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic);
       }
 
@@ -123,9 +119,9 @@ namespace OnTopic.Mapping.Hierarchical {
     ///   A helper function that will determine how far a given topic is from the root of a tree.
     /// </summary>
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    private static int DistanceFromRoot(Topic? sourceTopic) {
+    private static int DistanceFromRoot(Topic sourceTopic) {
       var distance = 1;
-      while (sourceTopic?.Parent is not null) {
+      while (sourceTopic.Parent is not null) {
         sourceTopic = sourceTopic.Parent;
         distance++;
       }

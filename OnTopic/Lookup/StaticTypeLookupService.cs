@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OnTopic.Internal.Diagnostics;
 
@@ -63,6 +64,7 @@ namespace OnTopic.Lookup {
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
     public StaticTypeLookupService(
       IEnumerable<Type>? types,
@@ -77,6 +79,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   The default type to return in case <see cref="Lookup(String[])"/> cannot find a match.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
     public Type? DefaultType { get; }
 
@@ -101,6 +104,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   Adds a <see cref="Type"/> to the underlying collection.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     protected void Add(Type type) => _typeCollection.Add(type);
 
     /*==========================================================================================================================
@@ -142,6 +146,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     /// <param name="type">The <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if the <see cref="Type"/> exists in the collection.</returns>
+    [ExcludeFromCodeCoverage]
     protected bool Contains(Type type) => _typeCollection.Contains(type);
 
     /// <summary>
@@ -149,6 +154,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     /// <param name="key">The key of the <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if a <see cref="Type"/> with <paramref name="key"/> exists in the collection.</returns>
+    [ExcludeFromCodeCoverage]
     protected bool Contains(string key) => _typeCollection.Contains(key);
 
     /*==========================================================================================================================
@@ -157,6 +163,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   Removes a <see cref="Type"/> with the provided <paramref name="key"/>.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     protected void Remove(string key) => _typeCollection.Remove(key);
 
   } //Class

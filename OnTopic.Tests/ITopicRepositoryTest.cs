@@ -4,12 +4,15 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.Tests.Fixtures;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -23,7 +26,8 @@ namespace OnTopic.Tests {
   ///   These tests not only validate that the <see cref="StubTopicRepository"/> is functioning as expected, but also that the
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
-  [TestClass]
+  [ExcludeFromCodeCoverage]
+  [Collection("Shared Repository")]
   public class ITopicRepositoryTest {
 
     /*==========================================================================================================================
@@ -43,8 +47,18 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ITopicRepositoryTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    public ITopicRepositoryTest(TopicInfrastructureFixture<StubTopicRepository> fixture) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(fixture, nameof(fixture));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository = fixture.CachedTopicRepository;
+
     }
 
     /*==========================================================================================================================
@@ -53,14 +67,14 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads the default topic and ensures there are the expected number of children.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_Default_ReturnsTopicTopic() {
 
       var rootTopic             = _topicRepository.Load();
 
-      Assert.AreEqual<int>(2, rootTopic.Children.Count);
-      Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);
-      Assert.AreEqual<string>("Web", rootTopic.Children.Last().Key);
+      Assert.Equal<int?>(2, rootTopic?.Children.Count);
+      Assert.Equal("Configuration", rootTopic?.Children.First().Key);
+      Assert.Equal("Web", rootTopic?.Children.Last().Key);
 
     }
 
@@ -70,15 +84,9 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
-    [TestMethod]
-    public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
-
-      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var child                 = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
-
-      Assert.AreEqual<string>("Page", topic.Key);
-
-    }
+    [Fact]
+    public void Load_ValidUniqueKey_ReturnsCorrectTopic() =>
+      Assert.Equal("Page", _topicRepository.Load("Root:Configuration:ContentTypes:Page")?.Key);
 
     /*==========================================================================================================================
     | TEST: LOAD: INVALID UNIQUE KEY: RETURNS NULL
@@ -86,14 +94,9 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads invalid topic key and ensures a null is returned.
     /// </summary>
-    [TestMethod]
-    public void Load_InvalidUniqueKey_ReturnsTopic() {
-
-      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType");
-
-      Assert.IsNull(topic);
-
-    }
+    [Fact]
+    public void Load_InvalidUniqueKey_ReturnsTopic() =>
+      Assert.Null(_topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType"));
 
     /*==========================================================================================================================
     | TEST: LOAD: VALID TOPIC ID: RETURNS CORRECT TOPIC
@@ -101,13 +104,13 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topic by ID and ensures it is found.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Load_ValidTopicId_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load(11111);
 
-      Assert.IsNotNull(topic);
-      Assert.AreEqual<string>("Web_1_1_1_1", topic.Key);
+      Assert.NotNull(topic);
+      Assert.Equal("Web_1_1_1_1", topic?.Key);
 
     }
 
@@ -117,14 +120,9 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads topic by an incorrect ID and ensures it a null is returned.
     /// </summary>
-    [TestMethod]
-    public void Load_InvalidTopicId_ReturnsNull() {
-
-      var topic                 = _topicRepository.Load(9999999);
-
-      Assert.IsNull(topic);
-
-    }
+    [Fact]
+    public void Load_InvalidTopicId_ReturnsNull() =>
+      Assert.Null(_topicRepository.Load(9999999));
 
     /*==========================================================================================================================
     | TEST: SAVE
@@ -132,23 +130,20 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Saves topics and ensures their identifiers are properly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Save() {
 
-      var web                   = _topicRepository.Load("Root:Web");
-      var configuration         = _topicRepository.Load("Root:Configuration");
+      var topic                 = new Topic("Test", "Page");
+      var child                 = new Topic("Child", "Page", topic);
 
-      Assert.AreEqual<int>(10000, web.Id);
-      Assert.AreEqual<int>(-1, configuration.Id);
+      _topicRepository.Save(topic);
 
-      _topicRepository.Save(configuration);
+      Assert.NotEqual<int>(-1, topic.Id);
+      Assert.Equal<int>(-1, child.Id);
 
-      Assert.AreNotEqual<int>(-1, configuration.Id);
-      Assert.AreEqual<int>(-1, configuration.Children.First().Id);
+      _topicRepository.Save(topic, true);
 
-      _topicRepository.Save(configuration, true);
-
-      Assert.AreNotEqual<int>(-1, configuration.Children.First().Id);
+      Assert.NotEqual<int>(-1, child.Id);
 
     }
 
@@ -158,22 +153,19 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Moves topics and ensures their parents are correctly set.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Move_ToNewParent_ConfirmedMove() {
 
-      var source                = _topicRepository.Load("Root:Web:Web_0");
-      var destination           = _topicRepository.Load("Root:Web:Web_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
-
-      Assert.ReferenceEquals(topic.Parent, source);
-      Assert.AreEqual<int>(2, destination.Children.Count);
-      Assert.AreEqual<int>(2, source.Children.Count);
+      var source                = new Topic("OriginalParent", "Page");
+      var destination           = new Topic("NewParent", "Page");
+      var topic                 = new Topic("Topic", "Page", source);
+      _                         = new Topic("Sibling", "Page", source);
 
       _topicRepository.Move(topic, destination);
 
-      Assert.ReferenceEquals(topic.Parent, destination);
-      Assert.AreEqual<int>(1, source.Children.Count);
-      Assert.AreEqual<int>(3, destination.Children.Count);
+      Assert.Equal<Topic?>(topic.Parent, destination);
+      Assert.Single(source.Children);
+      Assert.Single(destination.Children);
 
     }
 
@@ -183,23 +175,19 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
-    [TestMethod]
-    public void Move_ToNewSibling_ConirmedMove() {
+    [Fact]
+    public void Move_ToNewSibling_ConfirmedMove() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_0");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
-      var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
-
-      Assert.ReferenceEquals(topic.Parent, parent);
-      Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
-      Assert.AreEqual<int>(2, parent.Children.Count);
+      var parent                = new Topic("OriginalParent", "Page");
+      var topic                 = new Topic("Topic", "Page", parent);
+      var sibling               = new Topic("Sibling", "Page", parent);
 
       _topicRepository.Move(topic, parent, sibling);
 
-      Assert.ReferenceEquals(topic.Parent, parent);
-      Assert.AreEqual<int>(2, parent.Children.Count);
-      Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
-      Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
+      Assert.Equal<Topic?>(topic.Parent, parent);
+      Assert.Equal<int>(2, parent.Children.Count);
+      Assert.Equal("Sibling", parent.Children.First().Key);
+      Assert.Equal("Topic", parent.Children[1].Key);
 
     }
 
@@ -209,18 +197,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Deletes a topic to ensure it is properly removed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_Topic_Removed() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
-      var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
-
-      Assert.AreEqual<int>(2, parent.Children.Count);
+      var parent                = new Topic("OriginalParent", "Page");
+      var topic                 = new Topic("Topic", "Page", parent);
+      _                         = new Topic("child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(1, parent.Children.Count);
+      Assert.Empty(parent.Children);
 
     }
 
@@ -232,22 +218,21 @@ namespace OnTopic.Tests {
     ///   TopicDeleted"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
     ///   and not the immediate <see cref="CachedTopicRepository"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Delete_DeleteEvent_IsFired() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = new Topic("Test", "Page");
       var hasFired              = false;
 
       _topicRepository.Save(topic);
       _topicRepository.TopicDeleted += eventHandler;
       _topicRepository.Delete(topic);
 
-      Assert.IsTrue(hasFired);
+      Assert.True(hasFired);
 
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
     }
-
 
   } //Class
 } //Namespace

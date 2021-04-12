@@ -84,6 +84,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       "IsDisabled",
       "ParentID",               //Legacy, but exposed for avoid leacking legacy data
       "TopicID",                //Legacy, but exposed for avoid leacking legacy data
+      "ContentType",            //Legacy, but exposed for avoid leacking legacy data
       "IsHidden",
       "NoIndex",
       "SortOrder"
@@ -173,7 +174,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new(
         new XElement(_sitemapNamespace + "urlset",
-          from topic in rootTopic?.Children
+          from topic in rootTopic.Children
           select AddTopic(topic, includeMetadata)
         )
       );
@@ -196,9 +197,11 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is null) return topics;
-      if (topic.Attributes.GetBoolean("NoIndex")) return topics;
-      if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
+      if (
+        topic.Attributes.GetBoolean("IsPrivateBranch") ||
+        topic.ContentType.Equals("Container", StringComparison.OrdinalIgnoreCase) &&
+        topic.Attributes.GetBoolean("NoIndex")
+      ) return topics;
       if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -223,7 +226,9 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       );
       if (
         !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
-        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url"))
+        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url")) &&
+        !topic.Attributes.GetBoolean("NoIndex") &&
+        !topic.Attributes.GetBoolean("IsDisabled")
       ) {
         topics.Add(topicElement);
       }
@@ -241,7 +246,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Get attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       XElement getAttributes() =>
-        new XElement(_pagemapNamespace + "DataObject",
+        new(_pagemapNamespace + "DataObject",
           new XAttribute("type", "Attributes"),
             new XElement(_pagemapNamespace + "Attribute",
               new XAttribute("name", "ContentType"),

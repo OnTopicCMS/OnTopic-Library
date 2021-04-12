@@ -18,9 +18,31 @@ AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[Attributes]
-  GROUP BY	TopicID,
+  FROM (
+    SELECT	TopicID,
 	Version
+    FROM	[dbo].[Attributes]
+    GROUP BY	TopicID,
+	Version
+    UNION
+    SELECT	TopicID,
+	Version
+    FROM	[dbo].[ExtendedAttributes]
+    GROUP BY	TopicID,
+	Version
+    UNION
+    SELECT	Source_TopicID AS TopicID,
+	Version
+    FROM	[dbo].[TopicReferences]
+    GROUP BY	Source_TopicID,
+	Version
+    UNION
+    SELECT	Source_TopicID AS TopicID,
+	Version
+    FROM	[dbo].[Relationships]
+    GROUP BY	Source_TopicID,
+	Version
+  ) AS	VersionList
 )
 SELECT	Versions.TopicId,
 	Version

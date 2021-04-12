@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -24,8 +25,8 @@ namespace OnTopic.Mapping.Annotations {
   ///     populate the <see cref="Associations"/> specified on the associated topics.
   ///   </para>
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class IncludeAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+  public sealed class IncludeAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

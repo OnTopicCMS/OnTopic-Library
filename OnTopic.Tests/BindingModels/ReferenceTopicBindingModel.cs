@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class ReferenceTopicBindingModel : BasicTopicBindingModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttributeDescriptor") { }
+    public ReferenceTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
 
     public AssociatedTopicBindingModel? BaseTopic { get; set; }
 

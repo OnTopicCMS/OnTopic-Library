@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class TextAttributeTopicBindingModel : AttributeDescriptorTopicBindingModel {
 
-    public TextAttributeTopicBindingModel(string? key = null) : base(key, "TextAttributeDescriptor") { }
+    public TextAttributeTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
 
   } //Class
 } //Namespace

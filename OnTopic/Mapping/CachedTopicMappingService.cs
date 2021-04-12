@@ -83,7 +83,7 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -205,7 +205,12 @@ namespace OnTopic.Mapping {
       if (cacheKey.Item2 is not null) {
         cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
       }
-      if (cacheKey.Item1 > 0 && viewModel.GetType().Name == $"{contentType}TopicViewModel") {
+      if (
+        cacheKey.Item1 > 0 && (
+          viewModel.GetType().Name == $"{contentType}ViewModel" ||
+          viewModel.GetType().Name == $"{contentType}TopicViewModel"
+        )
+      ) {
         _cache.TryAdd(cacheKey, viewModel);
       }
       return viewModel;

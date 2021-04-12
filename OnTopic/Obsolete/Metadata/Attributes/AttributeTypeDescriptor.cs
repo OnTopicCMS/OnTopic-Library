@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Metadata.AttributeTypes {
 
@@ -19,6 +20,7 @@ namespace OnTopic.Metadata.AttributeTypes {
   ///   above, these attribute types are described by their own <see cref="ContentTypeDescriptor"/>s, which offer a strongly
   ///   typed representation of those properties. This class provides a base for those representations.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The AttributeTypeDescriptor class is obsolete. Derive from AttributeDescriptor instead.", true)]
   public abstract class AttributeTypeDescriptor : AttributeDescriptor {
 

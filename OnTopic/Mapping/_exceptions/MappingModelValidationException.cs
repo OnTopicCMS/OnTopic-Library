@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Reverse;
@@ -27,6 +28,7 @@ namespace OnTopic.Mapping {
   ///   validation errors caused by e.g. the <see cref="ReverseTopicMappingService"/>.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class MappingModelValidationException: TopicMappingException {
 
     /*==========================================================================================================================

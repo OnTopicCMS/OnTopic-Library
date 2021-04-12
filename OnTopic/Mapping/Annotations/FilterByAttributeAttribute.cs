@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-
 using System;
 using OnTopic.Internal.Diagnostics;
 
@@ -20,8 +19,8 @@ namespace OnTopic.Mapping.Annotations {
   ///   assignable to the collection's base type. With the <c>[FilterByAttribute(attributeKey, attributeValue)]</c> attribute,
   ///   the collection will instead be filtered to only those topics that have the specified attribute value assigned.
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple=true, Inherited=true)]
-  public sealed class FilterByAttributeAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple=true, Inherited=true)]
+  public sealed class FilterByAttributeAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

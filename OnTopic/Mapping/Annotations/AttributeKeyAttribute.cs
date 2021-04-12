@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Mapping.Annotations {
@@ -21,8 +22,8 @@ namespace OnTopic.Mapping.Annotations {
   ///   <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the target property name to be
   ///   decoupled from the source attribute key.
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class AttributeKeyAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+  public sealed class AttributeKeyAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,6 +51,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the attribute key.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The Value property has been renamed to Key for consistency", true)]
     public string? Value { get; }
 

@@ -8,6 +8,7 @@ using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Associations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests.Entities {
 
@@ -18,6 +19,7 @@ namespace OnTopic.Tests.Entities {
   ///   Provides a derived version of <see cref="Topic"/> with additional properties for evaluating the enforcement of business
   ///   logic.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class CustomTopic: Topic {
 
     /*==========================================================================================================================
@@ -52,6 +54,18 @@ namespace OnTopic.Tests.Entities {
     }
 
     /*==========================================================================================================================
+    | BOOLEAN AS STRING ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a string property which is intended to be mapped to a Boolean attribute.
+    /// </summary>
+    [AttributeSetter]
+    public string BooleanAsStringAttribute {
+      get => Attributes.GetValue("BooleanAttribute", "0");
+      set => SetAttributeValue("BooleanAttribute", value);
+    }
+
+    /*==========================================================================================================================
     | NUMERIC ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -66,6 +80,22 @@ namespace OnTopic.Tests.Entities {
           $"{nameof(NumericAttribute)} expects a positive value."
         );
         SetAttributeValue("NumericAttribute", value.ToString(CultureInfo.InvariantCulture));
+      }
+    }
+
+    /*==========================================================================================================================
+    | NON-NULLABLE ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a property which does not permit null values as a means of ensuring the business logic is enforced when
+    ///   removing values.
+    /// </summary>
+    [AttributeSetter]
+    public string NonNullableAttribute {
+      get => Attributes.GetValue("NonNullableAttribute")?? "";
+      set {
+        Contract.Requires(value, nameof(value));
+        SetAttributeValue("NonNullableAttribute", value.ToString(CultureInfo.InvariantCulture));
       }
     }
 
@@ -98,7 +128,7 @@ namespace OnTopic.Tests.Entities {
       get => References.GetValue("TopicReference");
       set {
         Contract.Requires<ArgumentOutOfRangeException>(
-          value.ContentType == ContentType,
+          value?.ContentType == ContentType,
           $"{nameof(TopicReference)} expects a topic with the same content type as the parent: {ContentType}."
         );
         References.SetValue("TopicReference", value);

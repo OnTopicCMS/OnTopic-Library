@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -72,6 +73,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   endpoint routing is preferred in ASP.NET Core 3. OnTopic also offers far more extension methods for endpoint routing,
     ///   while this method is provided exclusively for backward compatibility.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     [Obsolete("This method is deprecated and will be removed in OnTopic 5. Callers should migrate to endpoint routing.", true)]
     public static IRouteBuilder MapTopicRoute(
       this IRouteBuilder routes,
@@ -117,6 +119,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   If there are multiple routes that fit this description, you can instead opt to use the <see cref=
     ///   "MapTopicAreaRoute(IEndpointRouteBuilder)"/> extension, which will register all areas.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static ControllerActionEndpointConventionBuilder MapTopicAreaRoute(
       this IEndpointRouteBuilder routes,
       string areaName,
@@ -179,6 +182,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///     "MapImplicitAreaControllerRoute(IEndpointRouteBuilder)"/> overload, which will register all areas.
     ///   </para>
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static void MapImplicitAreaControllerRoute(this IEndpointRouteBuilder routes, string areaName) =>
       routes.MapAreaControllerRoute(
         name: $"{areaName}TopicArea",

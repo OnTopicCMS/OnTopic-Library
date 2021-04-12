@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Repositories {
 
@@ -13,6 +14,7 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   The DeleteEventArgs class defines an event argument type specific to deletion events
   /// </summary>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The DeleteEventArgs has been renamed to TopicEventArgs", true)]
   public class DeleteEventArgs : EventArgs {
 

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
@@ -23,6 +24,7 @@ namespace OnTopic.Repositories {
   ///   capturing a more specific error for this individual use case.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class TopicNotFoundException: TopicRepositoryException {
 
     /*==========================================================================================================================

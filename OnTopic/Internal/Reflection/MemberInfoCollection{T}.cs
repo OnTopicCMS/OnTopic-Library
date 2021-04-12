@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Internal.Diagnostics;
@@ -75,6 +76,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
     /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
+    [ExcludeFromCodeCoverage]
     protected override sealed void InsertItem(int index, T item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -109,6 +111,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
+    [ExcludeFromCodeCoverage]
     protected override sealed string GetKeyForItem(T item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Name;

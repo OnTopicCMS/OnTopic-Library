@@ -20,6 +20,7 @@ namespace OnTopic.TestDoubles {
   ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
   ///   Data Transfer Objects, such as View Models.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class DummyTopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
@@ -43,7 +44,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new()
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class
       => throw new NotImplementedException();
 
     /*==========================================================================================================================

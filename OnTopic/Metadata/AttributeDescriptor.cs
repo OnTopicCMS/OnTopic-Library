@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
@@ -90,6 +91,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public virtual ModelType ModelType { get; protected init; } = ModelType.ScalarValue;
 
     /*==========================================================================================================================
@@ -110,6 +112,7 @@ namespace OnTopic.Metadata {
     /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
+    [ExcludeFromCodeCoverage]
     public string EditorType => GetType().Name.Replace("AttributeDescriptor", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
@@ -127,6 +130,7 @@ namespace OnTopic.Metadata {
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
+    [ExcludeFromCodeCoverage]
     public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
@@ -145,6 +149,7 @@ namespace OnTopic.Metadata {
     ///   This is used to establish a required field validator in the editor interface. This should be used by the form
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public bool IsRequired {
       get => Attributes.GetBoolean("IsRequired");
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
@@ -161,8 +166,9 @@ namespace OnTopic.Metadata {
     ///   value (if not overwritten) is committed to the database and, thus, that version is used in the future. As such, the
     ///   default value only affects the topic when it is first being created via the editor.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public string? DefaultValue {
-      get => Attributes.GetValue("DefaultValue", "");
+      get => Attributes.GetValue("DefaultValue", null);
       set => SetAttributeValue("DefaultValue", value);
     }
 
@@ -190,6 +196,7 @@ namespace OnTopic.Metadata {
     ///     This property and its corresponding attribute was named <c>StoreInBlob</c> in versions of OnTopic prior to 4.0.
     ///   </para>
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public bool IsExtendedAttribute {
       get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob"));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");

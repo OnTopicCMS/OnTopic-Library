@@ -4,19 +4,21 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
+using OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -27,8 +29,8 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicController"/>, and other <see cref="Controller"/> classes that are part of
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
-  [TestClass]
-  public class TopicControllerTest {
+  [ExcludeFromCodeCoverage]
+  public class TopicControllerTest: IClassFixture<TestTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -51,13 +53,13 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicControllerTest() {
+    public TopicControllerTest(TestTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
-      _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
+      _topicRepository          = new CachedTopicRepository(topicRepository);
+      _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -66,7 +68,7 @@ namespace OnTopic.Tests {
       var routes                = new RouteData();
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
+      routes.Values.Add("path", "Web/Valid/Child/");
 
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
@@ -83,7 +85,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task TopicController_IndexAsync_ReturnsTopicViewResult() {
 
       var controller            = new TopicController(_topicRepository, _topicMappingService) {
@@ -95,8 +97,8 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.AreEqual<string?>("Web_0_1_1", model?.Title);
+      Assert.NotNull(model);
+      Assert.Equal("Child", model?.Title);
 
     }
 
@@ -106,17 +108,37 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
 
       var controller            = new RedirectController(_topicRepository);
-      var result                = controller.Redirect(11110) as RedirectResult;
+      var result                = controller.Redirect(_topic.Id) as RedirectResult;
 
       controller.Dispose();
 
-      Assert.IsNotNull(result);
-      Assert.IsTrue(result?.Permanent?? false);
-      Assert.AreEqual<string?>("/Web/Web_1/Web_1_1/Web_1_1_1/", result?.Url);
+      Assert.NotNull(result);
+      Assert.True(result?.Permanent?? false);
+      Assert.Equal(_topic.GetWebPath(), result?.Url);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS NOT FOUND OBJECT RESULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action with an invalid <see cref="Topic.Id"/> and
+    ///   confirms that a <see cref="NotFoundResult"/> is returned.
+    /// </summary>
+    [Fact]
+    public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
+
+      var controller            = new RedirectController(_topicRepository);
+      var result                = controller.Redirect(12345);
+
+      controller.Dispose();
+
+      Assert.NotNull(result);
+      Assert.IsType<NotFoundObjectResult>(result);
 
     }
 
@@ -126,25 +148,21 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ReturnsSitemapXml() {
 
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
       var result                = controller.Index() as ContentResult;
       var model                 = result?.Content as string;
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
+      Assert.NotNull(model);
+
+      Assert.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model!, StringComparison.Ordinal);
 
     }
 
@@ -155,80 +173,134 @@ namespace OnTopic.Tests {
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
     ///   properly excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SitemapController_Index_ExcludesContentTypes() {
 
-      var hiddenTopic1          = _topicRepository.Load("Root:Web:Web_1:Web_1_0")!;
-      var hiddenTopic2          = _topicRepository.Load("Root:Web:Web_1:Web_1_1")!;
-      var hiddenTopic3          = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_1")!;
-      var hiddenTopic4          = _topicRepository.Load("Root:Web:Web_0:Web_0_0")!;
-
-      hiddenTopic1.ContentType  = "List";
-      hiddenTopic2.ContentType  = "Container";
-      hiddenTopic3.ContentType  = "PageGroup";
-      hiddenTopic4.Attributes.SetValue("Url", "https://www.microsoft.com/");
-
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
-      var result                = controller.Index(false, true) as ContentResult;
+      var result                = controller.Extended(true) as ContentResult;
       var model                 = result?.Content as string;
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<DataObject type=\"Attributes\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"List\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"Container\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"PageGroup\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_0/Web_0_0/</loc>", StringComparison.Ordinal));
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
+
+      Assert.True(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
+      Assert.True(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
 
     }
 
     /*==========================================================================================================================
-    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES ATTRIBUTES
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES CONTAINER DESCENDANTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
-    ///   properly excludes the <c>Body</c> and <c>IsHidden</c> attributes.
+    ///   properly excludes the children of <c>Container</c> topics that are marked as <c>NoIndex</c>.
     /// </summary>
-    [TestMethod]
-    public void SitemapController_Index_ExcludesAttributes() {
+    [Fact]
+    public void SitemapController_Index_ExcludesContainerDescendants() {
 
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
-
-      topic.Attributes.SetValue("Title", "Title");
-      topic.Attributes.SetValue("LastModified", "December 23, 1918");
-      topic.Attributes.SetValue("Body", "Body");
-      topic.Attributes.SetValue("IsHidden", "0");
-
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
-      var result                = controller.Index(false, true) as ContentResult;
+      var result                = controller.Extended(true) as ContentResult;
       var model                 = result?.Content as string;
 
       controller.Dispose();
 
-      Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"LastModified\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("NoIndexContainer/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("NoIndexContainerChild/</loc>", StringComparison.Ordinal));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES PRIVATE BRANCHES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
+    ///   properly excludes the topics that are marked as <c>IsPrivateBranch</c>, including their descendants.
+    /// </summary>
+    [Fact]
+    public void SitemapController_Index_ExcludesPrivateBranches() {
+
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
+      };
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.NotNull(model);
+      Assert.False(model!.Contains("PrivateBranch/</loc>", StringComparison.Ordinal));
+      Assert.False(model!.Contains("PrivateBranchChild/</loc>", StringComparison.Ordinal));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: EXTENDED: INCLUDES ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the extended action of the <see cref="SitemapController.Extended(Boolean)" /> action and ensures that the
+    ///   results include the expected attributes.
+    /// </summary>
+    [Fact]
+    public void SitemapController_Extended_IncludesAttributes() {
+
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
+      };
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.NotNull(model);
+
+      Assert.Contains("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", model, StringComparison.Ordinal);
+      Assert.Contains("/Web/Valid/Child/</loc>", model, StringComparison.Ordinal);
+
+      Assert.Contains("<Attribute name=\"Attribute\">Value</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Title\">Title</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"Relationships\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
+      Assert.Contains("<DataObject type=\"References\">", model, StringComparison.Ordinal);
+      Assert.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", model, StringComparison.Ordinal);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: EXTENDED: EXCLUDES ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Extended(Boolean)" /> action and verifies that it
+    ///   properly excludes e.g. the <c>Body</c> and <c>IsHidden</c> attributes.
+    /// </summary>
+    [Fact]
+    public void SitemapController_Index_ExcludesAttributes() {
+
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
+      };
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.NotNull(model);
+
+      Assert.False(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
+      Assert.False(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
 
     }
 

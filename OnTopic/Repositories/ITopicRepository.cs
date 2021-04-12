@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 
 namespace OnTopic.Repositories {
@@ -57,14 +58,17 @@ namespace OnTopic.Repositories {
     event EventHandler<TopicRenameEventArgs> TopicRenamed;
 
     /// <inheritdoc cref="TopicDeleted"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DeleteEvent has been renamed to TopicDeleted")]
     event EventHandler<DeleteEventArgs> DeleteEvent;
 
     /// <inheritdoc cref="TopicMoved"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The MoveEvent has been renamed to TopicMoved")]
     event EventHandler<DeleteEventArgs> MoveEvent;
 
     /// <inheritdoc cref="TopicRenamed"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The RenameEvent has been renamed to TopicRenamed")]
     event EventHandler<RenameEventArgs> RenameEvent;
 
@@ -79,6 +83,12 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <summary>
+    ///   Loads the entire root topic graph, including all descendants.
+    /// </summary>
+    /// <returns>A topic object.</returns>
+    public Topic? Load() => Load(-1);
 
     /// <summary>
     ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
@@ -104,9 +114,10 @@ namespace OnTopic.Repositories {
     /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
+    Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
     Topic? Load(string? uniqueKey, bool isRecursive);
 
@@ -177,6 +188,7 @@ namespace OnTopic.Repositories {
     void Save(Topic topic, bool isRecursive = false);
 
     /// <inheritdoc cref="Save(Topic, Boolean)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
     int Save(Topic topic, bool isRecursive, bool isDraft);
 

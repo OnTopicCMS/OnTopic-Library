@@ -21,7 +21,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class PageTopicBindingModel : BasicTopicBindingModel {
 
-    public PageTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public PageTopicBindingModel(string key) : base(key, "Page") { }
 
     [Required]
     public string? Title { get; set; }

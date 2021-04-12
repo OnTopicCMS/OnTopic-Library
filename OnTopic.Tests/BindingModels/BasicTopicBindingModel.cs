@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Models;
 
 namespace OnTopic.Tests.BindingModels {
@@ -27,11 +26,11 @@ namespace OnTopic.Tests.BindingModels {
       ContentType = contentType;
     }
 
-    [Required, NotNull, DisallowNull]
-    public string? Key { get; init; }
+    [Required]
+    public string Key { get; init; } = default!;
 
-    [Required, NotNull, DisallowNull]
-    public string? ContentType { get; init; }
+    [Required]
+    public string ContentType { get; init; } = default!;
 
   } //Class
 } //Namespace

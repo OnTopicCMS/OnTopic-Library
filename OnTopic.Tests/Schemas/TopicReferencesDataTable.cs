@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Data.Sql;
 using OnTopic.Internal.Diagnostics;
 
@@ -19,6 +20,7 @@ namespace OnTopic.Tests.Schemas {
   /// <remarks>
   ///   This allows testing of the <see cref="SqlTopicRepository"/> via its <see cref="SqlDataReaderExtensions"/> methods.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class TopicReferencesDataTable: DataTable {
 
     /*==========================================================================================================================
@@ -79,7 +81,6 @@ namespace OnTopic.Tests.Schemas {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sourceTopicId, nameof(sourceTopicId));
       Contract.Requires(referenceKey, nameof(referenceKey));
-      Contract.Requires(targetTopicId, nameof(targetTopicId));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create new row

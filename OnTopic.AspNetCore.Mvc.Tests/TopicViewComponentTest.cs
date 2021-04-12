@@ -3,12 +3,13 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.Components;
 using OnTopic.AspNetCore.Mvc.Host.Components;
 using OnTopic.AspNetCore.Mvc.Models;
@@ -18,6 +19,7 @@ using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -28,8 +30,9 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="NavigationTopicViewComponentBase{T}"/>, and derived classes that are part of
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
-  [TestClass]
-  public class TopicViewComponentTest {
+  [ExcludeFromCodeCoverage]
+  [Collection("Data Tests")]
+  public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -57,12 +60,12 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicViewComponentTest() {
+    public TopicViewComponentTest(StubTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
+      _topicRepository          = new CachedTopicRepository(topicRepository);
       _topic                    = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
@@ -79,10 +82,22 @@ namespace OnTopic.Tests {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish view model context
       \-----------------------------------------------------------------------------------------------------------------------*/
+      _context                  = GetViewComponentContext(_topic.GetWebPath());
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET VIEW COMPONENT CONTEXT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new <see cref="ViewComponentContext"/> based on a given <paramref name="webPath"/>.
+    /// </summary>
+    private static ViewComponentContext GetViewComponentContext(string webPath) {
+
       var routes                = new RouteData();
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_3/Web_3_0");
+      routes.Values.Add("path", webPath);
 
       var viewContext           = new ViewContext() {
         HttpContext             = new DefaultHttpContext(),
@@ -92,7 +107,7 @@ namespace OnTopic.Tests {
         ViewContext             = viewContext
       };
 
-      _context                  = viewComponentContext;
+      return viewComponentContext;
 
     }
 
@@ -102,7 +117,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads a new <see cref="MenuViewComponent"/> and confirms the resulting values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task Menu_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
@@ -113,11 +128,59 @@ namespace OnTopic.Tests {
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
-      Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
-      Assert.AreEqual<string?>("/Web/", model?.NavigationRoot?.WebPath);
-      Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+      Assert.NotNull(model);
+      Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
+      Assert.Equal("/Web/", model?.NavigationRoot?.WebPath);
+      Assert.Equal<int?>(3, model?.NavigationRoot?.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MENU: INVOKE: RETURNS CONFIGURED NAVIGATION ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="MenuViewComponent"/> with a context defining an alternate <c>NavigationRoot</c>, and confirms
+    ///   that is returned as the <see cref="NavigationTopicViewModel"/>.
+    /// </summary>
+    [Fact]
+    public async Task Menu_Invoke_ReturnsConfiguredNavigationRoot() {
+
+      var webPath               = "/Web/Web_3/Web_3_1/Web_3_1_0/";
+      var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.NotNull(model);
+      Assert.Equal(webPath, model?.CurrentWebPath);
+      Assert.Equal("/Configuration/", model?.NavigationRoot?.WebPath);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
+    ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
+    /// </summary>
+    [Fact]
+    public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {
+
+      var parent                = new NavigationTopicViewModel() {
+        WebPath                 = "/Web/"
+      };
+      var child                 = new NavigationTopicViewModel() {
+        WebPath                 = parent.WebPath + "Path/"
+      };
+      parent.Children.Add(child);
+
+      Assert.True(child.IsSelected(child.WebPath));
+      Assert.True(parent.IsSelected(child.WebPath));
+      Assert.False(child.IsSelected(parent.WebPath));
 
     }
 
@@ -127,7 +190,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> and confirms the resulting values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public async Task PageLevelNavigation_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
@@ -138,11 +201,65 @@ namespace OnTopic.Tests {
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
-      Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
-      Assert.AreEqual<string?>("/Web/Web_3/", model?.NavigationRoot?.WebPath);
-      Assert.AreEqual<int?>(2, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+      Assert.NotNull(model);
+      Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
+      Assert.Equal("/Web/Web_3/", model?.NavigationRoot?.WebPath);
+      Assert.Equal<int?>(2, model?.NavigationRoot?.Children.Count);
+      Assert.True(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a root that does not derive from a <c>PageGroup</c>
+    ///   and confirms the resulting <see cref="NavigationTopicViewModel"/> is <c>null</c>.
+    /// </summary>
+    [Fact]
+    public async Task PageLevelNavigation_Invoke_ReturnsNull() {
+
+      var webPath               = "/Web/Web_1/Web_1_0/";
+
+      var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.NotNull(model);
+      Assert.Equal(webPath, model?.CurrentWebPath);
+      Assert.Null(model?.NavigationRoot);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE WITH NULL TOPIC: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a null topic reference and confirms the resulting <see
+    ///   cref="NavigationTopicViewModel"/> is <c>null</c>. This occurs when handling 404 errors.
+    /// </summary>
+    [Fact]
+    public async Task PageLevelNavigation_InvokeWithNullTopic_ReturnsNull()
+    {
+
+      var webPath = "/Invalid/Path/";
+
+      var viewComponent = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
+      {
+        ViewComponentContext = GetViewComponentContext(webPath)
+      };
+
+      var result = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult = result as ViewViewComponentResult;
+      var model = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.NotNull(model);
+      Assert.Equal(String.Empty, model?.CurrentWebPath);
+      Assert.Null(model?.NavigationRoot);
 
     }
 

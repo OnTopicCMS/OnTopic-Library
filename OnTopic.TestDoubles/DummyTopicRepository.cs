@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Collections;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 
@@ -17,6 +17,7 @@ namespace OnTopic.TestDoubles {
   ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
   ///   but is not intended to be called.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class DummyTopicRepository : ObservableTopicRepository {
 
     /*==========================================================================================================================
@@ -41,7 +42,7 @@ namespace OnTopic.TestDoubles {
     public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => null;
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
     public override Topic? Load(Topic? topic, DateTime version) => throw new NotImplementedException();

@@ -55,7 +55,21 @@ namespace OnTopic.Metadata {
     /// <summary>
     ///   A set of child <see cref="Topic"/>s packaged as part of the current <see cref="Topic"/>.
     /// </summary>
-    NestedTopic                 = 4
+    NestedTopic                 = 4,
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | REFLEXIVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A special value for <see cref="AttributeDescriptor"/>s placed on <see cref="AttributeDescriptor"/>s, which specifies
+    ///   that the <see cref="ModelType"/> should be inherited from the <see cref="AttributeDescriptor.ModelType"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This is useful for implementing an <see cref="AttributeDescriptor"/> which reflects the <see cref="AttributeDescriptor
+    ///   "/> it is placed on. For example, the <see cref="AttributeDescriptor.DefaultValue"/> attribute should store the value
+    ///   in the same location as the <see cref="AttributeDescriptor"/> for which it's setting.
+    /// </remarks>
+    Reflexive                   = 5
 
   } //Enum
 } //Namespace

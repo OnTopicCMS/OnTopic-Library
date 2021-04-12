@@ -433,7 +433,7 @@ namespace OnTopic.Collections.Specialized {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update from business logic
-      >-----------------------------------------------------------------------------------------------------------------------—
+      >-------------------------------------------------------------------------------------------------------------------------
       | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
       | business logic, then use the original values, while applying any change in the value triggered by the business logic.
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -447,7 +447,7 @@ namespace OnTopic.Collections.Specialized {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing item
-      >-----------------------------------------------------------------------------------------------------------------------—
+      >-------------------------------------------------------------------------------------------------------------------------
       | Because TrackedRecord<T> is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (originalItem is not null) {
@@ -458,8 +458,11 @@ namespace OnTopic.Collections.Specialized {
         else if (markDirty.HasValue) {
           markAsDirty = markDirty.Value;
         }
-        else if (originalItem.Value != value) {
+        else if (!originalItem.Value?.Equals(value)?? false) {
           markAsDirty = true;
+        }
+        else if (!version.HasValue) {
+          return;
         }
         updatedItem             = originalItem with {
           Value                 = value,
@@ -472,10 +475,11 @@ namespace OnTopic.Collections.Specialized {
       | Ignore if null
       >-------------------------------------------------------------------------------------------------------------------------
       | ###NOTE JJC20200501: Null or empty values are treated as deletions, and are not persisted to the data store. With
-      | existing values, these are written to ensure that the collection is marked as IsDirty, thus allowing previous values to
-      | be overwritten. Non-existent values, however, should simply be ignored.
+      | existing values, these are written to DeletedItems to ensure the collection is marked as IsDirty, thus allowing previous
+      | values to be overwritten. Non-existent values should simply be ignored, however; we shouldn't delete what doesn't exist.
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (value is null || String.IsNullOrEmpty(value.ToString())) {
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -507,8 +511,8 @@ namespace OnTopic.Collections.Specialized {
       /*------------------------------------------------------------------------------------------------------------------------
       | Persist item to collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (updatedItem is null) {
-        return;
+      if (updatedItem.Value is null) {
+        Remove(key);
       }
       else if (originalItem is not null) {
         this[IndexOf(originalItem)] = updatedItem;
@@ -590,9 +594,6 @@ namespace OnTopic.Collections.Specialized {
       }
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
-        if (DeletedItems.Contains(item.Key)) {
-          DeletedItems.Remove(item.Key);
-        }
       }
     }
 
@@ -608,11 +609,15 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
-      var trackedRecord = this[index];
-      if (!AssociatedTopic.IsNew) {
-        DeletedItems.Add(trackedRecord.Key);
+      var trackedRecord = this[index] with {
+        Value = null
+      };
+      if (_topicPropertyDispatcher.Enforce(trackedRecord.Key, trackedRecord)) {
+        if (!AssociatedTopic.IsNew) {
+          DeletedItems.Add(trackedRecord.Key);
+        }
+        base.RemoveItem(index);
       }
-      base.RemoveItem(index);
     }
 
     /*==========================================================================================================================
@@ -623,12 +628,15 @@ namespace OnTopic.Collections.Specialized {
     ///   it is appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="TrackedRecord{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
-    ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
+    ///   In order to ensure any business logic is enforced, <see cref="ClearItems()"/> loops through every <see cref="
+    ///   TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> and explicitly calls <see
+    ///   cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/>. This is slower, but ensures that any state tracking and null
+    ///   validation that occurs in the properties is maintained. Fortunately, this is a rare use case; we typically expect
+    ///   attributes to be handled individually.
     /// </remarks>
     protected override void ClearItems() {
-      if (!AssociatedTopic.IsNew) {
-        DeletedItems.AddRange(Items.Select(a => a.Key));
+      foreach (var item in Items.ToList()) {
+        Remove(item);
       }
       base.ClearItems();
     }
@@ -665,6 +673,7 @@ namespace OnTopic.Collections.Specialized {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
+    [ExcludeFromCodeCoverage]
     protected override sealed string GetKeyForItem(TItem item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;

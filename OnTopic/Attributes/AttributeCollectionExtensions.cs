@@ -47,15 +47,14 @@ namespace OnTopic.Attributes {
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return Int32.TryParse(
+      return AttributeValueConverter.Convert<bool?>(
         attributes.GetValue(
           name,
           defaultValue ? "1" : "0",
           inheritFromParent,
           inheritFromBase ? 5 : 0
-        ),
-        out var result
-      ) ? result is 1 : defaultValue;
+        )
+      )?? defaultValue;
     }
 
     /*==========================================================================================================================
@@ -85,15 +84,14 @@ namespace OnTopic.Attributes {
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return Int32.TryParse(
+      return AttributeValueConverter.Convert<int?>(
         attributes.GetValue(
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
           inheritFromBase? 5 : 0
-        ),
-        out var result
-      ) ? result : defaultValue;
+        )
+      )?? defaultValue;
     }
 
     /*==========================================================================================================================
@@ -123,15 +121,14 @@ namespace OnTopic.Attributes {
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return Double.TryParse(
+      return AttributeValueConverter.Convert<double?>(
         attributes.GetValue(
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
           inheritFromBase? 5 : 0
-        ),
-        out var result
-      ) ? result : defaultValue;
+        )
+      )?? defaultValue;
     }
 
     /*==========================================================================================================================
@@ -161,15 +158,14 @@ namespace OnTopic.Attributes {
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return DateTime.TryParse(
+      return AttributeValueConverter.Convert<DateTime?>(
         attributes.GetValue(
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
           inheritFromBase ? 5 : 0
-        ),
-        out var result
-      ) ? result : defaultValue;
+        )
+      )?? defaultValue;
     }
 
     /*==========================================================================================================================

@@ -26,6 +26,7 @@ namespace OnTopic.TestDoubles {
   ///   database, or working against actual data. This is faster and safer for test methods since it doesn't maintain a
   ///   dependency on a live database or persistent data.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class StubTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
@@ -50,24 +51,57 @@ namespace OnTopic.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
-      (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Lookup by TopicId
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topic = _cache;
+
+      if (topicId > 0) {
+        topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic != null) {
+        OnTopicLoaded(new(topic, isRecursive));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return topic;
+
+    }
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(uniqueKey)) {
+        return null;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey is not null && uniqueKey.Length > 0) {
-        uniqueKey = uniqueKey.Contains(":", StringComparison.Ordinal) ? uniqueKey : "Root:" + uniqueKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
+      var topic = _cache.GetByUniqueKey(uniqueKey);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic != null) {
+        OnTopicLoaded(new(topic, isRecursive));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
+      | Return topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      return topic;
 
     }
 
@@ -77,21 +111,35 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
       Contract.Requires(
         version.Date > new DateTime(2014, 12, 9),
         "The version is expected to have been created since version support was introduced into the topic library."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Get topic
+      | Lookup by TopicId
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = Load(topicId, referenceTopic, false);
+      var topic = _cache;
+
+      if (topicId > 0) {
+        topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic != null) {
+        OnTopicLoaded(new(topic, false, version));
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset version
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is not null) {
+        if (!topic.VersionHistory.Contains(version)) {
+          topic.VersionHistory.Add(version);
+        }
         topic.LastModified = version;
       }
 
@@ -156,6 +204,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    [ExcludeFromCodeCoverage]
     [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", true)]
     public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
@@ -185,21 +234,21 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = TopicFactory.Create("Root", "Container", 900);
       var currentAttributeId = 800;
+      var rootTopic = new Topic("Root", "Container", null, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
-      var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
+      var configuration = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
+      var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
 
       addAttribute(contentTypes, "Key", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "ContentType", "TextAttributeDescriptor", false, true);
       addAttribute(contentTypes, "Title", "TextAttributeDescriptor", true, true);
       addAttribute(contentTypes, "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
-      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
       addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
@@ -209,7 +258,7 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
-      var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
       addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
@@ -221,21 +270,22 @@ namespace OnTopic.TestDoubles {
       TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
       TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
-      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+      var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
       addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
       addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
-
-      var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
+      var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
       addAttribute(contactContentType, "Name", isExtended: false);
       addAttribute(contactContentType, "AlternateEmail", isExtended: false);
       addAttribute(contactContentType, "BillingContactEmail", isExtended: false);
+
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contactContentType);
+      contactContentType.Relationships.SetValue("ContentTypes", pageContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
@@ -247,13 +297,13 @@ namespace OnTopic.TestDoubles {
         bool isExtended         = true,
         bool isRequired         = false
       ) {
-        var container = contentType.Children.GetValue("Attributes");
+        var container           = contentType.Children.GetValue("Attributes");
         if (container is null) {
-          container = TopicFactory.Create("Attributes", "List", contentType);
+          container             = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
-        attribute.IsRequired = isRequired;
+        var attribute           = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
+        attribute.IsRequired    = isRequired;
         attribute.IsExtendedAttribute = isExtended;
         return attribute;
       }
@@ -261,12 +311,12 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var metadata = TopicFactory.Create("Metadata", "Container", configuration);
-      var categories = TopicFactory.Create("Categories", "Lookup", metadata);
-      var lookup = TopicFactory.Create("LookupList", "List", categories);
+      var metadata              = new Topic("Metadata", "Container", configuration, currentAttributeId++);
+      var categories            = new Topic("Categories", "Lookup", metadata, currentAttributeId++);
+      var lookup                = new Topic("LookupList", "List", categories, currentAttributeId++);
 
       for (var i=1; i<=5; i++) {
-        TopicFactory.Create("Category" + i, "LookupListItem", lookup);
+        _ = new Topic("Category" + i, "LookupListItem", lookup);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -276,10 +326,12 @@ namespace OnTopic.TestDoubles {
 
       CreateFakeData(web, 2, 3);
 
-      var pageGroup = TopicFactory.Create("Web_3", "PageGroup", web);
+      var pageGroup             = new Topic("Web_3", "PageGroup", web, currentAttributeId++);
+      _                         = new Topic("Web_3_0", "Page", pageGroup, currentAttributeId++);
+      var childPage             = new Topic("Web_3_1", "Page", pageGroup, currentAttributeId++);
+      var leafPage              = new Topic("Web_3_1_0", "Page", childPage, currentAttributeId++);
 
-      TopicFactory.Create("Web_3_0", "Page", pageGroup);
-      TopicFactory.Create("Web_3_1", "Page", pageGroup);
+      leafPage.Attributes.SetValue("NavigationRoot", "Configuration");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
@@ -296,7 +348,7 @@ namespace OnTopic.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
+        var topic = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
         if (depth > 0) {

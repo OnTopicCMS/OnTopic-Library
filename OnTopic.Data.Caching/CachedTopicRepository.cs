@@ -80,19 +80,19 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(uniqueKey)) {
+        return null;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey is not null && uniqueKey.Length is not 0) {
-        return _cache.GetByUniqueKey(uniqueKey);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      return _cache.GetByUniqueKey(uniqueKey);
 
     }
 
@@ -102,7 +102,7 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
       Contract.Requires(
         version.Date > new DateTime(2014, 12, 9),
         "The version is expected to have been created since version support was introduced into the topic library."

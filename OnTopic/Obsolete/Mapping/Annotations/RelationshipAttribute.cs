@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -11,7 +12,8 @@ namespace OnTopic.Mapping.Annotations {
   | ATTRIBUTE: RELATIONSHIP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc cref="CollectionAttribute"/>
-  [AttributeUsage(System.AttributeTargets.Property)]
+  [ExcludeFromCodeCoverage]
+  [AttributeUsage(AttributeTargets.Property)]
   [Obsolete("The [Relationship] attribute has been renamed to [Collection].", true)]
   public sealed class RelationshipAttribute : Attribute {
 

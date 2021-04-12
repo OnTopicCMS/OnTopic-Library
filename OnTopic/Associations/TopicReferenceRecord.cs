@@ -70,7 +70,7 @@ namespace OnTopic.Associations {
     /// </requires>
     public TopicReferenceRecord(
       string key,
-      Topic value,
+      Topic? value,
       bool isDirty              = true,
       DateTime? lastModified    = null
     ): base(key, value, isDirty, lastModified) {

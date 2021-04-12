@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Models;
 
@@ -21,6 +22,7 @@ namespace OnTopic.ViewModels.BindingModels {
   ///   ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
   ///   metadata for separate validation or processing.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   [Obsolete(
     "The RelatedTopicBindingModel has been replaced by the AssociatedTopicBindingModel. Please update references.",
     true

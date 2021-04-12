@@ -5,11 +5,13 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Tests.Entities;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -19,7 +21,7 @@ namespace OnTopic.Tests {
   /// <summary>
   ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
-  [TestClass]
+  [ExcludeFromCodeCoverage]
   public class AttributeCollectionTest {
 
     /*==========================================================================================================================
@@ -28,11 +30,36 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a new attribute via an <c>[AttributeSetter]</c> and ensures that the attribute can be returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_CorrectValue_IsReturned() {
-      var topic = TopicFactory.Create("Test", "Container");
-      topic.View = "Test";
-      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("View"));
+      var topic                 = new Topic("Test", "Container") {
+        View                    = "Test"
+      };
+      Assert.Equal("Test", topic.Attributes.GetValue("View"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET VALUE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/> and <see
+    ///   cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetValue_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.View            = "Test";
+
+      Assert.Equal("Test", topic.Attributes.GetValue("View"));
+      Assert.Equal("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
+      Assert.Null(topic.Attributes.GetValue("View", null, inheritFromBase: false));
+
     }
 
     /*==========================================================================================================================
@@ -41,10 +68,32 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_MissingValue_ReturnsDefault() {
-      var topic = TopicFactory.Create("Test", "Container");
-      Assert.AreEqual<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
+
+      var topic = new Topic("Test", "Container");
+
+      Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
+      Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET VALUE: EMPTY VALUE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   If the <see cref="TrackedRecord{T}.Value"/> is <see cref="String.Empty"/>, then <see cref="TrackedRecordCollection{
+    ///   TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> should return <c>null</c>.
+    /// </summary>
+    [Fact]
+    public void GetValue_EmptyValue_ReturnsNull() {
+
+      var topic = new Topic("Test", "Container");
+
+      topic.Attributes.Add(new("EmptyValue", ""));
+
+      Assert.Null(topic.Attributes.GetValue("EmptyValue"));
+
     }
 
     /*==========================================================================================================================
@@ -53,14 +102,38 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that integer values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetInteger("Number1", 1);
 
-      Assert.AreEqual<int>(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.Equal<int>(1, topic.Attributes.GetInteger("Number1", 5));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that integer values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetInteger_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetInteger("Number1", 1);
+
+      Assert.Equal<int>(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.Equal<int>(1, childTopic.Attributes.GetInteger("Number1", 5, true));
+      Assert.Equal<int>(0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -70,15 +143,15 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_IncorrectValue_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("Number3", 5));
-      Assert.AreEqual<int>(0, topic.Attributes.GetInteger("Number3"));
+      Assert.Equal<int>(0, topic.Attributes.GetInteger("Number3"));
+      Assert.Equal<int>(5, topic.Attributes.GetInteger("Number3", 5));
 
     }
 
@@ -88,13 +161,13 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetInteger_IncorrectKey_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
-      Assert.AreEqual<int>(0, topic.Attributes.GetInteger("InvalidKey"));
+      Assert.Equal<int>(0, topic.Attributes.GetInteger("InvalidKey"));
+      Assert.Equal<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
 
     }
 
@@ -104,14 +177,38 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetDouble("Number1", 1);
 
-      Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+      Assert.Equal<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetDouble_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetDouble("Number1", 1);
+
+      Assert.Equal<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+      Assert.Equal<double>(1.0, childTopic.Attributes.GetDouble("Number1", 5.0, true));
+      Assert.Equal<double>(0.0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -121,15 +218,15 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_IncorrectValue_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
-      Assert.AreEqual<double>(0, topic.Attributes.GetDouble("Number3"));
+      Assert.Equal<double>(0, topic.Attributes.GetDouble("Number3"));
+      Assert.Equal<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
 
     }
 
@@ -139,13 +236,13 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that double key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDouble_IncorrectKey_ReturnsDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
-      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
-      Assert.AreEqual<double>(0, topic.Attributes.GetDouble("InvalidKey"));
+      Assert.Equal<double>(0, topic.Attributes.GetDouble("InvalidKey"));
+      Assert.Equal<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
 
     }
 
@@ -153,17 +250,42 @@ namespace OnTopic.Tests {
     | TEST: GET DATETIME: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that integer values can be set and retrieved as expected.
+    ///   Ensures that Date/Time values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_CorrectValue_IsReturned() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
 
       topic.Attributes.SetDateTime("DateTime1", dateTime1);
 
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
+      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DATETIME: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that Date/Time values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetDateTime_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+      var dateTime1             = new DateTime(1976, 10, 15);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetDateTime("DateTime1", dateTime1);
+
+      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.Now));
+      Assert.Equal<DateTime>(dateTime1, childTopic.Attributes.GetDateTime("DateTime1", DateTime.Now, true));
+      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime1", inheritFromBase: false));
 
     }
 
@@ -173,17 +295,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_IncorrectValue_ReturnsDefault() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
-      var dateTime2             = new DateTime(1981, 06, 03);
 
-      topic.Attributes.SetDateTime("DateTime2", dateTime2);
+      topic.Attributes.SetValue("DateTime2", "IncorrectValue");
 
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
-      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime2"));
+      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime2", dateTime1));
 
     }
 
@@ -193,17 +314,17 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetDateTime_IncorrectKey_ReturnsDefault() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = new Topic("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
       var dateTime2             = new DateTime(1981, 06, 03);
 
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
-      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
 
     }
 
@@ -213,16 +334,41 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that boolean values can be set and retrieved as expected.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_CorrectValue_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetBoolean("IsValue1", true);
       topic.Attributes.SetBoolean("IsValue2", false);
 
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue2", true));
+      Assert.True(topic.Attributes.GetBoolean("IsValue1"));
+      Assert.True(topic.Attributes.GetBoolean("IsValue1", false));
+      Assert.False(topic.Attributes.GetBoolean("IsValue2", true));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET BOOLEAN: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that boolean values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetBoolean_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetBoolean("IsValue1", true);
+
+      Assert.True(topic.Attributes.GetBoolean("IsValue1"));
+      Assert.True(childTopic.Attributes.GetBoolean("IsValue1", false, true));
+      Assert.False(topic.Attributes.GetBoolean("IsValue1", inheritFromBase: false));
 
     }
 
@@ -232,16 +378,16 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that invalid values return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_IncorrectValue_ReturnDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("IsValue", "Invalid");
 
-      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue", true));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue"));
+      Assert.False(topic.Attributes.GetBoolean("IsValue"));
+      Assert.True(topic.Attributes.GetBoolean("IsValue", true));
+      Assert.False(topic.Attributes.GetBoolean("IsValue", false));
 
     }
 
@@ -251,14 +397,14 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Ensures that incorrect key names return the default.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetBoolean_IncorrectKey_ReturnDefault() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
-      Assert.IsTrue(topic.Attributes.GetBoolean("InvalidKey", true));
-      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey"));
+      Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
+      Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
+      Assert.False(topic.Attributes.GetBoolean("InvalidKey", false));
 
     }
 
@@ -268,11 +414,11 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a custom attribute on a topic and ensures it can be retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_CorrectValue_IsReturned() {
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
-      Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+      Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
     }
 
     /*==========================================================================================================================
@@ -281,15 +427,35 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Modifies the value of a custom attribute on a topic and ensures it is marked as IsDirty.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ValueChanged_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("Foo", "Baz");
 
-      Assert.IsTrue(topic.Attributes["Foo"].IsDirty);
+      Assert.True(topic.Attributes["Foo"].IsDirty);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CLEAR: NON-NULLABLE VALUE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an attribute on a topic instance with an valid value, and then attempts to clear all attributes. Ensures that the
+    ///   business logic is enforced by throwing an exception on the non-nullable property.
+    /// </summary>
+    [Fact]
+    public void Clear_NonNullableValueWithBusinessLogic_ThrowsException() {
+
+      var topic                 = new CustomTopic("Test", "Page") {
+        NonNullableAttribute    = "Test"
+      };
+
+      Assert.Throws<ArgumentNullException>(() =>
+        topic.Attributes.Clear()
+      );
 
     }
 
@@ -299,17 +465,17 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Calls <see cref="IList.Clear()"/> and confirms that the collection is marked as dirty, due to deleted attrbutes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Clear_ExistingValues_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
       topic.Attributes.Clear();
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsTrue(topic.Attributes.DeletedItems.Contains("Foo"));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.Contains("Foo", topic.Attributes.DeletedItems);
 
     }
 
@@ -320,15 +486,15 @@ namespace OnTopic.Tests {
     ///   Sets the value of a custom <see cref="AttributeRecord"/> to the existing value and ensures it is <i>not</i> marked as
     ///   <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_ValueUnchanged_IsNotDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Fah", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar");
 
-      Assert.IsFalse(topic.Attributes["Fah"].IsDirty);
+      Assert.False(topic.Attributes["Fah"].IsDirty);
 
     }
 
@@ -339,14 +505,38 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref="
     ///   TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_DirtyValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: IS NEW: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
+    ///   <c>true</c> if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
+    ///   MarkClean(String)"/> was called.
+    /// </summary>
+    [Fact]
+    public void IsDirty_IsNew_ReturnsTrue() {
+
+      var topic = new Topic("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      topic.Attributes.MarkClean("Foo");
+      topic.Attributes.MarkClean();
+
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty(true));
 
     }
 
@@ -357,15 +547,38 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_DeletedValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: UNDELETED VALUES: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after recreating the value.
+    /// </summary>
+    [Fact]
+    public void IsDirty_UndeletedValues_ReturnsFalse() {
+
+      var topic = new Topic("Test", "Container", null, 1);
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.Remove("Foo");
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      Assert.False(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty(true));
+      Assert.DoesNotContain("Foo", topic.Attributes.DeletedItems);
 
     }
 
@@ -377,14 +590,49 @@ namespace OnTopic.Tests {
     ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
     ///   <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_NoDirtyValues_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
-      Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: IS NEW: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> still returns
+    ///   <c>true</c> if the associated <see cref="Topic"/> is <see cref="Topic.IsNew"/>. New topics cannot be clean.
+    /// </summary>
+    [Fact]
+    public void IsDirty_IsNew_ReturnsFalse() {
+
+      var topic = new Topic("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      Assert.True(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MISSING KEY: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Confirms that calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> with an invalid
+    ///   <c>key</c> returns <c>false</c>.
+    /// </summary>
+    [Fact]
+    public void IsDirty_MissingKey_ReturnsFalse() {
+
+      var topic = new Topic("Test", "Container");
+
+      Assert.False(topic.Attributes.IsDirty("MissingKey"));
 
     }
 
@@ -393,19 +641,21 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
-    ///   cref="TrackedRecord{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeRecord"/> that is. Confirms
-    ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c>.
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Updates the <c>LastModified</c> attributes, thus marking the collection as <see
+    ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/>. Confirms that <see cref="AttributeCollection.
+    ///   IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_ExcludeLastModified_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
       topic.Attributes.SetValue("LastModifiedBy", "System");
 
-      Assert.IsFalse(topic.Attributes.IsDirty(true));
+      Assert.True(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty(true));
 
     }
 
@@ -417,17 +667,28 @@ namespace OnTopic.Tests {
     ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
-      var version = DateTime.Now.AddDays(5);
+      var topic                 = new Topic("Test", "Container", null, 1);
+      var firstVersion          = DateTime.Now.AddDays(5);
+      var secondVersion         = DateTime.Now.AddDays(10);
+      var thirdVersion          = DateTime.Now.AddDays(15);
 
-      topic.Attributes.SetValue("Baz", "Foo");
-      topic.Attributes.MarkClean(version);
-      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
+      topic.Attributes.SetValue("Foo", "Qux", false, firstVersion);
+      topic.Attributes.SetValue("Bar", "Quux");
+      topic.Attributes.SetValue("Baz", "Quuz");
 
-      Assert.AreEqual<DateTime>(version, cleanedAttribute.LastModified);
+      topic.Attributes.MarkClean("Bar", secondVersion);
+      topic.Attributes.MarkClean(thirdVersion);
+
+      topic.Attributes.TryGetValue("Foo", out var cleanedAttribute1);
+      topic.Attributes.TryGetValue("Bar", out var cleanedAttribute2);
+      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute3);
+
+      Assert.Equal<DateTime?>(firstVersion, cleanedAttribute1?.LastModified);
+      Assert.Equal<DateTime?>(secondVersion, cleanedAttribute2?.LastModified);
+      Assert.Equal<DateTime?>(thirdVersion, cleanedAttribute3?.LastModified);
 
     }
 
@@ -439,10 +700,10 @@ namespace OnTopic.Tests {
     ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.SetValue("Baz", "Foo");
@@ -451,7 +712,30 @@ namespace OnTopic.Tests {
 
       topic.Attributes.MarkClean();
 
-      Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.False(topic.Attributes.IsDirty());
+      Assert.Empty(topic.Attributes.DeletedItems);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an <see cref="AttributeRecord"/> to a <see cref="AttributeCollection"/> associated with a <see cref="Topic"/>
+    ///   that is <see cref="Topic.IsNew"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true
+    ///   </c> even after calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String)"/> since new
+    ///   topics cannot be clean.
+    /// </summary>
+    [Fact]
+    public void IsDirty_MarkClean_ReturnsTrue() {
+
+      var topic = new Topic("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+
+      topic.Attributes.MarkClean("Foo");
+
+      Assert.True(topic.Attributes.IsDirty("Foo"));
 
     }
 
@@ -463,15 +747,15 @@ namespace OnTopic.Tests {
     ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute after
     ///   calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic = new Topic("Test", "Container", null, 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean("Foo");
 
-      Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
+      Assert.False(topic.Attributes.IsDirty("Foo"));
 
     }
 
@@ -483,10 +767,10 @@ namespace OnTopic.Tests {
     ///   <see cref="AttributeRecord"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms that <see
     ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(
         new() {
@@ -496,7 +780,7 @@ namespace OnTopic.Tests {
         }
       );
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -509,15 +793,15 @@ namespace OnTopic.Tests {
     ///   IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedRecordCollection{TItem,
     ///   TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean();
 
-      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.True(topic.Attributes.IsDirty());
 
     }
 
@@ -527,14 +811,35 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Attempts to violate the business logic by bypassing the property setter; ensures that business logic is enforced.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(InvalidKeyException),
-      "The topic allowed a view to be set via a back door, without routing it through the View property."
-    )]
+    [Fact]
     public void SetValue_InvalidValue_ThrowsException() {
-      var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.SetValue("View", "# ?");
+
+      var topic = new Topic("Test", "Container");
+
+      Assert.Throws<InvalidKeyException>(() =>
+        topic.Attributes.SetValue("View", "# ?")
+      );
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE: DUPLICATE VALUE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to insert a <see cref="TrackedRecord{T}"/> with the same <see cref="TrackedRecord{T}.Key"/> as an existing
+    ///   value, and confirms that the expected <see cref="ArgumentException"/> is thrown.
+    /// </summary>
+    [Fact]
+    public void SetValue_DuplicateValue_ThrowsException() {
+
+      var topic = new Topic("Test", "Container");
+
+      topic.Attributes.Add(new("Test", "Original"));
+
+      Assert.Throws<ArgumentException>(() =>
+        topic.Attributes.Add(new("Test", "New"))
+      );
+
     }
 
     /*==========================================================================================================================
@@ -544,14 +849,14 @@ namespace OnTopic.Tests {
     ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeRecord"/> instance; ensures it can be
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_ValidAttributeRecord_IsReturned() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.Add(new("View", "NewKey", false));
 
-      Assert.AreEqual<string>("NewKey", topic.View);
+      Assert.Equal("NewKey", topic.View);
 
     }
 
@@ -562,14 +867,14 @@ namespace OnTopic.Tests {
     ///   Sets a numeric attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_NumericValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
 
       topic.Attributes.SetInteger("NumericAttribute", 1);
 
-      Assert.AreEqual<int>(1, topic.NumericAttribute);
+      Assert.Equal<int>(1, topic.NumericAttribute);
 
     }
 
@@ -580,14 +885,14 @@ namespace OnTopic.Tests {
     ///   Sets a Boolean attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_BooleanValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
 
       topic.Attributes.SetBoolean("BooleanAttribute", true);
 
-      Assert.IsTrue(topic.BooleanAttribute);
+      Assert.True(topic.BooleanAttribute);
 
     }
 
@@ -597,16 +902,14 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a numeric attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
+    [Fact]
     public void Add_NumericValueWithBusinessLogic_ThrowsException() {
 
       var topic = new CustomTopic("Test", "Page");
 
-      topic.Attributes.SetInteger("NumericAttribute", -1);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.Attributes.SetInteger("NumericAttribute", -1)
+      );
 
     }
 
@@ -617,7 +920,7 @@ namespace OnTopic.Tests {
     ///   Sets a Date/Time attribute on a topic instance; ensures it is routed through the corresponding property and correctly
     ///   retrieved.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_DateTimeValueWithBusinessLogic_IsReturned() {
 
       var topic = new CustomTopic("Test", "Page");
@@ -625,7 +928,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTimeAttribute", dateTime);
 
-      Assert.AreEqual<DateTime>(dateTime, topic.DateTimeAttribute);
+      Assert.Equal<DateTime>(dateTime, topic.DateTimeAttribute);
 
     }
 
@@ -635,16 +938,33 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets a <see cref="DateTime"/> attribute on a topic instance with an invalid value; ensures an exception is thrown.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(ArgumentOutOfRangeException),
-      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
-    )]
+    [Fact]
     public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
 
       var topic = new CustomTopic("Test", "Page");
 
-      topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue);
+      Assert.Throws<ArgumentOutOfRangeException>(() =>
+        topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue)
+      );
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ATTRIBUTE RECORD: LAST MODIFIED: DEFAULT VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new <see cref="AttributeRecord"/> and ensures that the <see cref="TrackedRecord{T}.LastModified"/> is set to
+    ///   <see cref="DateTime.UtcNow"/>.
+    /// </summary>
+    [Fact]
+    public void AttributeRecord_LastModified_DefaultValue() {
+
+      var beforeDate            = DateTime.UtcNow;
+      var attribute             = new AttributeRecord("Test", "Value");
+      var afterDate             = DateTime.UtcNow;
+
+      Assert.True(attribute.LastModified > beforeDate);
+      Assert.True(attribute.LastModified < afterDate);
 
     }
 
@@ -655,14 +975,15 @@ namespace OnTopic.Tests {
     ///   Attempts to violate the business logic by bypassing <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
     ///   SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that business logic is enforced.
     /// </summary>
-    [TestMethod]
-    [ExpectedException(
-      typeof(InvalidKeyException),
-      "The topic allowed a key to be set via a back door, without routing it through the View property."
-    )]
+    [Fact]
     public void Add_InvalidAttributeRecord_ThrowsException() {
-      var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.Add(new("View", "# ?"));
+
+      var topic = new Topic("Test", "Container");
+
+      Assert.Throws<InvalidKeyException>(() =>
+        topic.Attributes.Add(new("View", "# ?"))
+      );
+
     }
 
     /*==========================================================================================================================
@@ -673,13 +994,16 @@ namespace OnTopic.Tests {
     ///   "AttributeCollection"/> and confirms that the original <see cref="TrackedRecord{T}.IsDirty"/> is replaced if the <see
     ///   cref="TrackedRecord{T}.Value"/> changes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Add_WithBusinessLogic_MaintainsIsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
+      var topic                 = new Topic("Test", "Container", null, 1) {
+        View                    = "Test"
+      };
 
-      topic.View = "Test";
       topic.Attributes.TryGetValue("View", out var originalValue);
+
+      Contract.Assume(originalValue);
 
       var index = topic.Attributes.IndexOf(originalValue);
 
@@ -689,8 +1013,8 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("View", "NewerValue", false);
       topic.Attributes.TryGetValue("View", out var newerAttribute);
 
-      Assert.IsFalse(newAttribute.IsDirty);
-      Assert.IsFalse(newerAttribute.IsDirty);
+      Assert.False(newAttribute?.IsDirty);
+      Assert.False(newerAttribute?.IsDirty);
 
     }
 
@@ -702,14 +1026,14 @@ namespace OnTopic.Tests {
     ///   "/>. Empty values are treated as the same as non-existent attributes. They are stored for the sake of tracking <i>
     ///   deleted</i> attributes, but should not be stored for <i>new</i> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_EmptyAttributeRecord_Skips() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Attribute", "");
 
-      Assert.IsFalse(topic.Attributes.Contains("Attribute"));
+      Assert.False(topic.Attributes.Contains("Attribute"));
 
     }
 
@@ -721,15 +1045,15 @@ namespace OnTopic.Tests {
     ///   "/> assuming the value previously existed. Empty values are treated as the same as non-existent attributes, but they
     ///   should be stored for the sake of tracking <i>deleted</i> attributes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SetValue_EmptyAttributeRecord_Replaces() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = new Topic("Test", "Container");
 
       topic.Attributes.SetValue("Attribute", "New Value");
       topic.Attributes.SetValue("Attribute", "");
 
-      Assert.IsTrue(topic.Attributes.Contains("Attribute"));
+      Assert.True(topic.Attributes.Contains("Attribute"));
 
     }
 
@@ -739,22 +1063,22 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_InheritFromParent_ReturnsParentValue() {
 
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
       }
 
       topics[0].Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsNull(topics[4].Attributes.GetValue("Foo", null));
-      Assert.AreEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", true));
-      Assert.AreNotEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", false));
+      Assert.Null(topics[4].Attributes.GetValue("Foo", null));
+      Assert.Equal("Bar", topics[7].Attributes.GetValue("Foo", true));
+      Assert.NotEqual("Bar", topics[7].Attributes.GetValue("Foo", false));
 
     }
 
@@ -764,20 +1088,20 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a long tree of derived topics, and ensures that the inherited value is returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_InheritFromBase_ReturnsInheritedValue() {
 
       var topics = new Topic[5];
 
       for (var i = 0; i <= 4; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }
 
       topics[4].Attributes.SetValue("Foo", "Bar");
 
-      Assert.AreEqual<string>("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
+      Assert.Equal("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
 
     }
 
@@ -787,20 +1111,20 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Establishes a long tree of derives topics, and ensures that inheritance will pursue no more than five hops.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void GetValue_ExceedsMaxHops_ReturnsDefault() {
 
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = TopicFactory.Create("Topic" + i, "Container");
+        var topic = new Topic("Topic" + i, "Container");
         if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }
 
       topics[7].Attributes.SetValue("Foo", "Bar");
 
-      Assert.IsNull(topics[0].Attributes.GetValue("Foo", null, true, true));
+      Assert.Null(topics[0].Attributes.GetValue("Foo", null, true, true));
 
     }
 

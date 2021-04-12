@@ -87,6 +87,13 @@ namespace OnTopic {
         Parent                  = parent;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If existing, mark clean
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!IsNew) {
+        MarkClean();
+      }
+
     }
 
     #region Core Properties
@@ -143,7 +150,7 @@ namespace OnTopic {
       set {
         if (_parent != value) {
           Contract.Requires(value, "Parent cannot be explicitly set to null.");
-          SetParent(value, value?.Children?.LastOrDefault());
+          SetParent(value, value.Children.LastOrDefault());
         }
       }
     }
@@ -334,6 +341,7 @@ namespace OnTopic {
     ///   <c>true</c> if this instance is disabled; otherwise, <c>false</c>.
     /// </value>
     [AttributeSetter]
+    [ExcludeFromCodeCoverage]
     public bool IsDisabled {
       get => Attributes.GetBoolean("IsDisabled");
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
@@ -373,7 +381,7 @@ namespace OnTopic {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get => Attributes.GetValue("Title", Key)?? Key;
+      get => Attributes.GetValue("Title", Key);
       set => SetAttributeValue("Title", value);
     }
 
@@ -393,6 +401,7 @@ namespace OnTopic {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.", true)]
     public string? Description {
       get => Attributes.GetValue("Description");
@@ -486,7 +495,6 @@ namespace OnTopic {
       if (_parent != parent) {
         _parent = parent;
       }
-
 
     }
 
@@ -710,6 +718,7 @@ namespace OnTopic {
     }
 
     /// <inheritdoc cref="BaseTopic"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DerivedTopic property has been renamed to BaseTopic. Please update references.", true)]
     public Topic? DerivedTopic {
       get => BaseTopic;

@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class InvalidParentTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidParentTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public InvalidParentTopicBindingModel(string key) : base(key, "Page") { }
 
     public BasicTopicBindingModel? Parent { get; set; }
 

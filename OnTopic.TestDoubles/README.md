@@ -3,7 +3,7 @@ Provides common test doubles for use in testing the **OnTopic Library**.
 
 > _Note:_ This package is primarily intended for use by other OnTopic libraries that benefit from sharing testing infrastructure; most OnTopic implementations should not require this package. 
 
-[![OnTopic.TestDoubles package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/3a741b7a-7fa1-4bdb-bc55-efbac3f04e6c/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=3a741b7a-7fa1-4bdb-bc55-efbac3f04e6c&preferRelease=true)
+[![OnTopic.TestDoubles package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/3a741b7a-7fa1-4bdb-bc55-efbac3f04e6c/Badge)](https://www.nuget.org/packages/OnTopic.TestDoubles/)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
 ![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
 
@@ -23,8 +23,6 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
   </ItemGroup>
 </Project>
 ```
-
-> *Note:* This package is currently only available on Ignia's private **NuGet** repository. For access, please contact [Ignia](http://www.ignia.com/).
 
 ## Inventory
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OnTopic.Internal.Diagnostics;
 
@@ -52,6 +53,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     /// <param name="item">The <see cref="Type"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
+    [ExcludeFromCodeCoverage]
     protected override sealed string GetKeyForItem(Type item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Name;

@@ -34,29 +34,29 @@ namespace OnTopic.ViewModels {
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? Key { get; init; }
+    [Required]
+    public string Key { get; init; } = default!;
 
     /*==========================================================================================================================
     | CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? ContentType { get; init; }
+    [Required]
+    public string ContentType { get; init; } = default!;
 
     /*==========================================================================================================================
     | UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? UniqueKey { get; init; }
+    [Required]
+    public string UniqueKey { get; init; } = default!;
 
     /*==========================================================================================================================
     | WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? WebPath { get; init; }
+    [Required]
+    public string WebPath { get; init; } = default!;
 
     /*==========================================================================================================================
     | VIEW
@@ -68,13 +68,14 @@ namespace OnTopic.ViewModels {
     | TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Required, NotNull, DisallowNull]
-    public string? Title { get; init; }
+    [Required]
+    public string Title { get; init; } = default!;
 
     /*==========================================================================================================================
     | IS HIDDEN?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The IsHidden property is no longer supported by TopicViewModel.", true)]
     [DisableMapping]
     public bool IsHidden { get; init; }

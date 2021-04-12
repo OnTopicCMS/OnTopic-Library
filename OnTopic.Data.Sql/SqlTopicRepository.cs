@@ -60,17 +60,13 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
+    public override Topic Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle empty topic
-      >-------------------------------------------------------------------------------------------------------------------------
-      | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
-      | call Load() with the special integer value of -1, which will load all topics from the root.
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(uniqueKey)) {
-        return Load(-1, referenceTopic, isRecursive);
-      }
+      Contract.Requires(uniqueKey, nameof(uniqueKey));
+      Contract.Requires<TopicNotFoundException>(uniqueKey.Length > 0, nameof(uniqueKey));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -377,7 +373,10 @@ namespace OnTopic.Data.Sql {
       | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      areAttributesDirty        = areAttributesDirty || extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+      areAttributesDirty        =
+        areAttributesDirty      ||
+        indexedAttributeList.Any(a => a.IsExtendedAttribute == true) ||
+        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
 
       var isDirty               =
         isTopicDirty            ||

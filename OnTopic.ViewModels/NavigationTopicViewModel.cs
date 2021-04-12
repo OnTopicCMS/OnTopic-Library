@@ -6,7 +6,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Models;
 
 namespace OnTopic.ViewModels {
@@ -36,8 +35,8 @@ namespace OnTopic.ViewModels {
     | TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="TopicViewModel"/>
-    [Required, NotNull, DisallowNull]
-    public string? Title { get; init; }
+    [Required]
+    public string Title { get; init; } = default!;
 
     /*==========================================================================================================================
     | SHORT TITLE
@@ -51,8 +50,8 @@ namespace OnTopic.ViewModels {
     | WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="WebPath"/>
-    [Required, NotNull, DisallowNull]
-    public string? WebPath { get; init; }
+    [Required]
+    public string WebPath { get; init; } = default!;
 
     /*==========================================================================================================================
     | CHILDREN
