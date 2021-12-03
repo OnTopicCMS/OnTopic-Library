@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
