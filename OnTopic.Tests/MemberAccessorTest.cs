@@ -178,6 +178,31 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET VALUE: VALID METHOD: RETURNS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
+    ///   MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
+    /// </summary>
+    [Theory]
+    [InlineData(15)]
+    [InlineData(null)]
+    public void GetValue_ValidMethod_ReturnsValue(int? value) {
+
+      var type                  = typeof(MemberAccessorViewModel);
+      var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.GetMethod)).FirstOrDefault()!;
+      var memberAccessor        = new MemberAccessor(memberInfo);
+      var sourceObject          = new MemberAccessorViewModel();
+
+      sourceObject.SetMethod(value);
+
+      var returnObject          = memberAccessor.GetValue(sourceObject);
+
+      Assert.Equal<object?>(value, returnObject);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET VALUE: TYPE MISMATCH: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -219,6 +244,30 @@ namespace OnTopic.Tests {
       memberAccessor.SetValue(sourceObject, value);
 
       Assert.Equal<int?>(value, sourceObject.NullableProperty);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE: VALID METHOD: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
+    ///   MemberAccessor.SetValue(Object, Object?)"/> with a compliant object, expecting that the correct value will be set.
+    /// </summary>
+    [Theory]
+    [InlineData(15)]
+    [InlineData(null)]
+    public void SetValue_ValidMethod_SetsValue(int? value) {
+
+      var type                  = typeof(MemberAccessorViewModel);
+      var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.SetMethod)).FirstOrDefault()!;
+      var memberAccessor        = new MemberAccessor(memberInfo);
+      var sourceObject          = new MemberAccessorViewModel();
+
+      sourceObject.SetMethod(5);
+      memberAccessor.SetValue(sourceObject, value);
+
+      Assert.Equal<int?>(value, sourceObject.GetMethod());
 
     }
 

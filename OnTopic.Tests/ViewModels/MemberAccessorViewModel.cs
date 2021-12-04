@@ -4,9 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -22,15 +20,17 @@ namespace OnTopic.Tests.ViewModels {
   [ExcludeFromCodeCoverage]
   public class MemberAccessorViewModel {
 
+    private int? _methodValue;
+
     public MemberAccessorViewModel() { }
     public int? NullableProperty { get; set; }
     public int NonNullableProperty { get; set; }
     public Type NonNullableReferenceGetter { get; set; } = typeof(MemberAccessorViewModel);
     public int? ReadOnlyProperty { get; }
     public int WriteOnlyProperty { set { } }
-    public int GetMethod() => 0;
+    public int? GetMethod() => _methodValue;
     public int InvalidGetMethod(int value) => value;
-    public void SetMethod(int value) => _ = value;
+    public void SetMethod(int? value) => _methodValue = value;
     public void InvalidSetMethod(int value, int newValue) => _ = value == newValue;
 
   } //Class
