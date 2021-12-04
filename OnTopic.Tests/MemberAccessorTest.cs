@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.GetValue(object)"/> with a compliant object, expecting that the correct value will be returned.
+    ///   MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
     /// </summary>
     [Fact]
     public void GetValue_ValidProperty_ReturnsValue() {
@@ -182,7 +182,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.GetValue(object)"/> with an object that doesn't contain the <see cref="MemberInfo"/>, expecting that an
+    ///   MemberAccessor.GetValue(Object)"/> with an object that doesn't contain the <see cref="MemberInfo"/>, expecting that an
     ///   <see cref="InvalidCastException"/> will be thrown.
     /// </summary>
     [Fact]
@@ -203,7 +203,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.SetValue(object, object?)"/> with a compliant object, expecting that the correct value will be set.
+    ///   MemberAccessor.SetValue(Object, Object?)"/> with a compliant object, expecting that the correct value will be set.
     /// </summary>
     [Fact]
     public void SetValue_ValidProperty_SetsValue() {
@@ -224,7 +224,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.SetValue(object, object?)"/> with an object that isn't compatible with the <see cref="MemberInfo.
+    ///   MemberAccessor.SetValue(Object, Object?)"/> with an object that isn't compatible with the <see cref="MemberInfo.
     ///   MemberType"/>, expecting that an <see cref="InvalidCastException"/> will be thrown.
     /// </summary>
     [Fact]
