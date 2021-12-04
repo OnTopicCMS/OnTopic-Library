@@ -205,17 +205,20 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
     ///   MemberAccessor.SetValue(Object, Object?)"/> with a compliant object, expecting that the correct value will be set.
     /// </summary>
-    [Fact]
-    public void SetValue_ValidProperty_SetsValue() {
+    [Theory]
+    [InlineData(15)]
+    [InlineData(null)]
+    public void SetValue_ValidProperty_SetsValue(int? value) {
 
       var type                  = typeof(MemberAccessorViewModel);
-      var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.NonNullableProperty)).FirstOrDefault()!;
+      var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.NullableProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
       var sourceObject          = new MemberAccessorViewModel();
 
-      memberAccessor.SetValue(sourceObject, 15);
+      sourceObject.NullableProperty = 5;
+      memberAccessor.SetValue(sourceObject, value);
 
-      Assert.Equal<int>(15, sourceObject.NonNullableProperty);
+      Assert.Equal<int?>(value, sourceObject.NullableProperty);
 
     }
 
