@@ -323,8 +323,8 @@ namespace OnTopic.Internal.Reflection {
     /// <returns>
     ///   A loosely typed <see cref="Action{Object, Object}"/> that wraps the strongly typed <paramref name="deleg"/>.
     /// </returns>
-    private static Action<object, object> CreateSetterDelegateSignature<TClass, TValue>(Action<TClass, TValue> deleg)
-      => (instance, value) => deleg((TClass)instance, (TValue)value);
+    private static Action<object, object?> CreateSetterDelegateSignature<TClass, TValue>(Action<TClass, TValue?> deleg)
+      => (instance, value) => deleg((TClass)instance, (TValue?)value);
 
     /*==========================================================================================================================
     | CREATE GETTER DELEGATE SIGNATURE
@@ -338,7 +338,7 @@ namespace OnTopic.Internal.Reflection {
     /// <returns>
     ///   A loosely typed <see cref="Func{Object, Object}"/> that wraps the strongly typed <paramref name="deleg"/>.
     /// </returns>
-    private static Func<object, object> CreateGetterDelegateSignature<TClass, TResult>(Func<TClass, TResult> deleg)
+    private static Func<object, object?> CreateGetterDelegateSignature<TClass, TResult>(Func<TClass, TResult?> deleg)
       => instance => deleg((TClass)instance);
 
     /*==========================================================================================================================
