@@ -7,8 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Internal.Reflection
-{
+namespace OnTopic.Internal.Reflection {
 
   /*============================================================================================================================
   | CLASS: TYPE ACCESSOR CACHE
@@ -40,6 +39,10 @@ namespace OnTopic.Internal.Reflection
       Contract.Requires(type, nameof(type));
       return _cache.GetOrAdd(type, t => new(t));
     }
+
+    /// <inheritdoc cref="GetTypeAccessor(Type)"/>
+    /// <typeparam name="T">The <see cref="Type"/> that needs to be dynamically accessed.</typeparam>
+    internal static TypeAccessor GetTypeAccessor<T>() => GetTypeAccessor(typeof(T));
 
   } //Class
 } //Namespace
