@@ -89,7 +89,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateModel(
       [AllowNull]Type sourceType,
-      [AllowNull]MemberInfoCollection<PropertyInfo> properties,
+      [AllowNull]IEnumerable<PropertyInfo> properties,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
       [AllowNull]string attributePrefix = ""
       ) {
