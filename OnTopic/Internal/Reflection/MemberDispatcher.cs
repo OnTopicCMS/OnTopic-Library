@@ -125,14 +125,21 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasSettableProperty(Type type, string name, Type? targetType = null) {
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal bool HasSettableProperty(Type type, string name, Type? targetType = null, Type? attributeFlag = null) {
       var property = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
+      attributeFlag = attributeFlag ?? _attributeFlag;
       return (
         property is not null and { IsSettable: true } &&
         IsSettableType(property.Type, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, _attributeFlag))
+        (attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, attributeFlag))
       );
     }
+
+    /// <inheritdoc cref="HasSettableProperty(Type, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal bool HasSettableProperty<T>(Type type, string name, Type? targetType = null) where T : Attribute
+      => HasSettableProperty(type, name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: SET PROPERTY VALUE
@@ -188,14 +195,22 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasGettableProperty(Type type, string name, Type? targetType = null) {
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal bool HasGettableProperty(Type type, string name, Type? targetType = null, Type? attributeFlag = null) {
       var property = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
+      attributeFlag = attributeFlag ?? _attributeFlag;
       return (
         property is not null and { IsGettable: true } &&
         IsSettableType(property.Type, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(property.MemberInfo, _attributeFlag))
+        (attributeFlag is null || Attribute.IsDefined(property.MemberInfo, attributeFlag))
       );
     }
+
+    /// <inheritdoc cref="HasGettableProperty(Type, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal bool HasGettableProperty<T>(Type type, string name, Type? targetType = null) where T : Attribute
+      => HasGettableProperty(type, name, targetType, typeof(T));
+
 
     /*==========================================================================================================================
     | METHOD: GET PROPERTY VALUE
@@ -247,14 +262,21 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasSettableMethod(Type type, string name, Type? targetType = null) {
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal bool HasSettableMethod(Type type, string name, Type? targetType = null, Type? attributeFlag = null) {
       var method = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
+      attributeFlag = attributeFlag ?? _attributeFlag;
       return (
         method is not null and { IsSettable: true } &&
         IsSettableType(method.Type, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(method.MemberInfo, _attributeFlag))
+        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
     }
+
+    /// <inheritdoc cref="HasSettableMethod(Type, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal bool HasSettableMethod<T>(Type type, string name, Type? targetType = null) where T : Attribute
+      => HasSettableMethod(type, name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: SET METHOD VALUE
@@ -312,14 +334,21 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasGettableMethod(Type type, string name, Type? targetType = null) {
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal bool HasGettableMethod(Type type, string name, Type? targetType = null, Type? attributeFlag = null) {
       var method = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
+      attributeFlag = attributeFlag ?? _attributeFlag;
       return (
         method is not null and { IsGettable: true } &&
         IsSettableType(method.Type, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(method.MemberInfo, _attributeFlag))
+        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
     }
+
+    /// <inheritdoc cref="HasGettableMethod(Type, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal bool HasGettableMethod<T>(Type type, string name, Type? targetType = null) where T : Attribute
+      => HasGettableMethod(type, name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: GET METHOD VALUE
@@ -330,7 +359,8 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal object? GetMethodValue(object target, string name, Type? targetType = null) {
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal object? GetMethodValue(object target, string name, Type? targetType = null, Type? attributeFlag = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -355,6 +385,11 @@ namespace OnTopic.Internal.Reflection {
       return method.GetValue(target);
 
     }
+
+    /// <inheritdoc cref="GetMethodValue(object, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the method.</typeparam>
+    internal object? GetMethodValue<T>(object target, string name, Type? targetType = null) where T : Attribute
+      => GetMethodValue(target, name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE TYPE?

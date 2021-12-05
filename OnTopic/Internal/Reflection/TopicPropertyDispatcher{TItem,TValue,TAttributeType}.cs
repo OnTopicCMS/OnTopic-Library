@@ -187,7 +187,7 @@ namespace OnTopic.Internal.Reflection {
         type = typeof(TValue);
       }
       if (
-        _typeCache.HasSettableProperty(_associatedTopic.GetType(), itemKey, type) &&
+        _typeCache.HasSettableProperty<TAttributeType>(_associatedTopic.GetType(), itemKey, type) &&
         !PropertyCache.ContainsKey(itemKey)
       ) {
         PropertyCache.Add(itemKey, initialValue);
