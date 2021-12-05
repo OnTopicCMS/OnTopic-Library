@@ -212,5 +212,27 @@ namespace OnTopic.Tests
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET TYPE ACCESSOR: VALID TYPE: RETURNS TYPE ACCESSOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls the static <see cref="TypeAccessorCache"/> to retrieve a given <see cref="TypeAccessor"/> and ensures it is
+    ///   correctly returned from the cache.
+    /// </summary>
+    /// <remarks>
+    ///   While the <see cref="TypeAccessorCache"/> is separate from the <see cref="TypeAccessor"/> class that this set of tests
+    ///   is focused on, it is closely related, and the <see cref="TypeAccessorCache.GetTypeAccessor(Type)"/> currently only
+    ///   necessitates one unit test. As a result, it's being grouped in with the <see cref="TypeAccessorTest"/>.
+    /// </remarks>
+    [Fact]
+    public void GetTypeAccessor_ValidType_ReturnsTypeAccessor() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(typeof(MemberAccessorViewModel));
+
+      Assert.NotNull(typeAccessor);
+      Assert.Equal<Type>(typeof(MemberAccessorViewModel), typeAccessor.Type);
+
+    }
+
   } //Class
 } //Namespace
