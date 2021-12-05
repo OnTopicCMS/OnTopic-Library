@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
@@ -55,7 +56,6 @@ namespace OnTopic.Internal.Reflection {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Type?                           _attributeFlag;
-    private readonly            TypeMemberInfoCollection        _memberInfoCache                = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR (STATIC)
@@ -88,7 +88,20 @@ namespace OnTopic.Internal.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T : MemberInfo => _memberInfoCache.GetMembers<T>(type);
+    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T : MemberInfo {
+      List<MemberAccessor> members = new List<MemberAccessor>();
+      var typeAccessor = TypeAccessorCache.GetTypeAccessor(type);
+      if (typeof(T) == typeof(PropertyInfo)) {
+        members = typeAccessor.GetMembers(MemberTypes.Property);
+      }
+      else if (typeof(T) == typeof(MethodInfo)) {
+        members = typeAccessor.GetMembers(MemberTypes.Method);
+      }
+      else if (typeof(T) == typeof(ConstructorInfo)) {
+        return new MemberInfoCollection<T>(type);
+      }
+      return new MemberInfoCollection<T>(type, members.Select(m => m.MemberInfo).Cast<T>());
+    }
 
     /*==========================================================================================================================
     | METHOD: GET MEMBER {T}
@@ -97,7 +110,8 @@ namespace OnTopic.Internal.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <typeparamref name="T"/>
     ///   instance.
     /// </summary>
-    internal T? GetMember<T>(Type type, string name) where T : MemberInfo => _memberInfoCache.GetMember<T>(type, name);
+    internal T? GetMember<T>(Type type, string name) where T : MemberInfo
+      => TypeAccessorCache.GetTypeAccessor(type).GetMember(name)?.MemberInfo as T;
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
@@ -112,11 +126,11 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     internal bool HasSettableProperty(Type type, string name, Type? targetType = null) {
-      var property = GetMember<PropertyInfo>(type, name);
+      var property = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
       return (
-        property is not null and { CanWrite: true } &&
-        IsSettableType(property.PropertyType, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(property, _attributeFlag))
+        property is not null and { IsSettable: true } &&
+        IsSettableType(property.Type, targetType) &&
+        (_attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, _attributeFlag))
       );
     }
 
@@ -132,17 +146,30 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="value">The value to set on the property.</param>
     internal void SetPropertyValue(object target, string name, object? value) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
 
-      var property = GetMember<PropertyInfo>(target.GetType(), name);
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var property = TypeAccessorCache.GetTypeAccessor(target.GetType()).GetMember(name);
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var valueObject = value;
 
       if (valueObject is string) {
-        valueObject = AttributeValueConverter.Convert(value as string, property.PropertyType);
+        valueObject = AttributeValueConverter.Convert(value as string, property.Type);
+      }
+
+      if (valueObject is null && !property.IsNullable) {
+        return;
       }
 
       property.SetValue(target, valueObject);
@@ -162,11 +189,11 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     internal bool HasGettableProperty(Type type, string name, Type? targetType = null) {
-      var property = GetMember<PropertyInfo>(type, name);
+      var property = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
       return (
-        property is not null and { CanRead: true } &&
-        IsSettableType(property.PropertyType, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(property, _attributeFlag))
+        property is not null and { IsGettable: true } &&
+        IsSettableType(property.Type, targetType) &&
+        (_attributeFlag is null || Attribute.IsDefined(property.MemberInfo, _attributeFlag))
       );
     }
 
@@ -198,7 +225,7 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property = GetMember<PropertyInfo>(target.GetType(), name);
+      var property = TypeAccessorCache.GetTypeAccessor(target.GetType()).GetMember(name);
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
 
@@ -221,12 +248,11 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     internal bool HasSettableMethod(Type type, string name, Type? targetType = null) {
-      var method = GetMember<MethodInfo>(type, name);
+      var method = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
       return (
-        method is not null &&
-        method.GetParameters().Length is 1 &&
-        IsSettableType(method.GetParameters().First().ParameterType, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(method, _attributeFlag))
+        method is not null and { IsSettable: true } &&
+        IsSettableType(method.Type, targetType) &&
+        (_attributeFlag is null || Attribute.IsDefined(method.MemberInfo, _attributeFlag))
       );
     }
 
@@ -255,17 +281,21 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = GetMember<MethodInfo>(target.GetType(), name);
+      var method = TypeAccessorCache.GetTypeAccessor(target.GetType()).GetMember(name);
 
       Contract.Assume(method, $"The {name}() method could not be retrieved.");
 
       var valueObject = value;
 
       if (valueObject is string) {
-        valueObject = AttributeValueConverter.Convert(valueObject as string, method.GetParameters().First().ParameterType);
+        valueObject = AttributeValueConverter.Convert(valueObject as string, method.Type);
       }
 
-      method.Invoke(target, new object?[] { valueObject });
+      if (valueObject is null && !method.IsNullable) {
+        return;
+      }
+
+      method.SetValue(target, valueObject);
 
     }
 
@@ -283,12 +313,11 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     internal bool HasGettableMethod(Type type, string name, Type? targetType = null) {
-      var method = GetMember<MethodInfo>(type, name);
+      var method = TypeAccessorCache.GetTypeAccessor(type).GetMember(name);
       return (
-        method is not null &&
-        !method.GetParameters().Any() &&
-        IsSettableType(method.ReturnType, targetType) &&
-        (_attributeFlag is null || Attribute.IsDefined(method, _attributeFlag))
+        method is not null and { IsGettable: true } &&
+        IsSettableType(method.Type, targetType) &&
+        (_attributeFlag is null || Attribute.IsDefined(method.MemberInfo, _attributeFlag))
       );
     }
 
@@ -319,11 +348,11 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = GetMember<MethodInfo>(target.GetType(), name);
+      var method = TypeAccessorCache.GetTypeAccessor(target.GetType()).GetMember(name);
 
       Contract.Assume(method, $"The method '{name}' could not be found on the '{target.GetType()}' class.");
 
-      return method.Invoke(target, Array.Empty<object>());
+      return method.GetValue(target);
 
     }
 
