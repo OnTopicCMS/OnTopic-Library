@@ -55,7 +55,9 @@ namespace OnTopic.Internal.Reflection {
           BindingFlags.Public
       );
       foreach (var member in members.Where(t => MemberAccessor.IsValid(t))) {
-        _members.Add(member.Name, new(member));
+        if (!_members.ContainsKey(member.Name)) {
+          _members.Add(member.Name, new(member));
+        }
       }
 
     }
