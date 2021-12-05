@@ -539,7 +539,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="ArgumentException"/>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="InvalidCastException"/>.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
@@ -548,7 +548,7 @@ namespace OnTopic.Tests {
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new EmptyViewModel();
 
-      Assert.Throws<ArgumentException>(() =>
+      Assert.Throws<InvalidCastException>(() =>
         types.SetMethodValue(source, "SetMethod", reference)
       );
 
