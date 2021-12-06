@@ -80,43 +80,6 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ADD: DUPLICATE KEY: THROWS EXCEPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.InsertItem(
-    ///   Int32, MemberInfoCollection)"/> throws an exception if a <see cref="MemberInfoCollection"/> with a duplicate <see cref
-    ///   ="MemberInfoCollection{T}.Type"/> already exists.
-    ///   functions.
-    /// </summary>
-    [Fact]
-    public void Add_DuplicateKey_ThrowsException() =>
-      Assert.Throws<ArgumentException>(() =>
-        new TypeMemberInfoCollection {
-          new(typeof(EmptyViewModel)),
-          new(typeof(EmptyViewModel))
-        }
-      );
-
-    /*==========================================================================================================================
-    | TEST: HAS MEMBER: PROPERTY INFO: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.HasMember{T
-    ///   }(Type, String)"/> returns <c>true</c> when appropriate.
-    ///   functions.
-    /// </summary>
-    [Fact]
-    public void HasMember_PropertyInfo_ReturnsExpected() {
-
-      var typeCollection        = new TypeMemberInfoCollection();
-
-      Assert.True(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
-      Assert.False(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
-      Assert.False(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
-
-    }
-
-    /*==========================================================================================================================
     | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
