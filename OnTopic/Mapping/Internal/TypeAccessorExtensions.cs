@@ -33,17 +33,17 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     For setting values, the typical workflow is for a caller to check either <see cref="HasSettableMethod(TypeAccessor,
   ///     String, Type?)"/> or <see cref="HasSettableProperty(TypeAccessor, String, Type?)"/>, followed by <see cref="
-  ///     SetMethodValue(TypeAccessor, Object, String, Object?)"/> or <see cref="SetMethodValue(TypeAccessor, Object, String,
-  ///     Object?)"/> to retrieve the value. In these scenarios, the <see cref="TypeAccessorExtensions"/> will attempt to
-  ///     deserialize the <c>value</c> parameter from <see cref="String"/> to the type expected by the corresponding property or
-  ///     method. Typically, this will be a <see cref="Int32"/>, <see cref="Double"/>, <see cref="Boolean"/>, or <see cref=
-  ///     "DateTime"/>.
+  ///     SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> or <see cref="SetMethodValue(TypeAccessor, Object,
+  ///     String, Object?, Boolean)"/> to retrieve the value. In these scenarios, the <see cref="TypeAccessorExtensions"/> will
+  ///     attempt to deserialize the <c>value</c> parameter from <see cref="String"/> to the type expected by the corresponding
+  ///     property or method. Typically, this will be a <see cref="Int32"/>, <see cref="Double"/>, <see cref="Boolean"/>, or
+  ///     <see cref="DateTime"/>.
   ///   </para>
   ///   <para>
-  ///     Alternatively, setters can call <see cref="SetMethodValue(TypeAccessor, Object, String, Object?)"/> or <see cref="
-  ///     SetPropertyValue(TypeAccessor, Object, String, Object?)"/>, in which case the final <c>value</c> parameter will be set
-  ///     the target property, or passed as the parameter of the method without any attempt to convert it. Obviously, this
-  ///     requires that the target type be assignable from the <c>value</c> object.
+  ///     Alternatively, setters can call <see cref="SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> or <see
+  ///     cref="SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/>, in which case the final <c>value</c>
+  ///     parameter will be set the target property, or passed as the parameter of the method without any attempt to convert it.
+  ///     Obviously, this requires that the target type be assignable from the <c>value</c> object.
   ///   </para>
   ///   <para>
   ///     The <see cref="TypeAccessorExtensions"/> is an internal service intended to meet the specific needs of OnTopic, and
@@ -121,7 +121,16 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    internal static void SetPropertyValue(this TypeAccessor typeAccessor, object target, string name, object? value) {
+    /// <param name="allowConversion">
+    ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
+    /// </param>
+    internal static void SetPropertyValue(
+      this TypeAccessor typeAccessor,
+      object target,
+      string name,
+      object? value,
+      bool allowConversion = false
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -141,7 +150,7 @@ namespace OnTopic.Internal.Reflection {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var valueObject = value;
 
-      if (valueObject is string) {
+      if (valueObject is string && allowConversion) {
         valueObject = AttributeValueConverter.Convert(value as string, property.Type);
       }
 
@@ -266,7 +275,16 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    internal static void SetMethodValue(this TypeAccessor typeAccessor, object target, string name, object? value) {
+    /// <param name="allowConversion">
+    ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
+    /// </param>
+    internal static void SetMethodValue(
+      this TypeAccessor typeAccessor,
+      object target,
+      string name,
+      object? value,
+      bool allowConversion = false
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -283,7 +301,7 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = value;
 
-      if (valueObject is string) {
+      if (valueObject is string && allowConversion) {
         valueObject = AttributeValueConverter.Convert(valueObject as string, method.Type);
       }
 

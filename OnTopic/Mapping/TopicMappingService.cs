@@ -466,10 +466,10 @@ namespace OnTopic.Mapping
         }
       }
       else if (value != null && typeAccessor.HasSettableProperty(property.Name)) {
-        typeAccessor.SetPropertyValue(target, configuration.Property.Name, value);
+        typeAccessor.SetPropertyValue(target, configuration.Property.Name, value, true);
       }
       else if (value != null && typeAccessor.HasSettableProperty(property.Name, property.Type)) {
-        typeAccessor.SetPropertyValue(target, configuration.Property.Name, value);
+        typeAccessor.SetPropertyValue(target, configuration.Property.Name, value, true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

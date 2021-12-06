@@ -254,7 +254,7 @@ namespace OnTopic.Internal.Reflection {
       else if (Register(itemKey, initialObject)) {
         try {
           var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
-          typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value);
+          typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
         }
         catch (TargetInvocationException ex) {
           if (PropertyCache.ContainsKey(itemKey)) {

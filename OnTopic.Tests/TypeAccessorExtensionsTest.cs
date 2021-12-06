@@ -262,7 +262,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a key value can be properly set using the <see cref="
-    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?)"/> method.
+    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_Key_SetsValue() {
@@ -284,7 +284,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?)"/> method sets the property to <c>null</c>.
+    ///   TypeAccessor, Object, String, Object?, Boolean)"/> method sets the property to <c>null</c>.
     /// </summary>
     [Fact]
     public void SetPropertyValue_NullValue_SetsToNull() {
@@ -305,8 +305,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?)"/> sets the target property value to <c>null</c> if the value is set to <see
-    ///   cref="String.Empty"/>.
+    ///   TypeAccessor, Object, String, Object?, Boolean)"/> sets the target property value to <c>null</c> if the value is set
+    ///   to <see cref="String.Empty"/>.
     /// </summary>
     [Fact]
     public void SetPropertyValue_EmptyValue_SetsToNull() {
@@ -316,7 +316,7 @@ namespace OnTopic.Tests {
         NullableInteger         = 5
       };
 
-      typeAccessor.SetPropertyValue(model, "NullableInteger", "");
+      typeAccessor.SetPropertyValue(model, "NullableInteger", "", true);
 
       Assert.Null(model.NullableInteger);
 
@@ -327,8 +327,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?)"/> sets the value to its default if the value is set to <see cref="String.Empty
-    ///   "/> and the target property type is not nullable.
+    ///   TypeAccessor, Object, String, Object?, Boolean)"/> sets the value to its default if the value is set to <see cref="
+    ///   String.Empty"/> and the target property type is not nullable.
     /// </summary>
     [Fact]
     public void SetPropertyValue_EmptyValue_SetsDefault() {
@@ -336,7 +336,7 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<NonNullablePropertyTopicViewModel>();
       var model                 = new NonNullablePropertyTopicViewModel();
 
-      typeAccessor.SetPropertyValue(model, "NonNullableInteger", "ABC");
+      typeAccessor.SetPropertyValue(model, "NonNullableInteger", "ABC", true);
 
       Assert.Equal<int>(0, model.NonNullableInteger);
 
@@ -347,7 +347,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a boolean value can be properly set using the <see cref
-    ///   ="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?)"/> method.
+    ///   ="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_Boolean_SetsValue() {
@@ -355,7 +355,7 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<Topic>();
       var topic                 = new Topic("Test", "ContentType");
 
-      typeAccessor.SetPropertyValue(topic, "IsHidden", "1");
+      typeAccessor.SetPropertyValue(topic, "IsHidden", "1", true);
 
       Assert.True(topic.IsHidden);
 
@@ -366,7 +366,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a date/time value can be properly set using the <see
-    ///   cref="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?)"/> method.
+    ///   cref="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_DateTime_SetsValue() {
@@ -374,13 +374,13 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<Topic>();
       var topic                 = new Topic("Test", "ContentType");
 
-      typeAccessor.SetPropertyValue(topic, "LastModified", "June 3, 2008");
+      typeAccessor.SetPropertyValue(topic, "LastModified", "June 3, 2008", true);
       Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
-      typeAccessor.SetPropertyValue(topic, "LastModified", "2008-06-03");
+      typeAccessor.SetPropertyValue(topic, "LastModified", "2008-06-03", true);
       Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
-      typeAccessor.SetPropertyValue(topic, "LastModified", "06/03/2008");
+      typeAccessor.SetPropertyValue(topic, "LastModified", "06/03/2008", true);
       Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
 
     }
@@ -390,7 +390,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that an invalid property being set via the <see cref="
-    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?)"/> method throws an <see cref=
+    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method throws an <see cref=
     ///   "InvalidOperationException"/>.
     /// </summary>
     [Fact]
@@ -410,7 +410,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value can be properly set using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?)"/> method.
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetMethodValue_ValidValue_SetsValue() {
@@ -429,7 +429,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?)"/> method returns <c>false</c>.
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -437,7 +437,7 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
       var source                = new MethodBasedViewModel();
 
-      typeAccessor.SetMethodValue(source, "SetMethod", "ABC");
+      typeAccessor.SetMethodValue(source, "SetMethod", "ABC", true);
 
       Assert.Equal<int>(0, source.GetMethod());
 
@@ -448,7 +448,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?)"/> method throws an exception.
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method throws an exception.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidMember_ThrowsException() {
@@ -467,7 +467,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a reference value can be properly set using the <see
-    ///   cref="TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object)"/> method.
+    ///   cref="TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetMethodValue_ValidReferenceValue_SetsValue() {
@@ -487,7 +487,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object)"/> method throws an <see cref="
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method throws an <see cref="
     ///   InvalidCastException"/>.
     /// </summary>
     [Fact]
@@ -508,7 +508,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?)"/> method returns <c>false</c>.
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
@@ -527,7 +527,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an null value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object)"/> method returns <c>false</c>.
+    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
