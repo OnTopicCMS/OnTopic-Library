@@ -208,7 +208,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
     ///   MemberAccessor.GetValue(Object)"/> with an object that doesn't contain the <see cref="MemberInfo"/>, expecting that an
-    ///   <see cref="InvalidCastException"/> will be thrown.
+    ///   <see cref="ArgumentException"/> will be thrown.
     /// </summary>
     [Fact]
     public void GetValue_TypeMismatch_ThrowsException() {
@@ -217,7 +217,7 @@ namespace OnTopic.Tests {
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.ReadOnlyProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
 
-      Assert.Throws<InvalidCastException>(() =>
+      Assert.Throws<ArgumentException>(() =>
         memberAccessor.GetValue(new object())
       );
 
