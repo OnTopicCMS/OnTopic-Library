@@ -439,7 +439,8 @@ namespace OnTopic.Tests {
     | TEST: ADD: TOPIC REFERENCE WITH BUSINESS LOGIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
+    ///   Sets a topic reference on a topic instance with an invalid value; ensures an <see cref="ArgumentOutOfRangeException"/>
+    ///   is thrown.
     /// </summary>
     [Fact]
     public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
@@ -457,7 +458,8 @@ namespace OnTopic.Tests {
     | TEST: SET: TOPIC REFERENCE WITH BUSINESS LOGIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
+    ///   Sets a topic reference on a topic instance with an invalid value; ensures an <see cref="ArgumentOutOfRangeException"/>
+    ///   is thrown.
     /// </summary>
     [Fact]
     public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
