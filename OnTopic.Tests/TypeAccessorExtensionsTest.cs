@@ -418,7 +418,7 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
       var source                = new MethodBasedViewModel();
 
-      typeAccessor.SetMethodValue(source, "SetMethod", "123");
+      typeAccessor.SetMethodValue(source, "SetMethod", "123", true);
 
       Assert.Equal<int>(123, source.GetMethod());
 
