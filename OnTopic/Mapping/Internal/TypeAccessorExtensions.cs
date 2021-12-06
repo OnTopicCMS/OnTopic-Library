@@ -99,7 +99,7 @@ namespace OnTopic.Internal.Reflection {
     ) {
       var property = typeAccessor.GetMember(name);
       return (
-        property is not null and { CanWrite: true } &&
+        property is not null and { CanWrite: true, MemberType: MemberTypes.Property } &&
         IsSettableType(property.Type, targetType) &&
         (attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, attributeFlag))
       );
@@ -173,7 +173,7 @@ namespace OnTopic.Internal.Reflection {
     ) {
       var property = typeAccessor.GetMember(name);
       return (
-        property is not null and { CanRead: true } &&
+        property is not null and { CanRead: true, MemberType: MemberTypes.Property } &&
         IsSettableType(property.Type, targetType) &&
         (attributeFlag is null || Attribute.IsDefined(property.MemberInfo, attributeFlag))
       );
@@ -237,7 +237,7 @@ namespace OnTopic.Internal.Reflection {
     internal static bool HasSettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
       var method = typeAccessor.GetMember(name);
       return (
-        method is not null and { CanWrite: true } &&
+        method is not null and { CanWrite: true, MemberType: MemberTypes.Method } &&
         IsSettableType(method.Type, targetType) &&
         (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
@@ -311,7 +311,7 @@ namespace OnTopic.Internal.Reflection {
     internal static bool HasGettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
       var method = typeAccessor.GetMember(name);
       return (
-        method is not null and { CanRead: true } &&
+        method is not null and { CanRead: true, MemberType: MemberTypes.Method } &&
         IsSettableType(method.Type, targetType) &&
         (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
