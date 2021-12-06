@@ -141,14 +141,15 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property = typeAccessor.GetMember(name);
+      var member = typeAccessor.GetMember(name);
 
-      Contract.Assume(property, $"The {name} property could not be retrieved.");
+      Contract.Assume(member, $"The {name} property could not be retrieved.");
+      Contract.Assume(member.MemberType == MemberTypes.Property, $"The {name} member is not a property.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      property.SetValue(target, value, allowConversion);
+      member.SetValue(target, value, allowConversion);
 
     }
 
@@ -204,18 +205,18 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve property
+      | Retrieve member
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property = typeAccessor.GetMember(name);
+      var member = typeAccessor.GetMember(name);
 
-      if (property is null) {
+      if (member is null || member.MemberType != MemberTypes.Property) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return property.GetValue(target);
+      return member.GetValue(target);
 
     }
 
@@ -283,14 +284,15 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = typeAccessor.GetMember(name);
+      var member = typeAccessor.GetMember(name);
 
-      Contract.Assume(method, $"The {name}() method could not be retrieved.");
+      Contract.Assume(member, $"The {name}() method could not be retrieved.");
+      Contract.Assume(member.MemberType == MemberTypes.Method, $"The {name} member is not a method.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      method.SetValue(target, value, allowConversion);
+      member.SetValue(target, value, allowConversion);
 
     }
 
@@ -342,18 +344,18 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve property
+      | Retrieve member
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = typeAccessor.GetMember(name);
+      var member = typeAccessor.GetMember(name);
 
-      if (method is null) {
+      if (member is null || member.MemberType != MemberTypes.Method) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return method.GetValue(target);
+      return member.GetValue(target);
 
     }
 
