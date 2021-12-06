@@ -148,17 +148,7 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var valueObject = value;
-
-      if (valueObject is string && allowConversion) {
-        valueObject = AttributeValueConverter.Convert(value as string, property.Type);
-      }
-
-      if (valueObject is null && !property.IsNullable) {
-        return;
-      }
-
-      property.SetValue(target, valueObject);
+      property.SetValue(target, value, allowConversion);
 
     }
 
@@ -214,19 +204,17 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate member type
+      | Retrieve property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeAccessor.HasGettableProperty(name, targetType)) {
+      var property = typeAccessor.GetMember(name);
+
+      if (property is null) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property = typeAccessor.GetMember(name);
-
-      Contract.Assume(property, $"The {name} property could not be retrieved.");
-
       return property.GetValue(target);
 
     }
@@ -293,23 +281,16 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set value
+      | Validate dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
       var method = typeAccessor.GetMember(name);
 
       Contract.Assume(method, $"The {name}() method could not be retrieved.");
 
-      var valueObject = value;
-
-      if (valueObject is string && allowConversion) {
-        valueObject = AttributeValueConverter.Convert(valueObject as string, method.Type);
-      }
-
-      if (valueObject is null && !method.IsNullable) {
-        return;
-      }
-
-      method.SetValue(target, valueObject);
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      method.SetValue(target, value, allowConversion);
 
     }
 
@@ -361,19 +342,17 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate member type
+      | Retrieve property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!HasGettableMethod(typeAccessor, name, targetType)) {
+      var method = typeAccessor.GetMember(name);
+
+      if (method is null) {
         return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = TypeAccessorCache.GetTypeAccessor(target.GetType()).GetMember(name);
-
-      Contract.Assume(method, $"The method '{name}' could not be found on the '{target.GetType()}' class.");
-
       return method.GetValue(target);
 
     }

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Reflection;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
@@ -138,30 +139,98 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="source">The object from which the member value should be retrieved.</param>
     /// <returns>The value of the member, if available.</returns>
     internal object? GetValue(object source) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+
+      if (MemberInfo.DeclaringType != source.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(source.GetType())) {
+        throw new ArgumentException(
+          $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to access a member of {source.GetType()}",
+          nameof(source)
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate member type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!CanRead) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return Getter?.Invoke(source);
+
     }
 
     /*==========================================================================================================================
     | SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of the member on the <paramref name="source"/> object to the <paramref name="value"/>.
+    ///   Sets the value of the member on the <paramref name="target"/> object to the <paramref name="value"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     The <see cref="SetValue(object, object?)"/> method can set values on either property setters or methods which accept
-    ///     one parameter and don't have a return type.
+    ///     The <see cref="SetValue(Object, Object?, Boolean)"/> method can set values on either property setters or methods
+    ///     which accept one parameter and don't have a return type.
     ///   </para>
     ///   <para>
-    ///     The <see cref="SetValue(object, object?)"/> method makes no attempt to validate whether <paramref name="value"/> is
-    ///     compatible with the target property or method parameter type. If it is not compatible, the underlying reflection
-    ///     library will throw an exception. It is expected that callers will validate the types before calling this method.
+    ///     The <see cref="SetValue(Object, Object?, Boolean)"/> method makes no attempt to validate whether <paramref name="
+    ///     value"/> is compatible with the target property or method parameter type. If it is not compatible, the underlying
+    ///     reflection library will throw an exception. It is expected that callers will validate the types before calling this
+    ///     method.
     ///   </para>
     /// </remarks>
-    /// <param name="source">The object on which the member should be set.</param>
+    /// <param name="target">The object on which the member should be set.</param>
     /// <param name="value">The value that the member should be set to.</param>
-    internal void SetValue(object source, object? value) {
-      Setter?.Invoke(source, value);
+    /// <param name="allowConversion">
+    ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
+    /// </param>
+    internal void SetValue(object target, object? value, bool allowConversion = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+
+      if (MemberInfo.DeclaringType != target.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(target.GetType())) {
+        throw new ArgumentException(
+          $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to set a member of {target.GetType()}",
+          nameof(target)
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var valueObject           = value;
+      var sourceType            = value?.GetType();
+
+      if (!CanWrite) {
+        return;
+      }
+      else if (value is null && !IsNullable) {
+        return;
+      }
+      else if (value is null || Type.IsAssignableFrom(sourceType)) {
+        //Proceed with conversion
+      }
+      else if (allowConversion && value is string) {
+        valueObject = AttributeValueConverter.Convert(value as string, Type);
+      }
+
+      if (valueObject is null && !IsNullable) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Setter?.Invoke(target, valueObject);
+
     }
 
     /*==========================================================================================================================

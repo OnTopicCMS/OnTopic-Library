@@ -228,7 +228,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.SetValue(Object, Object?)"/> with a compliant object, expecting that the correct value will be set.
+    ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
+    ///   set.
     /// </summary>
     [Theory]
     [InlineData(15)]
@@ -252,7 +253,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.SetValue(Object, Object?)"/> with a compliant object, expecting that the correct value will be set.
+    ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
+    ///   set.
     /// </summary>
     [Theory]
     [InlineData(15)]
@@ -276,8 +278,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-    ///   MemberAccessor.SetValue(Object, Object?)"/> with an object that isn't compatible with the <see cref="MemberInfo.
-    ///   MemberType"/>, expecting that an <see cref="InvalidCastException"/> will be thrown.
+    ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with an object that isn't compatible with the <see cref="
+    ///   MemberInfo.MemberType"/>, expecting that an <see cref="InvalidCastException"/> will be thrown.
     /// </summary>
     [Fact]
     public void SetValue_MemberTypeMismatch_ThrowsException() {
