@@ -272,7 +272,7 @@ namespace OnTopic.Tests {
 
       typeAccessor.SetPropertyValue(topic, "Key", "NewKey");
 
-      var key                   = typeAccessor.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
+      var key                   = typeAccessor.GetPropertyValue(topic, "Key")?.ToString();
 
       Assert.Equal("NewKey", topic.Key);
       Assert.Equal("NewKey", key);

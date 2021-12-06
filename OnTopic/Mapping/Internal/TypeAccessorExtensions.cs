@@ -27,8 +27,8 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     For retrieving values, the typical workflow is for a caller to check either <see cref="HasGettableMethod(TypeAccessor,
   ///     String, Type?)"/> or <see cref="HasGettableProperty(TypeAccessor, String, Type?)"/>, followed by <see cref="
-  ///     GetPropertyValue(TypeAccessor, Object, String, Type?)"/> or <see cref="GetMethodValue(TypeAccessor, Object, String,
-  ///     Type?)"/> to retrieve the value.
+  ///     GetPropertyValue(TypeAccessor, Object, String)"/> or <see cref="GetMethodValue(TypeAccessor, Object, String)"/> to
+  ///     retrieve the value.
   ///   </para>
   ///   <para>
   ///     For setting values, the typical workflow is for a caller to check either <see cref="HasSettableMethod(TypeAccessor,
@@ -195,8 +195,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
     /// <param name="target">The object instance on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
-    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal static object? GetPropertyValue(this TypeAccessor typeAccessor, object target, string name, Type? targetType = null) {
+    internal static object? GetPropertyValue(this TypeAccessor typeAccessor, object target, string name) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -333,9 +332,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
-    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
-    internal static object? GetMethodValue(this TypeAccessor typeAccessor, object target, string name, Type? targetType = null, Type? attributeFlag = null) {
+    internal static object? GetMethodValue(this TypeAccessor typeAccessor, object target, string name) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -358,11 +355,6 @@ namespace OnTopic.Internal.Reflection {
       return member.GetValue(target);
 
     }
-
-    /// <inheritdoc cref="GetMethodValue(TypeAccessor, object, string, Type?, Type?)"/>
-    /// <typeparam name="T">The <see cref="Attribute"/> expected on the method.</typeparam>
-    internal static object? GetMethodValue<T>(this TypeAccessor typeAccessor, object target, string name, Type? targetType = null) where T : Attribute
-      => typeAccessor.GetMethodValue(target, name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE TYPE?
