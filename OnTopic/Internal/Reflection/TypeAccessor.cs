@@ -99,7 +99,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="name">The name of the <see cref="MemberAccessor"/>, derived from <see cref="MemberInfo.Name"/>.</param>
     /// <returns>True if a gettable member exists; otherwise false.</returns>
-    internal bool HasGetter(string name) => GetMember(name)?.IsGettable ?? false;
+    internal bool HasGetter(string name) => GetMember(name)?.CanRead ?? false;
 
     /*==========================================================================================================================
     | HAS SETTER?
@@ -109,7 +109,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="name">The name of the <see cref="MemberAccessor"/>, derived from <see cref="MemberInfo.Name"/>.</param>
     /// <returns>True if a settable member exists; otherwise false.</returns>
-    internal bool HasSetter(string name) => GetMember(name)?.IsSettable ?? false;
+    internal bool HasSetter(string name) => GetMember(name)?.CanWrite ?? false;
 
     /*==========================================================================================================================
     | GET VALUE

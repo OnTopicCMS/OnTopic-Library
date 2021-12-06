@@ -90,7 +90,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is read-only, and confirms that the
-    ///   <see cref="MemberAccessor.IsGettable"/> property is set to <c>true</c>.
+    ///   <see cref="MemberAccessor.CanRead"/> property is set to <c>true</c>.
     /// </summary>
     [Fact]
     public void IsGettable_ReadOnlyProperty_ReturnsTrue() {
@@ -99,7 +99,7 @@ namespace OnTopic.Tests {
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.ReadOnlyProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
 
-      Assert.True(memberAccessor.IsGettable);
+      Assert.True(memberAccessor.CanRead);
 
     }
 
@@ -108,7 +108,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is write-only, and confirms that the
-    ///   <see cref="MemberAccessor.IsGettable"/> property is set to <c>false</c>.
+    ///   <see cref="MemberAccessor.CanRead"/> property is set to <c>false</c>.
     /// </summary>
     [Fact]
     public void IsGettable_WriteOnlyProperty_ReturnsFalse() {
@@ -117,7 +117,7 @@ namespace OnTopic.Tests {
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.WriteOnlyProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
 
-      Assert.False(memberAccessor.IsGettable);
+      Assert.False(memberAccessor.CanRead);
 
     }
 
@@ -126,7 +126,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is write-only, and confirms that the
-    ///   <see cref="MemberAccessor.IsGettable"/> property is set to <c>false</c>.
+    ///   <see cref="MemberAccessor.CanRead"/> property is set to <c>false</c>.
     /// </summary>
     [Fact]
     public void IsSettable_WriteOnlyProperty_ReturnsTrue() {
@@ -135,7 +135,7 @@ namespace OnTopic.Tests {
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.WriteOnlyProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
 
-      Assert.True(memberAccessor.IsSettable);
+      Assert.True(memberAccessor.CanWrite);
 
     }
 
@@ -144,7 +144,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is read-only, and confirms that the
-    ///   <see cref="MemberAccessor.IsSettable"/> property is set to <c>false</c>.
+    ///   <see cref="MemberAccessor.CanWrite"/> property is set to <c>false</c>.
     /// </summary>
     [Fact]
     public void IsSettable_ReadOnlyProperty_ReturnsFalse() {
@@ -153,7 +153,7 @@ namespace OnTopic.Tests {
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.ReadOnlyProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
 
-      Assert.False(memberAccessor.IsSettable);
+      Assert.False(memberAccessor.CanWrite);
 
     }
 

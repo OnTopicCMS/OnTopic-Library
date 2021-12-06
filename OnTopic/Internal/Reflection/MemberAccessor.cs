@@ -100,20 +100,30 @@ namespace OnTopic.Internal.Reflection {
     internal bool IsNullable { get; }
 
     /*==========================================================================================================================
-    | IS GETTABLE?
+    | CAN READ?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determine if the member can be used to retrieve a value.
     /// </summary>
-    internal bool IsGettable { get; private set; }
+    /// <remarks>
+    ///   Unlike the the <see cref="PropertyInfo.CanRead"/>, the <see cref="CanRead"/> property can be set for either properties
+    ///   or methods. To be readable by <see cref="GetValue(Object)"/>, a method must have a return type and no parameters.
+    /// </remarks>
+    internal bool CanRead { get; private set; }
 
     /*==========================================================================================================================
-    | IS SETTABLE?
+    | CAN WRITE?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determine if the member can be used to set a value.
     /// </summary>
-    internal bool IsSettable { get; private set; }
+    /// <remarks>
+    ///   Unlike the the <see cref="PropertyInfo.CanWrite"/>, the <see cref="CanWrite"/> property can be set for either
+    ///   properties or methods. To be writable by <see cref="GetValue(Object)"/>, a method must be void and have exactly one
+    ///   parameter.
+    /// </remarks>
+    internal bool CanWrite { get; private set; }
+
 
     /*==========================================================================================================================
     | GET VALUE
@@ -217,8 +227,8 @@ namespace OnTopic.Internal.Reflection {
       | Set type as return type of property
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (memberInfo is PropertyInfo propertyInfo) {
-        IsGettable              = propertyInfo.CanRead;
-        IsSettable              = propertyInfo.CanWrite;
+        CanRead              = propertyInfo.CanRead;
+        CanWrite              = propertyInfo.CanWrite;
         return propertyInfo.PropertyType;
       }
 
@@ -236,7 +246,7 @@ namespace OnTopic.Internal.Reflection {
           parameters.Length == 0,
           $"The '{memberInfo.Name}()' method must not expect any parameters if the return type is not void."
         );
-        IsGettable = true;
+        CanRead = true;
         return methodInfo.ReturnType;
       }
 
@@ -249,7 +259,7 @@ namespace OnTopic.Internal.Reflection {
         $"will be used as the value of the setter."
       );
 
-      IsSettable = true;
+      CanWrite = true;
       return parameters[0].ParameterType;
 
     }
