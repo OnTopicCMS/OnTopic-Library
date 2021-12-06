@@ -439,7 +439,6 @@ namespace OnTopic.Mapping
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration((PropertyInfo)property.MemberInfo, attributePrefix);
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(target.GetType());
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
@@ -465,10 +464,7 @@ namespace OnTopic.Mapping
           ).ConfigureAwait(false);
         }
       }
-      else if (value != null && typeAccessor.HasSettableProperty(property.Name)) {
-        property.SetValue(target, value, true);
-      }
-      else if (value != null && typeAccessor.HasSettableProperty(property.Name, property.Type)) {
+      else if (value != null && property.CanWrite) {
         property.SetValue(target, value, true);
       }
 
