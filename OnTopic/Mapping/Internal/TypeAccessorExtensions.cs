@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
@@ -53,30 +52,6 @@ namespace OnTopic.Internal.Reflection {
   ///   </para>
   /// </remarks>
   internal static class TypeAccessorExtensions {
-
-    /*==========================================================================================================================
-    | METHOD: GET MEMBERS {T}
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Returns a collection of <typeparamref name="T"/> objects associated with a specific type.
-    /// </summary>
-    /// <remarks>
-    ///   If the collection cannot be found locally, it will be created.
-    /// </remarks>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the members should be retrieved.</param>
-    internal static MemberInfoCollection<T> GetMembers<T>(this TypeAccessor typeAccessor) where T : MemberInfo {
-      List<MemberAccessor> members = new List<MemberAccessor>();
-      if (typeof(T) == typeof(PropertyInfo)) {
-        members = typeAccessor.GetMembers(MemberTypes.Property);
-      }
-      else if (typeof(T) == typeof(MethodInfo)) {
-        members = typeAccessor.GetMembers(MemberTypes.Method);
-      }
-      else if (typeof(T) == typeof(ConstructorInfo)) {
-        return new MemberInfoCollection<T>(typeAccessor.Type);
-      }
-      return new MemberInfoCollection<T>(typeAccessor.Type, members.Select(m => m.MemberInfo).Cast<T>());
-    }
 
     /*==========================================================================================================================
     | METHOD: GET PRIMARY CONSTRUCTOR
