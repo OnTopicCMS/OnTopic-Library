@@ -20,8 +20,7 @@ using OnTopic.Mapping.Internal;
 using OnTopic.Models;
 using OnTopic.Repositories;
 
-namespace OnTopic.Mapping
-{
+namespace OnTopic.Mapping {
 
   /*============================================================================================================================
   | CLASS: TOPIC MAPPING SERVICE
