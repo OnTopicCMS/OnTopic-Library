@@ -63,6 +63,134 @@ namespace OnTopic.Internal.Reflection {
         BindingFlags.Public
       ).FirstOrDefault();
 
+
+    /*==========================================================================================================================
+    | METHOD: HAS GETTABLE PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local property is available and gettable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the property is not available.
+    /// </remarks>
+    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal static bool HasGettableProperty(
+      this TypeAccessor typeAccessor,
+      string name,
+      Type? targetType = null,
+      Type? attributeFlag = null
+    ) {
+      var property = typeAccessor.GetMember(name);
+      return (
+        property is not null and { CanRead: true, MemberType: MemberTypes.Property } &&
+        IsSettableType(property.Type, targetType) &&
+        (attributeFlag is null || Attribute.IsDefined(property.MemberInfo, attributeFlag))
+      );
+    }
+
+    /// <inheritdoc cref="HasGettableProperty(TypeAccessor, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal static bool HasGettableProperty<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
+      => typeAccessor.HasGettableProperty(name, targetType, typeof(T));
+
+    /*==========================================================================================================================
+    | METHOD: HAS GETTABLE METHOD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local method is available and gettable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the method is not available. Methods are only considered gettable if they have no parameters and
+    ///   their return value is a settable type.
+    /// </remarks>
+    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal static bool HasGettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
+      var method = typeAccessor.GetMember(name);
+      return (
+        method is not null and { CanRead: true, MemberType: MemberTypes.Method } &&
+        IsSettableType(method.Type, targetType) &&
+        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
+      );
+    }
+
+    /// <inheritdoc cref="HasGettableMethod(TypeAccessor, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal static bool HasGettableMethod<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
+      => typeAccessor.HasGettableMethod(name, targetType, typeof(T));
+
+    /*==========================================================================================================================
+    | METHOD: GET PROPERTY VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Uses reflection to call a property, assuming that it is a) readable, and b) of type <see cref="String"/>,
+    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
+    /// </summary>
+    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
+    /// <param name="target">The object instance on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    internal static object? GetPropertyValue(this TypeAccessor typeAccessor, object target, string name) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve member
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var member = typeAccessor.GetMember(name);
+
+      if (member is null || member.MemberType != MemberTypes.Property) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return member.GetValue(target);
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET METHOD VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Uses reflection to call a method, assuming that it has no parameters.
+    /// </summary>
+    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
+    /// <param name="target">The object instance on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    internal static object? GetMethodValue(this TypeAccessor typeAccessor, object target, string name) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve member
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var member = typeAccessor.GetMember(name);
+
+      if (member is null || member.MemberType != MemberTypes.Method) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return member.GetValue(target);
+
+    }
+
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -94,6 +222,35 @@ namespace OnTopic.Internal.Reflection {
     /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
     internal static bool HasSettableProperty<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
       => typeAccessor.HasSettableProperty(name, targetType, typeof(T));
+
+    /*==========================================================================================================================
+    | METHOD: HAS SETTABLE METHOD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local method is available and settable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
+    ///   a settable type. Be aware that this will return <c>false</c> if the method has additional parameters, even if those
+    ///   additional parameters are optional.
+    /// </remarks>
+    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
+    internal static bool HasSettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
+      var method = typeAccessor.GetMember(name);
+      return (
+        method is not null and { CanWrite: true, MemberType: MemberTypes.Method } &&
+        IsSettableType(method.Type, targetType) &&
+        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
+      );
+    }
+
+    /// <inheritdoc cref="HasSettableMethod(TypeAccessor, string, Type?, Type?)"/>
+    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
+    internal static bool HasSettableMethod<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
+      => typeAccessor.HasSettableMethod(name, targetType, typeof(T));
 
     /*==========================================================================================================================
     | METHOD: SET PROPERTY VALUE
@@ -139,101 +296,6 @@ namespace OnTopic.Internal.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: HAS GETTABLE PROPERTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify if a local property is available and gettable.
-    /// </summary>
-    /// <remarks>
-    ///   Will return false if the property is not available.
-    /// </remarks>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
-    /// <param name="name">The name of the property to assess.</param>
-    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
-    internal static bool HasGettableProperty(
-      this TypeAccessor typeAccessor,
-      string name,
-      Type? targetType = null,
-      Type? attributeFlag = null
-    ) {
-      var property = typeAccessor.GetMember(name);
-      return (
-        property is not null and { CanRead: true, MemberType: MemberTypes.Property } &&
-        IsSettableType(property.Type, targetType) &&
-        (attributeFlag is null || Attribute.IsDefined(property.MemberInfo, attributeFlag))
-      );
-    }
-
-    /// <inheritdoc cref="HasGettableProperty(TypeAccessor, string, Type?, Type?)"/>
-    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
-    internal static bool HasGettableProperty<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
-      => typeAccessor.HasGettableProperty(name, targetType, typeof(T));
-
-    /*==========================================================================================================================
-    | METHOD: GET PROPERTY VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Uses reflection to call a property, assuming that it is a) readable, and b) of type <see cref="String"/>,
-    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
-    /// </summary>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
-    /// <param name="target">The object instance on which the property is defined.</param>
-    /// <param name="name">The name of the property to assess.</param>
-    internal static object? GetPropertyValue(this TypeAccessor typeAccessor, object target, string name) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve member
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = typeAccessor.GetMember(name);
-
-      if (member is null || member.MemberType != MemberTypes.Property) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return member.GetValue(target);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: HAS SETTABLE METHOD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify if a local method is available and settable.
-    /// </summary>
-    /// <remarks>
-    ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
-    ///   a settable type. Be aware that this will return <c>false</c> if the method has additional parameters, even if those
-    ///   additional parameters are optional.
-    /// </remarks>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
-    /// <param name="name">The name of the method to assess.</param>
-    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
-    internal static bool HasSettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
-      var method = typeAccessor.GetMember(name);
-      return (
-        method is not null and { CanWrite: true, MemberType: MemberTypes.Method } &&
-        IsSettableType(method.Type, targetType) &&
-        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
-      );
-    }
-
-    /// <inheritdoc cref="HasSettableMethod(TypeAccessor, string, Type?, Type?)"/>
-    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
-    internal static bool HasSettableMethod<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
-      => typeAccessor.HasSettableMethod(name, targetType, typeof(T));
-
-    /*==========================================================================================================================
     | METHOD: SET METHOD VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -277,67 +339,6 @@ namespace OnTopic.Internal.Reflection {
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
       member.SetValue(target, value, allowConversion);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: HAS GETTABLE METHOD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify if a local method is available and gettable.
-    /// </summary>
-    /// <remarks>
-    ///   Will return false if the method is not available. Methods are only considered gettable if they have no parameters and
-    ///   their return value is a settable type.
-    /// </remarks>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
-    /// <param name="name">The name of the method to assess.</param>
-    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
-    internal static bool HasGettableMethod(this TypeAccessor typeAccessor, string name, Type? targetType = null, Type? attributeFlag = null) {
-      var method = typeAccessor.GetMember(name);
-      return (
-        method is not null and { CanRead: true, MemberType: MemberTypes.Method } &&
-        IsSettableType(method.Type, targetType) &&
-        (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
-      );
-    }
-
-    /// <inheritdoc cref="HasGettableMethod(TypeAccessor, string, Type?, Type?)"/>
-    /// <typeparam name="T">The <see cref="Attribute"/> expected on the property.</typeparam>
-    internal static bool HasGettableMethod<T>(this TypeAccessor typeAccessor, string name, Type? targetType = null) where T : Attribute
-      => typeAccessor.HasGettableMethod(name, targetType, typeof(T));
-
-    /*==========================================================================================================================
-    | METHOD: GET METHOD VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Uses reflection to call a method, assuming that it has no parameters.
-    /// </summary>
-    /// <param name="typeAccessor">The <see cref="TypeAccessor"/> on which the property is defined.</param>
-    /// <param name="target">The object instance on which the method is defined.</param>
-    /// <param name="name">The name of the method to assess.</param>
-    internal static object? GetMethodValue(this TypeAccessor typeAccessor, object target, string name) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve member
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = typeAccessor.GetMember(name);
-
-      if (member is null || member.MemberType != MemberTypes.Method) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return member.GetValue(target);
 
     }
 
