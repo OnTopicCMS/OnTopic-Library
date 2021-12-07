@@ -24,7 +24,7 @@ namespace OnTopic.Tests
   /// <remarks>
   ///   Most access to the <see cref="TypeAccessor"/> class will be through higher-level classes which provide type validation
   ///   and conversion. As a result, the unit tests for the <see cref="TypeAccessor"/> will focus on the more fundamental
-  ///   behavior of validating and translating a <see cref="Type"/> object into a <see cref="TypeAccessor"/>.
+  ///   behavior of validating and translating <see cref="Type"/> objects into <see cref="TypeAccessor"/> objects.
   /// </remarks>
   [ExcludeFromCodeCoverage]
   public class TypeAccessorTest: IClassFixture<TypeAccessorFixture<MemberAccessorViewModel>> {

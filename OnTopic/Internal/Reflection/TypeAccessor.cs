@@ -29,7 +29,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <remarks>
     ///   The <see cref="TypeAccessor"/> constructor automatically identifies each supported <see cref="MemberInfo"/> on the
-    ///   <see cref="Type"/> and adds an associated <see cref="MemberAccessor"/> to the <see cref="TypeAccessor"/> for each.
+    ///   <see cref="Type"/> and adds an associated <see cref="MemberAccessor"/> to the <see cref="TypeAccessor"/> of each.
     /// </remarks>
     /// <param name="type"></param>
     internal TypeAccessor(Type type) {
