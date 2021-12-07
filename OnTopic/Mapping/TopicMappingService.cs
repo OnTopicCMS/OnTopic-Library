@@ -176,7 +176,7 @@ namespace OnTopic.Mapping
       | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(type);
-      var constructorInfo       = typeAccessor.GetMembers<ConstructorInfo>().Where(c => c.IsPublic).FirstOrDefault();
+      var constructorInfo       = typeAccessor.GetPrimaryConstructor();
       var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
       var arguments             = new object?[parameters.Length];
 

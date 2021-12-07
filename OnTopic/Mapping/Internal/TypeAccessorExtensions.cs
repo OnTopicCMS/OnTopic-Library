@@ -79,6 +79,16 @@ namespace OnTopic.Internal.Reflection {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET PRIMARY CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    internal static ConstructorInfo GetPrimaryConstructor(this TypeAccessor typeAccessor) =>
+      typeAccessor.Type.GetConstructors(
+        BindingFlags.Instance |
+        BindingFlags.FlattenHierarchy |
+        BindingFlags.Public
+      ).FirstOrDefault();
+
+    /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
