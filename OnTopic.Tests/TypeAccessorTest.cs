@@ -326,7 +326,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a variety of values on a <see cref="MemberAccessorViewModel"/> using <see cref="TypeAccessor.SetValue(Object,
-    ///   String, Object?)"/> and ensures that they are, in fact, set correctly.
+    ///   String, Object?, Boolean)"/> and ensures that they are, in fact, set correctly.
     /// </summary>
     [Fact]
     public void SetValue_Names_SetsResults() {
