@@ -1140,9 +1140,9 @@ namespace OnTopic.Mapping
     ///   Gets a property on the <paramref name="source"/> that is compatible to the <paramref name="targetType"/>.
     /// </summary>
     /// <remarks>
-    ///   Even if the property values can't be set by the <see cref="TypeAccessorExtensions"/>, properties should be settable
-    ///   assuming the source and target types are compatible. In this case, <see cref="TopicMappingService"/> needn't know
-    ///   anything about the property type as it doesn't need to do a conversion; it can just do a one-to-one mapping.
+    ///   Even if the property values can't be set by the <see cref="TypeAccessor"/>, properties should be settable assuming the
+    ///   source and target types are compatible. In this case, <see cref="TopicMappingService"/> needn't know anything about
+    ///   the property type as it doesn't need to do a conversion; it can just do a one-to-one mapping.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="targetType">The target <see cref="Type"/>.</param>
