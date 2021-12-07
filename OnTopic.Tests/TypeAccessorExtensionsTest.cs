@@ -6,7 +6,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
@@ -22,62 +21,13 @@ namespace OnTopic.Tests {
   | CLASS: TYPE ACCESSOR EXTENSIONS TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeAccessorExtensions"/> and <see cref="MemberInfoCollection{T}"/> classes.
+  ///   Provides unit tests for the <see cref="TypeAccessorExtensions"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
   [ExcludeFromCodeCoverage]
   public class TypeAccessorExtensionsTest {
-
-    /*==========================================================================================================================
-    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES PROPERTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
-    ///   properties of the type.
-    /// </summary>
-    [Fact]
-    public void Constructor_ValidType_IdentifiesProperty() {
-
-      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
-
-      Assert.True(properties.Contains("AttributeDescriptors")); //First class collection property
-      Assert.False(properties.Contains("InvalidPropertyName")); //Invalid property
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES DERIVED PROPERTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
-    ///   properties derived from the base class.
-    /// </summary>
-    [Fact]
-    public void Constructor_ValidType_IdentifiesDerivedProperty() {
-
-      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
-
-      Assert.True(properties.Contains("Key")); //Inherited string property
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES METHOD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
-    ///   methods of the type.
-    /// </summary>
-    [Fact]
-    public void Constructor_ValidType_IdentifiesMethod() {
-
-      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
-
-      Assert.False(properties.Contains("IsTypeOf")); //This is a method, not a property
-
-    }
 
     /*==========================================================================================================================
     | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED

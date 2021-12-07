@@ -81,7 +81,7 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model <see cref="Type"/> to validate.
     /// </param>
     /// <param name="properties">
-    ///   A <see cref="MemberInfoCollection{PropertyInfo}"/> describing the <paramref name="sourceType"/>'s properties.
+    ///   A <see cref="IEnumerable{PropertyInfo}"/> describing the <paramref name="sourceType"/>'s properties.
     /// </param>
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
