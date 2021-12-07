@@ -17,7 +17,7 @@ namespace OnTopic.Internal.Reflection {
   | CLASS: MEMBER INFO COLLECTION {T}
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
+  ///   Provides keyed access to a collection of <see cref="MemberInfoCollection{T}"/> instances.
   /// </summary>
   internal class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
 
@@ -25,7 +25,7 @@ namespace OnTopic.Internal.Reflection {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="MemberInfoCollection"/> class associated with a <see cref="Type"/>
+    ///   Initializes a new instance of the <see cref="MemberInfoCollection{T}"/> class associated with a <see cref="Type"/>
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
@@ -48,7 +48,7 @@ namespace OnTopic.Internal.Reflection {
     }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="MemberInfoCollection"/> class associated with a <see cref="Type"/>
+    ///   Initializes a new instance of the <see cref="MemberInfoCollection{T}"/> class associated with a <see cref="Type"/>
     ///   name and prepopulates it with a predetermined set of <typeparamref name="T"/> instances.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>

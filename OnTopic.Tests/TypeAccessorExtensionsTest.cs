@@ -22,7 +22,7 @@ namespace OnTopic.Tests {
   | CLASS: TYPE ACCESSOR EXTENSIONS TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeAccessorExtensions"/> and <see cref="MemberInfoCollection"/> classes.
+  ///   Provides unit tests for the <see cref="TypeAccessorExtensions"/> and <see cref="MemberInfoCollection{T}"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
     ///   properties of the type.
     /// </summary>
     [Fact]
@@ -51,7 +51,7 @@ namespace OnTopic.Tests {
     | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES DERIVED PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
     ///   properties derived from the base class.
     /// </summary>
     [Fact]
@@ -67,7 +67,7 @@ namespace OnTopic.Tests {
     | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES METHOD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   Establishes a <see cref="MemberInfoCollection{T}"/> based on a type, and confirms that the property collection returns
     ///   methods of the type.
     /// </summary>
     [Fact]
