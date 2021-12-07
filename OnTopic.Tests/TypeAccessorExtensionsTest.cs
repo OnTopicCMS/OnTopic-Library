@@ -21,133 +21,13 @@ namespace OnTopic.Tests {
   | CLASS: TYPE ACCESSOR EXTENSIONS TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeAccessorExtensions"/> classes.
+  ///   Provides unit tests for the <see cref="TypeAccessor"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
   [ExcludeFromCodeCoverage]
   public class TypeAccessorExtensionsTest {
-
-    /*==========================================================================================================================
-    | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessorExtensions.HasGettableProperty(
-    ///   TypeAccessor, String, Type)"/> returns the expected value.
-    ///   functions.
-    /// </summary>
-    [Fact]
-    public void HasGettableProperty_ReturnsExpected() {
-
-      var typeAccessor1         = TypeAccessorCache.GetTypeAccessor<ContentTypeDescriptorTopicBindingModel>();
-      var typeAccessor2         = TypeAccessorCache.GetTypeAccessor<TopicReferenceTopicViewModel>();
-
-      Assert.True(typeAccessor1.HasGettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.Key)));
-      Assert.False(typeAccessor1.HasGettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.ContentTypes)));
-      Assert.False(typeAccessor1.HasGettableProperty("MissingProperty"));
-      Assert.True(typeAccessor2.HasGettableProperty(nameof(TopicReferenceTopicViewModel.TopicReference), typeof(TopicViewModel)));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: HAS GETTABLE PROPERTY: WITH ATTRIBUTE: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> with a required <see cref="Attribute"/> constraint and confirms that <see
-    ///   cref="TypeAccessorExtensions.HasGettableProperty(TypeAccessor, String, Type)"/> returns the expected value.
-    /// </summary>
-    [Fact]
-    public void HasGettableProperty_WithAttribute_ReturnsExpected() {
-
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<Topic>();
-
-      Assert.False(typeAccessor.HasGettableProperty<AttributeSetterAttribute>(nameof(Topic.Key)));
-      Assert.True(typeAccessor.HasGettableProperty<AttributeSetterAttribute>(nameof(Topic.View)));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: HAS SETTABLE PROPERTY: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessorExtensions.HasSettableProperty(
-    ///   TypeAccessor, String, Type)"/> returns the expected value.
-    ///   functions.
-    /// </summary>
-    [Fact]
-    public void HasSettableProperty_ReturnsExpected() {
-
-      var typeAccessor1         = TypeAccessorCache.GetTypeAccessor<ContentTypeDescriptorTopicBindingModel>();
-      var typeAccessor2         = TypeAccessorCache.GetTypeAccessor<TopicReferenceTopicViewModel>();
-
-      Assert.True(typeAccessor1.HasSettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.Key)));
-      Assert.False(typeAccessor1.HasSettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.ContentTypes)));
-      Assert.False(typeAccessor1.HasSettableProperty("MissingProperty"));
-      Assert.True(typeAccessor2.HasSettableProperty(nameof(TopicReferenceTopicViewModel.TopicReference), typeof(TopicViewModel)));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: HAS GETTABLE METHOD: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessorExtensions.HasGettableMethod(
-    ///   TypeAccessor, String, Type)"/> returns the expected value.
-    /// </summary>
-    [Fact]
-    public void HasGettableMethod_ReturnsExpected() {
-
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
-
-      Assert.True(typeAccessor.HasGettableMethod("GetMethod"));
-      Assert.False(typeAccessor.HasGettableMethod("SetMethod"));
-      Assert.False(typeAccessor.HasGettableMethod("MissingMethod"));
-      Assert.False(typeAccessor.HasGettableMethod("GetComplexMethod"));
-      Assert.True(typeAccessor.HasGettableMethod("GetComplexMethod", typeof(TopicViewModel)));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: HAS GETTABLE METHOD: WITH ATTRIBUTE: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> with a required <see cref="Attribute"/> constraint and confirms that <see
-    ///   cref="TypeAccessorExtensions.HasGettableMethod(TypeAccessor, String, Type)"/> returns the expected value.
-    /// </summary>
-    /// <remarks>
-    ///   In practice, we haven't encountered a need for this yet and, thus, don't have any semantically relevant attributes to
-    ///   use in this situation. As a result, this example is a bit contrived.
-    /// </remarks>
-    [Fact]
-    public void HasGettableMethod_WithAttribute_ReturnsExpected() {
-
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
-
-      Assert.True(typeAccessor.HasGettableMethod<DisplayNameAttribute>(nameof(MethodBasedViewModel.GetAnnotatedMethod)));
-      Assert.False(typeAccessor.HasGettableMethod<DisplayNameAttribute>(nameof(MethodBasedViewModel.GetMethod)));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: HAS SETTABLE METHOD: RETURNS EXPECTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessorExtensions.HasSettableMethod(
-    ///   TypeAccessor, String, Type)"/> returns the expected value.
-    /// </summary>
-    [Fact]
-    public void HasSettableMethod_ReturnsExpected() {
-
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
-
-      Assert.True(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetMethod)));
-      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.GetMethod)));
-      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetComplexMethod)));
-      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetParametersMethod)));
-      Assert.False(typeAccessor.HasSettableMethod("MissingMethod"));
-
-    }
 
     /*==========================================================================================================================
     | TEST: GET MEMBERS: PROPERTY: RETURNS PROPERTIES
@@ -170,11 +50,129 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessor.HasGettableProperty(String, Type)"
+    ///   /> returns the expected value.
+    /// </summary>
+    [Fact]
+    public void HasGettableProperty_ReturnsExpected() {
+
+      var typeAccessor1         = TypeAccessorCache.GetTypeAccessor<ContentTypeDescriptorTopicBindingModel>();
+      var typeAccessor2         = TypeAccessorCache.GetTypeAccessor<TopicReferenceTopicViewModel>();
+
+      Assert.True(typeAccessor1.HasGettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.Key)));
+      Assert.False(typeAccessor1.HasGettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.ContentTypes)));
+      Assert.False(typeAccessor1.HasGettableProperty("MissingProperty"));
+      Assert.True(typeAccessor2.HasGettableProperty(nameof(TopicReferenceTopicViewModel.TopicReference), typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="TypeAccessor.HasGettableProperty(String, Type)"/> returns the expected value.
+    /// </summary>
+    [Fact]
+    public void HasGettableProperty_WithAttribute_ReturnsExpected() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<Topic>();
+
+      Assert.False(typeAccessor.HasGettableProperty<AttributeSetterAttribute>(nameof(Topic.Key)));
+      Assert.True(typeAccessor.HasGettableProperty<AttributeSetterAttribute>(nameof(Topic.View)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessor.HasGettableMethod(String, Type)"/>
+    ///   returns the expected value.
+    /// </summary>
+    [Fact]
+    public void HasGettableMethod_ReturnsExpected() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
+
+      Assert.True(typeAccessor.HasGettableMethod("GetMethod"));
+      Assert.False(typeAccessor.HasGettableMethod("SetMethod"));
+      Assert.False(typeAccessor.HasGettableMethod("MissingMethod"));
+      Assert.False(typeAccessor.HasGettableMethod("GetComplexMethod"));
+      Assert.True(typeAccessor.HasGettableMethod("GetComplexMethod", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="TypeAccessor.HasGettableMethod(String, Type)"/> returns the expected value.
+    /// </summary>
+    /// <remarks>
+    ///   In practice, we haven't encountered a need for this yet and, thus, don't have any semantically relevant attributes to
+    ///   use in this situation. As a result, this example is a bit contrived.
+    /// </remarks>
+    [Fact]
+    public void HasGettableMethod_WithAttribute_ReturnsExpected() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
+
+      Assert.True(typeAccessor.HasGettableMethod<DisplayNameAttribute>(nameof(MethodBasedViewModel.GetAnnotatedMethod)));
+      Assert.False(typeAccessor.HasGettableMethod<DisplayNameAttribute>(nameof(MethodBasedViewModel.GetMethod)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS SETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessor.HasSettableProperty(String, Type)"
+    ///   /> returns the expected value.
+    /// </summary>
+    [Fact]
+    public void HasSettableProperty_ReturnsExpected() {
+
+      var typeAccessor1         = TypeAccessorCache.GetTypeAccessor<ContentTypeDescriptorTopicBindingModel>();
+      var typeAccessor2         = TypeAccessorCache.GetTypeAccessor<TopicReferenceTopicViewModel>();
+
+      Assert.True(typeAccessor1.HasSettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.Key)));
+      Assert.False(typeAccessor1.HasSettableProperty(nameof(ContentTypeDescriptorTopicBindingModel.ContentTypes)));
+      Assert.False(typeAccessor1.HasSettableProperty("MissingProperty"));
+      Assert.True(typeAccessor2.HasSettableProperty(nameof(TopicReferenceTopicViewModel.TopicReference), typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS SETTABLE METHOD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that <see cref="TypeAccessor.HasSettableMethod(String, Type)"/>
+    ///   returns the expected value.
+    /// </summary>
+    [Fact]
+    public void HasSettableMethod_ReturnsExpected() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MethodBasedViewModel>();
+
+      Assert.True(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetMethod)));
+      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.GetMethod)));
+      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetComplexMethod)));
+      Assert.False(typeAccessor.HasSettableMethod(nameof(MethodBasedViewModel.SetParametersMethod)));
+      Assert.False(typeAccessor.HasSettableMethod("MissingMethod"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: KEY: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a key value can be properly set using the <see cref="
-    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
+    ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_Key_SetsValue() {
@@ -195,8 +193,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: NULL VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?, Boolean)"/> method sets the property to <c>null</c>.
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessor.SetPropertyValue(Object,
+    ///   String, Object?, Boolean)"/> method sets the property to <c>null</c>.
     /// </summary>
     [Fact]
     public void SetPropertyValue_NullValue_SetsToNull() {
@@ -216,9 +214,9 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS TO NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?, Boolean)"/> sets the target property value to <c>null</c> if the value is set
-    ///   to <see cref="String.Empty"/>.
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessor.SetPropertyValue(Object,
+    ///   String, Object?, Boolean)"/> sets the target property value to <c>null</c> if the value is set to <see cref="
+    ///   String.Empty"/>.
     /// </summary>
     [Fact]
     public void SetPropertyValue_EmptyValue_SetsToNull() {
@@ -238,9 +236,9 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: EMPTY VALUE: SETS DEFAULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessorExtensions.SetPropertyValue(
-    ///   TypeAccessor, Object, String, Object?, Boolean)"/> sets the value to its default if the value is set to <see cref="
-    ///   String.Empty"/> and the target property type is not nullable.
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessor.SetPropertyValue(Object,
+    ///   String, Object?, Boolean)"/> sets the value to its default if the value is set to <see cref="String.Empty"/> and the
+    ///   target property type is not nullable.
     /// </summary>
     [Fact]
     public void SetPropertyValue_EmptyValue_SetsDefault() {
@@ -259,7 +257,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a boolean value can be properly set using the <see cref
-    ///   ="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
+    ///   ="TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_Boolean_SetsValue() {
@@ -277,8 +275,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: DATE/TIME: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeAccessor"/> and confirms that a date/time value can be properly set using the <see
-    ///   cref="TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
+    ///   Establishes a <see cref="TypeAccessor"/> and confirms that a date/time value can be properly set using the <see cref="
+    ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetPropertyValue_DateTime_SetsValue() {
@@ -302,7 +300,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that an invalid property being set via the <see cref="
-    ///   TypeAccessorExtensions.SetPropertyValue(TypeAccessor, Object, String, Object?, Boolean)"/> method throws an <see cref=
+    ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method throws an <see cref=
     ///   "InvalidOperationException"/>.
     /// </summary>
     [Fact]
@@ -322,7 +320,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value can be properly set using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method.
+    ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetMethodValue_ValidValue_SetsValue() {
@@ -341,7 +339,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method returns <c>false</c>.
+    ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -360,7 +358,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method throws an exception.
+    ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method throws an exception.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidMember_ThrowsException() {
@@ -379,7 +377,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a reference value can be properly set using the <see
-    ///   cref="TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method.
+    ///   cref="TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method.
     /// </summary>
     [Fact]
     public void SetMethodValue_ValidReferenceValue_SetsValue() {
@@ -399,7 +397,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method throws an <see cref="
+    ///   TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method throws an <see cref="
     ///   InvalidCastException"/>.
     /// </summary>
     [Fact]
@@ -420,7 +418,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object?, Boolean)"/> method returns <c>false</c>.
+    ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
@@ -439,7 +437,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an null value using the <see cref="
-    ///   TypeAccessorExtensions.SetMethodValue(TypeAccessor, Object, String, Object, Boolean)"/> method returns <c>false</c>.
+    ///   TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method returns <c>false</c>.
     /// </summary>
     [Fact]
     public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
