@@ -177,7 +177,6 @@ namespace OnTopic.Internal.Reflection {
     internal bool HasGettableProperty<T>(string name, Type? targetType = null) where T : Attribute
       => HasGettableProperty(name, targetType, typeof(T));
 
-
     /*==========================================================================================================================
     | METHOD: HAS GETTABLE METHOD
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -215,7 +214,29 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="source">The <see cref="Object"/> instance from which the value should be retrieved.</param>
     /// <param name="memberName">The name of the method or property from which the value should be retrieved.</param>
     /// <returns>The value returned from the member.</returns>
-    internal object? GetValue(object source, string memberName) => GetMember(memberName)?.GetValue(source);
+    internal object? GetValue(object source, string memberName) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(memberName, nameof(memberName));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve member
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var member = GetMember(memberName);
+
+      if (member is null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return member.GetValue(source);
+
+    }
 
     /*==========================================================================================================================
     | METHOD: GET PROPERTY VALUE
@@ -226,29 +247,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="target">The object instance on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
-    internal object? GetPropertyValue(object target, string name) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve member
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = GetMember(name);
-
-      if (member is null || member.MemberType != MemberTypes.Property) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return member.GetValue(target);
-
-    }
+    internal object? GetPropertyValue(object target, string name) => GetValue(target, name);
 
     /*==========================================================================================================================
     | METHOD: GET METHOD VALUE
@@ -258,29 +257,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
-    internal object? GetMethodValue(object target, string name) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve member
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = GetMember(name);
-
-      if (member is null || member.MemberType != MemberTypes.Method) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return member.GetValue(target);
-
-    }
+    internal object? GetMethodValue(object target, string name) => GetValue(target, name);
 
     /*==========================================================================================================================
     | HAS SETTER?
@@ -350,12 +327,35 @@ namespace OnTopic.Internal.Reflection {
     | SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of a member named <paramref name="memberName"/> on the supplied <paramref name="source"/> object.
+    ///   Sets the value of a member named <paramref name="memberName"/> on the supplied <paramref name="target"/> object.
     /// </summary>
-    /// <param name="source">The <see cref="Object"/> instance on which the value should be set.</param>
+    /// <param name="target">The <see cref="Object"/> instance on which the value should be set.</param>
     /// <param name="memberName">The name of the method or property on which the value should be set.</param>
     /// <param name="value">The <see cref="Object"/> value to set the member to.</param>
-    internal void SetValue(object source, string memberName, object? value) => GetMember(memberName)?.SetValue(source, value);
+    /// <param name="allowConversion">
+    ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
+    /// </param>
+    internal void SetValue(object target, string memberName, object? value, bool allowConversion = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(memberName, nameof(memberName));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var member = GetMember(memberName);
+
+      Contract.Assume(member, $"The {memberName} property could not be retrieved.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      member.SetValue(target, value, allowConversion);
+
+    }
 
     /*==========================================================================================================================
     | METHOD: SET PROPERTY VALUE
@@ -370,28 +370,8 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="allowConversion">
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
     /// </param>
-    internal void SetPropertyValue(object target, string name, object? value, bool allowConversion = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate dependencies
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = GetMember(name);
-
-      Contract.Assume(member, $"The {name} property could not be retrieved.");
-      Contract.Assume(member.MemberType == MemberTypes.Property, $"The {name} member is not a property.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      member.SetValue(target, value, allowConversion);
-
-    }
+    internal void SetPropertyValue(object target, string name, object? value, bool allowConversion = false)
+      => SetValue(target, name, value, allowConversion);
 
     /*==========================================================================================================================
     | METHOD: SET METHOD VALUE
@@ -410,28 +390,8 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="allowConversion">
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
     /// </param>
-    internal void SetMethodValue(object target, string name, object? value, bool allowConversion = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate dependencies
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var member = GetMember(name);
-
-      Contract.Assume(member, $"The {name}() method could not be retrieved.");
-      Contract.Assume(member.MemberType == MemberTypes.Method, $"The {name} member is not a method.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      member.SetValue(target, value, allowConversion);
-
-    }
+    internal void SetMethodValue(object target, string name, object? value, bool allowConversion = false)
+      => SetValue(target, name, value, allowConversion);
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE TYPE?
