@@ -296,8 +296,8 @@ namespace OnTopic.Internal.Reflection {
       | Set type as return type of property
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (memberInfo is PropertyInfo propertyInfo) {
-        CanRead              = propertyInfo.CanRead;
-        CanWrite              = propertyInfo.CanWrite;
+        CanRead                 = propertyInfo.CanRead;
+        CanWrite                = propertyInfo.CanWrite;
         return propertyInfo.PropertyType;
       }
 
