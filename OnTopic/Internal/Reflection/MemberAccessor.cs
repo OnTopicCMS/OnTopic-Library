@@ -125,6 +125,28 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     internal bool CanWrite { get; private set; }
 
+    /*==========================================================================================================================
+    | METHOD: IS SETTABLE?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether the current member is settable, either assuming the list of <see cref="AttributeValueConverter"/>,
+    ///   or provided a specific <paramref name="sourceType"/>.
+    /// </summary>
+    /// <param name="sourceType">The <see cref="System.Type"/> to evaluate against <see cref="Type"/>.</param>
+    /// <param name="allowConversion">
+    ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
+    /// </param>
+    internal bool IsSettable(Type? sourceType = null, bool allowConversion = false) {
+      if (sourceType is not null && (sourceType == Type || Type.IsAssignableFrom(sourceType))) {
+        return true;
+      }
+      if (allowConversion) {
+        var isTargetCompatible  = AttributeValueConverter.IsConvertible(Type);
+        var isSourceCompatible  = sourceType is null || AttributeValueConverter.IsConvertible(sourceType);
+        return isTargetCompatible && isSourceCompatible;
+      }
+      return false;
+    }
 
     /*==========================================================================================================================
     | GET VALUE

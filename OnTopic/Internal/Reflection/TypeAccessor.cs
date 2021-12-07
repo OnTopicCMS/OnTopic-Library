@@ -167,7 +167,7 @@ namespace OnTopic.Internal.Reflection {
       var property = GetMember(name);
       return (
         property is not null and { CanRead: true, MemberType: MemberTypes.Property } &&
-        IsSettableType(property.Type, targetType) &&
+        property.IsSettable(targetType, true) &&
         (attributeFlag is null || Attribute.IsDefined(property.MemberInfo, attributeFlag))
       );
     }
@@ -194,7 +194,7 @@ namespace OnTopic.Internal.Reflection {
       var method = GetMember(name);
       return (
         method is not null and { CanRead: true, MemberType: MemberTypes.Method } &&
-        IsSettableType(method.Type, targetType) &&
+        method.IsSettable(targetType, true) &&
         (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
     }
@@ -285,7 +285,7 @@ namespace OnTopic.Internal.Reflection {
       var property = GetMember(name);
       return (
         property is not null and { CanWrite: true, MemberType: MemberTypes.Property } &&
-        IsSettableType(property.Type, targetType) &&
+        property.IsSettable(targetType, true) &&
         (attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, attributeFlag))
       );
     }
@@ -313,7 +313,7 @@ namespace OnTopic.Internal.Reflection {
       var method = GetMember(name);
       return (
         method is not null and { CanWrite: true, MemberType: MemberTypes.Method } &&
-        IsSettableType(method.Type, targetType) &&
+        method.IsSettable(targetType, true) &&
         (attributeFlag is null || Attribute.IsDefined(method.MemberInfo, attributeFlag))
       );
     }
@@ -392,22 +392,6 @@ namespace OnTopic.Internal.Reflection {
     /// </param>
     internal void SetMethodValue(object target, string name, object? value, bool allowConversion = false)
       => SetValue(target, name, value, allowConversion);
-
-    /*==========================================================================================================================
-    | METHOD: IS SETTABLE TYPE?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines whether a given type is settable, either assuming the list of <see cref="AttributeValueConverter"/>, or
-    ///   provided a specific <paramref name="targetType"/>.
-    /// </summary>
-    private static bool IsSettableType(Type sourceType, Type? targetType = null) {
-
-      if (targetType is not null) {
-        return sourceType.IsAssignableFrom(targetType);
-      }
-      return AttributeValueConverter.IsConvertible(sourceType);
-
-    }
 
   } //Class
 } //Namespace
