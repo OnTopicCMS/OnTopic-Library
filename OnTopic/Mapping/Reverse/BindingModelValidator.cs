@@ -184,7 +184,9 @@ namespace OnTopic.Mapping.Reverse {
       | Handle mapping properties from referenced objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
-        var childProperties = new MemberInfoCollection<PropertyInfo>(propertyType, propertyType.GetProperties());
+        var typeAccessor        = TypeAccessorCache.GetTypeAccessor(propertyType);
+        var childProperties     = typeAccessor.GetMembers<PropertyInfo>();
+
         ValidateModel(
           propertyType,
           childProperties,

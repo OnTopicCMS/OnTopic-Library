@@ -207,7 +207,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
-      var properties            = typeAccessor.GetMembers(MemberTypes.Property).Select(m => m.MemberInfo).Cast<PropertyInfo>();
+      var properties            = typeAccessor.GetMembers<PropertyInfo>();
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
 
       BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);

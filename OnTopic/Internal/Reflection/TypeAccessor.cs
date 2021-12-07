@@ -81,6 +81,14 @@ namespace OnTopic.Internal.Reflection {
     internal List<MemberAccessor> GetMembers(MemberTypes memberTypes = MemberTypes.All) =>
       _members.Values.Where(m => memberTypes == MemberTypes.All || memberTypes.HasFlag(m.MemberType)).ToList();
 
+    /// <summary>
+    ///   Retrieves a list of properties and methods as <see cref="MemberInfo"/> objects, instead of <see cref="MemberAccessor"
+    ///   />s.
+    /// </summary>
+    /// <returns>A list of <see cref="MemberInfo"/> instances.</returns>
+    internal IEnumerable<T> GetMembers<T>() where T : MemberInfo
+      => GetMembers().Select(m => m.MemberInfo).Where(t => t is T).Cast<T>();
+
     /*==========================================================================================================================
     | GET MEMBER
     \-------------------------------------------------------------------------------------------------------------------------*/
