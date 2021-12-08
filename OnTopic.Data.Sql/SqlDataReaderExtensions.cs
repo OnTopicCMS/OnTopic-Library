@@ -201,7 +201,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && current.Parent?.Id != parentId && topics.Keys.Contains(parentId)) {
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.ContainsKey(parentId)) {
         current.Parent = topics[parentId];
       }
 
@@ -359,7 +359,7 @@ namespace OnTopic.Data.Sql {
       var related               = (Topic?)null;
 
       // Fetch the related topic
-      if (topics.Keys.Contains(targetTopicId)) {
+      if (topics.ContainsKey(targetTopicId)) {
         related                 = topics[targetTopicId];
       }
 
@@ -417,7 +417,7 @@ namespace OnTopic.Data.Sql {
       // Fetch the related topic
       if (targetTopicId is null) {
       }
-      else if (topics.Keys.Contains(targetTopicId.Value)) {
+      else if (topics.ContainsKey(targetTopicId.Value)) {
         referenced              = topics[targetTopicId.Value];
       }
       else {
