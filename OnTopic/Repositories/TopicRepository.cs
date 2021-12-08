@@ -768,7 +768,7 @@ namespace OnTopic.Repositories {
 
         //Skip if the value is null or empty; these values are not persisted to storage and should be treated as equivalent to
         //non-existent values.
-        if (attributeValue.Value is null || attributeValue.Value.Length == 0) {
+        if (String.IsNullOrEmpty(attributeValue.Value)) {
           continue;
         }
 

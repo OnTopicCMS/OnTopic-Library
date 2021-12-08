@@ -269,7 +269,7 @@ namespace OnTopic.Collections.Specialized {
         value = this[key].Value;
       }
 
-      if (value is not null && value.ToString().Length == 0) {
+      if (value is "") {
         value = null;
       }
 

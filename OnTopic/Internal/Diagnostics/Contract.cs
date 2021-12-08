@@ -88,7 +88,7 @@ namespace OnTopic.Internal.Diagnostics {
     /// </exception>
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
-      if (errorMessage is null || errorMessage.Length == 0) {
+      if (String.IsNullOrEmpty(errorMessage)) {
         throw new T();
       }
       try {
