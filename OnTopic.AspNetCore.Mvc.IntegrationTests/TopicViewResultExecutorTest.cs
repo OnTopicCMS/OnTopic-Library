@@ -163,7 +163,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var uri = new Uri("/Web/MissingView/", UriKind.Relative);
       var response = await client.GetAsync(uri).ConfigureAwait(false);
 
-      Assert.Equal<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
+      Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
     }
 

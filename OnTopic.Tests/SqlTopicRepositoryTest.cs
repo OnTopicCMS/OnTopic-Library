@@ -44,7 +44,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal(1, topic?.Id);
 
     }
 
@@ -72,7 +72,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(topic);
 
-      Assert.Equal<Topic?>(parent2, child.Parent);
+      Assert.Equal(parent2, child.Parent);
 
     }
 
@@ -97,7 +97,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal(1, topic?.Id);
       Assert.Equal("Value", topic?.Attributes.GetValue("Test"));
 
     }
@@ -154,8 +154,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
-      Assert.Equal<int?>(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
+      Assert.Equal(1, topic?.Id);
+      Assert.Equal(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
       Assert.True(topic?.Relationships.IsFullyLoaded);
 
     }
@@ -183,7 +183,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal(1, topic?.Id);
       Assert.Empty(topic?.Relationships);
       Assert.False(topic?.Relationships.IsFullyLoaded);
 
@@ -212,8 +212,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
-      Assert.Equal<int?>(2, topic?.References.GetValue("Test")?.Id);
+      Assert.Equal(1, topic?.Id);
+      Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
       Assert.True(topic?.References.IsDirty());
 
     }
@@ -242,8 +242,8 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph(referenceTopic, false);
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
-      Assert.Equal<int?>(2, topic?.References.GetValue("Test")?.Id);
+      Assert.Equal(1, topic?.Id);
+      Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
       Assert.True(topic?.References.IsFullyLoaded);
       Assert.False(topic?.References.IsDirty());
 
@@ -303,7 +303,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal(1, topic?.Id);
       Assert.Empty(topic?.References);
       Assert.False(topic?.References.IsFullyLoaded);
 
@@ -362,7 +362,7 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal<int?>(1, topic?.Id);
+      Assert.Equal(1, topic?.Id);
       Assert.Single(topic?.VersionHistory);
       Assert.True(topic?.VersionHistory.Contains(DateTime.MinValue));
 
@@ -384,7 +384,7 @@ namespace OnTopic.Tests {
       dataTable.AddRow(2);
       dataTable.AddRow(2);
 
-      Assert.Equal<int>(3, dataTable.Rows.Count);
+      Assert.Equal(3, dataTable.Rows.Count);
       Assert.Single(dataTable.Columns);
 
       dataTable.Dispose();
@@ -408,8 +408,8 @@ namespace OnTopic.Tests {
       dataTable.AddRow("ContentType", "Page");
       dataTable.AddRow("ParentId", "4");
 
-      Assert.Equal<int>(3, dataTable.Rows.Count);
-      Assert.Equal<int>(2, dataTable.Columns.Count);
+      Assert.Equal(3, dataTable.Rows.Count);
+      Assert.Equal(2, dataTable.Columns.Count);
 
       dataTable.Dispose();
 
@@ -432,8 +432,8 @@ namespace OnTopic.Tests {
       dataTable.AddRow("Parent", 2);
       dataTable.AddRow("RootTopic", 3);
 
-      Assert.Equal<int>(3, dataTable.Rows.Count);
-      Assert.Equal<int>(2, dataTable.Columns.Count);
+      Assert.Equal(3, dataTable.Rows.Count);
+      Assert.Equal(2, dataTable.Columns.Count);
 
       dataTable.Dispose();
 
@@ -458,7 +458,7 @@ namespace OnTopic.Tests {
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@TopicKey"));
       Assert.Equal("Root", (string?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+      Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -483,7 +483,7 @@ namespace OnTopic.Tests {
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@TopicKey"));
       Assert.Null(sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+      Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -507,8 +507,8 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal<int?>(5, (int?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal(5, (int?)sqlParameter?.Value);
+      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -532,8 +532,8 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@IsHidden"));
-      Assert.Equal<bool?>(true, (bool?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.Bit, sqlParameter?.SqlDbType);
+      Assert.Equal(true, (bool?)sqlParameter?.Value);
+      Assert.Equal(SqlDbType.Bit, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -558,8 +558,8 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@LastModified"));
-      Assert.Equal<DateTime?>(lastModified, (DateTime?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
+      Assert.Equal(lastModified, (DateTime?)sqlParameter?.Value);
+      Assert.Equal(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -584,8 +584,8 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@Relationships"));
-      Assert.Equal<DataTable?>(dataTable, (DataTable?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.Structured, sqlParameter?.SqlDbType);
+      Assert.Equal(dataTable, (DataTable?)sqlParameter?.Value);
+      Assert.Equal(SqlDbType.Structured, sqlParameter?.SqlDbType);
 
       command.Dispose();
       dataTable.Dispose();
@@ -612,7 +612,7 @@ namespace OnTopic.Tests {
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@AttributesXml"));
       Assert.Equal(xml.ToString(), (string?)sqlParameter?.Value);
-      Assert.Equal<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
+      Assert.Equal(SqlDbType.Xml, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -638,9 +638,9 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal<int>(5, command.GetReturnCode("TopicId"));
-      Assert.Equal<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal(5, command.GetReturnCode("TopicId"));
+      Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 
@@ -665,9 +665,9 @@ namespace OnTopic.Tests {
 
       Assert.Single(command.Parameters);
       Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal<int>(-1, command.GetReturnCode("TopicId"));
-      Assert.Equal<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.Equal<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+      Assert.Equal(-1, command.GetReturnCode("TopicId"));
+      Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
       command.Dispose();
 

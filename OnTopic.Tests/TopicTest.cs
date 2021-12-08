@@ -128,8 +128,8 @@ namespace OnTopic.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.Equal<Topic?>(parentTopic.Children["Child"], childTopic);
-      Assert.Equal<int>(5, childTopic.Parent.Id);
+      Assert.Equal(parentTopic.Children["Child"], childTopic);
+      Assert.Equal(5, childTopic.Parent.Id);
 
     }
 
@@ -186,10 +186,10 @@ namespace OnTopic.Tests {
         Parent                  = targetParent
       };
 
-      Assert.Equal<Topic?>(targetParent.Children["ChildTopic"], childTopic);
+      Assert.Equal(targetParent.Children["ChildTopic"], childTopic);
       Assert.True(targetParent.Children.Contains("ChildTopic"));
       Assert.False(sourceParent.Children.Contains("ChildTopic"));
-      Assert.Equal<int>(10, childTopic.Parent.Id);
+      Assert.Equal(10, childTopic.Parent.Id);
 
     }
 
@@ -273,7 +273,7 @@ namespace OnTopic.Tests {
 
       topic.LastModified        = lastModified;
 
-      Assert.Equal<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal(lastModified, topic.LastModified);
 
     }
 
@@ -292,7 +292,7 @@ namespace OnTopic.Tests {
 
       topic.VersionHistory.Add(lastModified);
 
-      Assert.Equal<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal(lastModified, topic.LastModified);
 
     }
 
@@ -311,7 +311,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("LastModified", lastModified.ToShortDateString());
 
-      Assert.Equal<DateTime>(lastModified, topic.LastModified);
+      Assert.Equal(lastModified, topic.LastModified);
 
     }
 
@@ -334,8 +334,8 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = secondBaseTopic;
       topic.BaseTopic           = finalBaseTopic;
 
-      Assert.Equal<Topic?>(topic.BaseTopic, finalBaseTopic);
-      Assert.Equal<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
+      Assert.Equal(topic.BaseTopic, finalBaseTopic);
+      Assert.Equal(2, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 
@@ -356,8 +356,8 @@ namespace OnTopic.Tests {
       baseTopic.Id              = 5;
       topic.BaseTopic           = baseTopic;
 
-      Assert.Equal<Topic?>(topic.BaseTopic, baseTopic);
-      Assert.Equal<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
+      Assert.Equal(topic.BaseTopic, baseTopic);
+      Assert.Equal(5, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 

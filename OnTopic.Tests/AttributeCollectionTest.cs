@@ -109,7 +109,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetInteger("Number1", 1);
 
-      Assert.Equal<int>(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.Equal(1, topic.Attributes.GetInteger("Number1", 5));
 
     }
 
@@ -131,9 +131,9 @@ namespace OnTopic.Tests {
 
       baseTopic.Attributes.SetInteger("Number1", 1);
 
-      Assert.Equal<int>(1, topic.Attributes.GetInteger("Number1", 5));
-      Assert.Equal<int>(1, childTopic.Attributes.GetInteger("Number1", 5, true));
-      Assert.Equal<int>(0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
+      Assert.Equal(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.Equal(1, childTopic.Attributes.GetInteger("Number1", 5, true));
+      Assert.Equal(0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -150,8 +150,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.Equal<int>(0, topic.Attributes.GetInteger("Number3"));
-      Assert.Equal<int>(5, topic.Attributes.GetInteger("Number3", 5));
+      Assert.Equal(0, topic.Attributes.GetInteger("Number3"));
+      Assert.Equal(5, topic.Attributes.GetInteger("Number3", 5));
 
     }
 
@@ -166,8 +166,8 @@ namespace OnTopic.Tests {
 
       var topic = new Topic("Test", "Container");
 
-      Assert.Equal<int>(0, topic.Attributes.GetInteger("InvalidKey"));
-      Assert.Equal<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
+      Assert.Equal(0, topic.Attributes.GetInteger("InvalidKey"));
+      Assert.Equal(5, topic.Attributes.GetInteger("InvalidKey", 5));
 
     }
 
@@ -184,7 +184,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDouble("Number1", 1);
 
-      Assert.Equal<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+      Assert.Equal(1.0, topic.Attributes.GetDouble("Number1", 5.0));
 
     }
 
@@ -206,9 +206,9 @@ namespace OnTopic.Tests {
 
       baseTopic.Attributes.SetDouble("Number1", 1);
 
-      Assert.Equal<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
-      Assert.Equal<double>(1.0, childTopic.Attributes.GetDouble("Number1", 5.0, true));
-      Assert.Equal<double>(0.0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
+      Assert.Equal(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+      Assert.Equal(1.0, childTopic.Attributes.GetDouble("Number1", 5.0, true));
+      Assert.Equal(0.0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -225,8 +225,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.Equal<double>(0, topic.Attributes.GetDouble("Number3"));
-      Assert.Equal<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
+      Assert.Equal(0.0, topic.Attributes.GetDouble("Number3"));
+      Assert.Equal(5.0, topic.Attributes.GetDouble("Number3", 5.0));
 
     }
 
@@ -241,8 +241,8 @@ namespace OnTopic.Tests {
 
       var topic = new Topic("Test", "Container");
 
-      Assert.Equal<double>(0, topic.Attributes.GetDouble("InvalidKey"));
-      Assert.Equal<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
+      Assert.Equal(0.0, topic.Attributes.GetDouble("InvalidKey"));
+      Assert.Equal(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
 
     }
 
@@ -260,7 +260,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTime1", dateTime1);
 
-      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
+      Assert.Equal(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
 
     }
 
@@ -283,9 +283,9 @@ namespace OnTopic.Tests {
 
       baseTopic.Attributes.SetDateTime("DateTime1", dateTime1);
 
-      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.Now));
-      Assert.Equal<DateTime>(dateTime1, childTopic.Attributes.GetDateTime("DateTime1", DateTime.Now, true));
-      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime1", inheritFromBase: false));
+      Assert.Equal(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.Now));
+      Assert.Equal(dateTime1, childTopic.Attributes.GetDateTime("DateTime1", DateTime.Now, true));
+      Assert.Equal(new DateTime(), topic.Attributes.GetDateTime("DateTime1", inheritFromBase: false));
 
     }
 
@@ -303,8 +303,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("DateTime2", "IncorrectValue");
 
-      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime2"));
-      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime2", dateTime1));
+      Assert.Equal(new DateTime(), topic.Attributes.GetDateTime("DateTime2"));
+      Assert.Equal(dateTime1, topic.Attributes.GetDateTime("DateTime2", dateTime1));
 
     }
 
@@ -323,8 +323,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
-      Assert.Equal<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
-      Assert.Equal<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
+      Assert.Equal(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.Equal(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
 
     }
 
@@ -686,9 +686,9 @@ namespace OnTopic.Tests {
       topic.Attributes.TryGetValue("Bar", out var cleanedAttribute2);
       topic.Attributes.TryGetValue("Baz", out var cleanedAttribute3);
 
-      Assert.Equal<DateTime?>(firstVersion, cleanedAttribute1?.LastModified);
-      Assert.Equal<DateTime?>(secondVersion, cleanedAttribute2?.LastModified);
-      Assert.Equal<DateTime?>(thirdVersion, cleanedAttribute3?.LastModified);
+      Assert.Equal(firstVersion, cleanedAttribute1?.LastModified);
+      Assert.Equal(secondVersion, cleanedAttribute2?.LastModified);
+      Assert.Equal(thirdVersion, cleanedAttribute3?.LastModified);
 
     }
 
@@ -874,7 +874,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetInteger("NumericAttribute", 1);
 
-      Assert.Equal<int>(1, topic.NumericAttribute);
+      Assert.Equal(1, topic.NumericAttribute);
 
     }
 
@@ -928,7 +928,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTimeAttribute", dateTime);
 
-      Assert.Equal<DateTime>(dateTime, topic.DateTimeAttribute);
+      Assert.Equal(dateTime, topic.DateTimeAttribute);
 
     }
 

@@ -69,7 +69,7 @@ namespace OnTopic.Tests {
 
       var members               = _typeAccessor.GetMembers();
 
-      Assert.Equal<int>(7+4, members.Count); // Includes four compliant members inherited from object
+      Assert.Equal(7+4, members.Count); // Includes four compliant members inherited from object
 
     }
 
@@ -86,7 +86,7 @@ namespace OnTopic.Tests {
 
       var memberAccessors       = _typeAccessor.GetMembers(MemberTypes.Property);
 
-      Assert.Equal<int>(5, memberAccessors.Count);
+      Assert.Equal(5, memberAccessors.Count);
 
     }
 
@@ -157,7 +157,7 @@ namespace OnTopic.Tests {
     [InlineData(nameof(MemberAccessorViewModel.WriteOnlyProperty), false)]
     [InlineData("MissingProperty", false)]
     public void HasGetter_Names_ReturnsResult(string name, bool result) {
-      Assert.Equal<bool>(result, _typeAccessor.HasGetter(name));
+      Assert.Equal(result, _typeAccessor.HasGetter(name));
     }
 
     /*==========================================================================================================================
@@ -260,7 +260,7 @@ namespace OnTopic.Tests {
 
       sourceObject.SetMethod(3);
 
-      Assert.Equal<object?>(result, _typeAccessor.GetValue(sourceObject, name));
+      Assert.Equal(result, _typeAccessor.GetValue(sourceObject, name));
     }
 
     /*==========================================================================================================================
@@ -278,7 +278,7 @@ namespace OnTopic.Tests {
     [InlineData(nameof(MemberAccessorViewModel.ReadOnlyProperty), false)]
     [InlineData("MissingProperty", false)]
     public void HasSetter_Names_ReturnsResult(string name, bool result) {
-      Assert.Equal<bool>(result, _typeAccessor.HasSetter(name));
+      Assert.Equal(result, _typeAccessor.HasSetter(name));
     }
 
     /*==========================================================================================================================
@@ -342,9 +342,9 @@ namespace OnTopic.Tests {
     //_typeAccessor.SetValue(sourceObject, nameof(MemberAccessorViewModel.WriteOnlyProperty), null); // Edge case is unsupported
 
       Assert.Null(sourceObject.NullableProperty);
-      Assert.Equal<int>(1, sourceObject.NonNullableProperty);
-      Assert.Equal<Type>(typeof(MemberAccessorTest), sourceObject.NonNullableReferenceGetter);
-      Assert.Equal<int?>(5, sourceObject.GetMethod());
+      Assert.Equal(1, sourceObject.NonNullableProperty);
+      Assert.Equal(typeof(MemberAccessorTest), sourceObject.NonNullableReferenceGetter);
+      Assert.Equal(5, sourceObject.GetMethod());
 
     }
 
@@ -429,7 +429,7 @@ namespace OnTopic.Tests {
 
       typeAccessor.SetPropertyValue(model, "NonNullableInteger", "ABC", true);
 
-      Assert.Equal<int>(0, model.NonNullableInteger);
+      Assert.Equal(0, model.NonNullableInteger);
 
     }
 
@@ -466,13 +466,13 @@ namespace OnTopic.Tests {
       var topic                 = new Topic("Test", "ContentType");
 
       typeAccessor.SetPropertyValue(topic, "LastModified", "June 3, 2008", true);
-      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal(new(2008, 6, 3), topic.LastModified);
 
       typeAccessor.SetPropertyValue(topic, "LastModified", "2008-06-03", true);
-      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal(new(2008, 6, 3), topic.LastModified);
 
       typeAccessor.SetPropertyValue(topic, "LastModified", "06/03/2008", true);
-      Assert.Equal<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.Equal(new(2008, 6, 3), topic.LastModified);
 
     }
 
@@ -509,7 +509,7 @@ namespace OnTopic.Tests {
 
       _typeAccessor.SetMethodValue(source, nameof(MemberAccessorViewModel.SetMethod), "123", true);
 
-      Assert.Equal<int?>(123, source.GetMethod());
+      Assert.Equal(123, source.GetMethod());
 
     }
 
@@ -528,7 +528,7 @@ namespace OnTopic.Tests {
 
       typeAccessor.SetMethodValue(source, nameof(MethodBasedViewModel.SetMethod), "ABC", true);
 
-      Assert.Equal<int>(0, source.GetMethod());
+      Assert.Equal(0, source.GetMethod());
 
     }
 
@@ -566,7 +566,7 @@ namespace OnTopic.Tests {
 
       typeAccessor.SetMethodValue(source, "SetMethod", reference);
 
-      Assert.Equal<TopicViewModel?>(reference, source.GetMethod());
+      Assert.Equal(reference, source.GetMethod());
 
     }
 
@@ -675,7 +675,7 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(typeof(MemberAccessorViewModel));
 
       Assert.NotNull(typeAccessor);
-      Assert.Equal<Type>(typeof(MemberAccessorViewModel), typeAccessor.Type);
+      Assert.Equal(typeof(MemberAccessorViewModel), typeAccessor.Type);
 
     }
 

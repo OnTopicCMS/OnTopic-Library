@@ -206,7 +206,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", newReference);
 
-      Assert.Equal<Topic?>(newReference, topic.References.GetValue("Reference"));
+      Assert.Equal(newReference, topic.References.GetValue("Reference"));
       Assert.Empty(reference.IncomingRelationships.GetValues("Reference"));
       Assert.Single(newReference.IncomingRelationships.GetValues("Reference"));
 
@@ -240,7 +240,7 @@ namespace OnTopic.Tests {
 
       Assert.False(topic.References.Contains("Reference"));
       Assert.Null(topic.References.GetValue("Reference"));
-      Assert.Equal<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
+      Assert.Equal(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
 
     }
 
@@ -303,7 +303,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.Equal<Topic?>(reference, topic.References.GetValue("Reference"));
+      Assert.Equal(reference, topic.References.GetValue("Reference"));
 
     }
 
@@ -347,7 +347,7 @@ namespace OnTopic.Tests {
       parentTopic.BaseTopic     = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.Equal<Topic?>(reference, topic.References.GetValue("Reference", true));
+      Assert.Equal(reference, topic.References.GetValue("Reference", true));
 
     }
 
@@ -412,7 +412,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("TopicReference", reference);
 
-      Assert.Equal<Topic?>(reference, topic.TopicReference);
+      Assert.Equal(reference, topic.TopicReference);
 
     }
 

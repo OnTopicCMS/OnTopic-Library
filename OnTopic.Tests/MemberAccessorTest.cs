@@ -173,7 +173,7 @@ namespace OnTopic.Tests {
       var sourceObject          = new MemberAccessorViewModel() { NonNullableProperty = 15 };
       var returnObject          = memberAccessor.GetValue(sourceObject);
 
-      Assert.Equal<object?>(sourceObject.NonNullableProperty, returnObject);
+      Assert.Equal(sourceObject.NonNullableProperty, returnObject);
 
     }
 
@@ -198,7 +198,7 @@ namespace OnTopic.Tests {
 
       var returnObject          = memberAccessor.GetValue(sourceObject);
 
-      Assert.Equal<object?>(value, returnObject);
+      Assert.Equal(value, returnObject);
 
     }
 
@@ -244,7 +244,7 @@ namespace OnTopic.Tests {
       };
       memberAccessor.SetValue(sourceObject, value);
 
-      Assert.Equal<int?>(value, sourceObject.NullableProperty);
+      Assert.Equal(value, sourceObject.NullableProperty);
 
     }
 
@@ -269,7 +269,7 @@ namespace OnTopic.Tests {
       sourceObject.SetMethod(5);
       memberAccessor.SetValue(sourceObject, value);
 
-      Assert.Equal<int?>(value, sourceObject.GetMethod());
+      Assert.Equal(value, sourceObject.GetMethod());
 
     }
 

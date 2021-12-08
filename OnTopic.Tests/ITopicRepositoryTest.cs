@@ -72,7 +72,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load();
 
-      Assert.Equal<int?>(2, rootTopic?.Children.Count);
+      Assert.Equal(2, rootTopic?.Children.Count);
       Assert.Equal("Configuration", rootTopic?.Children.First().Key);
       Assert.Equal("Web", rootTopic?.Children.Last().Key);
 
@@ -138,12 +138,12 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(topic);
 
-      Assert.NotEqual<int>(-1, topic.Id);
-      Assert.Equal<int>(-1, child.Id);
+      Assert.NotEqual(-1, topic.Id);
+      Assert.Equal(-1, child.Id);
 
       _topicRepository.Save(topic, true);
 
-      Assert.NotEqual<int>(-1, child.Id);
+      Assert.NotEqual(-1, child.Id);
 
     }
 
@@ -163,7 +163,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(topic, destination);
 
-      Assert.Equal<Topic?>(topic.Parent, destination);
+      Assert.Equal(topic.Parent, destination);
       Assert.Single(source.Children);
       Assert.Single(destination.Children);
 
@@ -184,8 +184,8 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(topic, parent, sibling);
 
-      Assert.Equal<Topic?>(topic.Parent, parent);
-      Assert.Equal<int>(2, parent.Children.Count);
+      Assert.Equal(topic.Parent, parent);
+      Assert.Equal(2, parent.Children.Count);
       Assert.Equal("Sibling", parent.Children.First().Key);
       Assert.Equal("Topic", parent.Children[1].Key);
 

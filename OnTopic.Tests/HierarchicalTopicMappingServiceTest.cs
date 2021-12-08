@@ -150,7 +150,7 @@ namespace OnTopic.Tests {
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Equal<int?>(3, viewModel?.Children.Count);
+      Assert.Equal(3, viewModel?.Children.Count);
       Assert.Empty(viewModel?.Children[0].Children);
 
     }
