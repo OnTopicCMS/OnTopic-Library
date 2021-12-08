@@ -103,10 +103,10 @@ namespace OnTopic.Tests {
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor<ContentTypeDescriptor>();
       var properties            = typeAccessor.GetMembers<PropertyInfo>();
 
-      Assert.Contains(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.Key)));
-      Assert.Contains(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.AttributeDescriptors)));
-      Assert.DoesNotContain(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.IsTypeOf)));
-      Assert.DoesNotContain(properties, p => p.Name.Equals("InvalidPropertyName"));
+      Assert.Contains(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.Key), StringComparison.Ordinal));
+      Assert.Contains(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.AttributeDescriptors), StringComparison.Ordinal));
+      Assert.DoesNotContain(properties, p => p.Name.Equals(nameof(ContentTypeDescriptor.IsTypeOf), StringComparison.Ordinal));
+      Assert.DoesNotContain(properties, p => p.Name.Equals("InvalidPropertyName", StringComparison.Ordinal));
 
     }
 
