@@ -830,7 +830,7 @@ namespace OnTopic.Tests {
       var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.NotNull(target?.TopicReference);
-      Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.TopicReference?.GetType());
+      Assert.IsType<AscendentTopicViewModel>(target?.TopicReference);
 
     }
 
@@ -855,7 +855,7 @@ namespace OnTopic.Tests {
       var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.Single(target?.Relationships);
-      Assert.Equal<Type?>(typeof(AscendentTopicViewModel), target?.Relationships.FirstOrDefault()?.GetType());
+      Assert.IsType<AscendentTopicViewModel>(target?.Relationships.FirstOrDefault());
 
     }
 
