@@ -128,23 +128,23 @@ namespace OnTopic.Attributes {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle type-specific rules
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (value is string) {
-        return (string)value;
+      if (value is string stringValue) {
+        return stringValue;
       }
-      else if (value is bool) {
-        return ((bool)value) ? "1" : "0";
+      else if (value is bool boolValue) {
+        return boolValue ? "1" : "0";
       }
-      else if (value is int) {
-        return ((int)value).ToString(CultureInfo.InvariantCulture);
+      else if (value is int intValue) {
+        return intValue.ToString(CultureInfo.InvariantCulture);
       }
-      else if (value is double) {
-        return ((double)value).ToString(CultureInfo.InvariantCulture);
+      else if (value is double doubleValue) {
+        return doubleValue.ToString(CultureInfo.InvariantCulture);
       }
-      else if (value is DateTime) {
-        return ((DateTime)value).ToString(CultureInfo.InvariantCulture);
+      else if (value is DateTime dateTimeValue) {
+        return dateTimeValue.ToString(CultureInfo.InvariantCulture);
       }
-      else if (value is Uri) {
-        return ((Uri)value).ToString();
+      else if (value is Uri uriValue) {
+        return uriValue.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
