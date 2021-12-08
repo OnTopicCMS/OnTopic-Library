@@ -201,7 +201,7 @@ namespace OnTopic.Mapping {
       await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
 
       foreach (var parameter in parameterQueue) {
-        arguments[parameter.Key] = parameter.Value.Result;
+        arguments[parameter.Key] = await parameter.Value.ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
