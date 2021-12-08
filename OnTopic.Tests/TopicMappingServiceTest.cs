@@ -1463,11 +1463,11 @@ namespace OnTopic.Tests {
 
       var topic = new Topic("Test", "Filtered", null, 5);
 
-      var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
-      var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target1 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target2 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
       var target3 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.Equal<FilteredTopicViewModel?>(target1, target2);
+      Assert.Equal(target1, target2);
       Assert.NotEqual<object?>(target1, target3);
 
     }
