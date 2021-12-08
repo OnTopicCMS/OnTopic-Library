@@ -399,7 +399,7 @@ namespace OnTopic.Tests {
     public void IsValid_Constructor_ReturnsFalse() {
 
       var type                  = typeof(MemberAccessorViewModel);
-      var memberInfo            = type.GetConstructor(new Type[] { })!;
+      var memberInfo            = type.GetConstructor(Array.Empty<Type>())!;
 
       Assert.NotNull(memberInfo);
       Assert.False(MemberAccessor.IsValid(memberInfo));
