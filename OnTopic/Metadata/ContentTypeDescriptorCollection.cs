@@ -79,7 +79,7 @@ namespace OnTopic.Metadata {
       | Add all ContentTypeDescriptors to collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypeDescriptors = rootContentType
-        .FindAll(t => typeof(ContentTypeDescriptor).IsAssignableFrom(t.GetType()))
+        .FindAll(t => t is ContentTypeDescriptor)
         .Cast<ContentTypeDescriptor>();
       foreach (var contentType in contentTypeDescriptors) {
         Add((ContentTypeDescriptor)contentType);

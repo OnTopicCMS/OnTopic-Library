@@ -294,7 +294,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (typeof(Topic).IsAssignableFrom(target.GetType())) {
+      if (target is Topic) {
         return topic;
       }
 
@@ -856,7 +856,7 @@ namespace OnTopic.Mapping {
         if (
           sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
           sourcePropertyValue.Count > 0 &&
-          typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
+          sourcePropertyValue[0] is Topic
         ) {
           listSource = getCollection(
             CollectionType.MappedCollection,

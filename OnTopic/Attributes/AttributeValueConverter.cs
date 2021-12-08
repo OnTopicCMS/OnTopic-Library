@@ -128,24 +128,22 @@ namespace OnTopic.Attributes {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle type-specific rules
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var type                  = value.GetType();
-
-      if (type.Equals(typeof(string))) {
+      if (value is string) {
         return (string)value;
       }
-      else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
+      else if (value is bool) {
         return ((bool)value) ? "1" : "0";
       }
-      else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
+      else if (value is int) {
         return ((int)value).ToString(CultureInfo.InvariantCulture);
       }
-      else if (type.Equals(typeof(double)) || type.Equals(typeof(double?))) {
+      else if (value is double) {
         return ((double)value).ToString(CultureInfo.InvariantCulture);
       }
-      else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
+      else if (value is DateTime) {
         return ((DateTime)value).ToString(CultureInfo.InvariantCulture);
       }
-      else if (type.Equals(typeof(Uri))) {
+      else if (value is Uri) {
         return ((Uri)value).ToString();
       }
 
