@@ -239,9 +239,9 @@ namespace OnTopic.Tests {
       var type                  = typeof(MemberAccessorViewModel);
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.NullableProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
-      var sourceObject          = new MemberAccessorViewModel();
-
-      sourceObject.NullableProperty = 5;
+      var sourceObject          = new MemberAccessorViewModel {
+        NullableProperty        = 5
+      };
       memberAccessor.SetValue(sourceObject, value);
 
       Assert.Equal<int?>(value, sourceObject.NullableProperty);
