@@ -29,11 +29,6 @@ namespace OnTopic.Mapping.Reverse {
   public class ReverseTopicMappingService : IReverseTopicMappingService {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             MemberDispatcher                _typeCache                      = new();
-
-    /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
@@ -211,7 +206,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
+      var properties            = typeAccessor.GetMembers<PropertyInfo>();
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
 
       BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);
@@ -371,7 +367,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValue = _typeCache.GetPropertyValue(source, configuration.Property.Name)?.ToString();
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
+      var attributeValue        = typeAccessor.GetPropertyValue(source, configuration.Property.Name)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Fall back to default, if configured

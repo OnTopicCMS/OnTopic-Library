@@ -32,11 +32,6 @@ namespace OnTopic.Mapping {
   public class TopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             MemberDispatcher                _typeCache                      = new();
-
-    /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
@@ -179,7 +174,8 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var constructorInfo       = _typeCache.GetMembers<ConstructorInfo>(type).Where(c => c.IsPublic).FirstOrDefault();
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(type);
+      var constructorInfo       = typeAccessor.GetPrimaryConstructor();
       var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
       var arguments             = new object?[parameters.Length];
 
@@ -229,7 +225,7 @@ namespace OnTopic.Mapping {
       var propertyQueue         = new List<Task>();
       var mappedParameters      = parameters.Select(p => p.Name);
 
-      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
+      foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
           propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false));
         }
@@ -328,8 +324,9 @@ namespace OnTopic.Mapping {
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue             = new List<Task>();
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(target.GetType());
 
-      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
+      foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
@@ -422,7 +419,7 @@ namespace OnTopic.Mapping {
       Topic                     source,
       object                    target,
       AssociationTypes          associations,
-      PropertyInfo              property,
+      MemberAccessor            property,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null,
       bool                      mapAssociationsOnly             = false
@@ -440,7 +437,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(property, attributePrefix);
+      var configuration         = new PropertyConfiguration((PropertyInfo)property.MemberInfo, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
@@ -449,9 +446,9 @@ namespace OnTopic.Mapping {
         return;
       }
 
-      var value = await GetValue(source, property.PropertyType, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
+      var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
 
-      if (value is null && IsList(property.PropertyType)) {
+      if (value is null && IsList(property.Type)) {
         await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
       }
       else if (configuration.MapToParent) {
@@ -466,11 +463,8 @@ namespace OnTopic.Mapping {
           ).ConfigureAwait(false);
         }
       }
-      else if (value != null && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
-        _typeCache.SetPropertyValue(target, configuration.Property.Name, value);
-      }
-      else if (value != null && _typeCache.HasSettableProperty(target.GetType(), property.Name, property.PropertyType)) {
-        _typeCache.SetPropertyValue(target, configuration.Property.Name, value);
+      else if (value != null && property.CanWrite) {
+        property.SetValue(target, value, true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -593,13 +587,14 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValue = _typeCache.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
+      var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
-        attributeValue = _typeCache.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
+        attributeValue = typeAccessor.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -857,7 +852,7 @@ namespace OnTopic.Mapping {
       //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
-        var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
+        var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
         if (
           sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
           sourcePropertyValue.Count > 0 &&
@@ -1144,9 +1139,9 @@ namespace OnTopic.Mapping {
     ///   Gets a property on the <paramref name="source"/> that is compatible to the <paramref name="targetType"/>.
     /// </summary>
     /// <remarks>
-    ///   Even if the property values can't be set by the <see cref="MemberDispatcher"/>, properties should be settable
-    ///   assuming the source and target types are compatible. In this case, <see cref="TopicMappingService"/> needn't know
-    ///   anything about the property type as it doesn't need to do a conversion; it can just do a one-to-one mapping.
+    ///   Even if the property values can't be set by the <see cref="TypeAccessor"/>, properties should be settable assuming the
+    ///   source and target types are compatible. In this case, <see cref="TopicMappingService"/> needn't know anything about
+    ///   the property type as it doesn't need to do a conversion; it can just do a one-to-one mapping.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="targetType">The target <see cref="Type"/>.</param>
@@ -1164,12 +1159,12 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
+      var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceProperty is null || !targetType.IsAssignableFrom(sourceProperty.PropertyType)) {
+      if (sourceProperty is null || !targetType.IsAssignableFrom(sourceProperty.Type)) {
         value = null;
         return false;
       }

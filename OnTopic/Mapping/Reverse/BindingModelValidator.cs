@@ -81,7 +81,7 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model <see cref="Type"/> to validate.
     /// </param>
     /// <param name="properties">
-    ///   A <see cref="MemberInfoCollection{PropertyInfo}"/> describing the <paramref name="sourceType"/>'s properties.
+    ///   A <see cref="IEnumerable{PropertyInfo}"/> describing the <paramref name="sourceType"/>'s properties.
     /// </param>
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
@@ -89,7 +89,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateModel(
       [AllowNull]Type sourceType,
-      [AllowNull]MemberInfoCollection<PropertyInfo> properties,
+      [AllowNull]IEnumerable<PropertyInfo> properties,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
       [AllowNull]string attributePrefix = ""
       ) {
@@ -184,7 +184,9 @@ namespace OnTopic.Mapping.Reverse {
       | Handle mapping properties from referenced objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
-        var childProperties = new MemberInfoCollection<PropertyInfo>(propertyType, propertyType.GetProperties());
+        var typeAccessor        = TypeAccessorCache.GetTypeAccessor(propertyType);
+        var childProperties     = typeAccessor.GetMembers<PropertyInfo>();
+
         ValidateModel(
           propertyType,
           childProperties,

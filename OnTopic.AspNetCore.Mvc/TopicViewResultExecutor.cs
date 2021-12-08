@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OnTopic.Internal.Diagnostics;
 

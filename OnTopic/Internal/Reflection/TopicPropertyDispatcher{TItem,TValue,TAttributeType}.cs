@@ -91,11 +91,6 @@ namespace OnTopic.Internal.Reflection {
   {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             MemberDispatcher                _typeCache                      = new(typeof(TAttributeType));
-
-    /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
@@ -187,8 +182,8 @@ namespace OnTopic.Internal.Reflection {
         type = typeof(TValue);
       }
       if (
-        _typeCache.HasSettableProperty(_associatedTopic.GetType(), itemKey, type) &&
-        !PropertyCache.ContainsKey(itemKey)
+        !PropertyCache.ContainsKey(itemKey) &&
+        TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType()).HasSettableProperty<TAttributeType>(itemKey, type)
       ) {
         PropertyCache.Add(itemKey, initialValue);
         return true;
@@ -258,7 +253,8 @@ namespace OnTopic.Internal.Reflection {
       }
       else if (Register(itemKey, initialObject)) {
         try {
-          _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value);
+          var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
+          typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
         }
         catch (TargetInvocationException ex) {
           if (PropertyCache.ContainsKey(itemKey)) {
