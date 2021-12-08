@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-#pragma warning disable CA1801 // Review unused parameters
 #pragma warning disable IDE0060 // Remove unused parameter
 
 namespace OnTopic.Collections {
@@ -199,5 +198,4 @@ namespace OnTopic.Collections {
   } //Class
 } //Namespace
 
-#pragma warning restore CA1801 // Review unused parameters
 #pragma warning restore IDE0060 // Remove unused parameter
