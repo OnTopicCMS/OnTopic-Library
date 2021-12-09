@@ -4,8 +4,6 @@
 | Project       Integration Tests Host
 \=============================================================================================================================*/
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
 
