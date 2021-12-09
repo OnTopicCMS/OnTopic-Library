@@ -15,7 +15,7 @@ namespace OnTopic.Repositories {
   ///   The DeleteEventArgs class defines an event argument type specific to deletion events
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The DeleteEventArgs has been renamed to TopicEventArgs", true)]
+  [Obsolete($"The {nameof(DeleteEventArgs)} has been renamed to {nameof(TopicEventArgs)}", true)]
   public class DeleteEventArgs : EventArgs {
 
     /*==========================================================================================================================

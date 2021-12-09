@@ -14,7 +14,7 @@ namespace OnTopic.Mapping.Annotations {
   /// <inheritdoc cref="CollectionAttribute"/>
   [ExcludeFromCodeCoverage]
   [AttributeUsage(AttributeTargets.Property)]
-  [Obsolete("The [Relationship] attribute has been renamed to [Collection].", true)]
+  [Obsolete($"The {nameof(RelationshipAttribute)} has been renamed to {nameof(CollectionAttribute)}.", true)]
   public sealed class RelationshipAttribute : Attribute {
 
     /*==========================================================================================================================

@@ -58,9 +58,7 @@ namespace OnTopic.ViewModels {
       >-------------------------------------------------------------------------------------------------------------------------
       | These will be removed in the next major version of OnTopic.
       \-----------------------------------------------------------------------------------------------------------------------*/
-#pragma warning disable CS0618 // Type or member is obsolete
       TryAdd(typeof(ListTopicViewModel));
-      #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add support types

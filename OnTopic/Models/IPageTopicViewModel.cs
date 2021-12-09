@@ -22,7 +22,7 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   /// </remarks>
-  [Obsolete("The IPageTopicViewModel is no longer utilized.", true)]
+  [Obsolete($"The {nameof(IPageTopicViewModel)} is no longer utilized.", true)]
   public interface IPageTopicViewModel : ITopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================

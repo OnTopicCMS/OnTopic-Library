@@ -14,7 +14,7 @@ namespace OnTopic.Mapping.Annotations {
   /// <inheritdoc cref="IncludeAttribute"/>
   [ExcludeFromCodeCoverage]
   [AttributeUsage(AttributeTargets.Property)]
-  [Obsolete("The [Follow] attribute has been renamed to [Include].", true)]
+  [Obsolete($"The {nameof(FollowAttribute)} has been renamed to {nameof(IncludeAttribute)}.", true)]
   public sealed class FollowAttribute : Attribute {
 
     /*==========================================================================================================================

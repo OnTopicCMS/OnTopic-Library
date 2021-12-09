@@ -68,17 +68,17 @@ namespace OnTopic.Repositories {
 
     /// <inheritdoc cref="TopicDeleted"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The DeleteEvent has been renamed to TopicDeleted", true)]
+    [Obsolete($"The {nameof(DeleteEvent)} has been renamed to {nameof(TopicDeleted)}", true)]
     public event EventHandler<DeleteEventArgs>? DeleteEvent;
 
     /// <inheritdoc cref="TopicMoved"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The MoveEvent has been renamed to TopicMoved", true)]
+    [Obsolete($"The {nameof(MoveEvent)} has been renamed to {nameof(TopicMoved)}", true)]
     public event EventHandler<DeleteEventArgs>? MoveEvent;
 
     /// <inheritdoc cref="TopicRenamed"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The RenameEvent has been renamed to TopicRenamed", true)]
+    [Obsolete($"The {nameof(RenameEvent)} has been renamed to {nameof(TopicRenamed)}", true)]
     public event EventHandler<RenameEventArgs>? RenameEvent;
 
     /*==========================================================================================================================
@@ -246,7 +246,7 @@ namespace OnTopic.Repositories {
 
     /// <inheritdoc cref="Save(Topic, Boolean)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
+    [Obsolete($"The 'isDraft' argument of the {nameof(Save)} method has been removed.")]
     public int Save(Topic topic, bool isRecursive, bool isDraft) => throw new NotImplementedException();
 
     /*==========================================================================================================================

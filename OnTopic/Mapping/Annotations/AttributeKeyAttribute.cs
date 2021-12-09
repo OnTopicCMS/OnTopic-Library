@@ -52,7 +52,7 @@ namespace OnTopic.Mapping.Annotations {
     ///   Gets the value of the attribute key.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The Value property has been renamed to Key for consistency", true)]
+    [Obsolete($"The {nameof(Value)} property has been renamed to {nameof(Key)} for consistency", true)]
     public string? Value { get; }
 
   } //Class

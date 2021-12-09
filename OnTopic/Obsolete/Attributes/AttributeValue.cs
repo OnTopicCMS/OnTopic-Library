@@ -42,7 +42,7 @@ namespace OnTopic.Attributes {
   ///   </para>
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The AttributeValue type has been renamed to AttributeRecord.", true)]
+  [Obsolete($"The {nameof(AttributeValue)} type has been renamed to {nameof(AttributeRecord)}.", true)]
   public class AttributeValue {
 
     /*==========================================================================================================================
