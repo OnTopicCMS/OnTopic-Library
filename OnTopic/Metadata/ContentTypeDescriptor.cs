@@ -6,9 +6,7 @@
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Associations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Metadata {
 

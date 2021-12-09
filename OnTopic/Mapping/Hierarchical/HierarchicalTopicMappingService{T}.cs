@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Models;
 using OnTopic.Repositories;

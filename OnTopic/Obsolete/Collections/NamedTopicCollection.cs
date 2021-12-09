@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Associations;
 using OnTopic.Collections.Specialized;
 

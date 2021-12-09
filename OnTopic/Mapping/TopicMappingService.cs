@@ -4,11 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Lookup;
 using OnTopic.Mapping.Annotations;

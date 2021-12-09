@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Globalization;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
 namespace OnTopic.Attributes {

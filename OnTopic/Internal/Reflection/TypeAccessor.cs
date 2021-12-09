@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Reflection;
 using OnTopic.Attributes;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
 

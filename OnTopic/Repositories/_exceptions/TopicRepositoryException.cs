@@ -4,9 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Repositories {
 

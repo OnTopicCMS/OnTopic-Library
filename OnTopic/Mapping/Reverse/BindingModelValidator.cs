@@ -5,9 +5,7 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Internal;

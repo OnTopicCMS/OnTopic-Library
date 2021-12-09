@@ -4,12 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Associations;
 

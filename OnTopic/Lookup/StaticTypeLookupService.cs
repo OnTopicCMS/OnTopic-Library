@@ -3,9 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Lookup {
 

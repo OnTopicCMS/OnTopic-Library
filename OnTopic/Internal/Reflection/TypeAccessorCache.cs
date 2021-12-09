@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.Concurrent;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
 

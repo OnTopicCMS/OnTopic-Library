@@ -9,7 +9,6 @@ using System.Globalization;
 using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Collections;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;

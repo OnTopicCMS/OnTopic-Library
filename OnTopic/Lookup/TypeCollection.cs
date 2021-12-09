@@ -5,9 +5,7 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Lookup {
 
