@@ -10,6 +10,7 @@ using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.Fixtures;
+using Xunit;
 
 namespace OnTopic.Tests {
 

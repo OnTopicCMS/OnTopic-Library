@@ -7,6 +7,7 @@ using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
+using Xunit;
 
 namespace OnTopic.Tests {
 

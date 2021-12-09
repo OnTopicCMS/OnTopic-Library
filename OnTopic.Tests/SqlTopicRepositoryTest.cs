@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using OnTopic.Associations;
 using OnTopic.Data.Sql;
 using OnTopic.Tests.Schemas;
+using Xunit;
 
 namespace OnTopic.Tests {
 

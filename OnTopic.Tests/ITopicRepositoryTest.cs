@@ -8,6 +8,7 @@ using OnTopic.Data.Caching;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.Fixtures;
+using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -22,7 +23,7 @@ namespace OnTopic.Tests {
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  [Collection("Shared Repository")]
+  [Xunit.Collection("Shared Repository")]
   public class ITopicRepositoryTest {
 
     /*==========================================================================================================================

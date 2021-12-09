@@ -15,6 +15,7 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
+using Xunit;
 
 namespace OnTopic.Tests {
 

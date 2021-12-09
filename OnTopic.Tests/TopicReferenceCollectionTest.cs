@@ -6,6 +6,7 @@
 using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
+using Xunit;
 
 namespace OnTopic.Tests {
 

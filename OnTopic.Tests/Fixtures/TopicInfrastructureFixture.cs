@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Text;
 using OnTopic.Data.Caching;
 using OnTopic.Lookup;
 using OnTopic.Mapping;
@@ -11,7 +10,8 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.TestDoubles;
 
-namespace OnTopic.Tests.Fixtures {
+namespace OnTopic.Tests.Fixtures
+{
 
   /*============================================================================================================================
   | CLASS: TOPIC INFRASTRUCTURE FIXTURE

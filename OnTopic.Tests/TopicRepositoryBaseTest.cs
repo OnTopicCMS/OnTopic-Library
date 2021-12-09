@@ -10,6 +10,7 @@ using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 
