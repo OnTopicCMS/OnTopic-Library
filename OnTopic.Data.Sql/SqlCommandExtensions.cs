@@ -3,12 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Data;
 using System.Globalization;
 using System.Text;
-using Microsoft.Data.SqlClient;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Data.Sql {
 

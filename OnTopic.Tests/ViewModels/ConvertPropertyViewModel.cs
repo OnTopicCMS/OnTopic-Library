@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Mapping;
-using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels {
 

@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Microsoft.AspNetCore.Mvc;
-using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 

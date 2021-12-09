@@ -4,14 +4,8 @@
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace OnTopic.AspNetCore.Mvc.Host {
 

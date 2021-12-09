@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Linq;
 using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 

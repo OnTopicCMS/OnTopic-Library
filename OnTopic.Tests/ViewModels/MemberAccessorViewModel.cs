@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable CA1024 // Use properties where appropriate
 #pragma warning disable CA1044 // Properties should not be write only

@@ -3,11 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Reflection;
 using OnTopic.Lookup;
@@ -15,7 +11,6 @@ using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.TestDoubles;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.Fixtures {
 

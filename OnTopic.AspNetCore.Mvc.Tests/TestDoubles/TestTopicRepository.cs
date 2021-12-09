@@ -3,12 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
-using OnTopic.TestDoubles;
 
 namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
 

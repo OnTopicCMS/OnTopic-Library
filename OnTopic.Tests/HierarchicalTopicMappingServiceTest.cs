@@ -3,17 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.Fixtures;
-using OnTopic.ViewModels;
-using Xunit;
 
 namespace OnTopic.Tests {
 

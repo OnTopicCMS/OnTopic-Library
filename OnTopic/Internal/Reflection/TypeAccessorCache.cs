@@ -3,9 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections.Concurrent;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
 

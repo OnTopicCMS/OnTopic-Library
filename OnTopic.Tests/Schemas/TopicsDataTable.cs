@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Data.Sql;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests.Schemas {
 

@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Threading.Tasks;
 using OnTopic.Models;
 
 namespace OnTopic.Mapping.Hierarchical {
