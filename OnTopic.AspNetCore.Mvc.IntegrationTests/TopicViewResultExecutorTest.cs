@@ -4,9 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
-using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
-using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 

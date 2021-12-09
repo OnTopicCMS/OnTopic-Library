@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Microsoft.AspNetCore.Mvc.Testing;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers;
-using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
-using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
