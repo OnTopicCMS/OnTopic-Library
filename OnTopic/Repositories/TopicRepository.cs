@@ -104,7 +104,10 @@ namespace OnTopic.Repositories {
     /// </param>
     /// <returns></returns>
     [ExcludeFromCodeCoverage]
-    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", true)]
+    [Obsolete(
+      $"Deprecated. Instead, use the new {nameof(SetContentTypeDescriptors)} method, which provides the same function.",
+      true
+    )]
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
       => SetContentTypeDescriptors(contentTypeDescriptors);
 
@@ -768,7 +771,7 @@ namespace OnTopic.Repositories {
 
         //Skip if the value is null or empty; these values are not persisted to storage and should be treated as equivalent to
         //non-existent values.
-        if (attributeValue.Value is null || attributeValue.Value.Length == 0) {
+        if (String.IsNullOrEmpty(attributeValue.Value)) {
           continue;
         }
 

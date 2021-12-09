@@ -72,7 +72,7 @@ namespace OnTopic.Models {
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The IsHidden property is no longer supported by ITopicViewModel.", true)]
+    [Obsolete($"The {nameof(IsHidden)} property is no longer supported by {nameof(ITopicViewModel)}.", true)]
     bool IsHidden { get; init; }
 
     /*==========================================================================================================================

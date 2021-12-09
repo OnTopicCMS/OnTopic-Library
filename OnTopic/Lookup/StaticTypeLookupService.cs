@@ -65,7 +65,10 @@ namespace OnTopic.Lookup {
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
+    [Obsolete(
+      $"The {nameof(DefaultType)} property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
+      true
+    )]
     public StaticTypeLookupService(
       IEnumerable<Type>? types,
       Type? defaultType
@@ -80,7 +83,10 @@ namespace OnTopic.Lookup {
     ///   The default type to return in case <see cref="Lookup(String[])"/> cannot find a match.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
+    [Obsolete(
+      $"The {nameof(DefaultType)} property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
+      true
+    )]
     public Type? DefaultType { get; }
 
     /*==========================================================================================================================

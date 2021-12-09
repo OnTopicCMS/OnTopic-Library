@@ -288,7 +288,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypeDescriptor = rootContentType?.FindFirst(t =>
         t.Key.Equals(topic.ContentType, StringComparison.OrdinalIgnoreCase) &&
-        t.GetType().IsAssignableFrom(typeof(ContentTypeDescriptor))
+        t is ContentTypeDescriptor
       ) as ContentTypeDescriptor;
 
       /*------------------------------------------------------------------------------------------------------------------------

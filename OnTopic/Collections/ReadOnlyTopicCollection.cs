@@ -49,7 +49,8 @@ namespace OnTopic.Collections {
     /// <inheritdoc cref="ReadOnlyKeyedTopicCollection{T}.GetTopic(String)"/>
     [ExcludeFromCodeCoverage]
     [Obsolete(
-      "The GetTopic() method is not implemented on ReadOnlyTopicCollection. Use ReadOnlyKeyedTopicCollection instead.",
+      $"The {nameof(GetValue)} method is not implemented on {nameof(ReadOnlyTopicCollection)}. Use " +
+      $"{nameof(ReadOnlyKeyedTopicCollection)} instead.",
       true
     )]
     public Topic? GetValue(string key) => throw new NotImplementedException();
@@ -60,7 +61,8 @@ namespace OnTopic.Collections {
     /// <inheritdoc cref="ReadOnlyKeyedTopicCollection{T}"/>
     [ExcludeFromCodeCoverage]
     [Obsolete(
-      "Indexing by key is not implemented on ReadOnlyTopicCollection. Use ReadOnlyKeyedTopicCollection instead.",
+      $"Indexing by key is not implemented on {nameof(ReadOnlyTopicCollection)}. Use {nameof(ReadOnlyKeyedTopicCollection)} " +
+      $"instead.",
       true
     )]
     public Topic this[string key] => throw new ArgumentOutOfRangeException(nameof(key));

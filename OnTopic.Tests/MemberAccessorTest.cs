@@ -173,7 +173,7 @@ namespace OnTopic.Tests {
       var sourceObject          = new MemberAccessorViewModel() { NonNullableProperty = 15 };
       var returnObject          = memberAccessor.GetValue(sourceObject);
 
-      Assert.Equal<object?>(sourceObject.NonNullableProperty, returnObject);
+      Assert.Equal(sourceObject.NonNullableProperty, returnObject);
 
     }
 
@@ -198,7 +198,7 @@ namespace OnTopic.Tests {
 
       var returnObject          = memberAccessor.GetValue(sourceObject);
 
-      Assert.Equal<object?>(value, returnObject);
+      Assert.Equal(value, returnObject);
 
     }
 
@@ -239,12 +239,12 @@ namespace OnTopic.Tests {
       var type                  = typeof(MemberAccessorViewModel);
       var memberInfo            = type.GetMember(nameof(MemberAccessorViewModel.NullableProperty)).FirstOrDefault()!;
       var memberAccessor        = new MemberAccessor(memberInfo);
-      var sourceObject          = new MemberAccessorViewModel();
-
-      sourceObject.NullableProperty = 5;
+      var sourceObject          = new MemberAccessorViewModel {
+        NullableProperty        = 5
+      };
       memberAccessor.SetValue(sourceObject, value);
 
-      Assert.Equal<int?>(value, sourceObject.NullableProperty);
+      Assert.Equal(value, sourceObject.NullableProperty);
 
     }
 
@@ -269,7 +269,7 @@ namespace OnTopic.Tests {
       sourceObject.SetMethod(5);
       memberAccessor.SetValue(sourceObject, value);
 
-      Assert.Equal<int?>(value, sourceObject.GetMethod());
+      Assert.Equal(value, sourceObject.GetMethod());
 
     }
 
@@ -399,7 +399,7 @@ namespace OnTopic.Tests {
     public void IsValid_Constructor_ReturnsFalse() {
 
       var type                  = typeof(MemberAccessorViewModel);
-      var memberInfo            = type.GetConstructor(new Type[] { })!;
+      var memberInfo            = type.GetConstructor(Array.Empty<Type>())!;
 
       Assert.NotNull(memberInfo);
       Assert.False(MemberAccessor.IsValid(memberInfo));

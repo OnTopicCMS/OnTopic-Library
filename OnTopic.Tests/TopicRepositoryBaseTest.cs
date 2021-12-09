@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
 
       var topic                 = _topicRepository.Load(11111);
 
-      Assert.Equal<int?>(11111, topic?.Id);
+      Assert.Equal(11111, topic?.Id);
 
     }
 
@@ -105,7 +105,7 @@ namespace OnTopic.Tests {
       var topic                 = _cachedTopicRepository.Load(11111, version);
 
       Assert.True(topic?.VersionHistory.Contains(version));
-      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.Equal(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -128,7 +128,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.True(topic?.VersionHistory.Contains(version));
-      Assert.Equal<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+      Assert.Equal(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
 
     }
 
@@ -575,7 +575,7 @@ namespace OnTopic.Tests {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
-      Assert.Equal<int>(15, contentTypes.Count);
+      Assert.Equal(15, contentTypes.Count);
       Assert.NotNull(contentTypes.GetValue("ContentTypeDescriptor"));
       Assert.NotNull(contentTypes.GetValue("Page"));
       Assert.NotNull(contentTypes.GetValue("LookupListItem"));
@@ -599,7 +599,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.SetContentTypeDescriptorsProxy(rootContentType);
 
-      Assert.NotEqual<int>(contentTypeCount, contentTypes.Count);
+      Assert.NotEqual(contentTypeCount, contentTypes.Count);
       Assert.Contains(newContentType, contentTypes);
 
     }
@@ -639,7 +639,7 @@ namespace OnTopic.Tests {
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
       Assert.NotNull(contentType);
-      Assert.Equal<Topic?>(contentType, newContentType);
+      Assert.Equal(contentType, newContentType);
 
     }
 
@@ -728,7 +728,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(contentTypesRoot, true);
 
-      Assert.NotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
+      Assert.NotEqual(initialCount, pageContentType.PermittedContentTypes.Count);
 
     }
 
@@ -866,10 +866,10 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(topic, target, sibling);
 
-      Assert.Equal<Topic?>(target, topic.Parent);
-      Assert.Equal<int>(0, target.Children.IndexOf(sibling));
-      Assert.Equal<int>(1, target.Children.IndexOf(topic));
-      Assert.Equal<int>(2, target.Children.IndexOf(olderSibling));
+      Assert.Equal(target, topic.Parent);
+      Assert.Equal(0, target.Children.IndexOf(sibling));
+      Assert.Equal(1, target.Children.IndexOf(topic));
+      Assert.Equal(2, target.Children.IndexOf(olderSibling));
 
     }
 
@@ -895,7 +895,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(contactContentType, pageContentType);
 
-      Assert.NotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
+      Assert.NotEqual(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
 
     }
 
@@ -924,7 +924,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Save(newAttribute);
 
-      Assert.Equal<int>(attributeCount+1, childContentType.AttributeDescriptors.Count);
+      Assert.Equal(attributeCount+1, childContentType.AttributeDescriptors.Count);
 
     }
 
@@ -1000,8 +1000,8 @@ namespace OnTopic.Tests {
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
       Assert.True(hasFired);
-      Assert.Equal<int?>(topicId, topic?.Id);
-      Assert.Equal<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
+      Assert.Equal(topicId, topic?.Id);
+      Assert.Equal(version, topic?.VersionHistory.LastOrDefault());
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 

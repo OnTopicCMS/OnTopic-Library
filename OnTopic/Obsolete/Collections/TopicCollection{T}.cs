@@ -20,7 +20,7 @@ namespace OnTopic.Collections {
   ///   Provides a strongly-typed collection of <see cref="Topic"/> instances, or a derived type.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The TopicCollection<T> class has been renamed to KeyedTopicCollection<T>.", true)]
+  [Obsolete($"The {nameof(TopicCollection<T>)} class has been renamed to {nameof(KeyedTopicCollection<T>)}.", true)]
   public class TopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
 
     /*==========================================================================================================================

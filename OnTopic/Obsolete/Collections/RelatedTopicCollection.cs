@@ -7,9 +7,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using OnTopic.Associations;
 using OnTopic.Internal.Diagnostics;
 
-#pragma warning disable CA1801 // Review unused parameters
 #pragma warning disable IDE0060 // Remove unused parameter
 
 namespace OnTopic.Collections {
@@ -21,7 +21,7 @@ namespace OnTopic.Collections {
   ///   Provides a simple interface for accessing collections of topic collections.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("RelatedTopicCollection has been migrated to the new TopicRelationshipMultiMap", true)]
+  [Obsolete($"{nameof(RelatedTopicCollection)} has been migrated to the new {nameof(TopicRelationshipMultiMap)}", true)]
   public class RelatedTopicCollection : KeyedCollection<string, NamedTopicCollection> {
 
     /*==========================================================================================================================
@@ -199,5 +199,4 @@ namespace OnTopic.Collections {
   } //Class
 } //Namespace
 
-#pragma warning restore CA1801 // Review unused parameters
 #pragma warning restore IDE0060 // Remove unused parameter

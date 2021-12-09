@@ -131,7 +131,7 @@ namespace OnTopic.Tests {
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.Equal("/Web/", model?.NavigationRoot?.WebPath);
-      Assert.Equal<int?>(3, model?.NavigationRoot?.Children.Count);
+      Assert.Equal(3, model?.NavigationRoot?.Children.Count);
 
     }
 
@@ -204,7 +204,7 @@ namespace OnTopic.Tests {
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.Equal("/Web/Web_3/", model?.NavigationRoot?.WebPath);
-      Assert.Equal<int?>(2, model?.NavigationRoot?.Children.Count);
+      Assert.Equal(2, model?.NavigationRoot?.Children.Count);
       Assert.True(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }

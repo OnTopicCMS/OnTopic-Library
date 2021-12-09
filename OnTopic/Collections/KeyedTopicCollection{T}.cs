@@ -50,7 +50,7 @@ namespace OnTopic.Collections {
 
     /// <inheritdoc cref="GetValue(String)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The GetTopic() method has been renamed to GetValue().", true)]
+    [Obsolete($"The {nameof(GetTopic)} method has been renamed to {nameof(GetValue)}.", true)]
     public T? GetTopic(string key) => GetValue(key);
 
     /*==========================================================================================================================

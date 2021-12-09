@@ -402,7 +402,11 @@ namespace OnTopic {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.", true)]
+    [Obsolete(
+      $"The Description convenience property will be removed in OnTopic Library 5.0. Use " +
+      $"{nameof(AttributeValueCollection.SetValue)} instead.",
+      true
+    )]
     public string? Description {
       get => Attributes.GetValue("Description");
       set => SetAttributeValue("Description", value);
@@ -719,7 +723,10 @@ namespace OnTopic {
 
     /// <inheritdoc cref="BaseTopic"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The DerivedTopic property has been renamed to BaseTopic. Please update references.", true)]
+    [Obsolete(
+      $"The {nameof(DerivedTopic)} property has been renamed to {nameof(BaseTopic)}. Please update references.",
+      true
+    )]
     public Topic? DerivedTopic {
       get => BaseTopic;
       set => BaseTopic = value;

@@ -43,7 +43,7 @@ namespace OnTopic.Tests {
       };
       var typeCollection        = new TypeCollection(topics);
 
-      Assert.Equal<int>(2, typeCollection.Count);
+      Assert.Equal(2, typeCollection.Count);
       Assert.Contains(typeof(CustomTopic), typeCollection);
       Assert.DoesNotContain(typeof(Topic), typeCollection);
 
@@ -85,7 +85,7 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new StaticTypeLookupService(topics);
 
-      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
+      Assert.Equal(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
 
     }
 
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
       lookupService.AddOrReplace(typeof(System.Diagnostics.Contracts.Contract));
       lookupService.AddOrReplace(typeof(Internal.Diagnostics.Contract));
 
-      Assert.Equal<Type?>(typeof(Internal.Diagnostics.Contract), lookupService.Lookup(nameof(Internal.Diagnostics.Contract)));
+      Assert.Equal(typeof(Internal.Diagnostics.Contract), lookupService.Lookup(nameof(Internal.Diagnostics.Contract)));
 
     }
 
@@ -157,9 +157,9 @@ namespace OnTopic.Tests {
 
       var lookupService         = new CompositeTypeLookupService(lookupService1, lookupService2);
 
-      Assert.Equal<Type?>(typeof(System.Diagnostics.Contracts.Contract), lookupService.Lookup("Contract"));
-      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing", "FallbackViewModel"));
-      Assert.Equal<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing")?? typeof(FallbackViewModel));
+      Assert.Equal(typeof(System.Diagnostics.Contracts.Contract), lookupService.Lookup("Contract"));
+      Assert.Equal(typeof(FallbackViewModel), lookupService.Lookup("Missing", "FallbackViewModel"));
+      Assert.Equal(typeof(FallbackViewModel), lookupService.Lookup("Missing")?? typeof(FallbackViewModel));
 
     }
 
@@ -178,8 +178,8 @@ namespace OnTopic.Tests {
       };
       var lookupService         = new DefaultTopicLookupService(topics);
 
-      Assert.Equal<Type?>(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));
-      Assert.Equal<Type?>(typeof(CustomTopic), lookupService.Lookup(nameof(CustomTopic)));
+      Assert.Equal(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));
+      Assert.Equal(typeof(CustomTopic), lookupService.Lookup(nameof(CustomTopic)));
       Assert.Null(lookupService.Lookup("TextAttributeDescriptor"));
 
     }
@@ -196,7 +196,7 @@ namespace OnTopic.Tests {
 
       var lookupService         = new DynamicTopicBindingModelLookupService();
 
-      Assert.Equal<Type?>(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
+      Assert.Equal(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
       Assert.Null(lookupService.Lookup("MissingTopicBindingModel"));
 
     }
