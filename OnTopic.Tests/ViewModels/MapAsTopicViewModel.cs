@@ -23,7 +23,7 @@ namespace OnTopic.Tests.ViewModels {
     [MapAs(typeof(AscendentTopicViewModel))]
     public KeyOnlyTopicViewModel? TopicReference { get; set; }
 
-    [MapAs(typeof(AscendentTopicViewModel))]
+    [MapAs<AscendentTopicViewModel>()]
     public Collection<KeyOnlyTopicViewModel> Relationships { get; } = new();
 
   } //Class
