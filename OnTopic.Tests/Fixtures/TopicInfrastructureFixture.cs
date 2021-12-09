@@ -10,7 +10,6 @@ using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.TestDoubles;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.Fixtures {
 

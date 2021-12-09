@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.BindingModels {
 

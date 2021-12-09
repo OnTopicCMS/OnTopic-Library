@@ -4,8 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.ViewModels;
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA1024 // Use properties where appropriate

@@ -4,13 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Associations;
 using OnTopic.Data.Sql;
 using OnTopic.Tests.Schemas;
-using Xunit;
 
 namespace OnTopic.Tests {
 

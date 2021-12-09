@@ -4,10 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using OnTopic.Data.Sql;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests.Schemas {
 

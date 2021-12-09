@@ -4,13 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -20,8 +17,6 @@ using OnTopic.Tests.Entities;
 using OnTopic.Tests.Fixtures;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
-using OnTopic.ViewModels;
-using Xunit;
 
 namespace OnTopic.Tests {
 

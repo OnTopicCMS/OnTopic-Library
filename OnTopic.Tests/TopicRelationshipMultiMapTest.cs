@@ -3,11 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
-using Xunit;
 
 namespace OnTopic.Tests {
 

@@ -5,11 +5,8 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
 using OnTopic.Models;
@@ -18,8 +15,6 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
-using OnTopic.ViewModels;
-using Xunit;
 
 namespace OnTopic.Tests {
 

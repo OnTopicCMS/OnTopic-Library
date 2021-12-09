@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
 using OnTopic.Mapping;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Tests.BindingModels;
-using OnTopic.ViewModels;
 
 #pragma warning disable CA2227 // Collection properties should be read only
 #pragma warning disable CA1034 // Nested types should not be visible
