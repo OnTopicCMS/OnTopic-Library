@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;

@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;

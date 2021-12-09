@@ -3,11 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Data.Sql.Models;

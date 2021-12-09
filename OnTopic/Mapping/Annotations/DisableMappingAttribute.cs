@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using OnTopic.Mapping.Reverse;
 
 namespace OnTopic.Mapping.Annotations {

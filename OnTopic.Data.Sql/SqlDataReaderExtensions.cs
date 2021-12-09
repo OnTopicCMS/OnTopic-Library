@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using Microsoft.Data.SqlClient;
 using OnTopic.Collections.Specialized;

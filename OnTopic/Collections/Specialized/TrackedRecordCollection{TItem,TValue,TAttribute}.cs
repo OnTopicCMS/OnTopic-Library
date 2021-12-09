@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Repositories;

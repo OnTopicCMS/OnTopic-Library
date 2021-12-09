@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Models;

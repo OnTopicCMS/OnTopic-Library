@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;

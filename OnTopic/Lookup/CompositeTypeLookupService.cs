@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OnTopic.Lookup {
 

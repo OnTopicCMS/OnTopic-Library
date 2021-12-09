@@ -3,7 +3,6 @@
 | Client        Ignia
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Repositories {
