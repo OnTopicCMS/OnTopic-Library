@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Data;
 
 namespace OnTopic.Data.Sql.Models {
 
