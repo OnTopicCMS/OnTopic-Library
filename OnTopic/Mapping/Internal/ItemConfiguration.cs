@@ -85,6 +85,7 @@ namespace OnTopic.Mapping.Internal {
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<MapAsAttribute>(source,                 a => MapAs = a.Type);
+      GetAttributeValue<MapAsAttribute<object>>(source,         a => MapAs = a.Type);
       GetAttributeValue<DefaultValueAttribute>(source,          a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(source,               a => InheritValue = true);
       GetAttributeValue<AttributeKeyAttribute>(source,          a => AttributeKey = attributePrefix + a.Key);
