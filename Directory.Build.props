@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>Preview</LangVersion>
     <Nullable>enable</Nullable>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
