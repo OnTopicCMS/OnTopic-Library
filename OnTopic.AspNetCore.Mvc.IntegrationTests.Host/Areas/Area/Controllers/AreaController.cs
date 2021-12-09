@@ -3,11 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Mapping;
-using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers {
 

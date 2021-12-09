@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Integration Tests Host
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
 

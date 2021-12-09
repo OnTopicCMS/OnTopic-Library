@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Integration Tests Host
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 
