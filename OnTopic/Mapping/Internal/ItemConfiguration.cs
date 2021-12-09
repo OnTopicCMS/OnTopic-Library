@@ -84,17 +84,17 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<MapAsAttribute>(source,               a => MapAs = a.Type);
-      GetAttributeValue<DefaultValueAttribute>(source,        a => DefaultValue = a.Value);
-      GetAttributeValue<InheritAttribute>(source,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(source,        a => AttributeKey = attributePrefix + a.Key);
-      GetAttributeValue<MapToParentAttribute>(source,         a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(source,         a => AttributePrefix += (a.AttributePrefix?? name));
-      GetAttributeValue<IncludeAttribute>(source,             a => IncludeAssociations = a.Associations);
-      GetAttributeValue<FlattenAttribute>(source,             a => FlattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(source,            a => MetadataKey = a.Key);
-      GetAttributeValue<DisableMappingAttribute>(source,      a => DisableMapping = true);
-      GetAttributeValue<FilterByContentTypeAttribute>(source, a => ContentTypeFilter = a.ContentType);
+      GetAttributeValue<MapAsAttribute>(source,                 a => MapAs = a.Type);
+      GetAttributeValue<DefaultValueAttribute>(source,          a => DefaultValue = a.Value);
+      GetAttributeValue<InheritAttribute>(source,               a => InheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(source,          a => AttributeKey = attributePrefix + a.Key);
+      GetAttributeValue<MapToParentAttribute>(source,           a => MapToParent = true);
+      GetAttributeValue<MapToParentAttribute>(source,           a => AttributePrefix += (a.AttributePrefix?? name));
+      GetAttributeValue<IncludeAttribute>(source,               a => IncludeAssociations = a.Associations);
+      GetAttributeValue<FlattenAttribute>(source,               a => FlattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(source,              a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(source,        a => DisableMapping = true);
+      GetAttributeValue<FilterByContentTypeAttribute>(source,   a => ContentTypeFilter = a.ContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine collection key and type
