@@ -6,6 +6,7 @@
 using System.Reflection;
 using OnTopic.Internal.Reflection;
 using OnTopic.Tests.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

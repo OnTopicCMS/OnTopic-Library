@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Collections;
+using Xunit;
 
 namespace OnTopic.Tests {
 

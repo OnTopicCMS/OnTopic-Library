@@ -11,6 +11,7 @@ using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
 using OnTopic.Tests.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

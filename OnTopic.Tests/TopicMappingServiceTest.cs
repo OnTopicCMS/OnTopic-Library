@@ -17,6 +17,7 @@ using OnTopic.Tests.Entities;
 using OnTopic.Tests.Fixtures;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
+using Xunit;
 
 namespace OnTopic.Tests {
 

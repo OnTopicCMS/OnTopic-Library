@@ -6,6 +6,7 @@
 using OnTopic.Lookup;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
+using Xunit;
 
 namespace OnTopic.Tests {
 

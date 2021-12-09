@@ -12,7 +12,6 @@ global using System.Diagnostics.CodeAnalysis;
 global using OnTopic.Internal.Diagnostics;
 global using OnTopic.Mapping.Annotations;
 global using OnTopic.ViewModels;
-global using Xunit;
 
 /*==============================================================================================================================
 | USING DIRECTIVES (LOCAL)
