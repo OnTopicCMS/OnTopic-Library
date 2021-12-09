@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -15,9 +14,7 @@ using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
-using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
-using Xunit;
 
 namespace OnTopic.Tests {
 
