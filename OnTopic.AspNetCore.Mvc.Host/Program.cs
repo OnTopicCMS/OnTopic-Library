@@ -74,4 +74,9 @@ app.MapTopicSitemap();
 app.MapTopicRedirect();
 app.MapControllers();
 
+/*------------------------------------------------------------------------------------------------------------------------------
+| Run application
+\-----------------------------------------------------------------------------------------------------------------------------*/
+app.Run();
+
 #pragma warning restore CA1812 // Avoid uninstantiated internal classes
