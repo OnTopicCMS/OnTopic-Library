@@ -12,13 +12,11 @@ using OnTopic.AspNetCore.Mvc.Host;
     | CONFIGURE SERVICES
     \-------------------------------------------------------------------------------------------------------------------------*/
     var builder = WebApplication.CreateBuilder(args);
-    var services = builder.Services;
-    var Configuration = builder.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Cookie Policy
       \-----------------------------------------------------------------------------------------------------------------------*/
-      services.Configure<CookiePolicyOptions>(options => {
+      builder.Services.Configure<CookiePolicyOptions>(options => {
         // This lambda determines whether user consent for non-essential cookies is needed for a given request.
         options.CheckConsentNeeded = context => true;
         options.MinimumSameSitePolicy = SameSiteMode.None;
@@ -27,7 +25,7 @@ using OnTopic.AspNetCore.Mvc.Host;
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
-      services.AddControllersWithViews()
+      builder.Services.AddControllersWithViews()
 
         //Add OnTopic support
         .AddTopicSupport();
@@ -35,24 +33,20 @@ using OnTopic.AspNetCore.Mvc.Host;
       /*------------------------------------------------------------------------------------------------------------------------
       | Register: Activators
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var activator = new SampleActivator(Configuration.GetConnectionString("OnTopic"));
+      var activator = new SampleActivator(builder.Configuration.GetConnectionString("OnTopic"));
 
-      services.AddSingleton<IControllerActivator>(activator);
-      services.AddSingleton<IViewComponentActivator>(activator);
-
-    }
+      builder.Services.AddSingleton<IControllerActivator>(activator);
+      builder.Services.AddSingleton<IViewComponentActivator>(activator);
 
     /*==========================================================================================================================
     | CONFIGURE APPLICATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     var app = builder.Build();
-    var env = app.Environment;
-    var endpoints = app;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Error Pages
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (env.IsDevelopment()) {
+      if (app.Environment.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
       }
       else {
@@ -73,7 +67,7 @@ using OnTopic.AspNetCore.Mvc.Host;
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
-        endpoints.MapTopicRoute("Web");
-        endpoints.MapTopicSitemap();
-        endpoints.MapTopicRedirect();
-        endpoints.MapControllers();
+        app.MapTopicRoute("Web");
+        app.MapTopicSitemap();
+        app.MapTopicRedirect();
+        app.MapControllers();
