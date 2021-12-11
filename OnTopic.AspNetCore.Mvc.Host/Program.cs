@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.ViewComponents;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Host;
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+
 /*==============================================================================================================================
 | CONFIGURE SERVICES
 \-----------------------------------------------------------------------------------------------------------------------------*/
@@ -71,3 +73,5 @@ app.MapTopicRoute("Web");
 app.MapTopicSitemap();
 app.MapTopicRedirect();
 app.MapControllers();
+
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
