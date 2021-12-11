@@ -3,49 +3,17 @@
 | Client        Ignia, LLC
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-
-namespace OnTopic.AspNetCore.Mvc.Host {
-
-  /*============================================================================================================================
-  | CLASS: STARTUP
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Configures the application and sets up dependencies.
-  /// </summary>
-  [ExcludeFromCodeCoverage]
-  public class Startup {
+using OnTopic.AspNetCore.Mvc;
+using OnTopic.AspNetCore.Mvc.Host;
 
     /*==========================================================================================================================
-    | CONSTRUCTOR
+    | CONFIGURE SERVICES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Constructs a new instances of the <see cref="Startup"/> class. Accepts an <see cref="IConfiguration"/>.
-    /// </summary>
-    /// <param name="configuration">
-    ///   The shared <see cref="IConfiguration"/> dependency.
-    /// </param>
-    public Startup(IConfiguration configuration) {
-      Configuration = configuration;
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONFIGURATION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a (public) reference to the application's <see cref="IConfiguration"/> service.
-    /// </summary>
-    public IConfiguration Configuration { get; }
-
-    /*==========================================================================================================================
-    | METHOD: CONFIGURE SERVICES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides configuration of services. This method is called by the runtime to bootstrap the server configuration.
-    /// </summary>
-    public void ConfigureServices(IServiceCollection services) {
+    var builder = WebApplication.CreateBuilder(args);
+    var services = builder.Services;
+    var Configuration = builder.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Cookie Policy
@@ -75,13 +43,11 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     }
 
     /*==========================================================================================================================
-    | METHOD: CONFIGURE (APPLICATION)
+    | CONFIGURE APPLICATION
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides configuration the application. This method is called by the runtime to bootstrap the application
-    ///   configuration, including the HTTP pipeline.
-    /// </summary>
-    public static void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+    var app = builder.Build();
+    var env = app.Environment;
+    var endpoints = app;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Error Pages
@@ -107,14 +73,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
-      app.UseEndpoints(endpoints => {
         endpoints.MapTopicRoute("Web");
         endpoints.MapTopicSitemap();
         endpoints.MapTopicRedirect();
         endpoints.MapControllers();
-      });
-
-    }
-
-  } //Class
-} //Namespace
