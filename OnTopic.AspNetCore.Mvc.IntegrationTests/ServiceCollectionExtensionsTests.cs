@@ -33,90 +33,29 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP TOPIC ROUTE: RESPONDS TO REQUEST
+    | TEST: REQUEST PAGE: EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRoute(IEndpointRouteBuilder, String,
-    ///   String, String)"/> and confirms that it responds appropriately.
+    ///   Evaluates various routes enabled by the routing extension methods to ensure they correctly map to the expected
+    ///   controllers, actions, and views.
     /// </summary>
-    [Fact]
-    public async Task MapTopicRoute_RespondsToRequest() {
+    [Theory]
+    [InlineData("/Web/ContentList/", "~/Views/ContentList/ContentList.cshtml")]            // MapTopicRoute()
+    [InlineData("/Area/Area/", "~/Areas/Area/Views/ContentType/ContentType.cshtml")]       // MapTopicAreaRoute()
+    [InlineData("/Area/Controller/AreaAction/", "~/Areas/Area/Views/Controller/AreaAction.cshtml")]       // MapTopicAreaRoute()
+    [InlineData("/Area/Accordion/", "~/Views/ContentList/Accordion.cshtml")]               // MapImplicitAreaControllerRoute()
+    [InlineData("/Topic/3/", "~/Views/ContentList/ContentList.cshtml")]                    // MapTopicRedirect()
+    public async Task RequestPage_ExpectedResults(string path, string expectedContent) {
 
       var client                = _factory.CreateClient();
-      var uri                   = new Uri($"/Web/ContentList/", UriKind.Relative);
+      var uri                   = new Uri(path, UriKind.Relative);
       var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var actualContent         = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
       response.EnsureSuccessStatusCode();
 
       Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: MAP TOPIC AREA ROUTE: RESPONDS TO REQUEST
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicAreaRoute(IEndpointRouteBuilder)"/>
-    ///   and confirms that it responds appropriately.
-    /// </summary>
-    [Fact]
-    public async Task MapTopicAreaRoute_RespondsToRequest() {
-
-      var client                = _factory.CreateClient();
-      var uri                   = new Uri($"/Area/Area/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-      response.EnsureSuccessStatusCode();
-
-      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal("~/Areas/Area/Views/ContentType/ContentType.cshtml", content);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: MAP DEFAULT AREA CONTROLLER ROUTE: RESPONDS TO REQUEST
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
-    ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
-    /// </summary>
-    [Fact]
-    public async Task MapDefaultAreaControllerRoute_RespondsToRequest() {
-
-      var client                = _factory.CreateClient();
-      var uri                   = new Uri($"/Area/Controller/AreaAction/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-      response.EnsureSuccessStatusCode();
-
-      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal("~/Areas/Area/Views/Controller/AreaAction.cshtml", content);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: MAP IMPLCIT AREA CONTROLLER ROUTE: RESPONDS TO REQUEST
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
-    ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
-    /// </summary>
-    [Fact]
-    public async Task MapImplicitAreaControllerRoute_RespondsToRequest() {
-
-      var client                = _factory.CreateClient();
-      var uri                   = new Uri($"/Area/Accordion/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-      response.EnsureSuccessStatusCode();
-
-      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal("~/Views/ContentList/Accordion.cshtml", content);
+      Assert.Equal(expectedContent, actualContent);
 
     }
 
@@ -142,27 +81,5 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
     }
 
-    /*==========================================================================================================================
-    | TEST: MAP TOPIC REDIRECT: REDIRECTS REQUEST
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRedirect(IEndpointRouteBuilder)"/>
-    ///   and confirms that it responds appropriately.
-    /// </summary>
-    [Fact]
-    public async Task MapTopicRedirect_RedirectsRequest() {
-
-      var client                = _factory.CreateClient();
-      var uri                   = new Uri($"/Topic/3/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-      response.EnsureSuccessStatusCode();
-
-      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-      Assert.Equal("~/Views/ContentList/ContentList.cshtml", content);
-
-    }
-
-  }
-}
+  } //Class
+} //Namespace
