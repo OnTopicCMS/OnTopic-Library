@@ -15,28 +15,26 @@ using OnTopic.ViewModels;
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: TOPIC CONTROLLER TEST
+  | CLASS: ERROR CONTROLLER TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicController"/>, and other <see cref="Controller"/> classes that are part of
-  ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
+  ///   Provides unit tests for the <see cref="ErrorController"/>.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class TopicControllerTest: IClassFixture<TestTopicRepository> {
+  public class ErrorControllerTest: IClassFixture<TestTopicRepository> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _topicMappingService;
-    readonly                    Topic                           _topic;
     readonly                    ControllerContext               _context;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicControllerTest"/> with shared resources.
+    ///   Initializes a new instance of the <see cref="ErrorControllerTest"/> with shared resources.
     /// </summary>
     /// <remarks>
     ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
@@ -45,78 +43,40 @@ namespace OnTopic.Tests {
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
     ///   tests.
     /// </remarks>
-    public TopicControllerTest(TestTopicRepository topicRepository) {
+    public ErrorControllerTest(TestTopicRepository topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = new CachedTopicRepository(topicRepository);
-      _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
-      _context                  = FakeControllerContext.GetControllerContext("Web", "Web/Valid/Child/");
+      _context                  = FakeControllerContext.GetControllerContext("Error");
 
     }
 
     /*==========================================================================================================================
-    | TEST: TOPIC CONTROLLER: INDEX ASYNC: RETURNS TOPIC VIEW RESULT
+    | TEST: ERROR CONTROLLER: HTTP: RETURNS EXPECTED ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
+    ///   Triggers the <see cref="ErrorController.HttpAsync(Int32)" /> action with different status codes, and ensures that the
+    ///   expected <see cref="Topic"/> is returned in the <see cref="TopicViewResult"/>.
     /// </summary>
-    [Fact]
-    public async Task TopicController_IndexAsync_ReturnsTopicViewResult() {
+    [Theory]
+    [InlineData(405, "405")]                               // Exact match
+    [InlineData(412, "400")]                               // Fallback to category
+    [InlineData(512, "Error")]                             // Fallback to root topic
+    public async void ErrorController_Http_ReturnsExpectedError(int errorCode, string expectedContent) {
 
-      var controller            = new TopicController(_topicRepository, _topicMappingService) {
-        ControllerContext       = _context
+      var controller            = new ErrorController(_topicRepository, _topicMappingService) {
+        ControllerContext       = new(_context)
       };
-
-      var result                = await controller.IndexAsync(_topic.GetWebPath()).ConfigureAwait(false) as TopicViewResult;
+      var result                = await controller.HttpAsync(errorCode).ConfigureAwait(false) as TopicViewResult;
       var model                 = result?.Model as PageTopicViewModel;
 
       controller.Dispose();
 
-      Assert.NotNull(model);
-      Assert.Equal("Child", model?.Title);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS REDIRECT RESULT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action.
-    /// </summary>
-    [Fact]
-    public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
-
-      var controller            = new RedirectController(_topicRepository);
-      var result                = controller.Redirect(_topic.Id) as RedirectResult;
-
-      controller.Dispose();
-
       Assert.NotNull(result);
-      Assert.True(result?.Permanent?? false);
-      Assert.Equal(_topic.GetWebPath(), result?.Url);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS NOT FOUND OBJECT RESULT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action with an invalid <see cref="Topic.Id"/> and
-    ///   confirms that a <see cref="NotFoundResult"/> is returned.
-    /// </summary>
-    [Fact]
-    public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
-
-      var controller            = new RedirectController(_topicRepository);
-      var result                = controller.Redirect(12345);
-
-      controller.Dispose();
-
-      Assert.NotNull(result);
-      Assert.IsType<NotFoundObjectResult>(result);
+      Assert.Equal(expectedContent, model?.Title);
 
     }
 

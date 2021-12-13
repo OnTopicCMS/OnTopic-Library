@@ -211,6 +211,24 @@ namespace OnTopic.AspNetCore.Mvc {
       routes.MapDynamicControllerRoute<TopicRouteValueTransformer>("{area:exists}/{action=Index}");
 
     /*==========================================================================================================================
+    | EXTENSION: MAP ERROR ROUTE (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds the <c>/Error/{errorCode}</c> endpoint route for the <see cref="ErrorController"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This allows the <see cref="ErrorController"/> to be used in conjunction with e.g., the <see cref="
+    ///   StatusCodePagesExtensions.UseStatusCodePages(IApplicationBuilder)"/>, by providing a route for capturing the <c>
+    ///   errorCode</c>.
+    /// </remarks>
+    public static ControllerActionEndpointConventionBuilder MapTopicErrors(this IEndpointRouteBuilder routes, string rootTopic = "Error") =>
+      routes.MapControllerRoute(
+        name: "TopicError",
+        pattern: $"{rootTopic}/{{id:int}}/",
+        defaults: new { controller = "Error", action = "Http", rootTopic }
+      );
+
+    /*==========================================================================================================================
     | EXTENSION: MAP TOPIC SITEMAP (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -48,11 +48,9 @@ var app = builder.Build();
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Error Pages
 \-----------------------------------------------------------------------------------------------------------------------------*/
-if (app.Environment.IsDevelopment()) {
-  app.UseDeveloperExceptionPage();
-}
-else {
-  app.UseExceptionHandler("/Home/Error");
+if (!app.Environment.IsDevelopment()) {
+  app.UseStatusCodePagesWithReExecute("/Error/{0}");
+  app.UseExceptionHandler("/Error/500/");
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
 }
@@ -69,9 +67,16 @@ app.UseCors("default");
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
 \-----------------------------------------------------------------------------------------------------------------------------*/
-app.MapTopicRoute("Web");
-app.MapTopicSitemap();
-app.MapTopicRedirect();
+app.MapImplicitAreaControllerRoute();                           // {area:exists}/{action=Index}
+app.MapDefaultAreaControllerRoute();                            // {area:exists}/{controller}/{action=Index}/{id?}
+app.MapTopicAreaRoute();                                        // {area:exists}/{**path}
+
+app.MapTopicErrors(rootTopic: "Error");                         // Error/{statusCode}
+app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
+app.MapTopicRoute(rootTopic: "Web");                            // Web/{**path}
+app.MapTopicRoute(rootTopic: "Error");                          // Error/{**path}
+app.MapTopicSitemap();                                          // Sitemap
+app.MapTopicRedirect();                                         // Topic/{topicId}
 app.MapControllers();
 
 /*------------------------------------------------------------------------------------------------------------------------------
