@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Net;
 using Microsoft.AspNetCore.Routing;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
@@ -81,6 +82,28 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       Assert.Equal("text/xml", response.Content.Headers.ContentType?.ToString());
       Assert.True(content.Contains("/Web/ContentList/</loc>", StringComparison.OrdinalIgnoreCase));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: USE STATUS CODE PAGES: RETURNS EXPECTED STATUS CODE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates a route with an error, and confirms that it returns a page with the expected status code.
+    /// </summary>
+    [Theory]
+    [InlineData("/MissingPage/", HttpStatusCode.NotFound, "400")]
+    [InlineData("/Web/Container/", HttpStatusCode.Forbidden, "400")]
+    public async Task UseStatusCodePages_ReturnsExpectedStatusCode(string path, HttpStatusCode statusCode, string expectedContent) {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri(path, UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var actualContent         = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      Assert.Equal(statusCode, response.StatusCode);
+      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.Equal(expectedContent, actualContent);
 
     }
 
