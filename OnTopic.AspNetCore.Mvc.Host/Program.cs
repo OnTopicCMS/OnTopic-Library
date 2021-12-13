@@ -70,9 +70,11 @@ app.UseCors("default");
 app.MapImplicitAreaControllerRoute();                           // {area:exists}/{action=Index}
 app.MapDefaultAreaControllerRoute();                            // {area:exists}/{controller}/{action=Index}/{id?}
 app.MapTopicAreaRoute();                                        // {area:exists}/{**path}
+
+app.MapTopicErrors(rootTopic: "Error");                         // Error/{statusCode}
 app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
-app.MapTopicRoute("Web");                              // Web/{**path}
-app.MapTopicRoute("Error");                            // Error/{**path}
+app.MapTopicRoute(rootTopic: "Web");                            // Web/{**path}
+app.MapTopicRoute(rootTopic: "Error");                          // Error/{**path}
 app.MapTopicSitemap();                                          // Sitemap
 app.MapTopicRedirect();                                         // Topic/{topicId}
 app.MapControllers();
