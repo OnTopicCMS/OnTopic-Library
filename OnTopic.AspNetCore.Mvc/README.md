@@ -116,6 +116,8 @@ public class Startup {
 ```
 > *Note:* This will register the `TopicViewLocationExpander`, `TopicViewResultExecutor`, `TopicRouteValueTransformer`, as well as all [Controllers](#controllers) that ship with `OnTopic.AspNetCore.Mvc`.
 
+> *Note:* When using ASP.NET Core 6's minimal hosting model, this will instead be placed in the `Program` class as a top-level statement.
+ 
 In addition, within the same `ConfigureServices()` method, you will need to establish a class that implements `IControllerActivator` and `IViewComponentActivator`, and will represent the site's _Composition Root_ for dependency injection. This will typically look like:
 ```csharp
 var activator = new OrganizationNameActivator(Configuration.GetConnectionString("OnTopic"))
@@ -151,6 +153,8 @@ public class Startup {
 ```
 > *Note:* Because OnTopic relies on wildcard path names, a new route should be configured for every root namespace (e.g., `/Web`). While it's possible to configure OnTopic to evaluate _all_ paths, this makes it difficult to delegate control to other controllers and handlers, when necessary. As a result, it is recommended that each root container be registered individually.
 
+> *Note:* When using ASP.NET Core 6's minimal hosting model, these will instead be placed in the `Program` class as a top-level statement.
+
 ### Composition Root
 As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator for controllers, and view component activator for view components. For controllers, the basic structure of this might look like:
 ```csharp
@@ -184,6 +188,9 @@ public class Startup {
   }
 }
 ```
+
+> *Note:* When using ASP.NET Core 6's minimal hosting model, these will instead be placed in the `Program` class as a top-level statement.
+
 The first three of these options all use the `Http()` action, which will provide the following fallback logic:
 - If `Error:{errorCode}` exists, use that (e.g., `Error:404`)
 - If `Error:{errorCode/100*100} exists, use that (e.g., `Error:400`)
