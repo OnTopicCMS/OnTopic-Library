@@ -106,6 +106,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
           new TopicController(_topicRepository, _topicMappingService),
         nameof(AreaController) =>
           new AreaController(_topicRepository, _topicMappingService),
+        nameof(ErrorController) =>
+          new ErrorController(_topicRepository, _topicMappingService),
         nameof(ControllerController) =>
           new ControllerController(),
         nameof(SitemapController) =>
