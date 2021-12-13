@@ -1,5 +1,5 @@
-﻿# OnTopic for ASP.NET Core 3.x, 5.x
-The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with ASP.NET Core 3.x and ASP.NET Core 5.x. It is the recommended client for working with OnTopic.
+﻿# OnTopic for ASP.NET Core
+The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with ASP.NET Core (3.0 and above) . It is the recommended client for working with OnTopic.
 
 [![OnTopic.AspNetCore.Mvc package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/4db5e20c-69c6-4134-823a-c3de06d1176e/Badge)](https://www.nuget.org/packages/OnTopic.AspNetCore.Mvc/)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
