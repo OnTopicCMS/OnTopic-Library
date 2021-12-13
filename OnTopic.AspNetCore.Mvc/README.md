@@ -17,6 +17,7 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
   - [Application](#application)
   - [Route Configuration](#route-configuration)
   - [Composition Root](#composition-root)
+  - [Error Handling](#error-handling)
 
 ## Components
 There are five key components at the heart of the ASP.NET Core implementation.
@@ -29,6 +30,7 @@ There are five key components at the heart of the ASP.NET Core implementation.
 
 ## Controllers and View Components
 There are five main controllers and view components that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary classes:
+- **[`ErrorController`](Controllers/ErrorController.cs)**: Provides a specialized `TopicController` with an `Http()` action for handling status code errors (e.g., from `UseStatusCodePages()`).
 - **[`RedirectController`](Controllers/RedirectController.cs)**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`.
 - **[`SitemapController`](Controllers/SitemapController.cs)**: Provides a single `Sitemap` action which recurses over the entire Topic graph, including all attributes, and returns an XML document with a sitemaps.org schema.
 - **[`MenuViewComponentBase<T>`](Components/MenuViewComponentBase{T}.cs)**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance.
@@ -138,6 +140,7 @@ public class Startup {
       endpoints.MapDefaultControllerRoute();            // {controller=Home}/{action=Index}/{id?}
       endpoints.MapDefaultAreaControllerRoute();        // {area:exists}/{controller}/{action=Index}/{id?}
 
+      endpoints.MapTopicErrors();                       // Error/{errorCode}
       endpoints.MapTopicRoute("Web");                   // Web/{**path}
       endpoints.MapTopicRedirect();                     // Topic/{topicId}
       endpoints.MapControllers();
@@ -166,3 +169,28 @@ return controllerType.Name switch {
 For a complete reference template, including the ancillary controllers, view components, and a more maintainable structure, see the [`OrganizationNameActivator.cs`](https://gist.github.com/JeremyCaney/00c04b1b9f40d9743793cd45dfaaa606) Gist. Optionally, you may use a dependency injection container.
 
 > *Note:* The default `TopicController` will automatically identify the current topic (based on the `RouteData`), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../OnTopic/Mapping/README.md)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`.
+
+### Error Handling
+The `ErrorController` provides support for handling ASP.NET Core's `UseStatusCodePages()` middleware, while continuing to support a range of other options. Routing to the controller can be supported by any of the following options, in isolation or together:
+```csharp
+public class Startup {
+  public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+    app.UseEndpoints(endpoints => {
+      endpoints.MapTopicErrors();                        // Error/{errorCode}
+      endpoints.MapTopicErrors("Errors");                // Errors/{errorCode}
+      endpoints.MapDefaultControllerRoute();             // Error/Http/{errorCode}
+      endpoints.MapTopicRoute("Error");                  // Error/{path}; e.g., Error/Unauthorized
+    }
+  }
+}
+```
+The first three of these options all use the `Http()` action, which will provide the following fallback logic:
+- If `Error:{errorCode}` exists, use that (e.g., `Error:404`)
+- If `Error:{errorCode/100*100} exists, use that (e.g., `Error:400`)
+- If `Error` exists, use that (e.g., `Error`)
+
+These are all intended to be used with one of ASP.NET Core's `UseStatusCodePages()` methods. For instance:
+```csharp
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+```
+The last option allows the same `ErrorController` to be used with any other custom error handling that might be configured—such as middleware, or the legacy `<httpErrors />` handler—to handle any custom page under the `Error` topic.
