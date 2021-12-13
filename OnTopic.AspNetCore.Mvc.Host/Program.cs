@@ -67,7 +67,9 @@ app.UseCors("default");
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
 \-----------------------------------------------------------------------------------------------------------------------------*/
-app.MapTopicErrors("Error");                           // Error/{statusCode}
+app.MapImplicitAreaControllerRoute();                           // {area:exists}/{action=Index}
+app.MapDefaultAreaControllerRoute();                            // {area:exists}/{controller}/{action=Index}/{id?}
+app.MapTopicAreaRoute();                                        // {area:exists}/{**path}
 app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
 app.MapTopicRoute("Web");                              // Web/{**path}
 app.MapTopicRoute("Error");                            // Error/{**path}
