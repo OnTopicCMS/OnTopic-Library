@@ -45,6 +45,9 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     [InlineData("/Area/Controller/AreaAction/", "~/Areas/Area/Views/Controller/AreaAction.cshtml")]       // MapTopicAreaRoute()
     [InlineData("/Area/Accordion/", "~/Views/ContentList/Accordion.cshtml")]               // MapImplicitAreaControllerRoute()
     [InlineData("/Topic/3/", "~/Views/ContentList/ContentList.cshtml")]                    // MapTopicRedirect()
+    [InlineData("/Error/404", "400")]                                                      // MapTopicErrors()
+    [InlineData("/Error/Http/404", "400")]                                                 // MapDefaultControllerRoute()
+    [InlineData("/Error/Unauthorized/", "Unauthorized")]                                   // MapTopicRoute()
     public async Task RequestPage_ExpectedResults(string path, string expectedContent) {
 
       var client                = _factory.CreateClient();
