@@ -148,6 +148,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       var web                   = new Topic("Web", "Page", rootTopic, currentAttributeId++);
       _                         = new Topic("ContentList", "ContentList", web, currentAttributeId++);
       _                         = new Topic("MissingView", "Missing", web, currentAttributeId++);
+      _                         = new Topic("Container", "Container", web, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish area topics
@@ -160,6 +161,14 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       _                         = new Topic("TopicWithView", "ContentList", area, currentAttributeId++) {
         View                    = "Accordion"
       };
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish error topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var error                 = new Topic("Error", "Page", rootTopic, currentAttributeId++);
+
+      _                         = new Topic("400", "Page", error, currentAttributeId++);
+      _                         = new Topic("Unauthorized", "Page", error, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
