@@ -67,12 +67,12 @@ app.UseCors("default");
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
 \-----------------------------------------------------------------------------------------------------------------------------*/
-app.MapTopicErrors("Error");
-app.MapDefaultControllerRoute();
-app.MapTopicRoute("Web");
-app.MapTopicRoute("Error");
-app.MapTopicSitemap();
-app.MapTopicRedirect();
+app.MapTopicErrors("Error");                           // Error/{statusCode}
+app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
+app.MapTopicRoute("Web");                              // Web/{**path}
+app.MapTopicRoute("Error");                            // Error/{**path}
+app.MapTopicSitemap();                                          // Sitemap
+app.MapTopicRedirect();                                         // Topic/{topicId}
 app.MapControllers();
 
 /*------------------------------------------------------------------------------------------------------------------------------
