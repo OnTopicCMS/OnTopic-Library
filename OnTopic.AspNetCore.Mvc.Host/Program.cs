@@ -48,10 +48,7 @@ var app = builder.Build();
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Error Pages
 \-----------------------------------------------------------------------------------------------------------------------------*/
-if (app.Environment.IsDevelopment()) {
-  app.UseDeveloperExceptionPage();
-}
-else {
+if (!app.Environment.IsDevelopment()) {
   app.UseStatusCodePagesWithReExecute("/Error/{0}");
   app.UseExceptionHandler("/Error/500/");
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
