@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Routing;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
@@ -56,21 +53,7 @@ namespace OnTopic.Tests {
       _topicRepository          = new CachedTopicRepository(topicRepository);
       _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish view model context
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var routes                = new RouteData();
-
-      routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web/Valid/Child/");
-
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = routes,
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
-      _context                  = new(actionContext);
+      _context                  = FakeControllerContext.GetControllerContext("Web", "Web/Valid/Child/");
 
     }
 
