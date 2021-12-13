@@ -88,11 +88,13 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
+        endpoints.MapTopicErrors();
         endpoints.MapDefaultAreaControllerRoute();
         endpoints.MapDefaultControllerRoute();
         endpoints.MapImplicitAreaControllerRoute();
         endpoints.MapTopicAreaRoute();
         endpoints.MapTopicRoute("Web");
+        endpoints.MapTopicRoute("Error");
         endpoints.MapTopicSitemap();
         endpoints.MapTopicRedirect();
         endpoints.MapControllers();
