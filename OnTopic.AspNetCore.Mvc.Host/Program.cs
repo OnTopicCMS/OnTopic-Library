@@ -69,7 +69,10 @@ app.UseCors("default");
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
 \-----------------------------------------------------------------------------------------------------------------------------*/
+app.MapTopicErrors("Error");
+app.MapDefaultControllerRoute();
 app.MapTopicRoute("Web");
+app.MapTopicRoute("Error");
 app.MapTopicSitemap();
 app.MapTopicRedirect();
 app.MapControllers();
