@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Net;
 using Microsoft.AspNetCore.Routing;
 
@@ -104,6 +105,45 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.Equal(statusCode, response.StatusCode);
       Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.Equal(expectedContent, actualContent);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: USE RESPONSE CACHING: RETURNS CACHED PAGE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates a route with response caching, and confirms that the page remains unchanged after subsequent calls.
+    /// </summary>
+    /// <remarks>
+    ///   The <c>Counter.cshtml</c> page will increment a number output for every request to a given path. The <c>CachedPage</c>
+    ///   request will not increment because the cached result is being returned; the <c>UncachedPage</c> will increment because
+    ///   the results are not cached.
+    /// </remarks>
+    [Theory]
+    [InlineData("/Web/CachedPage/", "1", "1", true)]
+    [InlineData("/Web/UncachedPage/", "1", "2", false)]
+    public async Task UseResponseCaching_ReturnsCachedPage(
+      string path,
+      string firstResult,
+      string secondResult,
+      bool validateHeaders
+    ) {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri(path, UriKind.Relative);
+
+      var response1             = await client.GetAsync(uri).ConfigureAwait(false);
+      var content1              = await response1.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      var response2             = await client.GetAsync(uri).ConfigureAwait(false);
+      var content2              = await response2.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response1.EnsureSuccessStatusCode();
+
+      Assert.StartsWith(firstResult, content1, StringComparison.Ordinal);
+      Assert.StartsWith(secondResult, content2, StringComparison.Ordinal);
+      Assert.Equal(validateHeaders? true : null, response1.Headers.CacheControl?.Public);
+      Assert.Equal(validateHeaders? TimeSpan.FromSeconds(10) : null, response1?.Headers.CacheControl?.MaxAge);
 
     }
 

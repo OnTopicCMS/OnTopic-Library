@@ -171,6 +171,21 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       _                         = new Topic("Unauthorized", "Page", error, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish caching tests
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var cacheProfile          = new Topic("CacheProfile", "CacheProfile", rootTopic, currentAttributeId++);
+      var cachedPage            = new Topic("CachedPage", "Page", web, currentAttributeId++);
+      var uncachedPage          = new Topic("UncachedPage", "Page", web, currentAttributeId++);
+
+      cacheProfile.Attributes.SetValue("Duration", "10");
+      cacheProfile.Attributes.SetValue("Location", "Any");
+
+      cachedPage.References.SetValue("CacheProfile", cacheProfile);
+      cachedPage.Attributes.SetValue("View", "Counter");
+
+      uncachedPage.Attributes.SetValue("View", "Counter");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
       return rootTopic;

@@ -25,6 +25,11 @@ builder.Services.Configure<CookiePolicyOptions>(options => {
 });
 
 /*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Output Caching
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.AddResponseCaching();
+
+/*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.AddControllersWithViews()
@@ -49,7 +54,7 @@ var app = builder.Build();
 | Configure: Error Pages
 \-----------------------------------------------------------------------------------------------------------------------------*/
 if (!app.Environment.IsDevelopment()) {
-  app.UseStatusCodePagesWithReExecute("/Error/{0}");
+  app.UseStatusCodePagesWithReExecute("/Error/{0}/");
   app.UseExceptionHandler("/Error/500/");
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
@@ -63,6 +68,7 @@ app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseRouting();
 app.UseCors("default");
+app.UseResponseCaching();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
