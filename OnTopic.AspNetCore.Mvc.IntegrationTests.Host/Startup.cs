@@ -82,7 +82,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       | Configure: Error Pages
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseDeveloperExceptionPage();
-      app.UseStatusCodePagesWithReExecute("/Error/{0}");
+      app.UseStatusCodePagesWithReExecute("/Error/{0}/");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Server defaults
