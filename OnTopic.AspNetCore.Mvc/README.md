@@ -8,6 +8,7 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
 ### Contents
 - [Components](#components)
 - [Controllers and View Components](#controllers-and-view-components)
+- [Filters](#filters)
 - [View Conventions](#view-conventions)
   - [View Matching](#view-matching)
   - [View Locations](#view-locations)
@@ -20,7 +21,7 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
   - [Error Handling](#error-handling)
 
 ## Components
-There are five key components at the heart of the ASP.NET Core implementation.
+There are six components at the heart of the ASP.NET Core implementation.
 - **`TopicController`**: This is a default controller instance that can be used for _any_ topic path. It will automatically validate that the `Topic` exists, that it is not disabled (`!IsDisabled`), and will honor any redirects (e.g., if the `Url` attribute is filled out). Otherwise, it will return a `TopicViewResult` based on a view model, view name, and content type.
 - **`TopicRouteValueTransformer`**: A `DynamicRouteValueTransformer` for use with the ASP.NET Core's `MapDynamicControllerRoute()` method, allowing for route parameters to be implicitly inferred; notably, it will use the `area` as the default `controller` and `rootTopic`, if those route parameters are not otherwise defined.
 - **`TopicViewLocationExpander`**: Assists the out-of-the-box Razor view engine in locating views associated with OnTopic, e.g. by looking in `~/Views/ContentTypes/{ContentType}.cshtml`, or `~/Views/{ContentType}/{View}.cshtml`. See [View Locations](#view-locations) below.
@@ -44,6 +45,11 @@ There are five main controllers and view components that ship with the ASP.NET C
 >     IHierarchicalTopicMappingService<NavigationTopicViewModel> hierarchicalTopicMappingService
 >   ): base(topicRepository, hierarchicalTopicMappingService) {}
 > }
+
+## Filters
+There are two filters included with the ASP.NET Core implementation, which are meant to work in conjunction with `TopicController`:
+- **[`[ValidateTopic]`](_filters/ValidateTopicAttribute.cs)**: A filter attribute that handles topics that aren't intended to be served publicly, such as `PageGroup` and `Container` content types, or topics with `Url` or `IsDisabled` set.
+- **[`[TopicResponseCache]`](_filters/TopicResponseCacheAttribute.cs)**: A filter attribute registered on `TopicController` which checks for an affiliated `CacheProfile` topic and sets HTTP response headers accordingly. Compatible with the [ASP.NET Core Response Caching Middleware](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware).
 
 ## View Conventions
 By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
