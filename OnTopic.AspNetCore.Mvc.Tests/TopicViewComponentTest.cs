@@ -121,7 +121,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
@@ -147,7 +147,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(webPath, model?.CurrentWebPath);
@@ -194,7 +194,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
@@ -222,7 +222,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(webPath, model?.CurrentWebPath);
@@ -250,7 +250,7 @@ namespace OnTopic.Tests {
 
       var result = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult = result as ViewViewComponentResult;
-      var model = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(String.Empty, model?.CurrentWebPath);
