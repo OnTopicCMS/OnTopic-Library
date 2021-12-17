@@ -181,6 +181,9 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       cacheProfile.Attributes.SetValue("Location", "Any");
 
       cachedPage.References.SetValue("CacheProfile", cacheProfile);
+      cachedPage.Attributes.SetValue("View", "Counter");
+
+      uncachedPage.Attributes.SetValue("View", "Counter");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
