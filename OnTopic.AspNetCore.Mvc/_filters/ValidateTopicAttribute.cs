@@ -60,23 +60,19 @@ namespace OnTopic.AspNetCore.Mvc {
       Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
+      | Validate controller
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = context.Controller as TopicController;
-      var currentTopic          = controller?.CurrentTopic;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate context
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (controller is null) {
+      if (context.Controller is not TopicController controller) {
         throw new InvalidOperationException(
-          $"The {nameof(ValidateTopicAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
+          $"The {nameof(TopicResponseCacheAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle exceptions
+      | Validate current topic
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var currentTopic          = controller.CurrentTopic;
+
       if (currentTopic is null) {
         if (!AllowNull) {
           context.Result = controller.NotFound("There is no topic associated with this path.");

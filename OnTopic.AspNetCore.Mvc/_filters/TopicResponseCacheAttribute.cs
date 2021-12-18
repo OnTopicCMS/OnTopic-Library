@@ -62,9 +62,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate controller
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = context.Controller as TopicController;
-
-      if (controller is null) {
+      if (context.Controller is not TopicController controller) {
         throw new InvalidOperationException(
           $"The {nameof(TopicResponseCacheAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
         );
