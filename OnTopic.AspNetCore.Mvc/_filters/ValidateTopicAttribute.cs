@@ -75,7 +75,7 @@ namespace OnTopic.AspNetCore.Mvc {
 
       if (currentTopic is null) {
         if (!AllowNull) {
-          context.Result = controller.NotFound("There is no topic associated with this path.");
+          context.Result = controller.NotFound();
         }
         return;
       }
