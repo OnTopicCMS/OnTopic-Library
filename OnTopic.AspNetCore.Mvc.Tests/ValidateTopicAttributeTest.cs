@@ -111,7 +111,7 @@ namespace OnTopic.Tests {
     | TEST: NULL TOPIC: RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
+    ///   Ensures that a <see cref="NotFoundResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [Fact]
     public void NullTopic_ReturnsNotFound() {
@@ -124,7 +124,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsType<NotFoundObjectResult>(context.Result);
+      Assert.IsType<NotFoundResult>(context.Result);
 
     }
 
