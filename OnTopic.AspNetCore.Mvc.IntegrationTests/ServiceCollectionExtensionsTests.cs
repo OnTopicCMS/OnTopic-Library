@@ -94,6 +94,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     /// </summary>
     [Theory]
     [InlineData("/MissingPage/", HttpStatusCode.NotFound, "400")]
+    [InlineData("/Web/MissingPage/", HttpStatusCode.NotFound, "400")]
     [InlineData("/Web/Container/", HttpStatusCode.Forbidden, "400")]
     public async Task UseStatusCodePages_ReturnsExpectedStatusCode(string path, HttpStatusCode statusCode, string expectedContent) {
 
