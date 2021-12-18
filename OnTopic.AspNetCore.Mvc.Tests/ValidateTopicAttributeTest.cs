@@ -44,7 +44,7 @@ namespace OnTopic.Tests {
       var actionExecutingContext = new ActionExecutingContext(
         actionContext,
         new List<IFilterMetadata>(),
-        new Dictionary<string, object>(),
+        new Dictionary<string, object?>(),
         controller
       );
 
