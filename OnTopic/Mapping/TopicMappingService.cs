@@ -358,8 +358,6 @@ namespace OnTopic.Mapping {
         return parameter.DefaultValue;
       }
 
-      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
-
       if (configuration.MapToParent) {
         return await MapAsync(
           source,
@@ -370,7 +368,9 @@ namespace OnTopic.Mapping {
         ).ConfigureAwait(false);
       }
 
-      else if (value is null && IsList(parameter.ParameterType)) {
+      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
+
+      if (value is null && IsList(parameter.ParameterType)) {
         return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
       }
 
@@ -441,8 +441,6 @@ namespace OnTopic.Mapping {
         return;
       }
 
-      var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
-
       if (configuration.MapToParent) {
         var targetProperty = property.GetValue(target);
         if (targetProperty is not null) {
@@ -455,11 +453,14 @@ namespace OnTopic.Mapping {
           ).ConfigureAwait(false);
         }
       }
-      else if (value is null && IsList(property.Type)) {
-        await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
-      }
-      else if (value != null && property.CanWrite) {
-        property.SetValue(target, value, true);
+      else {
+        var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
+        if (value is null && IsList(property.Type)) {
+          await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
+        }
+        else if (value != null && property.CanWrite) {
+          property.SetValue(target, value, true);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
