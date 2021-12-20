@@ -352,12 +352,21 @@ namespace OnTopic.Mapping {
       string? attributePrefix = null
     ) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish per-property variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Bypass if mapping is disabled
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return parameter.DefaultValue;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle [MapToParent] attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
         return await MapAsync(
           source,
@@ -368,6 +377,9 @@ namespace OnTopic.Mapping {
         ).ConfigureAwait(false);
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
 
       if (value is null && IsList(parameter.ParameterType)) {
@@ -435,12 +447,15 @@ namespace OnTopic.Mapping {
       var configuration         = new PropertyConfiguration((PropertyInfo)property.MemberInfo, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle by type, attribute
+      | Bypass if mapping is disabled
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle [MapToParent] attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
         var targetProperty = property.GetValue(target);
         if (targetProperty is not null) {
@@ -453,6 +468,10 @@ namespace OnTopic.Mapping {
           ).ConfigureAwait(false);
         }
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       else {
         var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
         if (value is null && IsList(property.Type)) {
