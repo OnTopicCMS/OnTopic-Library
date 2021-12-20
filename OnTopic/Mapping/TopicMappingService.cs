@@ -30,6 +30,19 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITypeLookupService              _typeLookupService;
+    static readonly             List<Type>                      _listTypes                      = new();
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
+    /// </summary>
+    static TopicMappingService() {
+      _listTypes.Add(typeof(IEnumerable<>));
+      _listTypes.Add(typeof(ICollection<>));
+      _listTypes.Add(typeof(IList<>));
+    }
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -667,12 +680,7 @@ namespace OnTopic.Mapping {
     /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
     private static bool IsList(Type targetType) =>
       typeof(IList).IsAssignableFrom(targetType) ||
-      targetType.IsGenericType &&
-      (
-        targetType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
-        targetType.GetGenericTypeDefinition() == typeof(ICollection<>) ||
-        targetType.GetGenericTypeDefinition() == typeof(IList<>)
-      );
+      targetType.IsGenericType && _listTypes.Contains(targetType.GetGenericTypeDefinition());
 
     /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
