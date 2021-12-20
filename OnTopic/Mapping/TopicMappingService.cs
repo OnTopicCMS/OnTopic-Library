@@ -519,16 +519,6 @@ namespace OnTopic.Mapping {
       Contract.Requires(cache, nameof(cache));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish per-property variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicReferenceId = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
-      var topicReference = source.References.GetValue(configuration.AttributeKey);
-
-      if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
-        topicReferenceId = source.Attributes.GetInteger(configuration.AttributeKey, 0);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var value                 = (object?)null;
@@ -545,8 +535,8 @@ namespace OnTopic.Mapping {
       else if (configuration.MapToParent) {
         return null;
       }
-      else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
-        if (source.Parent is not null) {
+      else if (configuration.AttributeKey is "Parent") {
+        if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
       }
@@ -556,14 +546,8 @@ namespace OnTopic.Mapping {
       else if (IsList(targetType)) {
         return null;
       }
-      else if (
-        topicReference is not null &&
-        associations.HasFlag(AssociationTypes.References)
-      ) {
-        value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
-      }
-      else if (topicReferenceId > 0 && associations.HasFlag(AssociationTypes.References)) {
-        topicReference = _topicRepository.Load(topicReferenceId, source);
+      else if (associations.HasFlag(AssociationTypes.References)) {
+        var topicReference = getTopicReference();
         if (topicReference is not null) {
           value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
         }
@@ -573,6 +557,32 @@ namespace OnTopic.Mapping {
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       return value;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get Topic Reference
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Topic? getTopicReference() {
+
+        // Check for standard topic reference
+        var topicReference      = source.References.GetValue(configuration.AttributeKey);
+        if (topicReference is not null) {
+          return topicReference;
+        }
+
+        int topicReferenceId;
+        if (configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
+          topicReferenceId    = source.Attributes.GetInteger(configuration.AttributeKey, 0);
+        }
+        else {
+          topicReferenceId    = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+        }
+        if (topicReferenceId > 0) {
+          topicReference      = _topicRepository.Load(topicReferenceId, source);
+        }
+
+        return topicReference;
+
+      }
 
     }
 
