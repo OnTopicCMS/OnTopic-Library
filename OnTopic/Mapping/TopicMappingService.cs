@@ -360,10 +360,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && IsList(parameter.ParameterType)) {
-        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
-      }
-      else if (configuration.MapToParent) {
+      if (configuration.MapToParent) {
         return await MapAsync(
           source,
           parameter.ParameterType,
@@ -371,6 +368,10 @@ namespace OnTopic.Mapping {
           cache,
           configuration.AttributePrefix
         ).ConfigureAwait(false);
+      }
+
+      else if (value is null && IsList(parameter.ParameterType)) {
+        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
       }
 
       return value;
@@ -442,10 +443,7 @@ namespace OnTopic.Mapping {
 
       var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
 
-      if (value is null && IsList(property.Type)) {
-        await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
-      }
-      else if (configuration.MapToParent) {
+      if (configuration.MapToParent) {
         var targetProperty = property.GetValue(target);
         if (targetProperty is not null) {
           await MapAsync(
@@ -456,6 +454,9 @@ namespace OnTopic.Mapping {
             configuration.AttributePrefix
           ).ConfigureAwait(false);
         }
+      }
+      else if (value is null && IsList(property.Type)) {
+        await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
       }
       else if (value != null && property.CanWrite) {
         property.SetValue(target, value, true);
