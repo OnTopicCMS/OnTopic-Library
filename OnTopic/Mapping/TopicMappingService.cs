@@ -620,14 +620,14 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
+      if (attributeValue is null) {
         attributeValue = typeAccessor.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
+      if (attributeValue is null) {
         attributeValue = source.Attributes.GetValue(
           configuration.AttributeKey,
           configuration.DefaultValue?.ToString(),
