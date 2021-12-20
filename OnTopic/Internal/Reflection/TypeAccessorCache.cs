@@ -34,7 +34,6 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> that needs to be dynamically accessed.</param>
     /// <returns>A <see cref="TypeAccessor"/> for dynamically accessing the supplied <paramref name="type"/>.</returns>
     internal static TypeAccessor GetTypeAccessor(Type type) {
-      Contract.Requires(type, nameof(type));
       return _cache.GetOrAdd(type, t => new(t));
     }
 

@@ -310,7 +310,6 @@ namespace OnTopic.Mapping.Reverse {
       Contract.Requires(sourceType, nameof(sourceType));
       Contract.Requires(configuration, nameof(configuration));
       Contract.Requires(attributeDescriptor, nameof(attributeDescriptor));
-      //Contract.Requires(listType, nameof(listType));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables

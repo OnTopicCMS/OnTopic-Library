@@ -30,6 +30,19 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITypeLookupService              _typeLookupService;
+    static readonly             List<Type>                      _listTypes                      = new();
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
+    /// </summary>
+    static TopicMappingService() {
+      _listTypes.Add(typeof(IEnumerable<>));
+      _listTypes.Add(typeof(ICollection<>));
+      _listTypes.Add(typeof(IList<>));
+    }
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -352,18 +365,22 @@ namespace OnTopic.Mapping {
       string? attributePrefix = null
     ) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish per-property variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Bypass if mapping is disabled
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return parameter.DefaultValue;
       }
 
-      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
-
-      if (value is null && IsList(parameter.ParameterType)) {
-        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
-      }
-      else if (configuration.MapToParent) {
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle [MapToParent] attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.MapToParent) {
         return await MapAsync(
           source,
           parameter.ParameterType,
@@ -371,6 +388,15 @@ namespace OnTopic.Mapping {
           cache,
           configuration.AttributePrefix
         ).ConfigureAwait(false);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
+
+      if (value is null && IsList(parameter.ParameterType)) {
+        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
       }
 
       return value;
@@ -420,32 +446,21 @@ namespace OnTopic.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(associations, nameof(associations));
-      Contract.Requires(property, nameof(property));
-      Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration((PropertyInfo)property.MemberInfo, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle by type, attribute
+      | Bypass if mapping is disabled
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return;
       }
 
-      var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
-
-      if (value is null && IsList(property.Type)) {
-        await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
-      }
-      else if (configuration.MapToParent) {
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle [MapToParent] attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.MapToParent) {
         var targetProperty = property.GetValue(target);
         if (targetProperty is not null) {
           await MapAsync(
@@ -457,8 +472,18 @@ namespace OnTopic.Mapping {
           ).ConfigureAwait(false);
         }
       }
-      else if (value != null && property.CanWrite) {
-        property.SetValue(target, value, true);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      else {
+        var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
+        if (value is null && IsList(property.Type)) {
+          await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
+        }
+        else if (value != null && property.CanWrite) {
+          property.SetValue(target, value, true);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -490,24 +515,6 @@ namespace OnTopic.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(associations, nameof(associations));
-      Contract.Requires(configuration, nameof(configuration));
-      Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish per-property variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicReferenceId = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
-      var topicReference = source.References.GetValue(configuration.AttributeKey);
-
-      if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
-        topicReferenceId = source.Attributes.GetInteger(configuration.AttributeKey, 0);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var value                 = (object?)null;
@@ -521,37 +528,59 @@ namespace OnTopic.Mapping {
       if (TryGetCompatibleProperty(source, targetType, configuration, out var compatibleValue)) {
         value = compatibleValue;
       }
-      else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
-        value = GetScalarValue(source, configuration);
+      else if (configuration.MapToParent) {
+        return null;
+      }
+      else if (configuration.AttributeKey is "Parent") {
+        if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
+          value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
+        }
+      }
+      else if (AttributeValueConverter.IsConvertible(targetType)) {
+        if (!mapAssociationsOnly) {
+          value = GetScalarValue(source, configuration);
+        }
       }
       else if (IsList(targetType)) {
         return null;
       }
-      else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
-        if (source.Parent is not null) {
-          value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
-        }
-      }
-      else if (
-        topicReference is not null &&
-        associations.HasFlag(AssociationTypes.References)
-      ) {
-        value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
-      }
-      else if (topicReferenceId > 0 && associations.HasFlag(AssociationTypes.References)) {
-        topicReference = _topicRepository.Load(topicReferenceId, source);
+      else if (associations.HasFlag(AssociationTypes.References)) {
+        var topicReference = getTopicReference();
         if (topicReference is not null) {
           value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
         }
-      }
-      else if (configuration.MapToParent) {
-        return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       return value;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get Topic Reference
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Topic? getTopicReference() {
+
+        // Check for standard topic reference
+        var topicReference      = source.References.GetValue(configuration.AttributeKey);
+        if (topicReference is not null) {
+          return topicReference;
+        }
+
+        int topicReferenceId;
+        if (configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
+          topicReferenceId    = source.Attributes.GetInteger(configuration.AttributeKey, 0);
+        }
+        else {
+          topicReferenceId    = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+        }
+        if (topicReferenceId > 0) {
+          topicReference      = _topicRepository.Load(topicReferenceId, source);
+        }
+
+        return topicReference;
+
+      }
 
     }
 
@@ -573,12 +602,6 @@ namespace OnTopic.Mapping {
     private static object? GetScalarValue(Topic source, ItemConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(configuration, nameof(configuration));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
@@ -587,14 +610,14 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
+      if (attributeValue is null) {
         attributeValue = typeAccessor.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
+      if (attributeValue is null) {
         attributeValue = source.Attributes.GetValue(
           configuration.AttributeKey,
           configuration.DefaultValue?.ToString(),
@@ -634,12 +657,7 @@ namespace OnTopic.Mapping {
     /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
     private static bool IsList(Type targetType) =>
       typeof(IList).IsAssignableFrom(targetType) ||
-      targetType.IsGenericType &&
-      (
-        targetType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
-        targetType.GetGenericTypeDefinition() == typeof(ICollection<>) ||
-        targetType.GetGenericTypeDefinition() == typeof(IList<>)
-      );
+      targetType.IsGenericType && _listTypes.Contains(targetType.GetGenericTypeDefinition());
 
     /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
@@ -649,18 +667,6 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
     private static IList? InitializeCollection(Type targetType) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(targetType, nameof(targetType));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Escape clause if preconditions are not met
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!IsList(targetType)) {
-        return (IList?)null;
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to create specific type
@@ -723,19 +729,6 @@ namespace OnTopic.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(associations, nameof(associations));
-      Contract.Requires(configuration, nameof(configuration));
-      Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Escape clause if preconditions are not met
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!IsList(configuration.Property.PropertyType)) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
       var targetList = (IList?)configuration.Property.GetValue(target, null);
@@ -787,13 +780,6 @@ namespace OnTopic.Mapping {
     ///   The <see cref="ItemConfiguration"/> with details about the property's attributes.
     /// </param>
     private IList<Topic> GetSourceCollection(Topic source, AssociationTypes associations, ItemConfiguration configuration) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(associations, nameof(associations));
-      Contract.Requires(configuration, nameof(configuration));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
@@ -918,14 +904,6 @@ namespace OnTopic.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(sourceList, nameof(sourceList));
-      Contract.Requires(targetList, nameof(targetList));
-      Contract.Requires(configuration, nameof(configuration));
-      Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Determine the type of item in the list
       \-----------------------------------------------------------------------------------------------------------------------*/
       var listType = typeof(ITopicViewModel);
@@ -943,15 +921,9 @@ namespace OnTopic.Mapping {
 
       foreach (var childTopic in sourceList) {
 
-        //Ensure the source topic matches any [FilterByAttribute()] settings
-        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
-          continue;
-        }
-
-        if (
-          configuration.ContentTypeFilter is not null &&
-          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
-        ) {
+        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
+        //explicitly requested by a top-level request.
+        if (childTopic.IsDisabled) {
           continue;
         }
 
@@ -960,9 +932,16 @@ namespace OnTopic.Mapping {
           continue;
         }
 
-        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
-        //explicitly requested by a top-level request.
-        if (childTopic.IsDisabled) {
+        //Ensure the source topic matches any [FilterByContentType()] settings
+        if (
+          configuration.ContentTypeFilter is not null &&
+          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
+        ) {
+          continue;
+        }
+
+        //Ensure the source topic matches any [FilterByAttribute()] settings
+        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
           continue;
         }
 
@@ -975,7 +954,7 @@ namespace OnTopic.Mapping {
           }
         }
         else {
-          AddToList(childDto);
+          addToList(childDto);
         }
 
       }
@@ -988,22 +967,20 @@ namespace OnTopic.Mapping {
         var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
         if (dto is not null) {
-          AddToList(dto);
+          addToList(dto);
         }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
-      void AddToList(object dto) {
-        if (dto is not null) {
-          try {
-            targetList.Add(dto);
-          }
-          catch (ArgumentException) {
-            //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
-            //We would defensively check for this, except IList doesn't provide a suitable method to do so
-          }
+      void addToList(object dto) {
+        try {
+          targetList.Add(dto);
+        }
+        catch (ArgumentException) {
+          //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+          //We would defensively check for this, except IList doesn't provide a suitable method to do so
         }
       }
 
@@ -1055,14 +1032,6 @@ namespace OnTopic.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(targetType, nameof(targetType));
-      Contract.Requires(configuration, nameof(configuration));
-      Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Bypass disabled topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
@@ -1082,13 +1051,6 @@ namespace OnTopic.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate results
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicDto is null) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Return type
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topicDto;
@@ -1104,12 +1066,6 @@ namespace OnTopic.Mapping {
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
     private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(targetList, nameof(targetList));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate source properties
@@ -1142,13 +1098,6 @@ namespace OnTopic.Mapping {
     /// <param name="configuration">The <see cref="ItemConfiguration"/> with details about the item's attributes.</param>
     /// <param name="value">The compatible property, if it is available.</param>
     private static bool TryGetCompatibleProperty(Topic source, Type targetType, ItemConfiguration configuration, out object? value) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(targetType, nameof(targetType));
-      Contract.Requires(configuration, nameof(configuration));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
