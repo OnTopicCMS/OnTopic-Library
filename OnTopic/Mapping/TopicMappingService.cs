@@ -689,13 +689,6 @@ namespace OnTopic.Mapping {
       Contract.Requires(targetType, nameof(targetType));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Escape clause if preconditions are not met
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!IsList(targetType)) {
-        return (IList?)null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to create specific type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!targetType.IsInterface && !targetType.IsAbstract) {
@@ -762,11 +755,6 @@ namespace OnTopic.Mapping {
       Contract.Requires(associations, nameof(associations));
       Contract.Requires(configuration, nameof(configuration));
       Contract.Requires(cache, nameof(cache));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Escape clause if preconditions are not met
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!IsList(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
