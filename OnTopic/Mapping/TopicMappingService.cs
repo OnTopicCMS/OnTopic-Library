@@ -542,16 +542,19 @@ namespace OnTopic.Mapping {
       if (TryGetCompatibleProperty(source, targetType, configuration, out var compatibleValue)) {
         value = compatibleValue;
       }
-      else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
-        value = GetScalarValue(source, configuration);
-      }
-      else if (IsList(targetType)) {
+      else if (configuration.MapToParent) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
         if (source.Parent is not null) {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
+      }
+      else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
+        value = GetScalarValue(source, configuration);
+      }
+      else if (IsList(targetType)) {
+        return null;
       }
       else if (
         topicReference is not null &&
@@ -564,9 +567,6 @@ namespace OnTopic.Mapping {
         if (topicReference is not null) {
           value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
         }
-      }
-      else if (configuration.MapToParent) {
-        return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
