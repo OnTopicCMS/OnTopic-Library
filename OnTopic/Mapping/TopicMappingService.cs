@@ -954,7 +954,7 @@ namespace OnTopic.Mapping {
           }
         }
         else {
-          AddToList(childDto);
+          addToList(childDto);
         }
 
       }
@@ -967,22 +967,20 @@ namespace OnTopic.Mapping {
         var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
         if (dto is not null) {
-          AddToList(dto);
+          addToList(dto);
         }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
-      void AddToList(object dto) {
-        if (dto is not null) {
-          try {
-            targetList.Add(dto);
-          }
-          catch (ArgumentException) {
-            //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
-            //We would defensively check for this, except IList doesn't provide a suitable method to do so
-          }
+      void addToList(object dto) {
+        try {
+          targetList.Add(dto);
+        }
+        catch (ArgumentException) {
+          //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+          //We would defensively check for this, except IList doesn't provide a suitable method to do so
         }
       }
 
