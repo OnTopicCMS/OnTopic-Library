@@ -921,15 +921,9 @@ namespace OnTopic.Mapping {
 
       foreach (var childTopic in sourceList) {
 
-        //Ensure the source topic matches any [FilterByAttribute()] settings
-        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
-          continue;
-        }
-
-        if (
-          configuration.ContentTypeFilter is not null &&
-          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
-        ) {
+        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
+        //explicitly requested by a top-level request.
+        if (childTopic.IsDisabled) {
           continue;
         }
 
@@ -938,9 +932,16 @@ namespace OnTopic.Mapping {
           continue;
         }
 
-        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
-        //explicitly requested by a top-level request.
-        if (childTopic.IsDisabled) {
+        //Ensure the source topic matches any [FilterByContentType()] settings
+        if (
+          configuration.ContentTypeFilter is not null &&
+          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
+        ) {
+          continue;
+        }
+
+        //Ensure the source topic matches any [FilterByAttribute()] settings
+        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
           continue;
         }
 
