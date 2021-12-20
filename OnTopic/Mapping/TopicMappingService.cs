@@ -540,8 +540,10 @@ namespace OnTopic.Mapping {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
       }
-      else if (!mapAssociationsOnly && AttributeValueConverter.IsConvertible(targetType)) {
-        value = GetScalarValue(source, configuration);
+      else if (AttributeValueConverter.IsConvertible(targetType)) {
+        if (!mapAssociationsOnly) {
+          value = GetScalarValue(source, configuration);
+        }
       }
       else if (IsList(targetType)) {
         return null;
