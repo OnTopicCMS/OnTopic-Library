@@ -124,12 +124,6 @@ namespace OnTopic.Data.Sql {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(command, "The SQL command object must be specified.");
-      Contract.Requires(command.Parameters, "The SQL command object's parameters collection must be available");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish basic parameter
       \-----------------------------------------------------------------------------------------------------------------------*/
       var parameter             = new SqlParameter("@" + sqlParameter, sqlDbType) {

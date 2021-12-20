@@ -63,11 +63,6 @@ namespace OnTopic.Internal.Reflection {
     internal TypeAccessor(Type type) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(type, nameof(type));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Initialize fields, properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       _members                  = new(StringComparer.OrdinalIgnoreCase);
@@ -214,12 +209,6 @@ namespace OnTopic.Internal.Reflection {
     internal object? GetValue(object source, string memberName) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-      Contract.Requires(memberName, nameof(memberName));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve member
       \-----------------------------------------------------------------------------------------------------------------------*/
       var member = GetMember(memberName);
@@ -334,12 +323,6 @@ namespace OnTopic.Internal.Reflection {
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
     /// </param>
     internal void SetValue(object target, string memberName, object? value, bool allowConversion = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(memberName, nameof(memberName));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies

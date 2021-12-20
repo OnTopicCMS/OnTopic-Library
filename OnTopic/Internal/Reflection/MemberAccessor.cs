@@ -40,7 +40,6 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(memberInfo, nameof(memberInfo));
       Contract.Requires(
         memberInfo is PropertyInfo or MethodInfo,
         $"The {nameof(memberInfo)} parameter must be of type {nameof(PropertyInfo)} or {nameof(MethodInfo)}."
@@ -163,8 +162,6 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(source, nameof(source));
-
       if (MemberInfo.DeclaringType != source.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(source.GetType())) {
         throw new ArgumentException(
           $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to access a member of {source.GetType()}",
@@ -214,8 +211,6 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-
       if (MemberInfo.DeclaringType != target.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(target.GetType())) {
         throw new ArgumentException(
           $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to set a member of {target.GetType()}",
