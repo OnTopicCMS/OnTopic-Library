@@ -26,6 +26,7 @@ namespace OnTopic.Internal.Reflection {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Action<object, object?>?        _setter;
     private                     Func<object, object?>?          _getter;
+    private                     List<Attribute>                 _customAttributes               = default!;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -121,6 +122,19 @@ namespace OnTopic.Internal.Reflection {
     ///   parameter.
     /// </remarks>
     internal bool CanWrite { get; private set; }
+
+    /*==========================================================================================================================
+    | CUSTOM ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a cached list of custom attributes associated with member.
+    /// </summary>
+    internal List<Attribute> CustomAttributes {
+      get {
+        _customAttributes ??= MemberInfo.GetCustomAttributes(true).OfType<Attribute>().ToList();
+        return _customAttributes;
+      }
+    }
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE?
