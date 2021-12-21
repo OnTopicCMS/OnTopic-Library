@@ -43,6 +43,60 @@ namespace OnTopic.Attributes {
       return String.IsNullOrWhiteSpace(value)? null : value;
     }
 
+    /*==========================================================================================================================
+    | METHOD: GET BOOLEAN VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an attribute value as a Boolean from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   attributeKey"/>.
+    /// </summary>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <returns>The value for the attribute as a boolean.</returns>
+    public bool? GetBoolean(string attributeKey) => AttributeValueConverter.Convert<bool?>(GetValue(attributeKey));
+
+    /*==========================================================================================================================
+    | METHOD: GET INTEGER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an attribute value as an integer from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   attributeKey"/>.
+    /// </summary>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <returns>The value for the attribute as an integer.</returns>
+    public int? GetInteger(string attributeKey) => AttributeValueConverter.Convert<int?>(GetValue(attributeKey));
+
+    /*==========================================================================================================================
+    | METHOD: GET DOUBLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an attribute value as a double from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   attributeKey"/>.
+    /// </summary>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <returns>The value for the attribute as a double.</returns>
+    public double? GetDouble(string attributeKey) => AttributeValueConverter.Convert<double?>(GetValue(attributeKey));
+
+    /*==========================================================================================================================
+    | METHOD: GET DATETIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an attribute value as a date/time from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   attributeKey"/>.
+    /// </summary>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <returns>The value for the attribute as a DateTime object.</returns>
+    public DateTime? GetDateTime(string attributeKey) => AttributeValueConverter.Convert<DateTime?>(GetValue(attributeKey));
+
+    /*==========================================================================================================================
+    | METHOD: GET URI
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an attribute value as a URI from the <see cref="AttributeDictionary"/> based on the <paramref name="attributeKey
+    ///   "/>.
+    /// </summary>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <returns>The value for the attribute as a Uri object.</returns>
+    public Uri? GetUri(string attributeKey) => AttributeValueConverter.Convert<Uri?>(GetValue(attributeKey));
 
   } //Class
 } //Namespace
