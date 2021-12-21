@@ -458,7 +458,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration((PropertyInfo)propertyAccessor.MemberInfo, attributePrefix);
+      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled

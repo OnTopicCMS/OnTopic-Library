@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Mapping.Internal {
@@ -35,15 +36,18 @@ namespace OnTopic.Mapping.Internal {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="PropertyInfo"/> instance, exposes a set of properties associated with known <see cref="Attribute"/>
-    ///   instances.
+    ///   Given a <see cref="MemberAccessor"/> instance, exposes a set of properties associated with known <see cref="Attribute"
+    ///   /> instances.
     /// </summary>
-    /// <param name="property">The <see cref="PropertyInfo"/> instance to check for <see cref="Attribute"/> values.</param>
+    /// <param name="memberAccessor">
+    ///   The <see cref="MemberAccessor"/> instance to check for <see cref="Attribute"/> values.
+    /// </param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal PropertyConfiguration(PropertyInfo property, string? attributePrefix = ""):
-      base(property, property.Name, attributePrefix)
+    internal PropertyConfiguration(MemberAccessor memberAccessor, string? attributePrefix = ""):
+      base(memberAccessor, memberAccessor.Name, attributePrefix)
     {
-      Property = property;
+      Property                  = (PropertyInfo)memberAccessor.MemberInfo;
+      MemberAccessor            = memberAccessor;
     }
 
     /*==========================================================================================================================
@@ -53,6 +57,14 @@ namespace OnTopic.Mapping.Internal {
     ///   The <see cref="PropertyInfo"/> that the current <see cref="PropertyConfiguration"/> is associated with.
     /// </summary>
     internal PropertyInfo Property { get; }
+
+    /*==========================================================================================================================
+    | PROPERTY: MEMBER ACCESSOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The <see cref="MemberAccessor"/> that the current <see cref="PropertyConfiguration"/> is associated with.
+    /// </summary>
+    internal MemberAccessor MemberAccessor { get; }
 
     /*==========================================================================================================================
     | METHOD: VALIDATE

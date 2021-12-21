@@ -205,7 +205,7 @@ namespace OnTopic.Mapping.Reverse {
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
-      foreach (var property in properties) {
+      foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
@@ -229,21 +229,22 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="property">Information related to the current property.</param>
+    /// <param name="propertyAccessor">Information related to the current property.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private async Task SetPropertyAsync(
       object                    source,
       Topic                     target,
-      PropertyInfo              property,
+      MemberAccessor            propertyAccessor,
       string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(property, attributePrefix);
+      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
       var compositeAttributeKey = configuration.AttributeKey;
+      var property              = configuration.Property;
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
