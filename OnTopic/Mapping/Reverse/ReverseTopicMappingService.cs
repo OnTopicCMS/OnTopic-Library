@@ -244,7 +244,6 @@ namespace OnTopic.Mapping.Reverse {
       var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
       var compositeAttributeKey = configuration.AttributeKey;
-      var property              = configuration.Property;
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
@@ -258,7 +257,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties injected by the compiler for record types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.Property.Name is "EqualityContract") {
+      if (propertyAccessor.Name is "EqualityContract") {
         return;
       }
 
@@ -267,7 +266,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
         await MapAsync(
-          property.GetValue(source),
+          propertyAccessor.GetValue(source),
           target,
           configuration.AttributePrefix
         ).ConfigureAwait(false);
@@ -317,13 +316,12 @@ namespace OnTopic.Mapping.Reverse {
     ///   Sets an attribute on the target <see cref="Topic"/> with a scalar value from the source binding model.
     /// </summary>
     /// <remarks>
-    ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
-    ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
-    ///   cref="SetScalarValue(Object, Topic, PropertyConfiguration)"/> method will attempt to set the property on the
-    ///   <paramref name="target"/>. If the value is not set on the <paramref name="source"/> then the <see
-    ///   cref="DefaultValueAttribute"/> will be evaluated as a fallback. If the property is not of a settable type then the
-    ///   property is not set. If the value is empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s
-    ///   <see cref="AttributeCollection"/>.
+    ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.MemberAccessor"/> is of the type <see
+    ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see cref="SetScalarValue(
+    ///   Object, Topic, PropertyConfiguration)"/> method will attempt to set the property on the <paramref name="target"/>. If
+    ///   the value is not set on the <paramref name="source"/> then the <see cref="DefaultValueAttribute"/> will be evaluated
+    ///   as a fallback. If the property is not of a settable type then the property is not set. If the value is empty, then it
+    ///   will be treated as <c>null</c> in the <paramref name="target"/>'s <see cref="AttributeCollection"/>.
     /// </remarks>
     /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
@@ -342,8 +340,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
-      var attributeValue        = typeAccessor.GetPropertyValue(source, configuration.Property.Name)?.ToString();
+      var memberAccessor        = configuration.MemberAccessor;
+      var attributeValue        = memberAccessor.GetValue(source)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Fall back to default, if configured
@@ -356,7 +354,7 @@ namespace OnTopic.Mapping.Reverse {
       | Handle type conversion
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeValue is not null) {
-        switch (configuration.Property.PropertyType.Name) {
+        switch (memberAccessor.Type.Name) {
           case nameof(Boolean):
             attributeValue = attributeValue is "True" ? "1" : "0";
             break;
@@ -393,7 +391,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList?)configuration.Property.GetValue(source, null);
+      var sourceList = (IList?)configuration.MemberAccessor.GetValue(source);
 
       if (sourceList is null) {
         sourceList = new List<IAssociatedTopicBindingModel>();
@@ -411,8 +409,8 @@ namespace OnTopic.Mapping.Reverse {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
         if (targetTopic is null) {
           throw new MappingModelValidationException(
-            $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
-            $"be located in the repository."
+            $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.MemberAccessor.Name}' property could " +
+            $"not be located in the repository."
           );
         }
         target.Relationships.SetValue(configuration.AttributeKey, targetTopic);
@@ -443,7 +441,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList?)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
+      var sourceList = (IList?)configuration.MemberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
@@ -484,14 +482,14 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var modelReference = (IAssociatedTopicBindingModel?)configuration.Property.GetValue(source);
+      var modelReference = (IAssociatedTopicBindingModel?)configuration.MemberAccessor.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (modelReference is null || modelReference.UniqueKey is null) {
         throw new MappingModelValidationException(
-          $"The {configuration.Property.Name} property must reference an object with its `UniqueKey` property set The " +
+          $"The {configuration.MemberAccessor.Name} property must reference an object with its `UniqueKey` property set The " +
           $"value may be empty, but it should not be null."
         );
       }
@@ -507,7 +505,7 @@ namespace OnTopic.Mapping.Reverse {
       if (modelReference.UniqueKey.Length > 0 && topicReference is null) {
         throw new MappingModelValidationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
-          $"'{configuration.Property.Name}' property could not be found."
+          $"'{configuration.MemberAccessor.Name}' property could not be found."
         );
       }
 
