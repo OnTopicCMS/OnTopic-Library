@@ -9,6 +9,8 @@
 \-----------------------------------------------------------------------------------------------------------------------------*/
 global using System.ComponentModel.DataAnnotations;
 global using System.Diagnostics.CodeAnalysis;
+global using OnTopic.Attributes;
+global using OnTopic.Internal.Diagnostics;
 global using OnTopic.Models;
 
 /*==============================================================================================================================

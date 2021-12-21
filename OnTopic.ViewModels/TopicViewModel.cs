@@ -21,6 +21,24 @@ namespace OnTopic.ViewModels {
   public record TopicViewModel: ITopicViewModel, ICoreTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
 
     /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="TopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public TopicViewModel(AttributeDictionary attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      IsHidden                  = attributes.GetBoolean("IsHidden")?? false;
+      View                      = attributes.GetValue("View");
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="TopicViewModel"/> with no parameters.
+    /// </summary>
+    public TopicViewModel() { }
+
+    /*==========================================================================================================================
     | ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
