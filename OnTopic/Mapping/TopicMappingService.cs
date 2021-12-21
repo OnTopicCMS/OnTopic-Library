@@ -741,10 +741,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetList = (IList?)configuration.Property.GetValue(target, null);
+      var targetList = (IList?)configuration.MemberAccessor.GetValue(target);
       if (targetList is null) {
-        targetList = InitializeCollection(configuration.Property.PropertyType);
-        configuration.Property.SetValue(target, targetList);
+        targetList = InitializeCollection(configuration.MemberAccessor.Type);
+        configuration.MemberAccessor.SetValue(target, targetList);
       }
 
       Contract.Assume(
