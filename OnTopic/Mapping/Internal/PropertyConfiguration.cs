@@ -75,8 +75,8 @@ namespace OnTopic.Mapping.Internal {
     /// </summary>
     /// <param name="target">The target DTO to validate the current property on.</param>
     internal void Validate(object target) {
-      foreach (ValidationAttribute validator in Property.GetCustomAttributes(typeof(ValidationAttribute))) {
-        validator.Validate(Property.GetValue(target), Property.Name);
+      foreach (ValidationAttribute validator in CustomAttributes.OfType<ValidationAttribute>()) {
+        validator.Validate(MemberAccessor.GetValue(target), MemberAccessor.Name);
       }
     }
 
