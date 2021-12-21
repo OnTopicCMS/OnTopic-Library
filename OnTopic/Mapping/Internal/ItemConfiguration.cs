@@ -15,7 +15,7 @@ namespace OnTopic.Mapping.Internal {
   | CLASS: ITEM CONFIGURATION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Evaluates the <see cref="ICustomAttributeProvider"/> for a given instance for a <see cref="ParameterInfo"/> or <see cref
+  ///   Evaluates the <see cref="IEnumerable{Attribute}"/> of a given instance for a <see cref="ParameterInfo"/> or <see cref
   ///   ="PropertyInfo"/>, and exposes known <see cref="Attribute"/>s through a set of property values.
   /// </summary>
   /// <remarks>
@@ -41,20 +41,21 @@ namespace OnTopic.Mapping.Internal {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given an <see cref="ICustomAttributeProvider"/> instance, exposes a set of properties associated with known <see cref=
-    ///   "Attribute"/> instances.
+    ///   Given an <see cref="IEnumerable{Attribute}"/> instance, exposes a set of properties associated with known
+    ///   <see cref="Attribute"/> instances.
     /// </summary>
-    /// <param name="source">
-    ///   The <see cref="ICustomAttributeProvider"/> instance to check for <see cref="Attribute"/> values.
+    /// <param name="customAttributes">
+    ///   The <see cref="IEnumerable{Attribute}"/> instance to check for <see cref="Attribute"/> values.
     /// </param>
     /// <param name="name">The name of the <see cref="ParameterInfo"/> or <see cref="PropertyInfo"/>.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal ItemConfiguration(ICustomAttributeProvider source, string name, string? attributePrefix = "") {
+    internal ItemConfiguration(IEnumerable<Attribute> customAttributes, string name, string? attributePrefix = "") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set backing property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Source = source;
+      CustomAttributes          = customAttributes;
+      var source                = customAttributes;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
@@ -74,23 +75,22 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<MapAsAttribute>(source,               a => MapAs = a.Type);
-      GetAttributeValue<DefaultValueAttribute>(source,        a => DefaultValue = a.Value);
-      GetAttributeValue<InheritAttribute>(source,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(source,        a => AttributeKey = attributePrefix + a.Key);
-      GetAttributeValue<MapToParentAttribute>(source,         a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(source,         a => AttributePrefix += (a.AttributePrefix?? name));
-      GetAttributeValue<IncludeAttribute>(source,             a => IncludeAssociations = a.Associations);
-      GetAttributeValue<FlattenAttribute>(source,             a => FlattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(source,            a => MetadataKey = a.Key);
-      GetAttributeValue<DisableMappingAttribute>(source,      a => DisableMapping = true);
-      GetAttributeValue<FilterByContentTypeAttribute>(source, a => ContentTypeFilter = a.ContentType);
+      GetAttributeValue<MapAsAttribute>(                        a => MapAs = a.Type);
+      GetAttributeValue<DefaultValueAttribute>(                 a => DefaultValue = a.Value);
+      GetAttributeValue<InheritAttribute>(                      a => InheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(                 a => AttributeKey = attributePrefix + a.Key);
+      GetAttributeValue<MapToParentAttribute>(                  a => MapToParent = true);
+      GetAttributeValue<MapToParentAttribute>(                  a => AttributePrefix += (a.AttributePrefix?? name));
+      GetAttributeValue<IncludeAttribute>(                      a => IncludeAssociations = a.Associations);
+      GetAttributeValue<FlattenAttribute>(                      a => FlattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(                     a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(               a => DisableMapping = true);
+      GetAttributeValue<FilterByContentTypeAttribute>(          a => ContentTypeFilter = a.ContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine collection key and type
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<CollectionAttribute>(
-        source,
         a => {
           CollectionKey = a.Key ?? CollectionKey;
           CollectionType = a.Type;
@@ -104,7 +104,7 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttributes = (FilterByAttributeAttribute[])source.GetCustomAttributes(typeof(FilterByAttributeAttribute), true);
+      var filterByAttributes = source.OfType<FilterByAttributeAttribute>();
       if (filterByAttributes is not null && filterByAttributes.Any()) {
         foreach (var filter in filterByAttributes) {
           AttributeFilters.Add(filter.Key, filter.Value);
@@ -114,12 +114,12 @@ namespace OnTopic.Mapping.Internal {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: SOURCE
+    | PROPERTY: CUSTOM ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   The <see cref="ICustomAttributeProvider"/> that the current <see cref="ItemConfiguration"/> is associated with.
+    ///   The <see cref="IEnumerable{Attribute}"/> that the current <see cref="ItemConfiguration"/> is associated with.
     /// </summary>
-    internal ICustomAttributeProvider Source { get; }
+    protected IEnumerable<Attribute> CustomAttributes { get; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE KEY
@@ -439,17 +439,27 @@ namespace OnTopic.Mapping.Internal {
       );
 
     /*==========================================================================================================================
+    | PRIVATE: GET ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function identifies whether a <typeparamref name="T"/> exists in the <see cref="CustomAttributes"/> and, if so,
+    ///   returns the value.
+    /// </summary>
+    /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
+    private T? GetAttribute<T>() where T : Attribute =>
+      CustomAttributes.OfType<T>().FirstOrDefault();
+
+    /*==========================================================================================================================
     | PRIVATE: GET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper function evaluates an attribute and then, if it exists, executes an <see cref="Action{T1}"/> to process the
+    ///   Helper function evaluates an attribute and then, if it exists, executes an <see cref="Action{T}"/> to process the
     ///   results.
     /// </summary>
     /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
-    /// <param name="source">The <see cref="ICustomAttributeProvider"/> instance to pull the attribute from.</param>
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
-    private static void GetAttributeValue<T>(ICustomAttributeProvider source, Action<T> action) where T : Attribute {
-      var attribute = (T)source.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+    private void GetAttributeValue<T>(Action<T> action) where T : Attribute {
+      var attribute = GetAttribute<T>();
       if (attribute is not null) {
         action(attribute);
       }
