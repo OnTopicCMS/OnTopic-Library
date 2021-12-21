@@ -750,8 +750,8 @@ namespace OnTopic.Mapping {
 
       Contract.Assume(
         targetList,
-        $"The target list type, '{configuration.Property.PropertyType}', could not be properly constructed, as required to " +
-        $"map the '{configuration.Property.Name}' property on the '{target?.GetType().Name}' object."
+        $"The target list type, '{configuration.MemberAccessor.Type}', could not be properly constructed, as required to " +
+        $"map the '{configuration.MemberAccessor.Name}' property on the '{target?.GetType().Name}' object."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
