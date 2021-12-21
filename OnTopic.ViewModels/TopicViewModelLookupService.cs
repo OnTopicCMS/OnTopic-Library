@@ -48,6 +48,7 @@ namespace OnTopic.ViewModels {
       \-----------------------------------------------------------------------------------------------------------------------*/
       TryAdd(typeof(ItemTopicViewModel));
       TryAdd(typeof(ContentItemTopicViewModel));
+      TryAdd(typeof(CacheProfileTopicViewModel));
       TryAdd(typeof(LookupListItemTopicViewModel));
       TryAdd(typeof(SlideTopicViewModel));
 
