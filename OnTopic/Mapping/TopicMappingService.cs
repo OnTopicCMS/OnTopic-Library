@@ -185,6 +185,7 @@ namespace OnTopic.Mapping {
       var constructorInfo       = typeAccessor.GetPrimaryConstructor();
       var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
       var arguments             = new object?[parameters.Length];
+      var attributeArguments    = (IDictionary<string, string?>)new Dictionary<string, string?>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Pre-cache entry
@@ -201,14 +202,23 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var parameterQueue        = new Dictionary<int, Task<object?>>();
 
-      foreach (var parameter in parameters) {
-        parameterQueue.Add(parameter.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
+      if (parameters.Length == 1 && parameters[0].ParameterType == typeof(AttributeDictionary)) {
+        var attributes          = topic.Attributes.AsAttributeDictionary(true);
+        arguments[0]            = attributes;
+        attributeArguments      = attributes;
       }
+      else {
 
-      await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
+        foreach (var parameter in parameters) {
+          parameterQueue.Add(parameter.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
+        }
 
-      foreach (var parameter in parameterQueue) {
-        arguments[parameter.Key] = await parameter.Value.ConfigureAwait(false);
+        await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
+
+        foreach (var parameter in parameterQueue) {
+          arguments[parameter.Key] = await parameter.Value.ConfigureAwait(false);
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -230,7 +240,7 @@ namespace OnTopic.Mapping {
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var propertyQueue         = new List<Task>();
-      var mappedParameters      = parameters.Select(p => p.Name);
+      var mappedParameters      = parameters.Select(p => p.Name).Union(attributeArguments.Select(a => a.Key));
 
       foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
