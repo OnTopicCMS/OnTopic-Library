@@ -406,6 +406,50 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET URI: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that URI values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [Fact]
+    public void GetUri_InheritedValue_IsReturned() {
+
+      var baseTopic             = new Topic("Base", "Container");
+      var topic                 = new Topic("Test", "Container");
+      var childTopic            = new Topic("Child", "Container", topic);
+      var url                   = "https://www.github.com/OnTopicCMS/";
+      var uri                   = new Uri(url);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetUri("Url", uri);
+
+      Assert.Equal(uri, topic.Attributes.GetUri("Url"));
+      Assert.Equal(uri, childTopic.Attributes.GetUri("Url", inheritFromParent: true));
+      Assert.Null(topic.Attributes.GetUri("Url", inheritFromBase: false));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET URI: INCORRECT VALUE: RETURN DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that invalid values return the default.
+    /// </summary>
+    [Fact]
+    public void GetUri_IncorrectValue_ReturnDefault() {
+
+      var topic                 = new Topic("Test", "Container");
+      var url                   = "https://www.github.com/OnTopicCMS/";
+      var uri                   = new Uri(url);
+
+      Assert.Null(topic.Attributes.GetUri("InvalidUrl"));
+      Assert.Equal(uri, topic.Attributes.GetUri("InvalidUrl", uri));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
