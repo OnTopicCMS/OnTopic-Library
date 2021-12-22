@@ -46,17 +46,8 @@ namespace OnTopic.Mapping.Internal {
     internal PropertyConfiguration(MemberAccessor memberAccessor, string? attributePrefix = ""):
       base(memberAccessor.CustomAttributes, memberAccessor.Name, attributePrefix)
     {
-      Property                  = (PropertyInfo)memberAccessor.MemberInfo;
       MemberAccessor            = memberAccessor;
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: PROPERTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   The <see cref="PropertyInfo"/> that the current <see cref="PropertyConfiguration"/> is associated with.
-    /// </summary>
-    internal PropertyInfo Property { get; }
 
     /*==========================================================================================================================
     | PROPERTY: MEMBER ACCESSOR
