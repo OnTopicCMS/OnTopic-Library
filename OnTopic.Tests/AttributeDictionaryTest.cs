@@ -176,5 +176,54 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: AS ATTRIBUTE DICTIONARY: EXCLUDED KEYS: EXCLUDED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="AttributeDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+    ///   and confirms that <see cref="AttributeDictionary.GetValue(String)"/> doesn't include the excluded values.
+    /// </summary>
+    [Fact]
+    public void AsAttributeDictionary_ExcludedKeys_Excluded() {
+
+      var topic                 = new Topic("Test", "Page");
+
+      topic.Attributes.SetValue("Title", "Page Title");
+      topic.Attributes.SetValue("LastModified", "October 15, 1976");
+      topic.Attributes.SetValue("Subtitle", "Subtitle");
+
+      var attributes            = topic.Attributes.AsAttributeDictionary();
+
+      Assert.Single(attributes.Keys);
+      Assert.Null(attributes.GetValue("Title"));
+      Assert.Null(attributes.GetValue("LastModified"));
+      Assert.Equal("Subtitle", attributes.GetValue("Subtitle"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: AS ATTRIBUTE DICTIONARY: INHERIT FROM BASE: INHERITS VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="AttributeDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+    ///   and confirms that <see cref="AttributeDictionary.GetValue(String)"/> correctly inherits values.
+    /// </summary>
+    [Fact]
+    public void AsAttributeDictionary_InheritFromBase_InheritsValues() {
+
+      var baseTopic             = new Topic("BaseTopic", "Page");
+      var topic                 = new Topic("Test", "Page");
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetValue("Subtitle", "Subtitle");
+
+      var attributes            = topic.Attributes.AsAttributeDictionary(true);
+
+      Assert.Single(attributes.Keys);
+      Assert.Equal("Subtitle", attributes.GetValue("Subtitle"));
+
+    }
+
   } //Class
 } //Namespace
