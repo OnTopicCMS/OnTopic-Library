@@ -149,6 +149,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: ATTRIBUTE DICTIONARY: RETURNS NEW MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and attempts to map a view model with a constructor containing a <see
+    ///   cref="AttributeDictionary"/>. Confirms that the expected model is returned.
+    /// </summary>
+    [Fact]
+    public async Task Map_AttributeDictionary_ReturnsNewModel() {
+
+      var topic                 = new Topic("Test", "Page");
+      var lastModified          = new DateTime(2021, 12, 22);
+
+      topic.Attributes.SetValue("Subtitle", "Value");
+      topic.VersionHistory.Add(lastModified);
+
+      var target                = await _mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.Equal("Test", target?.Title);
+      Assert.Equal("Value", target?.Subtitle);
+      Assert.Equal(lastModified, target?.LastModified);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: CONSTRUCTOR: RETURNS NEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
