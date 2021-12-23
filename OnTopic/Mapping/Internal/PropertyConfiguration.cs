@@ -44,7 +44,7 @@ namespace OnTopic.Mapping.Internal {
     /// </param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     internal PropertyConfiguration(MemberAccessor memberAccessor, string? attributePrefix = ""):
-      base(memberAccessor.CustomAttributes, memberAccessor.Name, attributePrefix)
+      base(memberAccessor, memberAccessor.Name, attributePrefix)
     {
       MemberAccessor            = memberAccessor;
     }
