@@ -83,6 +83,13 @@ namespace OnTopic.Internal.Reflection {
         }
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get parameters from primary constructor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var parameter in GetPrimaryConstructor().GetParameters()) {
+        ConstructorParameters.Add(new(parameter));
+      }
+
     }
 
     /*==========================================================================================================================
@@ -92,6 +99,15 @@ namespace OnTopic.Internal.Reflection {
     ///   Gets the return type of a getter or the argument type of a setter.
     /// </summary>
     internal Type Type { get; }
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR PARAMETERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a list of <see cref="ParameterMetadata"/> instances derived from the primary constructor of the <see cref="Type"
+    ///   /> associated with this <see cref="TypeAccessor"/>.
+    /// </summary>
+    internal List<ParameterMetadata> ConstructorParameters { get; } = new();
 
     /*==========================================================================================================================
     | GET MEMBERS
