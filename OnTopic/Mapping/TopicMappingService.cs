@@ -541,7 +541,7 @@ namespace OnTopic.Mapping {
       else if (configuration.Metadata.IsList) {
         return null;
       }
-      else if (associations.HasFlag(AssociationTypes.References)) {
+      else if (configuration.Metadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
         var topicReference = getTopicReference();
         if (topicReference is not null) {
           value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
