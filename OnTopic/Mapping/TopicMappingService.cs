@@ -525,7 +525,12 @@ namespace OnTopic.Mapping {
       if (TryGetCompatibleProperty(source, targetType, configuration, out var compatibleValue)) {
         value = compatibleValue;
       }
-      else if (configuration.MapToParent) {
+      else if (configuration.Metadata.IsConvertible) {
+        if (!mapAssociationsOnly) {
+          value = GetScalarValue(source, configuration);
+        }
+      }
+      else if (configuration.Metadata.IsList) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent") {
@@ -533,12 +538,7 @@ namespace OnTopic.Mapping {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
       }
-      else if (configuration.Metadata.IsConvertible) {
-        if (!mapAssociationsOnly) {
-          value = GetScalarValue(source, configuration);
-        }
-      }
-      else if (configuration.Metadata.IsList) {
+      else if (configuration.MapToParent) {
         return null;
       }
       else if (configuration.Metadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
