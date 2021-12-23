@@ -30,19 +30,6 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITypeLookupService              _typeLookupService;
-    static readonly             List<Type>                      _listTypes                      = new();
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
-    /// </summary>
-    static TopicMappingService() {
-      _listTypes.Add(typeof(IEnumerable<>));
-      _listTypes.Add(typeof(ICollection<>));
-      _listTypes.Add(typeof(IList<>));
-    }
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -404,7 +391,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var value = await GetValue(source, parameter.Type, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && IsList(parameter.Type)) {
+      if (value is null && parameter.IsList) {
         return await getList(parameter.Type, configuration).ConfigureAwait(false);
       }
 
@@ -487,7 +474,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
         var value = await GetValue(source, propertyAccessor.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
-        if (value is null && IsList(propertyAccessor.Type)) {
+        if (value is null && propertyAccessor.IsList) {
           await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
         }
         else if (value != null && propertyAccessor.CanWrite) {
@@ -545,12 +532,12 @@ namespace OnTopic.Mapping {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
       }
-      else if (AttributeValueConverter.IsConvertible(targetType)) {
+      else if (configuration.Metadata.IsConvertible) {
         if (!mapAssociationsOnly) {
           value = GetScalarValue(source, configuration);
         }
       }
-      else if (IsList(targetType)) {
+      else if (configuration.Metadata.IsList) {
         return null;
       }
       else if (associations.HasFlag(AssociationTypes.References)) {
@@ -640,33 +627,6 @@ namespace OnTopic.Mapping {
       return attributeValue;
 
     }
-
-    /*==========================================================================================================================
-    | PRIVATE: IS LIST?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a type, determines whether it's a list that is recognized by the <see cref="TopicMappingService"/>.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     To qualify, the <paramref name="targetType"/> must either implement <see cref="IList"/>, or it must be of type <see
-    ///     cref="IEnumerable{T}"/>, <see cref="ICollection{T}"/>, or <see cref="IList{T}"/>—any of which, if null, will be
-    ///     instantiated as a new <see cref="List{T}"/>.
-    ///   </para>
-    ///   <para>
-    ///     It is technically possible for the <paramref name="targetType"/> to implement one of the interfaces, such as <see
-    ///     cref="IList{T}"/>, while the assigned reference type is not compatible with the <see cref="IList"/> interface
-    ///     required by e.g. <see cref="PopulateTargetCollectionAsync(IList{Topic}, IList, ItemConfiguration, MappedTopicCache)"
-    ///     />. Detecting this requires looping through the interface implementations which is comparatively more costly given
-    ///     the number of times <see cref="IsList(Type)"/> gets called. In practice, collections that implement e.g. <see cref="
-    ///     IList{T}"/> are expected to also support <see cref="IList"/>. If they don't, however, the mapping will throw an
-    ///     exception since the assigned value will not be castable to an <see cref="IList"/>.
-    ///   </para>
-    /// </remarks>
-    /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
-    private static bool IsList(Type targetType) =>
-      typeof(IList).IsAssignableFrom(targetType) ||
-      targetType.IsGenericType && _listTypes.Contains(targetType.GetGenericTypeDefinition());
 
     /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION

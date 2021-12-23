@@ -23,6 +23,19 @@ namespace OnTopic.Internal.Reflection {
     private readonly static     List<Type>                      _listTypes                      = new();
     private readonly            ICustomAttributeProvider        _attributeProvider;
     private readonly            Type                            _type                           = default!;
+    private                     List<Attribute>                 _customAttributes               = default!;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="ItemMetadata"/> with required dependencies.
+    /// </summary>
+    static ItemMetadata() {
+      _listTypes.Add(typeof(IEnumerable<>));
+      _listTypes.Add(typeof(ICollection<>));
+      _listTypes.Add(typeof(IList<>));
+    }
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -100,6 +113,23 @@ namespace OnTopic.Internal.Reflection {
     ///   nullable reference types.
     /// </remarks>
     internal bool IsNullable { get; init; }
+
+    /*==========================================================================================================================
+    | IS LIST?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determine if the member is a <see cref="IList"/>, <see cref="IList{T}"/>, <see cref="IEnumerable{T}"/>, or <see cref="
+    ///   ICollection{T}"/>.
+    /// </summary>
+    internal bool IsList { get; init; }
+
+    /*==========================================================================================================================
+    | IS CONVERTIBLE?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determine if the member is of a type that can be converted using the <see cref="AttributeValueConverter"/> class.
+    /// </summary>
+    internal bool IsConvertible { get; init; }
 
     /*==========================================================================================================================
     | CUSTOM ATTRIBUTES
