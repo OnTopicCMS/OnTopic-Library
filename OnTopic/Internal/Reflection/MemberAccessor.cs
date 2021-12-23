@@ -19,14 +19,13 @@ namespace OnTopic.Internal.Reflection {
   ///   compatible with the property or method parameter type being set, nor does it make any effort to provide explicit
   ///   conversions. Those capabilities will be handled by higher-level libraries.
   /// </remarks>
-  internal class MemberAccessor {
+  internal class MemberAccessor: ItemMetadata {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Action<object, object?>?        _setter;
     private                     Func<object, object?>?          _getter;
-    private                     List<Attribute>                 _customAttributes               = default!;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -36,7 +35,7 @@ namespace OnTopic.Internal.Reflection {
     ///   instance.
     /// </summary>
     /// <param name="memberInfo">The <see cref="MemberInfo"/> associated with the <see cref="MemberAccessor"/>.</param>
-    internal MemberAccessor(MemberInfo memberInfo) {
+    internal MemberAccessor(MemberInfo memberInfo): base(memberInfo.Name, memberInfo) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -50,10 +49,8 @@ namespace OnTopic.Internal.Reflection {
       | Set Properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       MemberInfo                = memberInfo;
-      Name                      = MemberInfo.Name;
       MemberType                = MemberInfo.MemberType;
       Type                      = GetType(memberInfo);
-      IsNullable                = !Type.IsValueType || Nullable.GetUnderlyingType(Type) != null;
 
     }
 
@@ -66,37 +63,10 @@ namespace OnTopic.Internal.Reflection {
     internal MemberInfo MemberInfo { get; }
 
     /*==========================================================================================================================
-    | NAME
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="MemberInfo.Name"/>
-    internal string Name { get; }
-
-    /*==========================================================================================================================
     | MEMBER TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="MemberInfo.MemberType"/>
     internal MemberTypes MemberType { get; }
-
-    /*==========================================================================================================================
-    | TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the <see cref="Type"/> associated with this member. For properties and get methods, this is the return type. For
-    ///   set methods, this is the type of the parameter.
-    /// </summary>
-    internal Type Type { get; }
-
-    /*==========================================================================================================================
-    | IS NULLABLE?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determine if the member accepts null values.
-    /// </summary>
-    /// <remarks>
-    ///   If the <see cref="Type"/> is a reference type, then it will always accept null values; this doesn't detect C# 9.0
-    ///   nullable reference types.
-    /// </remarks>
-    internal bool IsNullable { get; }
 
     /*==========================================================================================================================
     | CAN READ?
@@ -122,19 +92,6 @@ namespace OnTopic.Internal.Reflection {
     ///   parameter.
     /// </remarks>
     internal bool CanWrite { get; private set; }
-
-    /*==========================================================================================================================
-    | CUSTOM ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a cached list of custom attributes associated with member.
-    /// </summary>
-    internal List<Attribute> CustomAttributes {
-      get {
-        _customAttributes ??= MemberInfo.GetCustomAttributes(true).OfType<Attribute>().ToList();
-        return _customAttributes;
-      }
-    }
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE?
