@@ -30,6 +30,7 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITypeLookupService              _typeLookupService;
+    static readonly             TypeAccessor                    _topicTypeAccessor              = TypeAccessorCache.GetTypeAccessor<Topic>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -600,7 +601,8 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
+      var typeAccessor          = GetTopicAccessor(source.GetType());
+
       var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1071,7 +1073,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourcePropertyAccessor = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
+      var sourcePropertyAccessor = GetTopicAccessor(source.GetType()).GetMember(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
@@ -1089,6 +1091,17 @@ namespace OnTopic.Mapping {
       return true;
 
     }
+
+    /*==========================================================================================================================
+    | PRIVATE: GET TOPIC ACCESSOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a specific <see cref="Type"/> for a <see cref="Topic"/>, returns the appropriate <see cref="TypeAccessor"/> from
+    ///   the <see cref="TypeAccessorCache"/>.
+    /// </summary>
+    /// <param name="topicType">The <see cref="Type"/> of the source <see cref="Topic"/>.</param>
+    private static TypeAccessor GetTopicAccessor(Type topicType) =>
+      topicType == typeof(Topic) ? _topicTypeAccessor : TypeAccessorCache.GetTypeAccessor(topicType);
 
   } //Class
 } //Namespace
