@@ -212,9 +212,9 @@ namespace OnTopic.Tests {
     public void AsAttributeDictionary_InheritFromBase_InheritsValues() {
 
       var baseTopic             = new Topic("BaseTopic", "Page");
-      var topic                 = new Topic("Test", "Page");
-
-      topic.BaseTopic           = baseTopic;
+      var topic                 = new Topic("Test", "Page") {
+        BaseTopic               = baseTopic
+      };
 
       baseTopic.Attributes.SetValue("Subtitle", "Subtitle");
 
