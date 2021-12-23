@@ -182,9 +182,8 @@ namespace OnTopic.Mapping {
       | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(type);
-      var constructorInfo       = typeAccessor.GetPrimaryConstructor();
-      var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
-      var arguments             = new object?[parameters.Length];
+      var parameters            = typeAccessor.ConstructorParameters;
+      var arguments             = new object?[parameters.Count];
       var attributeArguments    = (IDictionary<string, string?>)new Dictionary<string, string?>();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -202,7 +201,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var parameterQueue        = new Dictionary<int, Task<object?>>();
 
-      if (parameters.Length == 1 && parameters[0].ParameterType == typeof(AttributeDictionary)) {
+      if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
         var attributes          = topic.Attributes.AsAttributeDictionary(true);
         arguments[0]            = attributes;
         attributeArguments      = attributes;
@@ -210,7 +209,7 @@ namespace OnTopic.Mapping {
       else {
 
         foreach (var parameter in parameters) {
-          parameterQueue.Add(parameter.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
+          parameterQueue.Add(parameter.ParameterInfo.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
         }
 
         await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
@@ -370,7 +369,7 @@ namespace OnTopic.Mapping {
     private async Task<object?> GetParameterAsync(
       Topic source,
       AssociationTypes associations,
-      ParameterInfo parameter,
+      ParameterMetadata parameter,
       MappedTopicCache cache,
       string? attributePrefix = null
     ) {
@@ -378,14 +377,13 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = parameter.GetCustomAttributes(true).OfType<Attribute>();
-      var configuration         = new ItemConfiguration(attributes, parameter.Name, attributePrefix);
+      var configuration         = new ItemConfiguration(parameter.CustomAttributes, parameter.Name, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
-        return parameter.DefaultValue;
+        return parameter.ParameterInfo.DefaultValue;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -394,7 +392,7 @@ namespace OnTopic.Mapping {
       if (configuration.MapToParent) {
         return await MapAsync(
           source,
-          parameter.ParameterType,
+          parameter.Type,
           associations,
           cache,
           configuration.AttributePrefix
@@ -404,10 +402,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
+      var value = await GetValue(source, parameter.Type, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && IsList(parameter.ParameterType)) {
-        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
+      if (value is null && IsList(parameter.Type)) {
+        return await getList(parameter.Type, configuration).ConfigureAwait(false);
       }
 
       return value;
