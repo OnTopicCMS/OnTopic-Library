@@ -378,7 +378,8 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
+      var attributes            = parameter.GetCustomAttributes(true).OfType<Attribute>();
+      var configuration         = new ItemConfiguration(attributes, parameter.Name, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled
@@ -441,7 +442,7 @@ namespace OnTopic.Mapping {
     /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="associations">Determines what associations the mapping should include, if any.</param>
-    /// <param name="property">Information related to the current property.</param>
+    /// <param name="propertyAccessor">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
@@ -449,7 +450,7 @@ namespace OnTopic.Mapping {
       Topic                     source,
       object                    target,
       AssociationTypes          associations,
-      MemberAccessor            property,
+      MemberAccessor            propertyAccessor,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null,
       bool                      mapAssociationsOnly             = false
@@ -458,7 +459,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration((PropertyInfo)property.MemberInfo, attributePrefix);
+      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled
@@ -471,7 +472,7 @@ namespace OnTopic.Mapping {
       | Handle [MapToParent] attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
-        var targetProperty = property.GetValue(target);
+        var targetProperty = propertyAccessor.GetValue(target);
         if (targetProperty is not null) {
           await MapAsync(
             source,
@@ -487,12 +488,12 @@ namespace OnTopic.Mapping {
       | Determine value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        var value = await GetValue(source, property.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
-        if (value is null && IsList(property.Type)) {
+        var value = await GetValue(source, propertyAccessor.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
+        if (value is null && IsList(propertyAccessor.Type)) {
           await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
         }
-        else if (value != null && property.CanWrite) {
-          property.SetValue(target, value, true);
+        else if (value != null && propertyAccessor.CanWrite) {
+          propertyAccessor.SetValue(target, value, true);
         }
       }
 
@@ -741,16 +742,16 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetList = (IList?)configuration.Property.GetValue(target, null);
+      var targetList = (IList?)configuration.MemberAccessor.GetValue(target);
       if (targetList is null) {
-        targetList = InitializeCollection(configuration.Property.PropertyType);
-        configuration.Property.SetValue(target, targetList);
+        targetList = InitializeCollection(configuration.MemberAccessor.Type);
+        configuration.MemberAccessor.SetValue(target, targetList);
       }
 
       Contract.Assume(
         targetList,
-        $"The target list type, '{configuration.Property.PropertyType}', could not be properly constructed, as required to " +
-        $"map the '{configuration.Property.Name}' property on the '{target?.GetType().Name}' object."
+        $"The target list type, '{configuration.MemberAccessor.Type}', could not be properly constructed, as required to " +
+        $"map the '{configuration.MemberAccessor.Name}' property on the '{target?.GetType().Name}' object."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1112,12 +1113,12 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
+      var sourcePropertyAccessor = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceProperty is null || !targetType.IsAssignableFrom(sourceProperty.Type)) {
+      if (sourcePropertyAccessor is null || !targetType.IsAssignableFrom(sourcePropertyAccessor.Type)) {
         value = null;
         return false;
       }
@@ -1125,7 +1126,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      value = sourceProperty.GetValue(source);
+      value = sourcePropertyAccessor.GetValue(source);
 
       return true;
 
