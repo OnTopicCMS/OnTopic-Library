@@ -19,6 +19,19 @@ namespace OnTopic.ViewModels {
   /// </remarks>
   public record LookupListItemTopicViewModel: ItemTopicViewModel {
 
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="LookupListItemTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public LookupListItemTopicViewModel(AttributeDictionary attributes): base(attributes) { }
+
+    /// <summary>
+    ///   Initializes a new <see cref="LookupListItemTopicViewModel"/> with no parameters.
+    /// </summary>
+    public LookupListItemTopicViewModel() { }
 
   } //Class
 } //Namespace

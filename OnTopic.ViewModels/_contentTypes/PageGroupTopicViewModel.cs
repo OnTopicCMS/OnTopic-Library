@@ -19,6 +19,20 @@ namespace OnTopic.ViewModels {
   /// </remarks>
   public record PageGroupTopicViewModel : SectionTopicViewModel {
 
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="PageGroupTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public PageGroupTopicViewModel(AttributeDictionary attributes): base(attributes) { }
+
+    /// <summary>
+    ///   Initializes a new <see cref="PageGroupTopicViewModel"/> with no parameters.
+    /// </summary>
+    public PageGroupTopicViewModel() { }
+
 
   } //Class
 } //Namespace

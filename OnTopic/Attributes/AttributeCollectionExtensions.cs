@@ -167,6 +167,43 @@ namespace OnTopic.Attributes {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET URI
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
+    ///   of inheritance, and an optional setting for searching through base topics for values. Return as a URI.
+    /// </summary>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    /// </param>
+    /// <param name="inheritFromBase">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
+    ///   the value.
+    /// </param>
+    /// <returns>The value for the attribute as a DateTime object.</returns>
+    public static Uri? GetUri(
+      this AttributeCollection  attributes,
+      string                    name,
+      Uri?                      defaultValue                    = default,
+      bool                      inheritFromParent               = false,
+      bool                      inheritFromBase                 = true
+    ) {
+      Contract.Requires(attributes);
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
+      return AttributeValueConverter.Convert<Uri>(
+        attributes.GetValue(
+          name,
+          null,
+          inheritFromParent,
+          inheritFromBase ? 5 : 0
+        )
+      )?? defaultValue;
+    }
+
+    /*==========================================================================================================================
     | METHOD: SET BOOLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -327,6 +364,48 @@ namespace OnTopic.Attributes {
     ) => attributes?.SetValue(
       key,
       value.ToString(CultureInfo.InvariantCulture),
+      isDirty
+    );
+
+    /*==========================================================================================================================
+    | METHOD: SET URI
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
+    /// </summary>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The <see cref="DateTime"/> value for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public static void SetUri(
+      this AttributeCollection  attributes,
+      string                    key,
+      Uri                       value,
+      bool?                     isDirty                         = null
+    ) => attributes?.SetValue(
+      key,
+      value?.ToString(),
       isDirty
     );
 

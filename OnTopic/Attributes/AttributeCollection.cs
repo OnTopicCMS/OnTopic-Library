@@ -22,6 +22,14 @@ namespace OnTopic.Attributes {
   public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private static readonly     List<string>                    _excludedAttributes             = new() {
+      nameof(Topic.Title),
+      nameof(Topic.LastModified)
+    };
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -52,7 +60,6 @@ namespace OnTopic.Attributes {
     /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
-
     /// <summary>
     ///   Determine if <i>any</i> attributes in the <see cref="AttributeCollection"/> are dirty.
     /// </summary>
@@ -131,6 +138,37 @@ namespace OnTopic.Attributes {
           base[attributeIndex]  = attributeValue;
         }
       }
+    }
+
+    /*==========================================================================================================================
+    | METHOD: AS ATTRIBUTE DICTIONARY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref="
+    ///   AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref="
+    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on
+    ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref="Topic.
+    ///   LastModified"/>.
+    /// </remarks>
+    /// <param name="inheritFromBase">
+    ///   Determines if attributes from the <see cref="Topic.BaseTopic"/> should be included. Defaults to <c>false</c>.
+    /// </param>
+    /// <returns>A new <see cref="AttributeDictionary"/> containing attributes</returns>
+    public AttributeDictionary AsAttributeDictionary(bool inheritFromBase = false) {
+      var sourceAttributes      = (AttributeCollection?)this;
+      var attributes = new AttributeDictionary();
+      while (sourceAttributes is not null) {
+        foreach (var attribute in sourceAttributes) {
+          if (!_excludedAttributes.Contains(attribute.Key) && !attributes.ContainsKey(attribute.Key)) {
+            attributes.Add(attribute.Key, attribute.Value);
+          }
+        }
+        sourceAttributes = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
+      }
+      return attributes;
     }
 
   } //Class

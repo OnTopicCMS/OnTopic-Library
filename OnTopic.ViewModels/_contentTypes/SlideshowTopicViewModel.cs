@@ -20,6 +20,23 @@ namespace OnTopic.ViewModels {
   public record SlideshowTopicViewModel: ContentListTopicViewModel {
 
     /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="SlideshowTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public SlideshowTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      TransitionEffect          = attributes.GetValue(nameof(TransitionEffect));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="SlideshowTopicViewModel"/> with no parameters.
+    /// </summary>
+    public SlideshowTopicViewModel() { }
+
+    /*==========================================================================================================================
     | TRANSITION EFFECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

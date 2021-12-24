@@ -20,6 +20,29 @@ namespace OnTopic.ViewModels {
   public record PageTopicViewModel: TopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="PageTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public PageTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      ShortTitle                = attributes.GetValue(nameof(ShortTitle));
+      Subtitle                  = attributes.GetValue(nameof(Subtitle));
+      MetaTitle                 = attributes.GetValue(nameof(MetaTitle));
+      MetaDescription           = attributes.GetValue(nameof(MetaDescription));
+      MetaKeywords              = attributes.GetValue(nameof(MetaKeywords));
+      NoIndex                   = attributes.GetBoolean(nameof(NoIndex))?? false;
+      Body                      = attributes.GetValue(nameof(Body));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="PageTopicViewModel"/> with no parameters.
+    /// </summary>
+    public PageTopicViewModel() { }
+
+    /*==========================================================================================================================
     | SHORT TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

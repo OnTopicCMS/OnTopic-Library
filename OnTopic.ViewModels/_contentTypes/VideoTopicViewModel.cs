@@ -20,6 +20,24 @@ namespace OnTopic.ViewModels {
   public record VideoTopicViewModel: PageTopicViewModel {
 
     /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="VideoTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public VideoTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      VideoUrl                  = attributes.GetUri(nameof(VideoUrl))!;
+      PosterUrl                 = attributes.GetUri(nameof(PosterUrl));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="VideoTopicViewModel"/> with no parameters.
+    /// </summary>
+    public VideoTopicViewModel() { }
+
+    /*==========================================================================================================================
     | VIDEO URL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

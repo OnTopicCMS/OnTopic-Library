@@ -21,6 +21,27 @@ namespace OnTopic.ViewModels {
   public record CacheProfileTopicViewModel: ItemTopicViewModel {
 
     /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="CacheProfileTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public CacheProfileTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      Duration                  = attributes.GetInteger(nameof(Duration));
+      Location                  = attributes.GetValue(nameof(Location));
+      NoStore                   = attributes.GetBoolean(nameof(NoStore));
+      VaryByHeader              = attributes.GetValue(nameof(VaryByHeader));
+      VaryByQueryKeys           = attributes.GetValue(nameof(VaryByQueryKeys));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="CacheProfileTopicViewModel"/> with no parameters.
+    /// </summary>
+    public CacheProfileTopicViewModel() { }
+
+    /*==========================================================================================================================
     | DURATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
