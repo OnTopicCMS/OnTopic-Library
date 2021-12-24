@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 using OnTopic.Collections.Specialized;
+using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Mapping.Internal {
@@ -44,18 +45,18 @@ namespace OnTopic.Mapping.Internal {
     ///   Given an <see cref="IEnumerable{Attribute}"/> instance, exposes a set of properties associated with known
     ///   <see cref="Attribute"/> instances.
     /// </summary>
-    /// <param name="customAttributes">
-    ///   The <see cref="IEnumerable{Attribute}"/> instance to check for <see cref="Attribute"/> values.
+    /// <param name="itemMetadata">
+    ///   The <see cref="ItemMetadata"/> instance associated with this <see cref="ItemConfiguration"/>.
     /// </param>
     /// <param name="name">The name of the <see cref="ParameterInfo"/> or <see cref="PropertyInfo"/>.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal ItemConfiguration(IEnumerable<Attribute> customAttributes, string name, string? attributePrefix = "") {
+    internal ItemConfiguration(ItemMetadata itemMetadata, string name, string? attributePrefix = "") {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set backing property
+      | Set backing properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      CustomAttributes          = customAttributes;
-      var source                = customAttributes;
+      Metadata                  = itemMetadata;
+      CustomAttributes          = itemMetadata.CustomAttributes;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
@@ -104,7 +105,7 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttributes = source.OfType<FilterByAttributeAttribute>();
+      var filterByAttributes = CustomAttributes.OfType<FilterByAttributeAttribute>();
       if (filterByAttributes is not null && filterByAttributes.Any()) {
         foreach (var filter in filterByAttributes) {
           AttributeFilters.Add(filter.Key, filter.Value);
@@ -112,6 +113,14 @@ namespace OnTopic.Mapping.Internal {
       }
 
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: METADATA
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The <see cref="ItemMetadata"/> that the current <see cref="ItemConfiguration"/> is associated with.
+    /// </summary>
+    internal ItemMetadata Metadata { get; }
 
     /*==========================================================================================================================
     | PROPERTY: CUSTOM ATTRIBUTES

@@ -30,19 +30,7 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITypeLookupService              _typeLookupService;
-    static readonly             List<Type>                      _listTypes                      = new();
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
-    /// </summary>
-    static TopicMappingService() {
-      _listTypes.Add(typeof(IEnumerable<>));
-      _listTypes.Add(typeof(ICollection<>));
-      _listTypes.Add(typeof(IList<>));
-    }
+    static readonly             TypeAccessor                    _topicTypeAccessor              = TypeAccessorCache.GetTypeAccessor<Topic>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -182,9 +170,8 @@ namespace OnTopic.Mapping {
       | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(type);
-      var constructorInfo       = typeAccessor.GetPrimaryConstructor();
-      var parameters            = constructorInfo?.GetParameters()?? Array.Empty<ParameterInfo>();
-      var arguments             = new object?[parameters.Length];
+      var parameters            = typeAccessor.ConstructorParameters;
+      var arguments             = new object?[parameters.Count];
       var attributeArguments    = (IDictionary<string, string?>)new Dictionary<string, string?>();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -202,7 +189,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var parameterQueue        = new Dictionary<int, Task<object?>>();
 
-      if (parameters.Length == 1 && parameters[0].ParameterType == typeof(AttributeDictionary)) {
+      if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
         var attributes          = topic.Attributes.AsAttributeDictionary(true);
         arguments[0]            = attributes;
         attributeArguments      = attributes;
@@ -210,7 +197,7 @@ namespace OnTopic.Mapping {
       else {
 
         foreach (var parameter in parameters) {
-          parameterQueue.Add(parameter.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
+          parameterQueue.Add(parameter.ParameterInfo.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
         }
 
         await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
@@ -370,7 +357,7 @@ namespace OnTopic.Mapping {
     private async Task<object?> GetParameterAsync(
       Topic source,
       AssociationTypes associations,
-      ParameterInfo parameter,
+      ParameterMetadata parameter,
       MappedTopicCache cache,
       string? attributePrefix = null
     ) {
@@ -378,14 +365,13 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = parameter.GetCustomAttributes(true).OfType<Attribute>();
-      var configuration         = new ItemConfiguration(attributes, parameter.Name, attributePrefix);
+      var configuration         = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
-        return parameter.DefaultValue;
+        return parameter.ParameterInfo.DefaultValue;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -394,7 +380,7 @@ namespace OnTopic.Mapping {
       if (configuration.MapToParent) {
         return await MapAsync(
           source,
-          parameter.ParameterType,
+          parameter.Type,
           associations,
           cache,
           configuration.AttributePrefix
@@ -404,10 +390,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var value = await GetValue(source, parameter.ParameterType, associations, configuration, cache, false).ConfigureAwait(false);
+      var value = await GetValue(source, parameter.Type, associations, configuration, cache, false).ConfigureAwait(false);
 
-      if (value is null && IsList(parameter.ParameterType)) {
-        return await getList(parameter.ParameterType, configuration).ConfigureAwait(false);
+      if (value is null && parameter.IsList) {
+        return await getList(parameter.Type, configuration).ConfigureAwait(false);
       }
 
       return value;
@@ -489,7 +475,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
         var value = await GetValue(source, propertyAccessor.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
-        if (value is null && IsList(propertyAccessor.Type)) {
+        if (value is null && propertyAccessor.IsList) {
           await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
         }
         else if (value != null && propertyAccessor.CanWrite) {
@@ -539,7 +525,12 @@ namespace OnTopic.Mapping {
       if (TryGetCompatibleProperty(source, targetType, configuration, out var compatibleValue)) {
         value = compatibleValue;
       }
-      else if (configuration.MapToParent) {
+      else if (configuration.Metadata.IsConvertible) {
+        if (!mapAssociationsOnly) {
+          value = GetScalarValue(source, configuration);
+        }
+      }
+      else if (configuration.Metadata.IsList) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent") {
@@ -547,15 +538,10 @@ namespace OnTopic.Mapping {
           value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
         }
       }
-      else if (AttributeValueConverter.IsConvertible(targetType)) {
-        if (!mapAssociationsOnly) {
-          value = GetScalarValue(source, configuration);
-        }
-      }
-      else if (IsList(targetType)) {
+      else if (configuration.MapToParent) {
         return null;
       }
-      else if (associations.HasFlag(AssociationTypes.References)) {
+      else if (configuration.Metadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
         var topicReference = getTopicReference();
         if (topicReference is not null) {
           value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
@@ -615,7 +601,8 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(source.GetType());
+      var typeAccessor          = GetTopicAccessor(source.GetType());
+
       var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -642,33 +629,6 @@ namespace OnTopic.Mapping {
       return attributeValue;
 
     }
-
-    /*==========================================================================================================================
-    | PRIVATE: IS LIST?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a type, determines whether it's a list that is recognized by the <see cref="TopicMappingService"/>.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     To qualify, the <paramref name="targetType"/> must either implement <see cref="IList"/>, or it must be of type <see
-    ///     cref="IEnumerable{T}"/>, <see cref="ICollection{T}"/>, or <see cref="IList{T}"/>—any of which, if null, will be
-    ///     instantiated as a new <see cref="List{T}"/>.
-    ///   </para>
-    ///   <para>
-    ///     It is technically possible for the <paramref name="targetType"/> to implement one of the interfaces, such as <see
-    ///     cref="IList{T}"/>, while the assigned reference type is not compatible with the <see cref="IList"/> interface
-    ///     required by e.g. <see cref="PopulateTargetCollectionAsync(IList{Topic}, IList, ItemConfiguration, MappedTopicCache)"
-    ///     />. Detecting this requires looping through the interface implementations which is comparatively more costly given
-    ///     the number of times <see cref="IsList(Type)"/> gets called. In practice, collections that implement e.g. <see cref="
-    ///     IList{T}"/> are expected to also support <see cref="IList"/>. If they don't, however, the mapping will throw an
-    ///     exception since the assigned value will not be castable to an <see cref="IList"/>.
-    ///   </para>
-    /// </remarks>
-    /// <param name="targetType">The <see cref="Type"/> of collection to initialize.</param>
-    private static bool IsList(Type targetType) =>
-      typeof(IList).IsAssignableFrom(targetType) ||
-      targetType.IsGenericType && _listTypes.Contains(targetType.GetGenericTypeDefinition());
 
     /*==========================================================================================================================
     | PRIVATE: INITIALIZE COLLECTION
@@ -1113,7 +1073,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourcePropertyAccessor = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
+      var sourcePropertyAccessor = GetTopicAccessor(source.GetType()).GetMember(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
@@ -1131,6 +1091,17 @@ namespace OnTopic.Mapping {
       return true;
 
     }
+
+    /*==========================================================================================================================
+    | PRIVATE: GET TOPIC ACCESSOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a specific <see cref="Type"/> for a <see cref="Topic"/>, returns the appropriate <see cref="TypeAccessor"/> from
+    ///   the <see cref="TypeAccessorCache"/>.
+    /// </summary>
+    /// <param name="topicType">The <see cref="Type"/> of the source <see cref="Topic"/>.</param>
+    private static TypeAccessor GetTopicAccessor(Type topicType) =>
+      topicType == typeof(Topic) ? _topicTypeAccessor : TypeAccessorCache.GetTypeAccessor(topicType);
 
   } //Class
 } //Namespace

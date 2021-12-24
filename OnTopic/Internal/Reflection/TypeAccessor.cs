@@ -83,6 +83,13 @@ namespace OnTopic.Internal.Reflection {
         }
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get parameters from primary constructor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var parameter in GetPrimaryConstructor().GetParameters()) {
+        ConstructorParameters.Add(new(parameter));
+      }
+
     }
 
     /*==========================================================================================================================
@@ -92,6 +99,15 @@ namespace OnTopic.Internal.Reflection {
     ///   Gets the return type of a getter or the argument type of a setter.
     /// </summary>
     internal Type Type { get; }
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR PARAMETERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a list of <see cref="ParameterMetadata"/> instances derived from the primary constructor of the <see cref="Type"
+    ///   /> associated with this <see cref="TypeAccessor"/>.
+    /// </summary>
+    internal List<ParameterMetadata> ConstructorParameters { get; } = new();
 
     /*==========================================================================================================================
     | GET MEMBERS
@@ -118,7 +134,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Retrieves a property or method supported by the <see cref="TypeAccessor"/> by <paramref name="memberName"/>.
     /// </summary>
-    /// <param name="memberName">The name of the member to retrieve, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="memberName">The name of the member to retrieve, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <returns>A <see cref="MemberAccessor"/> instance for getting or setting values on a given member.</returns>
     internal MemberAccessor? GetMember(string memberName) => _members.GetValueOrDefault(memberName);
 
@@ -139,7 +155,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Determines if a <see cref="MemberAccessor"/> with a getter exists for a member with the given <paramref name="
     ///   memberName"/>.
     /// </summary>
-    /// <param name="memberName">The name of the member to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="memberName">The name of the member to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <returns>True if a gettable member exists; otherwise false.</returns>
     internal bool HasGetter(string memberName) => GetMember(memberName)?.CanRead ?? false;
 
@@ -152,7 +168,7 @@ namespace OnTopic.Internal.Reflection {
     /// <remarks>
     ///   Will return false if the property is not available.
     /// </remarks>
-    /// <param name="propertyName">The name of the property to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="propertyName">The name of the property to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
     internal bool HasGettableProperty(string propertyName, Type? targetType = null, Type? attributeFlag = null) {
@@ -179,7 +195,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Will return false if the method is not available. Methods are only considered gettable if they have no parameters and
     ///   their return value is a settable type.
     /// </remarks>
-    /// <param name="methodName">The name of the method to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="methodName">The name of the method to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
     internal bool HasGettableMethod(string methodName, Type? targetType = null, Type? attributeFlag = null) {
@@ -204,7 +220,7 @@ namespace OnTopic.Internal.Reflection {
     ///   object.
     /// </summary>
     /// <param name="source">The <see cref="Object"/> instance from which the value should be retrieved.</param>
-    /// <param name="memberName">The name of the member to retrieve, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="memberName">The name of the member to retrieve, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <returns>The value returned from the member.</returns>
     internal object? GetValue(object source, string memberName) {
 
@@ -232,7 +248,7 @@ namespace OnTopic.Internal.Reflection {
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
     /// <param name="source">The object instance on which the property is defined.</param>
-    /// <param name="propertyName">The name of the property to retrieve, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="propertyName">The name of the property to retrieve, derived from <see cref="ItemMetadata.Name"/>.</param>
     internal object? GetPropertyValue(object source, string propertyName) => GetValue(source, propertyName);
 
     /*==========================================================================================================================
@@ -242,7 +258,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Uses reflection to call a method, assuming that it has no parameters.
     /// </summary>
     /// <param name="source">The object instance on which the method is defined.</param>
-    /// <param name="methodName">The name of the method to retrieve, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="methodName">The name of the method to retrieve, derived from <see cref="ItemMetadata.Name"/>.</param>
     internal object? GetMethodValue(object source, string methodName) => GetValue(source, methodName);
 
     /*==========================================================================================================================
@@ -252,7 +268,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Determines if a <see cref="MemberAccessor"/> with a setter exists for a member with the given <paramref name="
     ///   memberName"/>.
     /// </summary>
-    /// <param name="memberName">The name of the member to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="memberName">The name of the member to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <returns>True if a settable member exists; otherwise false.</returns>
     internal bool HasSetter(string memberName) => GetMember(memberName)?.CanWrite ?? false;
 
@@ -265,7 +281,7 @@ namespace OnTopic.Internal.Reflection {
     /// <remarks>
     ///   Will return false if the property is not available.
     /// </remarks>
-    /// <param name="propertyName">The name of the property to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="propertyName">The name of the property to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
     internal bool HasSettableProperty(string propertyName, Type? targetType = null, Type? attributeFlag = null) {
@@ -293,7 +309,7 @@ namespace OnTopic.Internal.Reflection {
     ///   a settable type. Be aware that this will return <c>false</c> if the method has additional parameters, even if those
     ///   additional parameters are optional.
     /// </remarks>
-    /// <param name="methodName">The name of the method to assess, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="methodName">The name of the method to assess, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
     internal bool HasSettableMethod(string methodName, Type? targetType = null, Type? attributeFlag = null) {
@@ -317,7 +333,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Sets the value of a member named <paramref name="memberName"/> on the supplied <paramref name="target"/> object.
     /// </summary>
     /// <param name="target">The <see cref="Object"/> instance on which the value should be set.</param>
-    /// <param name="memberName">The name of the member to set, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="memberName">The name of the member to set, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="value">The <see cref="Object"/> value to set the member to.</param>
     /// <param name="allowConversion">
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
@@ -346,7 +362,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Int32"/>, or <see cref="Boolean"/>, or is otherwise compatible with the <paramref name="value"/> type.
     /// </summary>
     /// <param name="target">The object on which the property is defined.</param>
-    /// <param name="propertyName">The name of the property to set, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="propertyName">The name of the property to set, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="value">The value to set on the property.</param>
     /// <param name="allowConversion">
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.
@@ -366,7 +382,7 @@ namespace OnTopic.Internal.Reflection {
     ///   are present it will return <c>false</c>, even if those additional parameters are optional.
     /// </remarks>
     /// <param name="target">The object instance on which the method is defined.</param>
-    /// <param name="methodName">The name of the method to set, derived from <see cref="MemberAccessor.Name"/>.</param>
+    /// <param name="methodName">The name of the method to set, derived from <see cref="ItemMetadata.Name"/>.</param>
     /// <param name="value">The value to set the method to.</param>
     /// <param name="allowConversion">
     ///   Determines whether a fallback to <see cref="AttributeValueConverter.Convert(String?, Type)"/> is permitted.

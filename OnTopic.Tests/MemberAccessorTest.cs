@@ -29,7 +29,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is nullable, and confirms that the
-    ///   <see cref="MemberAccessor.IsNullable"/> property is set to <c>true</c>.
+    ///   <see cref="ItemMetadata.IsNullable"/> property is set to <c>true</c>.
     /// </summary>
     [Fact]
     public void IsNullable_NullableProperty_ReturnsTrue() {
@@ -47,7 +47,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is not nullable, and confirms that
-    ///   the <see cref="MemberAccessor.IsNullable"/> property is set to <c>false</c>.
+    ///   the <see cref="ItemMetadata.IsNullable"/> property is set to <c>false</c>.
     /// </summary>
     [Fact]
     public void IsNullable_NonNullableProperty_ReturnsFalse() {
@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/> that is a non-nullable reference type,
-    ///   and confirms that the <see cref="MemberAccessor.IsNullable"/> property is set to <c>true</c>.
+    ///   and confirms that the <see cref="ItemMetadata.IsNullable"/> property is set to <c>true</c>.
     /// </summary>
     /// <remarks>
     ///   Unfortunately, the .NET reflection libraries don't (yet) have the ability to determine if a nullable reference types
