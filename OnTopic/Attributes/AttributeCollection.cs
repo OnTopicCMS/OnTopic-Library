@@ -159,14 +159,18 @@ namespace OnTopic.Attributes {
     /// <returns>A new <see cref="AttributeDictionary"/> containing attributes</returns>
     public AttributeDictionary AsAttributeDictionary(bool inheritFromBase = false) {
       var sourceAttributes      = (AttributeCollection?)this;
-      var attributes = new AttributeDictionary();
-      while (sourceAttributes is not null) {
+      var attributes            = new AttributeDictionary();
+      var count                 = 0;
+      while (sourceAttributes is not null && ++count < 5) {
         foreach (var attribute in sourceAttributes) {
-          if (!_excludedAttributes.Contains(attribute.Key) && !attributes.ContainsKey(attribute.Key)) {
-            attributes.Add(attribute.Key, attribute.Value);
+          if (count is 1 || !attributes.ContainsKey(attribute.Key)) {
+            attributes.TryAdd(attribute.Key, attribute.Value);
           }
         }
         sourceAttributes = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
+      }
+      foreach (var attribute in _excludedAttributes) {
+        attributes.Remove(attribute);
       }
       return attributes;
     }
