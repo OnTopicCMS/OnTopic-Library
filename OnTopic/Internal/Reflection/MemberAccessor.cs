@@ -109,9 +109,8 @@ namespace OnTopic.Internal.Reflection {
         return true;
       }
       if (allowConversion) {
-        var isTargetCompatible  = AttributeValueConverter.IsConvertible(Type);
-        var isSourceCompatible  = sourceType is null || AttributeValueConverter.IsConvertible(sourceType);
-        return isTargetCompatible && isSourceCompatible;
+        var isSourceConvertible  = sourceType is null || AttributeValueConverter.IsConvertible(sourceType);
+        return IsConvertible && isSourceConvertible;
       }
       return false;
     }
