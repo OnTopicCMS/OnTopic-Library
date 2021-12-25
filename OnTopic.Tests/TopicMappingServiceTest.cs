@@ -65,6 +65,59 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: LOAD TESTING: EVALUATE THRESHOLD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests creating and mapping <see cref="Topic"/> instances in bulk,
+    ///   as a quick-and-easy way of assessing performance.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="TopicMappingService"/> includes functionality to map properties to attributes via a constructor that
+    ///     accepts a <see cref="AttributeDictionary"/>. This introduces some overhead which is not cost effective if there are
+    ///     not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref="
+    ///     AttributeDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
+    ///     construction to the model developer. This test is intended to help identify and optimize that threshold based on
+    ///     improvements to the underlying <see cref="AttributeDictionary"/>, <see cref="TopicMappingService.MapAsync(Topic?,
+    ///     AssociationTypes)"/>, and <see cref="AttributeCollection.AsAttributeDictionary(bool)"/> convenience method.
+    ///   </para>
+    ///   <para>
+    ///     This is only intended to be enabled when needed for specialized performance testing.
+    ///   </para>
+    /// </remarks>
+    [Fact]
+    public async Task Map_Bulk_EvaluateThreshold() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var runs                  = 0;                            // The number of mapping operations to perform
+      var propertyCount         = 10;                           // The number of property values to set on the LoadTestingModel
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish data model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topic                 = new Topic("Test", "ContentList", null);
+
+      for (var i = 0; i <= propertyCount; i++) {
+        topic.Attributes.SetInteger("Property"+i, i);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Run load testing
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      for (var i = 0; i < runs; i++) {
+        await _mappingService.MapAsync<LoadTestingViewModel>(topic).ConfigureAwait(false);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Always assume the test passed
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Assert.True(true);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: LOAD TESTING: EVALUATE TIME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
