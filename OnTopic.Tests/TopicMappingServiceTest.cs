@@ -65,6 +65,140 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: LOAD TESTING: EVALUATE THRESHOLD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests creating and mapping <see cref="Topic"/> instances in bulk,
+    ///   as a quick-and-easy way of assessing performance.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="TopicMappingService"/> includes functionality to map properties to attributes via a constructor that
+    ///     accepts a <see cref="AttributeDictionary"/>. This introduces some overhead which is not cost effective if there are
+    ///     not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref="
+    ///     AttributeDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
+    ///     construction to the model developer. This test is intended to help identify and optimize that threshold based on
+    ///     improvements to the underlying <see cref="AttributeDictionary"/>, <see cref="TopicMappingService.MapAsync(Topic?,
+    ///     AssociationTypes)"/>, and <see cref="AttributeCollection.AsAttributeDictionary(bool)"/> convenience method.
+    ///   </para>
+    ///   <para>
+    ///     This is only intended to be enabled when needed for specialized performance testing.
+    ///   </para>
+    /// </remarks>
+    [Fact]
+    public async Task Map_Bulk_EvaluateThreshold() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var runs                  = 0;                            // The number of mapping operations to perform
+      var propertyCount         = 10;                           // The number of property values to set on the LoadTestingModel
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish data model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topic                 = new Topic("Test", "ContentList", null);
+
+      for (var i = 0; i <= propertyCount; i++) {
+        topic.Attributes.SetInteger("Property"+i, i);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Run load testing
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      for (var i = 0; i < runs; i++) {
+        await _mappingService.MapAsync<LoadTestingViewModel>(topic).ConfigureAwait(false);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Always assume the test passed
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Assert.True(true);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: LOAD TESTING: EVALUATE TIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests creating and mapping <see cref="Topic"/> instances in bulk,
+    ///   as a quick-and-easy way of assessing performance.
+    /// </summary>
+    [Fact]
+    public async Task Map_LoadTesting_EvaluateTime() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var runs                  = 0;                            // The number of mapping operations to perform
+      var useFullAttributeSet   = false;                        // Include a larget set of attribute values
+      var includeNestedTopics   = false;                        // Only include a minimal set of properties
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish object model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var currentId             = 1;
+      var baseTopic             = new Topic("Base", "Page", null, currentId++);
+      var grandparent           = new Topic("Grandparent", "Page", null, currentId++);
+      var parent                = new Topic("Parent", "Page", grandparent, currentId++);
+      var topic                 = new Topic("Test", "ContentList", parent, currentId++);
+      var contentItems          = new Topic("ContentItems", "List", topic, currentId++);
+
+      if (includeNestedTopics) {
+        _                       = new Topic("Item1", "ContentItem", contentItems, currentId++);
+        _                       = new Topic("Item2", "ContentItem", contentItems, currentId++);
+        _                       = new Topic("Item3", "ContentItem", contentItems, currentId++);
+        _                       = new Topic("Item4", "ContentItem", contentItems, currentId++);
+        _                       = new Topic("Item5", "ContentItem", contentItems, currentId++);
+        _                       = new Topic("Item6", "ContentItem", contentItems, currentId++);
+      }
+
+      grandparent.BaseTopic     = baseTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Populate attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var contentItem in contentItems.Children) {
+        contentItem.Attributes.SetDateTime("LastModified", DateTime.Now);
+        contentItem.Attributes.SetValue("Description", "Value1");
+        if (useFullAttributeSet) {
+          contentItem.Attributes.SetValue("LearnMoreUrl", "/Topic/23/");
+          contentItem.Attributes.SetValue("ThumbnailImage", "/Image.jpg");
+          contentItem.Attributes.SetValue("Description", "Value1");
+          contentItem.Attributes.SetValue("Category", "Gumby");
+        }
+      }
+
+      topic.Attributes.SetValue("Title", "Friendly Title");
+      topic.Attributes.SetValue("IsHidden", "0");
+      if (useFullAttributeSet) {
+        topic.Attributes.SetValue("View", "Test");
+        topic.Attributes.SetValue("ShortTitle", "Short Title");
+        topic.Attributes.SetValue("Subtitle", "Subtitle");
+        topic.Attributes.SetValue("MetaTitle", "Meta Title");
+        topic.Attributes.SetValue("MetaDescription", "Meta Description");
+        topic.Attributes.SetValue("MetaKeywords", "Load;Test;Keywords");
+        topic.Attributes.SetValue("NoIndex", "0");
+        topic.Attributes.SetValue("Body", "Body of test topic");
+      }
+
+      baseTopic.Attributes.SetValue("Title", "Inherited Title");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Run load testing
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      for (var i = 0; i <= runs; i++) {
+        await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Always assume the test passed
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Assert.True(true);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: GENERIC: RETURNS NEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -1444,6 +1578,7 @@ namespace OnTopic.Tests {
       Assert.Single(target?.Children);
 
     }
+
     /*==========================================================================================================================
     | TEST: MAP: CACHED TOPIC: RETURNS CACHED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/

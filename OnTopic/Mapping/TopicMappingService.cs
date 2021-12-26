@@ -170,9 +170,11 @@ namespace OnTopic.Mapping {
       | Identify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = TypeAccessorCache.GetTypeAccessor(type);
+      var properties            = typeAccessor.GetMembers(MemberTypes.Property);
       var parameters            = typeAccessor.ConstructorParameters;
       var arguments             = new object?[parameters.Count];
       var attributeArguments    = (IDictionary<string, string?>)new Dictionary<string, string?>();
+      var parameterQueue        = new Dictionary<int, Task<object?>>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Pre-cache entry
@@ -185,15 +187,40 @@ namespace OnTopic.Mapping {
       cache.Preregister(topic.Id, type);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set parameters
+      | Handle AttributeDictionary constructor
+      >-------------------------------------------------------------------------------------------------------------------------
+      | A model may optionally expose a constructor with a single parameter accepting an AttributeDictionary. In this scenario,
+      | the TopicMappingService may optionally pass a lightweight AttributeDictionary, allowing the model's constructor to
+      | populate scalar values, instead of relying on reflection.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var parameterQueue        = new Dictionary<int, Task<object?>>();
-
       if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
-        var attributes          = topic.Attributes.AsAttributeDictionary(true);
-        arguments[0]            = attributes;
-        attributeArguments      = attributes;
+
+        // This strategy is only performant if there are quite a several scalar properties and they are well-covered by the
+        // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and properties. In practice, this
+        // should be benefitial with any more than mapped attributes, but we also expect that most topics will have 2-3 excluded
+        // or unmapped attributes (e.g., Title, LastModified) and that models will have five or properties that aren't mapped to
+        // attributes (e.g., Id, Key, WebPath). This doesn't guarantee that the attributes map to the properties, but a more
+        // accurate evaluation undermines the performance benefits of this optimization.
+        if (topic.Attributes.Count >= 5 && properties.Count(p => p.IsConvertible) >= 5) {
+          var attributes        = topic.Attributes.AsAttributeDictionary(true);
+          arguments[0]          = attributes;
+          attributeArguments    = attributes;
+        }
+        else {
+          parameters            = new();
+          arguments             = Array.Empty<object?>();
+        }
+
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle other constructors
+      >-------------------------------------------------------------------------------------------------------------------------
+      | A model may optionally expose a constructor with multiple parameters, which can be defined via reflection in the same
+      | way as properties would be. This is especially useful for records using the positional syntax (i.e., where properties
+      | are defined using the constructor). This also, optionally, provides the model with more control, where needed, over how
+      | it's constructed.
+      \-----------------------------------------------------------------------------------------------------------------------*/
       else {
 
         foreach (var parameter in parameters) {
