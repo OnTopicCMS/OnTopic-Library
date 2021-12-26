@@ -221,11 +221,18 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   StatusCodePagesExtensions.UseStatusCodePages(IApplicationBuilder)"/>, by providing a route for capturing the <c>
     ///   errorCode</c>.
     /// </remarks>
-    public static ControllerActionEndpointConventionBuilder MapTopicErrors(this IEndpointRouteBuilder routes, string rootTopic = "Error") =>
+    /// <param name="routes">The <see cref="IEndpointRouteBuilder"/> this route is being added to.</param>
+    /// <param name="rootTopic">The name of the root topic that the route should be mapped to. Defaults to <c>Error</c>.</param>
+    /// <param name="includeStaticFiles">Determines if static resources should be covered. Defaults to <c>true</c>.</param>
+    public static ControllerActionEndpointConventionBuilder MapTopicErrors(
+      this                      IEndpointRouteBuilder           routes,
+      string                    rootTopic                       = "Error",
+      bool                      includeStaticFiles              = true
+    ) =>
       routes.MapControllerRoute(
         name: "TopicError",
         pattern: $"{rootTopic}/{{id:int}}/",
-        defaults: new { controller = "Error", action = "Http", rootTopic }
+        defaults: new { controller = "Error", action = "Http", rootTopic, includeStaticFiles }
       );
 
     /*==========================================================================================================================

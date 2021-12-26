@@ -96,6 +96,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     [InlineData("/MissingPage/", HttpStatusCode.NotFound, "400")]
     [InlineData("/Web/MissingPage/", HttpStatusCode.NotFound, "400")]
     [InlineData("/Web/Container/", HttpStatusCode.Forbidden, "400")]
+    [InlineData("/Scripts/ECMAScript.js", HttpStatusCode.NotFound, "The resource requested could not found.")]
     public async Task UseStatusCodePages_ReturnsExpectedStatusCode(string path, HttpStatusCode statusCode, string expectedContent) {
 
       var client                = _factory.CreateClient();
@@ -104,7 +105,6 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var actualContent         = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
       Assert.Equal(statusCode, response.StatusCode);
-      Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.Equal(expectedContent, actualContent);
 
     }
