@@ -53,8 +53,8 @@ var app = builder.Build();
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Error Pages
 \-----------------------------------------------------------------------------------------------------------------------------*/
-if (!app.Environment.IsDevelopment()) {
   app.UseStatusCodePagesWithReExecute("/Error/{0}/");
+if (!app.Environment.IsDevelopment()) {
   app.UseExceptionHandler("/Error/500/");
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
@@ -77,7 +77,7 @@ app.MapImplicitAreaControllerRoute();                           // {area:exists}
 app.MapDefaultAreaControllerRoute();                            // {area:exists}/{controller}/{action=Index}/{id?}
 app.MapTopicAreaRoute();                                        // {area:exists}/{**path}
 
-app.MapTopicErrors(rootTopic: "Error");                         // Error/{statusCode}
+app.MapTopicErrors(includeStaticFiles: false);                  // Error/{statusCode}
 app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
 app.MapTopicRoute(rootTopic: "Web");                            // Web/{**path}
 app.MapTopicRoute(rootTopic: "Error");                          // Error/{**path}
