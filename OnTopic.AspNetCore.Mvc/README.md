@@ -187,7 +187,7 @@ public class Startup {
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
     app.UseEndpoints(endpoints => {
       endpoints.MapTopicErrors();                        // Error/{errorCode}
-      endpoints.MapTopicErrors("Errors");                // Errors/{errorCode}
+      endpoints.MapTopicErrors("Errors", false);         // Errors/{errorCode}; disables includeStaticFiles
       endpoints.MapDefaultControllerRoute();             // Error/Http/{errorCode}
       endpoints.MapTopicRoute("Error");                  // Error/{path}; e.g., Error/Unauthorized
     }
