@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using OnTopic.Mapping;
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
@@ -48,7 +49,17 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   content available.
     /// </summary>
     /// <returns>A view associated with the requested current <paramref name="statusCode"/>.</returns>
-    public async virtual Task<IActionResult> HttpAsync([FromRoute(Name="id")] int statusCode) {
+    public async virtual Task<IActionResult> HttpAsync([FromRoute(Name="id")] int statusCode, bool includeStaticFiles = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Bypass for resources
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!includeStaticFiles) {
+        var feature             = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+        if (feature?.OriginalPath.Contains('.', StringComparison.Ordinal)?? false) {
+          return Content("The resource requested could not found.");
+        }
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify base path
