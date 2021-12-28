@@ -31,10 +31,6 @@ namespace OnTopic.Mapping.Internal {
   ///     then the <see cref="ITopicMappingService"/> will instead use the value defined by that attribute, thus allowing a
   ///     property on the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
   ///   </para>
-  ///   <para>
-  ///     The <see cref="ItemConfiguration"/> works with both <see cref="ParameterInfo"/> and <see cref="PropertyInfo"/>
-  ///     instances, whereas the <see cref="PropertyConfiguration"/> works exclusively with <see cref="PropertyInfo"/> instances.
-  ///   </para>
   /// </remarks>
   internal class ItemConfiguration {
 
