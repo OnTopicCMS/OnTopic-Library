@@ -120,7 +120,7 @@ namespace OnTopic.Internal.Reflection {
     internal ItemConfiguration Configuration {
       get {
         if (_itemConfiguration is null) {
-          _itemConfiguration = new(this, Name, "");
+          _itemConfiguration = new(this);
         }
         return _itemConfiguration;
       }

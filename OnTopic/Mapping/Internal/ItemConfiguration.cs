@@ -48,9 +48,7 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="itemMetadata">
     ///   The <see cref="ItemMetadata"/> instance associated with this <see cref="ItemConfiguration"/>.
     /// </param>
-    /// <param name="name">The name of the <see cref="ParameterInfo"/> or <see cref="PropertyInfo"/>.</param>
-    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal ItemConfiguration(ItemMetadata itemMetadata, string name, string? attributePrefix = "") {
+    internal ItemConfiguration(ItemMetadata itemMetadata) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set backing properties
@@ -61,8 +59,8 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeKey              = attributePrefix + name;
-      AttributePrefix           = attributePrefix;
+      AttributeKey              = itemMetadata.Name;
+      AttributePrefix           = "";
       DefaultValue              = null;
       InheritValue              = false;
       CollectionKey             = AttributeKey;
@@ -79,9 +77,9 @@ namespace OnTopic.Mapping.Internal {
       GetAttributeValue<MapAsAttribute>(                        a => MapAs = a.Type);
       GetAttributeValue<DefaultValueAttribute>(                 a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(                      a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(                 a => AttributeKey = attributePrefix + a.Key);
+      GetAttributeValue<AttributeKeyAttribute>(                 a => AttributeKey = a.Key);
       GetAttributeValue<MapToParentAttribute>(                  a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(                  a => AttributePrefix += (a.AttributePrefix?? name));
+      GetAttributeValue<MapToParentAttribute>(                  a => AttributePrefix += (a.AttributePrefix?? AttributeKey));
       GetAttributeValue<IncludeAttribute>(                      a => IncludeAssociations = a.Associations);
       GetAttributeValue<FlattenAttribute>(                      a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(                     a => MetadataKey = a.Key);
