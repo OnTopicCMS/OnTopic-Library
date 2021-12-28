@@ -410,17 +410,17 @@ namespace OnTopic.Mapping {
           parameter.Type,
           associations,
           cache,
-          configuration.AttributePrefix
+          configuration.AttributePrefix + attributePrefix
         ).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var value = await GetValue(source, parameter.Type, associations, configuration, cache, false).ConfigureAwait(false);
+      var value = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false).ConfigureAwait(false);
 
       if (value is null && parameter.IsList) {
-        return await getList(parameter.Type, configuration).ConfigureAwait(false);
+        return await getList(parameter.Type).ConfigureAwait(false);
       }
 
       return value;
@@ -428,16 +428,16 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get List Function
       \-----------------------------------------------------------------------------------------------------------------------*/
-      async Task<IList?> getList(Type targetType, ItemConfiguration configuration) {
+      async Task<IList?> getList(Type targetType) {
 
-        var sourceList = GetSourceCollection(source, associations, configuration);
+        var sourceList = GetSourceCollection(source, associations, parameter, attributePrefix);
         var targetList = InitializeCollection(targetType);
 
         if (sourceList is null || targetList is null) {
           return (IList?)null;
         }
 
-        await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache).ConfigureAwait(false);
+        await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache).ConfigureAwait(false);
 
         return targetList;
 
@@ -472,7 +472,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
+      var configuration         = propertyAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled
@@ -492,7 +492,7 @@ namespace OnTopic.Mapping {
             targetProperty,
             associations,
             cache,
-            configuration.AttributePrefix
+            configuration.AttributePrefix + attributePrefix
           ).ConfigureAwait(false);
         }
       }
@@ -501,9 +501,9 @@ namespace OnTopic.Mapping {
       | Determine value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        var value = await GetValue(source, propertyAccessor.Type, associations, configuration, cache, mapAssociationsOnly).ConfigureAwait(false);
+        var value = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
         if (value is null && propertyAccessor.IsList) {
-          await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
+          await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix).ConfigureAwait(false);
         }
         else if (value != null && propertyAccessor.CanWrite) {
           propertyAccessor.SetValue(target, value, true);
@@ -526,17 +526,24 @@ namespace OnTopic.Mapping {
     /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="targetType">The <see cref="Type"/> of the target parameter or property.</param>
     /// <param name="associations">Determines what associations the mapping should include, if any.</param>
-    /// <param name="configuration">Information related to the current parameter or property.</param>
+    /// <param name="itemMetadata">Information related to the current parameter or property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
     private async Task<object?> GetValue(
       Topic source,
       Type targetType,
       AssociationTypes associations,
-      ItemConfiguration configuration,
+      ItemMetadata itemMetadata,
       MappedTopicCache cache,
-      bool mapAssociationsOnly = false
+      string? attributePrefix    = "",
+      bool mapAssociationsOnly  = false
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = itemMetadata.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
@@ -549,29 +556,29 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (TryGetCompatibleProperty(source, targetType, configuration, out var compatibleValue)) {
+      if (TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
         value = compatibleValue;
       }
-      else if (configuration.Metadata.IsConvertible) {
+      else if (itemMetadata.IsConvertible) {
         if (!mapAssociationsOnly) {
-          value = GetScalarValue(source, configuration);
+          value = GetScalarValue(source, itemMetadata, attributePrefix);
         }
       }
-      else if (configuration.Metadata.IsList) {
+      else if (itemMetadata.IsList) {
         return null;
       }
       else if (configuration.AttributeKey is "Parent") {
         if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
-          value = await GetTopicReferenceAsync(source.Parent, targetType, configuration, cache).ConfigureAwait(false);
+          value = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
         }
       }
       else if (configuration.MapToParent) {
         return null;
       }
-      else if (configuration.Metadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
+      else if (itemMetadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
         var topicReference = getTopicReference();
         if (topicReference is not null) {
-          value = await GetTopicReferenceAsync(topicReference, targetType, configuration, cache).ConfigureAwait(false);
+          value = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
         }
       }
 
@@ -599,7 +606,7 @@ namespace OnTopic.Mapping {
           topicReferenceId    = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
         }
         if (topicReferenceId > 0) {
-          topicReference      = _topicRepository.Load(topicReferenceId, source);
+          topicReference        = _topicRepository.Load(topicReferenceId, source);
         }
 
         return topicReference;
@@ -615,15 +622,21 @@ namespace OnTopic.Mapping {
     ///   Gets a scalar property from a <see cref="Topic"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="GetScalarValue(Topic, ItemConfiguration)"/> method will attempt to retrieve the value from the
-    ///   <paramref name="source"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>
-    ///   {Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="
+    ///   The <see cref="GetScalarValue(Topic, ItemMetadata, String)"/> method will attempt to retrieve the value from the
+    ///   <paramref name="source"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method,
+    ///   <c>{Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>).
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
+    /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <autogeneratedoc />
-    private static object? GetScalarValue(Topic source, ItemConfiguration configuration) {
+    private static object? GetScalarValue(Topic source, ItemMetadata itemMetadata, string? attributePrefix) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = itemMetadata.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
@@ -704,47 +717,47 @@ namespace OnTopic.Mapping {
     ///   target collection.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
+    ///   Given a collection <paramref name="memberAccessor"/> on a <paramref name="target"/> DTO, attempts to identify a source
     ///   collection on the <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
     ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
-    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   property name, though this behavior can be modified using the <paramref name="memberAccessor"/>, based on annotations
     ///   on the <paramref name="target"/> DTO.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
     /// <param name="associations">Determines what associations the mapping should include, if any.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private async Task SetCollectionValueAsync(
       Topic                     source,
       object                    target,
       AssociationTypes          associations,
-      PropertyConfiguration     configuration,
-      MappedTopicCache          cache
+      MemberAccessor            memberAccessor,
+      MappedTopicCache          cache,
+      string?                   attributePrefix
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetList = (IList?)configuration.MemberAccessor.GetValue(target);
+      var targetList = (IList?)memberAccessor.GetValue(target);
       if (targetList is null) {
-        targetList = InitializeCollection(configuration.MemberAccessor.Type);
-        configuration.MemberAccessor.SetValue(target, targetList);
+        targetList = InitializeCollection(memberAccessor.Type);
+        memberAccessor.SetValue(target, targetList);
       }
 
       Contract.Assume(
         targetList,
-        $"The target list type, '{configuration.MemberAccessor.Type}', could not be properly constructed, as required to " +
-        $"map the '{configuration.MemberAccessor.Name}' property on the '{target?.GetType().Name}' object."
+        $"The target list type, '{memberAccessor.Type}', could not be properly constructed, as required to " +
+        $"map the '{memberAccessor.Name}' property on the '{target?.GetType().Name}' object."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = GetSourceCollection(source, associations, configuration);
+      var sourceList = GetSourceCollection(source, associations, memberAccessor, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
@@ -754,7 +767,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache).ConfigureAwait(false);
 
     }
 
@@ -765,23 +778,28 @@ namespace OnTopic.Mapping {
     ///   Given a source topic and a property configuration, attempts to identify a source collection that maps to the property.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on a target DTO, attempts to identify a source collection on the
+    ///   Given a collection <paramref name="itemMetadata"/> on a target DTO, attempts to identify a source collection on the
     ///   <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
     ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
-    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   property name, though this behavior can be modified using the <paramref name="itemMetadata"/>, based on annotations
     ///   on the target DTO.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="associations">Determines what associations the mapping should include, if any.</param>
-    /// <param name="configuration">
-    ///   The <see cref="ItemConfiguration"/> with details about the property's attributes.
-    /// </param>
-    private IList<Topic> GetSourceCollection(Topic source, AssociationTypes associations, ItemConfiguration configuration) {
+    /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    private IList<Topic> GetSourceCollection(
+      Topic                     source,
+      AssociationTypes          associations,
+      ItemMetadata              itemMetadata,
+      string?                   attributePrefix
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var                       configuration                   = itemMetadata.Configuration;
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
       var                       collectionKey                   = configuration.CollectionKey;
       var                       collectionType                  = configuration.CollectionType;
@@ -890,16 +908,19 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
     /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="ItemConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     private async Task PopulateTargetCollectionAsync(
       IList<Topic>              sourceList,
       IList                     targetList,
-      ItemConfiguration         configuration,
+      ItemMetadata              itemMetadata,
       MappedTopicCache          cache
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = itemMetadata.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine the type of item in the list
@@ -1020,14 +1041,19 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="targetType">The <see cref="Type"/> expected for the mapped <paramref name="source"/>.</param>
-    /// <param name="configuration">The <see cref="ItemConfiguration"/> with details about the item's attributes.</param>
+    /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the item's attributes.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     private async Task<object?> GetTopicReferenceAsync(
       Topic source,
       Type targetType,
-      ItemConfiguration configuration,
+      ItemMetadata itemMetadata,
       MappedTopicCache cache
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = itemMetadata.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass disabled topics
@@ -1093,9 +1119,15 @@ namespace OnTopic.Mapping {
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="targetType">The target <see cref="Type"/>.</param>
-    /// <param name="configuration">The <see cref="ItemConfiguration"/> with details about the item's attributes.</param>
+    /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the item's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <param name="value">The compatible property, if it is available.</param>
-    private static bool TryGetCompatibleProperty(Topic source, Type targetType, ItemConfiguration configuration, out object? value) {
+    private static bool TryGetCompatibleProperty(Topic source, Type targetType, ItemMetadata itemMetadata, string? attributePrefix, out object? value) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = itemMetadata.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}

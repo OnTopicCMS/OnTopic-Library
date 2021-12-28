@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
-using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
@@ -233,7 +232,7 @@ namespace OnTopic.Mapping.Reverse {
       | Detect non-mapped relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor.ModelType is ModelType.Relationship) {
-        ValidateRelationship(sourceType, configuration, attributeDescriptor, listType);
+        ValidateRelationship(sourceType, propertyAccessor, attributeDescriptor, listType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -282,8 +281,8 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="sourceType">
     ///   The binding model <see cref="Type"/> to validate.
     /// </param>
-    /// <param name="configuration">
-    ///   A <see cref="PropertyConfiguration"/> describing a specific property of the <paramref name="sourceType"/>.
+    /// <param name="propertyAccessor">
+    ///   A <see cref="MemberAccessor"/> describing a specific property of the <paramref name="sourceType"/>.
     /// </param>
     /// <param name="attributeDescriptor">
     ///   The <see cref="AttributeDescriptor"/> object against which to validate the model.
@@ -291,7 +290,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="listType">The generic <see cref="Type"/> used for the corresponding <see cref="IList{T}"/>.</param>
     static internal void ValidateRelationship(
       [AllowNull]Type                      sourceType,
-      [AllowNull]PropertyConfiguration     configuration,
+      [AllowNull]MemberAccessor            propertyAccessor,
       [AllowNull]AttributeDescriptor       attributeDescriptor,
       [DisallowNull]Type                   listType
     ) {
@@ -300,20 +299,20 @@ namespace OnTopic.Mapping.Reverse {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sourceType, nameof(sourceType));
-      Contract.Requires(configuration, nameof(configuration));
+      Contract.Requires(propertyAccessor, nameof(propertyAccessor));
       Contract.Requires(attributeDescriptor, nameof(attributeDescriptor));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property              = configuration.MemberAccessor;
+      var configuration         = propertyAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(property.Type)) {
+      if (!typeof(IList).IsAssignableFrom(propertyAccessor.Type)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but does not implement {nameof(IList)}. Relationships must implement " +
           $"{nameof(IList)} or derive from a collection that does."
         );
@@ -324,7 +323,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!new[] { CollectionType.Any, CollectionType.Relationship }.Contains(configuration.CollectionType)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but is configured as a {configuration.CollectionType}. The property should be " +
           $"flagged as either {nameof(CollectionType.Any)} or {nameof(CollectionType.Relationship)}."
         );
@@ -335,7 +334,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IAssociatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.CollectionType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
           $"intended to be mapped as a {configuration.CollectionType} then update the definition in the associated " +
