@@ -58,8 +58,8 @@ namespace OnTopic.Tests {
     | TEST: ERROR CONTROLLER: HTTP: RETURNS EXPECTED ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorController.HttpAsync(Int32)" /> action with different status codes, and ensures that the
-    ///   expected <see cref="Topic"/> is returned in the <see cref="TopicViewResult"/>.
+    ///   Triggers the <see cref="ErrorController.HttpAsync(Int32, Boolean)" /> action with different status codes, and ensures
+    ///   that the expected <see cref="Topic"/> is returned in the <see cref="TopicViewResult"/>.
     /// </summary>
     [Theory]
     [InlineData(405, "405")]                               // Exact match
