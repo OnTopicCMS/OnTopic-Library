@@ -240,7 +240,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
+      var configuration         = memberAccessor.Configuration;
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
       var compositeAttributeKey = configuration.AttributeKey;
 

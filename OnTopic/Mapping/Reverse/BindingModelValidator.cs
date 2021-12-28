@@ -148,8 +148,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
       var compositeAttributeKey = configuration.AttributeKey;
+      var configuration         = propertyAccessor.Configuration;
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
       var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
       var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };

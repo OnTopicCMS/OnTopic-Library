@@ -392,7 +392,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new ItemConfiguration(parameter, parameter.Name, attributePrefix);
+      var configuration         = parameter.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if mapping is disabled

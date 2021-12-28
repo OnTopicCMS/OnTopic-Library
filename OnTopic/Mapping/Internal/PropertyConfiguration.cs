@@ -41,10 +41,7 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="memberAccessor">
     ///   The <see cref="MemberAccessor"/> instance to check for <see cref="Attribute"/> values.
     /// </param>
-    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal PropertyConfiguration(MemberAccessor memberAccessor, string? attributePrefix = ""):
-      base(memberAccessor, memberAccessor.Name, attributePrefix)
-    {
+    internal PropertyConfiguration(MemberAccessor memberAccessor): base(memberAccessor) {
       MemberAccessor            = memberAccessor;
     }
 
