@@ -6,6 +6,9 @@
 using System.Collections;
 using System.Reflection;
 using OnTopic.Attributes;
+using OnTopic.Mapping;
+using OnTopic.Mapping.Internal;
+using OnTopic.Mapping.Reverse;
 
 namespace OnTopic.Internal.Reflection {
 
@@ -24,6 +27,7 @@ namespace OnTopic.Internal.Reflection {
     private readonly            ICustomAttributeProvider        _attributeProvider;
     private readonly            Type                            _type                           = default!;
     private                     List<Attribute>                 _customAttributes               = default!;
+    private                     ItemConfiguration?              _itemConfiguration;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -99,6 +103,26 @@ namespace OnTopic.Internal.Reflection {
         IsConvertible           = AttributeValueConverter.IsConvertible(Type);
         bool isList()
           => typeof(IList).IsAssignableFrom(Type) || Type.IsGenericType && _listTypes.Contains(Type.GetGenericTypeDefinition());
+      }
+    }
+
+    /*==========================================================================================================================
+    | CONFIGURATION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a reference to the configuration settings for the current item, based on the annotations configured in the code.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="ItemConfiguration"/> class identifies annotations used by the <see cref="TopicMappingService"/> and the
+    ///   <see cref="ReverseTopicMappingService"/>. While it can be called on any <see cref="Type"/>, it is only expected to
+    ///   offer a benefit for model classes intended for mapping.
+    /// </remarks>
+    internal ItemConfiguration Configuration {
+      get {
+        if (_itemConfiguration is null) {
+          _itemConfiguration = new(this, Name, "");
+        }
+        return _itemConfiguration;
       }
     }
 
