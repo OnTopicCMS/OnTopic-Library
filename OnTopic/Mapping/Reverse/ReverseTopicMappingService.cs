@@ -241,7 +241,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = memberAccessor.Configuration;
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
-      var compositeAttributeKey = configuration.AttributeKey;
+      var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
@@ -278,7 +278,7 @@ namespace OnTopic.Mapping.Reverse {
 
       if (attributeType is null) {
         throw new MappingModelValidationException(
-          $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
+          $"The attribute '{configuration.GetCompositeAttributeKey(attributePrefix)}' mapped by the {source.GetType()} could not be found on the " +
           $"'{contentTypeDescriptor.Key}' content type.");
       }
 
@@ -362,7 +362,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the value (to null, if appropriate)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
+      target.Attributes.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), attributeValue);
 
     }
 
@@ -403,7 +403,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Relationships.Clear(configuration.AttributeKey);
+      target.Relationships.Clear(configuration.GetCompositeAttributeKey(attributePrefix));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
@@ -416,7 +416,7 @@ namespace OnTopic.Mapping.Reverse {
             $"located in the repository."
           );
         }
-        target.Relationships.SetValue(configuration.AttributeKey, targetTopic);
+        target.Relationships.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), targetTopic);
       }
 
     }
@@ -454,9 +454,9 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var container = target.Children.GetValue(configuration.AttributeKey);
+      var container = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
       if (container is null) {
-        container = TopicFactory.Create(configuration.AttributeKey, "List", target);
+        container = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
         container.IsHidden = true;
       }
 
@@ -525,11 +525,11 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
-        target.Attributes.SetValue(configuration.AttributeKey, topicReference?.Id.ToString(CultureInfo.InvariantCulture));
+      if (configuration.GetCompositeAttributeKey(attributePrefix).EndsWith("Id", StringComparison.Ordinal)) {
+        target.Attributes.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), topicReference?.Id.ToString(CultureInfo.InvariantCulture));
       }
       else {
-        target.References.SetValue(configuration.AttributeKey, topicReference);
+        target.References.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), topicReference);
       }
 
     }

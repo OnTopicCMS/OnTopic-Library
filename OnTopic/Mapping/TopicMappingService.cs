@@ -567,7 +567,7 @@ namespace OnTopic.Mapping {
       else if (itemMetadata.IsList) {
         return null;
       }
-      else if (configuration.AttributeKey is "Parent") {
+      else if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
         if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
           value = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
         }
@@ -593,17 +593,17 @@ namespace OnTopic.Mapping {
       Topic? getTopicReference() {
 
         // Check for standard topic reference
-        var topicReference      = source.References.GetValue(configuration.AttributeKey);
+        var topicReference      = source.References.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
         if (topicReference is not null) {
           return topicReference;
         }
 
         int topicReferenceId;
-        if (configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
-          topicReferenceId    = source.Attributes.GetInteger(configuration.AttributeKey, 0);
+        if (configuration.GetCompositeAttributeKey(attributePrefix).EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
+          topicReferenceId      = source.Attributes.GetInteger(configuration.GetCompositeAttributeKey(attributePrefix), 0);
         }
         else {
-          topicReferenceId    = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+          topicReferenceId      = source.Attributes.GetInteger($"{configuration.GetCompositeAttributeKey(attributePrefix)}Id", 0);
         }
         if (topicReferenceId > 0) {
           topicReference        = _topicRepository.Load(topicReferenceId, source);
@@ -643,13 +643,13 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = GetTopicAccessor(source.GetType());
 
-      var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
+      var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeValue is null) {
-        attributeValue = typeAccessor.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
+        attributeValue = typeAccessor.GetPropertyValue(source, configuration.GetCompositeAttributeKey(attributePrefix))?.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -657,7 +657,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeValue is null) {
         attributeValue = source.Attributes.GetValue(
-          configuration.AttributeKey,
+          configuration.GetCompositeAttributeKey(attributePrefix),
           configuration.DefaultValue?.ToString(),
           configuration.InheritValue
         );
@@ -848,7 +848,7 @@ namespace OnTopic.Mapping {
       //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
-        var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.AttributeKey);
+        var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
         if (
           sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
           sourcePropertyValue.Count > 0 &&
@@ -1132,7 +1132,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourcePropertyAccessor = GetTopicAccessor(source.GetType()).GetMember(configuration.AttributeKey);
+      var sourcePropertyAccessor = GetTopicAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met

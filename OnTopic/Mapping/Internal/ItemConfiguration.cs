@@ -423,6 +423,21 @@ namespace OnTopic.Mapping.Internal {
     internal Dictionary<string, string> AttributeFilters { get; }
 
     /*==========================================================================================================================
+    | METHOD: GET COMPOSITE ATTRIBUTE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the current <see cref="AttributeKey"/>, and, optionally, the supplied <paramref name="attributePrefix"/>.
+    /// </summary>
+    /// <param name="attributePrefix">
+    ///   The current mapping operation's attribute prefix to be prepended to the <see cref="AttributeKey"/>.
+    /// </param>
+    /// <returns>
+    ///   The composite attribute key, based on <see cref="AttributeKey"/> and, optionally, the supplied <paramref name="
+    ///   attributePrefix"/>.
+    /// </returns>
+    internal string GetCompositeAttributeKey(string? attributePrefix) => $"{attributePrefix}{AttributeKey}";
+
+    /*==========================================================================================================================
     | METHOD: SATISFIES ATTRIBUTE FILTERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

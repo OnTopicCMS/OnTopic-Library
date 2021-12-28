@@ -147,8 +147,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var compositeAttributeKey = configuration.AttributeKey;
       var configuration         = propertyAccessor.Configuration;
+      var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
       var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
       var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
@@ -208,7 +208,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.AttributeKey is "Parent") {
+      if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
         throw new MappingModelValidationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
