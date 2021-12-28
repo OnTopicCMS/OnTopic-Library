@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
@@ -56,20 +55,6 @@ namespace OnTopic.Mapping.Internal {
     ///   The <see cref="MemberAccessor"/> that the current <see cref="PropertyConfiguration"/> is associated with.
     /// </summary>
     internal MemberAccessor MemberAccessor { get; }
-
-    /*==========================================================================================================================
-    | METHOD: VALIDATE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a target DTO, will automatically identify any attributes that derive from <see cref="ValidationAttribute"/> and
-    ///   ensure that their conditions are satisfied.
-    /// </summary>
-    /// <param name="target">The target DTO to validate the current property on.</param>
-    internal void Validate(object target) {
-      foreach (ValidationAttribute validator in CustomAttributes.OfType<ValidationAttribute>()) {
-        validator.Validate(MemberAccessor.GetValue(target), MemberAccessor.Name);
-      }
-    }
 
   }
 }
