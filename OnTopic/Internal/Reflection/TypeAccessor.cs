@@ -90,6 +90,11 @@ namespace OnTopic.Internal.Reflection {
         ConstructorParameters.Add(new(parameter));
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify expected topic, and set MaybeCompatible if a corresponding property exists
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      SetItemCompatibility();
+
     }
 
     /*==========================================================================================================================
@@ -389,6 +394,63 @@ namespace OnTopic.Internal.Reflection {
     /// </param>
     internal void SetMethodValue(object target, string methodName, object? value, bool allowConversion = false)
       => SetValue(target, methodName, value, allowConversion);
+
+    /*==========================================================================================================================
+    | METHOD: SET ITEM COMPATIBILITY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if each member corresponds to a compatible or convertible member of a corresponding <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="SetItemCompatibility"/> method applies basic assumptions to identify the corresponding <see cref=
+    ///   "Topic"/> and whether or not any matching parameters or members are compatible with members of that <see cref="Topic"
+    ///   />. See <see cref="ItemMetadata.MaybeCompatible"/> for more details.
+    /// </remarks>
+    private void SetItemCompatibility() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Only attempt to detect compatibility for model types, not for topics.
+      >-------------------------------------------------------------------------------------------------------------------------
+      | We expect mapping to topics to typically use e.g. Attributes or References, which will automatically marshal through
+      | properties if appropriate.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (typeof(Topic).IsAssignableFrom(Type)) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify corresponding topic type
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Assuming a model follows the convention {ContentType}TopicViewModel or {ContentType}ViewModel, find a corresponding
+      | Topic named {ContentType}. If this cannot be found, fall back to Topic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var impliedContentType    = Type.Name
+                                    .Replace("TopicViewModel", "", StringComparison.OrdinalIgnoreCase)
+                                    .Replace("ViewModel", "", StringComparison.OrdinalIgnoreCase);
+      var topicType             = TopicFactory.TypeLookupService.Lookup(impliedContentType)?? typeof(Topic);
+      var topicAccessor         = TypeAccessorCache.GetTypeAccessor(topicType);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Detect compatibility
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the Topic contains a property named {Name} or a method named Get{Name}, and that member's type is either compatible
+      | or convertible, then set MaybeCompatible to true.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var member in ConstructorParameters.Cast<ItemMetadata>().Union(_members.Values)) {
+        var attributeKey        = member.Configuration.AttributeKey;
+        var topicMember         = topicAccessor.GetMember(attributeKey)?? topicAccessor.GetMember($"Get{attributeKey}");
+        if (topicMember is null) {
+          continue;
+        }
+        else if (member.IsConvertible && topicMember.Type == typeof(string)) {
+          member.MaybeCompatible = true;
+        }
+        else if (member.Type.IsAssignableFrom(topicMember.Type)) {
+          member.MaybeCompatible = true;
+        }
+
+      }
+    }
 
   } //Class
 } //Namespace
