@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
 
       var members               = _typeAccessor.GetMembers();
 
-      Assert.Equal(7+4, members.Count); // Includes four compliant members inherited from object
+      Assert.Equal(7, members.Count);
 
     }
 

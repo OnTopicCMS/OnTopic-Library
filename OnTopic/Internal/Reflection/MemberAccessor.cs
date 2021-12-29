@@ -247,6 +247,11 @@ namespace OnTopic.Internal.Reflection {
     internal static Func<MemberInfo, bool> IsValid => memberInfo => {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Skip members inherited from object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (memberInfo.DeclaringType == typeof(object)) return false;
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure type is property or method
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (memberInfo is not MethodInfo and not PropertyInfo) return false;
@@ -254,8 +259,8 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (memberInfo is PropertyInfo) return true;
       if (memberInfo.Name.Contains("et_", StringComparison.Ordinal)) return false;
+      if (memberInfo is PropertyInfo) return true;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate methods
