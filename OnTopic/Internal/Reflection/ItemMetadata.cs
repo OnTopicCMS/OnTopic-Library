@@ -156,6 +156,36 @@ namespace OnTopic.Internal.Reflection {
     internal bool IsConvertible { get; init; }
 
     /*==========================================================================================================================
+    | MAYBE COMPATIBLE?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determine if the item corresponds to a member on the <see cref="Topic"/> class (or derivative) associated with the
+    ///   parent <see cref="TypeAccessor"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="MaybeCompatible"/> does not <i>guarantee</i> that a corresponding compatible property will be found.
+    ///     First, it cannot know what the source <see cref="Topic"/> will be, so it relies only evaluates topics who match the
+    ///     naming convention (e.g., <c>{ContentType}TopicViewModel</c> maps to <c>{ContentType}</c>), and otherwise falls back
+    ///     to <see cref="Topic"/>; if a model is mapped to a different derivative of <see cref="Topic"/>, additional matches
+    ///     may be available. Second, it evaluates whether the <see cref="Topic"/> member is of a type that can be assigned to
+    ///     the model member, or otherwise <i>converted</i>—i.e., that the <see cref="Topic"/> member is a string, and the model
+    ///     member is one of the <see cref="AttributeValueConverter.ConvertibleTypes"/>. This provides a hint for avoiding type
+    ///     checks in cases we don't expect to be compatible, while deferring to the caller to provide more sophisticated checks
+    ///     based on the actual <see cref="Topic"/>.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="MaybeCompatible"/> property must be set from the <see cref="TypeAccessor"/>, which is best positioned
+    ///     to efficiently determine the corresponding attributes. To do this, it must rely on attributes accessed via the <see
+    ///     cref="Configuration"/> property. As a result, the <see cref="MaybeCompatible"/> must be set <i>after</i> the <see
+    ///     cref="ItemMetadata"/> instance has been constructed, instead of during initialization like the other properties.
+    ///     That isn't ideal, but isn't easy to avoid without making each <see cref="ItemMetadata"/> aware of the parent <see
+    ///     cref="TypeAccessor"/>.
+    ///   </para>
+    /// </remarks>
+    internal bool MaybeCompatible { get; set; }
+
+    /*==========================================================================================================================
     | CUSTOM ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
