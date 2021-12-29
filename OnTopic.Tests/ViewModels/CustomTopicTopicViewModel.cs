@@ -27,7 +27,7 @@ namespace OnTopic.Tests.ViewModels {
   ///     of the test case, and not something we'd expect in real-life scenarios.
   ///   </para>
   /// </remarks>
-  public class CustomTopicTopicViewModel {
+  public record CustomTopicTopicViewModel {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
