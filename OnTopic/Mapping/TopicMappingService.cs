@@ -196,12 +196,13 @@ namespace OnTopic.Mapping {
       if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
 
         // This strategy is only performant if there are quite a several scalar properties and they are well-covered by the
-        // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and properties. In practice, this
-        // should be benefitial with any more than mapped attributes, but we also expect that most topics will have 2-3 excluded
-        // or unmapped attributes (e.g., Title, LastModified) and that models will have five or properties that aren't mapped to
-        // attributes (e.g., Id, Key, WebPath). This doesn't guarantee that the attributes map to the properties, but a more
-        // accurate evaluation undermines the performance benefits of this optimization.
-        if (topic.Attributes.Count >= 5 && properties.Count(p => p.IsConvertible) >= 5) {
+        // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and three or more compatible
+        // properties. In practice, this should be benefitial with any more than mapped attributes, but we also expect that most
+        // topics will have 2-3 excluded or unmapped attributes (e.g., Title, LastModified). With models, we can be a bit more
+        // intelligent, by excluding any members that are likely compatible with Topic properties, thus exluding e.g., Id, Key,
+        // WebPath, etc. This doesn't guarantee that the attributes map to the properties, but a more accurate evaluation would
+        // undermine the performance benefits of this optimization.
+        if (topic.Attributes.Count >= 5 && properties.Count(p => !p.MaybeCompatible) >= 3) {
           var attributes        = topic.Attributes.AsAttributeDictionary(true);
           arguments[0]          = attributes;
           attributeArguments    = attributes;
@@ -643,12 +644,20 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = GetTopicAccessor(source.GetType());
 
-      var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
+      var attributeValue        = (string?)null;
+      var maybeCompatible       = source.GetType() != typeof(Topic) || itemMetadata.MaybeCompatible;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue is null) {
+      if (maybeCompatible) {
+        attributeValue = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.{Property}
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (maybeCompatible && attributeValue is null) {
         attributeValue = typeAccessor.GetPropertyValue(source, configuration.GetCompositeAttributeKey(attributePrefix))?.ToString();
       }
 
@@ -888,7 +897,7 @@ namespace OnTopic.Mapping {
       | Provide local function for evaluating current collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       IList<Topic> getCollection(CollectionType collection, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetAssociations = AssociationMap.Mappings[collection];
+        var targetAssociations  = AssociationMap.Mappings[collection];
         var preconditionsMet    =
           listSource.Count == 0 &&
           (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
@@ -1128,6 +1137,14 @@ namespace OnTopic.Mapping {
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = itemMetadata.Configuration;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Rely on MaybeCompatible to bypass known incompatible types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (source.GetType() == typeof(Topic) && !itemMetadata.MaybeCompatible) {
+        value = null;
+        return false;
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}

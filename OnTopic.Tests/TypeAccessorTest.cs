@@ -11,6 +11,7 @@ using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
 using OnTopic.Tests.ViewModels;
+using OnTopic.Tests.ViewModels.Metadata;
 using Xunit;
 
 namespace OnTopic.Tests {
@@ -65,7 +66,7 @@ namespace OnTopic.Tests {
 
       var members               = _typeAccessor.GetMembers();
 
-      Assert.Equal(7+4, members.Count); // Includes four compliant members inherited from object
+      Assert.Equal(7, members.Count);
 
     }
 
@@ -622,6 +623,27 @@ namespace OnTopic.Tests {
       typeAccessor.SetMethodValue(source, "SetMethod", (object?)null);
 
       Assert.Null(source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAYBE COMPATIBLE: CORRESPONDING TOPIC: CORRECTLY SET
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeAccessor"/> and based on the <see cref="ContentTypeDescriptorTopicViewModel"/> and
+    ///   confirms that the underlying <see cref="MemberAccessor"/> instances are correctly marked as <see cref="ItemMetadata.
+    ///   MaybeCompatible"/> based on the association with the <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    [Fact]
+    public void MaybeCompatible_CorrespondingTopic_CorrectlySet() {
+
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<CustomTopicTopicViewModel>();
+
+      Assert.Equal(9, typeAccessor.GetMembers(MemberTypes.Property).Count(m => m.MaybeCompatible));
+      Assert.Equal(2, typeAccessor.GetMembers(MemberTypes.Property).Count(m => !m.MaybeCompatible));
+      Assert.Equal(9, typeAccessor.ConstructorParameters.Count(m => m.MaybeCompatible));
+      Assert.Equal(2, typeAccessor.ConstructorParameters.Count(m => !m.MaybeCompatible));
+      Assert.True(typeAccessor.GetMember(nameof(CustomTopicTopicViewModel.TopicReference))?.MaybeCompatible);
 
     }
 

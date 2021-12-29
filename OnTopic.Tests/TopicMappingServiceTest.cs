@@ -295,13 +295,29 @@ namespace OnTopic.Tests {
       var topic                 = new Topic("Test", "Page");
       var lastModified          = new DateTime(2021, 12, 22);
 
-      topic.Attributes.SetValue("Subtitle", "Value");
+      topic.Attributes.SetValue("Title", "Value");
+      topic.Attributes.SetValue("ShortTitle", "Short Title");
+      topic.Attributes.SetValue("Subtitle", "Subtitle");
+      topic.Attributes.SetValue("MetaTitle", "Meta Title");
+      topic.Attributes.SetValue("MetaDescription", "Meta Description");
+      topic.Attributes.SetValue("MetaKeywords", "Load;Test;Keywords");
+      topic.Attributes.SetValue("NoIndex", "0");
+      topic.Attributes.SetValue("Body", "Body of test topic");
+      topic.Attributes.SetValue("MappedProperty", "Mapped Value");
+      topic.Attributes.SetValue("UnmappedProperty", "Unmapped Value");
       topic.VersionHistory.Add(lastModified);
 
-      var target                = await _mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<AttributeDictionaryConstructorTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.Equal("Test", target?.Title);
-      Assert.Equal("Value", target?.Subtitle);
+      Assert.Equal("Value", target?.Title);
+      Assert.Equal("Short Title", target?.ShortTitle);
+      Assert.Equal("Subtitle", target?.Subtitle);
+      Assert.Equal("Meta Title", target?.MetaTitle);
+      Assert.Equal("Meta Description", target?.MetaDescription);
+      Assert.Equal(false, target?.NoIndex);
+      Assert.Equal("Load;Test;Keywords", target?.MetaKeywords);
+      Assert.Equal("Mapped Value", target?.MappedProperty);
+      Assert.Null(target?.UnmappedProperty);
       Assert.Equal(lastModified, target?.LastModified);
 
     }
