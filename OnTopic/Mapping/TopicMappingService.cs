@@ -643,12 +643,20 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var typeAccessor          = GetTopicAccessor(source.GetType());
 
-      var attributeValue        = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
+      var attributeValue        = (string?)null;
+      var maybeCompatible       = source.GetType() != typeof(Topic) || itemMetadata.MaybeCompatible;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue is null) {
+      if (maybeCompatible) {
+        attributeValue = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.{Property}
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (maybeCompatible && attributeValue is null) {
         attributeValue = typeAccessor.GetPropertyValue(source, configuration.GetCompositeAttributeKey(attributePrefix))?.ToString();
       }
 
@@ -888,7 +896,7 @@ namespace OnTopic.Mapping {
       | Provide local function for evaluating current collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       IList<Topic> getCollection(CollectionType collection, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetAssociations = AssociationMap.Mappings[collection];
+        var targetAssociations  = AssociationMap.Mappings[collection];
         var preconditionsMet    =
           listSource.Count == 0 &&
           (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
@@ -1128,6 +1136,14 @@ namespace OnTopic.Mapping {
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = itemMetadata.Configuration;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Rely on MaybeCompatible to bypass known incompatible types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (source.GetType() == typeof(Topic) && !itemMetadata.MaybeCompatible) {
+        value = null;
+        return false;
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
