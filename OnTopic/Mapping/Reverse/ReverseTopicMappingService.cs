@@ -10,7 +10,6 @@ using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Reflection;
-using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
@@ -228,21 +227,21 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="propertyAccessor">Information related to the current property.</param>
+    /// <param name="memberAccessor">Information related to the current property.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private async Task SetPropertyAsync(
       object                    source,
       Topic                     target,
-      MemberAccessor            propertyAccessor,
+      MemberAccessor            memberAccessor,
       string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(propertyAccessor, attributePrefix);
+      var configuration         = memberAccessor.Configuration;
       var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
-      var compositeAttributeKey = configuration.AttributeKey;
+      var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
@@ -256,7 +255,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties injected by the compiler for record types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (propertyAccessor.Name is "EqualityContract") {
+      if (memberAccessor.Name is "EqualityContract") {
         return;
       }
 
@@ -265,7 +264,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
         await MapAsync(
-          propertyAccessor.GetValue(source),
+          memberAccessor.GetValue(source),
           target,
           configuration.AttributePrefix
         ).ConfigureAwait(false);
@@ -279,30 +278,30 @@ namespace OnTopic.Mapping.Reverse {
 
       if (attributeType is null) {
         throw new MappingModelValidationException(
-          $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
+          $"The attribute '{configuration.GetCompositeAttributeKey(attributePrefix)}' mapped by the {source.GetType()} could not be found on the " +
           $"'{contentTypeDescriptor.Key}' content type.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      configuration.Validate(source);
+      memberAccessor.Validate(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle property by type
       \-----------------------------------------------------------------------------------------------------------------------*/
       switch (attributeType.ModelType) {
         case ModelType.ScalarValue:
-          SetScalarValue(source, target, configuration);
+          SetScalarValue(source, target, memberAccessor, attributePrefix);
           return;
         case ModelType.Relationship:
-          SetRelationships(source, target, configuration);
+          SetRelationships(source, target, memberAccessor, attributePrefix);
           return;
         case ModelType.NestedTopic:
-          await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
+          await SetNestedTopicsAsync(source, target, memberAccessor, attributePrefix).ConfigureAwait(false);
           return;
         case ModelType.Reference:
-          SetReference(source, target, configuration);
+          SetReference(source, target, memberAccessor, attributePrefix);
           return;
       }
 
@@ -315,31 +314,31 @@ namespace OnTopic.Mapping.Reverse {
     ///   Sets an attribute on the target <see cref="Topic"/> with a scalar value from the source binding model.
     /// </summary>
     /// <remarks>
-    ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.MemberAccessor"/> is of the type <see
-    ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see cref="SetScalarValue(
-    ///   Object, Topic, PropertyConfiguration)"/> method will attempt to set the property on the <paramref name="target"/>. If
-    ///   the value is not set on the <paramref name="source"/> then the <see cref="DefaultValueAttribute"/> will be evaluated
-    ///   as a fallback. If the property is not of a settable type then the property is not set. If the value is empty, then it
-    ///   will be treated as <c>null</c> in the <paramref name="target"/>'s <see cref="AttributeCollection"/>.
+    ///   Assuming the <paramref name="memberAccessor"/>'s <see cref="ItemMetadata.Type"/> property is of the type <see cref=
+    ///   "String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see cref="SetScalarValue(
+    ///   Object, Topic, MemberAccessor, String?)"/> method will attempt to set the property on the <paramref name="target"/>.
+    ///   If the value is not set on the <paramref name="source"/> then the <see cref="DefaultValueAttribute"/> will be
+    ///   evaluated as a fallback. If the property is not of a settable type then the property is not set. If the value is
+    ///   empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s <see cref="AttributeCollection"/>.
     /// </remarks>
     /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <autogeneratedoc />
     private static void SetScalarValue(
       object                    source,
       Topic                     target,
-      PropertyConfiguration     configuration
+      MemberAccessor            memberAccessor,
+      string?                   attributePrefix
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var memberAccessor        = configuration.MemberAccessor;
+      var configuration         = memberAccessor.Configuration;
       var attributeValue        = memberAccessor.GetValue(source)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -363,7 +362,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the value (to null, if appropriate)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
+      target.Attributes.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), attributeValue);
 
     }
 
@@ -378,19 +377,24 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private void SetRelationships(
       object                    source,
       Topic                     target,
-      PropertyConfiguration     configuration
+      MemberAccessor            memberAccessor,
+      string?                   attributePrefix
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = memberAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList?)configuration.MemberAccessor.GetValue(source);
+      var sourceList = (IList?)memberAccessor.GetValue(source);
 
       if (sourceList is null) {
         sourceList = new List<IAssociatedTopicBindingModel>();
@@ -399,7 +403,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Relationships.Clear(configuration.AttributeKey);
+      target.Relationships.Clear(configuration.GetCompositeAttributeKey(attributePrefix));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
@@ -408,11 +412,11 @@ namespace OnTopic.Mapping.Reverse {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
         if (targetTopic is null) {
           throw new MappingModelValidationException(
-            $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.MemberAccessor.Name}' property could " +
-            $"not be located in the repository."
+            $"The relationship '{relationship.UniqueKey}' mapped in the '{memberAccessor.Name}' property could not be " +
+            $"located in the repository."
           );
         }
-        target.Relationships.SetValue(configuration.AttributeKey, targetTopic);
+        target.Relationships.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), targetTopic);
       }
 
     }
@@ -428,26 +432,31 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private async Task SetNestedTopicsAsync(
       object                    source,
       Topic                     target,
-      PropertyConfiguration     configuration
+      MemberAccessor            memberAccessor,
+      string?                   attributePrefix
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = memberAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList?)configuration.MemberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
+      var sourceList = (IList?)memberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var container = target.Children.GetValue(configuration.AttributeKey);
+      var container = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
       if (container is null) {
-        container = TopicFactory.Create(configuration.AttributeKey, "List", target);
+        container = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
         container.IsHidden = true;
       }
 
@@ -469,26 +478,31 @@ namespace OnTopic.Mapping.Reverse {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
+    /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     private void SetReference(
       object                    source,
       Topic                     target,
-      PropertyConfiguration     configuration
+      MemberAccessor            memberAccessor,
+      string?                   attributePrefix
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish configuration
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var configuration         = memberAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var modelReference = (IAssociatedTopicBindingModel?)configuration.MemberAccessor.GetValue(source);
+      var modelReference = (IAssociatedTopicBindingModel?)memberAccessor.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (modelReference is null || modelReference.UniqueKey is null) {
         throw new MappingModelValidationException(
-          $"The {configuration.MemberAccessor.Name} property must reference an object with its `UniqueKey` property set The " +
+          $"The {memberAccessor.Name} property must reference an object with its `UniqueKey` property set The " +
           $"value may be empty, but it should not be null."
         );
       }
@@ -504,18 +518,18 @@ namespace OnTopic.Mapping.Reverse {
       if (modelReference.UniqueKey.Length > 0 && topicReference is null) {
         throw new MappingModelValidationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
-          $"'{configuration.MemberAccessor.Name}' property could not be found."
+          $"'{memberAccessor.Name}' property could not be found."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
-        target.Attributes.SetValue(configuration.AttributeKey, topicReference?.Id.ToString(CultureInfo.InvariantCulture));
+      if (configuration.GetCompositeAttributeKey(attributePrefix).EndsWith("Id", StringComparison.Ordinal)) {
+        target.Attributes.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), topicReference?.Id.ToString(CultureInfo.InvariantCulture));
       }
       else {
-        target.References.SetValue(configuration.AttributeKey, topicReference);
+        target.References.SetValue(configuration.GetCompositeAttributeKey(attributePrefix), topicReference);
       }
 
     }

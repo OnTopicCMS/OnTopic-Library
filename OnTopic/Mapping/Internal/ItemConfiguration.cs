@@ -31,10 +31,6 @@ namespace OnTopic.Mapping.Internal {
   ///     then the <see cref="ITopicMappingService"/> will instead use the value defined by that attribute, thus allowing a
   ///     property on the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
   ///   </para>
-  ///   <para>
-  ///     The <see cref="ItemConfiguration"/> works with both <see cref="ParameterInfo"/> and <see cref="PropertyInfo"/>
-  ///     instances, whereas the <see cref="PropertyConfiguration"/> works exclusively with <see cref="PropertyInfo"/> instances.
-  ///   </para>
   /// </remarks>
   internal class ItemConfiguration {
 
@@ -48,21 +44,18 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="itemMetadata">
     ///   The <see cref="ItemMetadata"/> instance associated with this <see cref="ItemConfiguration"/>.
     /// </param>
-    /// <param name="name">The name of the <see cref="ParameterInfo"/> or <see cref="PropertyInfo"/>.</param>
-    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    internal ItemConfiguration(ItemMetadata itemMetadata, string name, string? attributePrefix = "") {
+    internal ItemConfiguration(ItemMetadata itemMetadata) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set backing properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Metadata                  = itemMetadata;
       CustomAttributes          = itemMetadata.CustomAttributes;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeKey              = attributePrefix + name;
-      AttributePrefix           = attributePrefix;
+      AttributeKey              = itemMetadata.Name;
+      AttributePrefix           = "";
       DefaultValue              = null;
       InheritValue              = false;
       CollectionKey             = AttributeKey;
@@ -79,9 +72,9 @@ namespace OnTopic.Mapping.Internal {
       GetAttributeValue<MapAsAttribute>(                        a => MapAs = a.Type);
       GetAttributeValue<DefaultValueAttribute>(                 a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(                      a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(                 a => AttributeKey = attributePrefix + a.Key);
+      GetAttributeValue<AttributeKeyAttribute>(                 a => AttributeKey = a.Key);
       GetAttributeValue<MapToParentAttribute>(                  a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(                  a => AttributePrefix += (a.AttributePrefix?? name));
+      GetAttributeValue<MapToParentAttribute>(                  a => AttributePrefix += (a.AttributePrefix?? AttributeKey));
       GetAttributeValue<IncludeAttribute>(                      a => IncludeAssociations = a.Associations);
       GetAttributeValue<FlattenAttribute>(                      a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(                     a => MetadataKey = a.Key);
@@ -113,14 +106,6 @@ namespace OnTopic.Mapping.Internal {
       }
 
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: METADATA
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   The <see cref="ItemMetadata"/> that the current <see cref="ItemConfiguration"/> is associated with.
-    /// </summary>
-    internal ItemMetadata Metadata { get; }
 
     /*==========================================================================================================================
     | PROPERTY: CUSTOM ATTRIBUTES
@@ -432,6 +417,21 @@ namespace OnTopic.Mapping.Internal {
     ///   </para>
     /// </remarks>
     internal Dictionary<string, string> AttributeFilters { get; }
+
+    /*==========================================================================================================================
+    | METHOD: GET COMPOSITE ATTRIBUTE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the current <see cref="AttributeKey"/>, and, optionally, the supplied <paramref name="attributePrefix"/>.
+    /// </summary>
+    /// <param name="attributePrefix">
+    ///   The current mapping operation's attribute prefix to be prepended to the <see cref="AttributeKey"/>.
+    /// </param>
+    /// <returns>
+    ///   The composite attribute key, based on <see cref="AttributeKey"/> and, optionally, the supplied <paramref name="
+    ///   attributePrefix"/>.
+    /// </returns>
+    internal string GetCompositeAttributeKey(string? attributePrefix) => $"{attributePrefix}{AttributeKey}";
 
     /*==========================================================================================================================
     | METHOD: SATISFIES ATTRIBUTE FILTERS
