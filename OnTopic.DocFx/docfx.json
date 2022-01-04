@@ -6,7 +6,13 @@
           "files": [
             "**.csproj"
           ],
-          "src": "C:\\Code\\OnTopic-Library\\OnTopic.DocFx"
+          "cwd": "../",
+          "exclude": [
+            "**/OnTopic.DocFx/**",
+            "**/**.Tests/**",
+            "**/**.IntegrationTests/**",
+            "**/**.Host/**"
+          ]
         }
       ],
       "dest": "api",
