@@ -15,11 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic.All\OnTopic.All.csproj" />
-    <ProjectReference Include="..\OnTopic.AspNetCore.Mvc\OnTopic.AspNetCore.Mvc.csproj" />
-    <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
-    <ProjectReference Include="..\OnTopic.Data.Sql\OnTopic.Data.Sql.csproj" />
-    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
-    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
 
 </Project>
