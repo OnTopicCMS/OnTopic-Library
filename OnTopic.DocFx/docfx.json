@@ -67,6 +67,8 @@
     "keepFileLink": false,
     "cleanupCacheHistory": false,
     "disableGitFeatures": false,
-    "repositoryRoot": "../"
+    "repositoryRoot": "../",
+    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ]
+
   }
 }
