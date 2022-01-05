@@ -1,5 +1,8 @@
 ﻿apiRules:
 - exclude:
+    uidRegex: ^OnTopic\.Repositories.*$
+    type: Type
+- exclude:
     hasAttribute:
       uid: System.ObsoleteAttribute
 - exclude:

@@ -1,0 +1,10 @@
+﻿apiRules:
+- include:
+    uidRegex: ^OnTopic\.Repositories.*$
+    type: Namespace
+- include:
+    uidRegex: ^OnTopic\.Data\..*$
+    type: Namespace
+- exclude:
+    uidRegex: ^.*$
+    type: Namespace
