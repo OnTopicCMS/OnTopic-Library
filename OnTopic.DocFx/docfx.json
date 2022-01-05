@@ -56,6 +56,9 @@
       }
     ],
     "dest": "_site",
+    "globalMetadata": {
+      "_appLogoPath": "images/Logo.png"
+    },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
@@ -68,7 +71,8 @@
     "cleanupCacheHistory": false,
     "disableGitFeatures": false,
     "repositoryRoot": "../",
-    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ]
-
+    "xrefService": [
+      "https://xref.docs.microsoft.com/query?uid={uid}"
+    ]
   }
 }
