@@ -1,5 +1,14 @@
 - name: Articles
   href: articles/
-- name: Api Documentation
-  href: api/
-  homepage: api/index.md
+- name: Core Entities
+  href: api/OnTopic/
+  homepage: api/OnTopic/OnTopic.yml
+- name: ASP.NET Core
+  href: api/AspNetCore/
+  homepage: api/AspNetCore/OnTopic.AspNetCore.Mvc.yml
+- name: Repositories
+  href: api/Repositories/
+  homepage: api/Repositories/OnTopic.Data.Caching.yml
+- name: View Models
+  href: api/ViewModels/
+  homepage: api/ViewModels/OnTopic.ViewModels.yml

@@ -3,21 +3,38 @@
     {
       "src": [
         {
-          "files": [
-            "OnTopic.All/bin/Debug/netcoreapp3.1/**.dll"
-          ],
-          "cwd": "../",
-          "exclude": [
-            "**/OnTopic.DocFx/**",
-            "**/**.Tests/**",
-            "**/**.IntegrationTests/**",
-            "**/**.Host/**"
-          ]
+          "files": "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.dll",
+          "src": "../"
         }
       ],
-      "dest": "api",
-      "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "dest": "api/OnTopic"
+    },
+    {
+      "src": [
+        {
+          "files": "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.AspNetCore.Mvc.dll",
+          "src": "../"
+        }
+      ],
+      "dest": "api/AspNetCore"
+    },
+    {
+      "src": [
+        {
+          "files": "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.Data.*.dll",
+          "src": "../"
+        }
+      ],
+      "dest": "api/Repositories"
+    },
+    {
+      "src": [
+        {
+          "files": "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.ViewModels.dll",
+          "src": "../"
+        }
+      ],
+      "dest": "api/ViewModels"
     }
   ],
   "build": {
@@ -25,6 +42,7 @@
       {
         "files": [
           "api/**.yml",
+          "api/**/toc.yml",
           "api/index.md"
         ]
       },
