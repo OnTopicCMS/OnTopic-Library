@@ -1,5 +1,3 @@
-- name: Articles
-  href: articles/
 - name: Core Entities
   href: api/OnTopic/
   homepage: api/OnTopic/OnTopic.yml
