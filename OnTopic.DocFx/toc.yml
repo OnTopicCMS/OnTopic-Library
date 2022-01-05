@@ -1,4 +1,4 @@
-- name: Core Entities
+- name: Base Library
   href: api/OnTopic/
   homepage: api/OnTopic/OnTopic.yml
 - name: ASP.NET Core
