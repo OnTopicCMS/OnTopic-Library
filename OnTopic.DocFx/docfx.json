@@ -50,6 +50,22 @@
         }
       ],
       "dest": "api/ViewModels"
+    },
+    {
+      "src": [
+        {
+          "files": "bin/Debug/net6.0/OnTopic.Data.Transfer.dll"
+        }
+      ],
+      "dest": "api/DataTransfer"
+    },
+    {
+      "src": [
+        {
+          "files": "bin/Debug/net6.0/OnTopic.Editor.AspNetCore.dll"
+        }
+      ],
+      "dest": "api/Editor"
     }
   ],
   "build": {

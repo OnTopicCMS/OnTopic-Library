@@ -13,3 +13,9 @@
 - name: View Models
   href: api/ViewModels/
   homepage: api/ViewModels/OnTopic.ViewModels.yml
+- name: Transfer
+  href: api/DataTransfer/
+  homepage: api/DataTransfer/OnTopic.Data.Transfer.yml
+- name: Editor
+  href: api/Editor/
+  homepage: api/Editor/OnTopic.Editor.AspNetCore.yml
