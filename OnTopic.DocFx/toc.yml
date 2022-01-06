@@ -1,16 +1,16 @@
-- name: Base Library
+- name: OnTopic
   href: api/OnTopic/
   homepage: api/OnTopic/OnTopic.yml
-- name: ASP.NET Core
+- name: Web
   href: api/AspNetCore/
   homepage: api/AspNetCore/OnTopic.AspNetCore.Mvc.yml
 - name: Mapping
   href: api/Mapping/
   homepage: api/Mapping/OnTopic.Mapping.yml
-- name: Repositories
+- name: Data
   href: api/Repositories/
   homepage: api/Repositories/OnTopic.Data.Caching.yml
-- name: View Models
+- name: Models
   href: api/ViewModels/
   homepage: api/ViewModels/OnTopic.ViewModels.yml
 - name: Transfer
