@@ -1,21 +1,21 @@
 - name: OnTopic
   href: api/OnTopic/
-  homepage: api/OnTopic/OnTopic.yml
+  homepage: api/OnTopic/
 - name: Web
   href: api/AspNetCore/
-  homepage: api/AspNetCore/OnTopic.AspNetCore.Mvc.yml
+  homepage: api/AspNetCore/
 - name: Mapping
   href: api/Mapping/
-  homepage: api/Mapping/OnTopic.Mapping.yml
+  homepage: api/Mapping/
 - name: Data
   href: api/Repositories/
-  homepage: api/Repositories/OnTopic.Data.Caching.yml
+  homepage: api/Repositories/
 - name: Models
   href: api/ViewModels/
-  homepage: api/ViewModels/OnTopic.ViewModels.yml
+  homepage: api/ViewModels/
 - name: Transfer
   href: api/DataTransfer/
-  homepage: api/DataTransfer/OnTopic.Data.Transfer.yml
+  homepage: api/DataTransfer/
 - name: Editor
   href: api/Editor/
-  homepage: api/Editor/OnTopic.Editor.AspNetCore.yml
+  homepage: api/Editor/
