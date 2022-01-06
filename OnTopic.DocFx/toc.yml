@@ -4,6 +4,9 @@
 - name: ASP.NET Core
   href: api/AspNetCore/
   homepage: api/AspNetCore/OnTopic.AspNetCore.Mvc.yml
+- name: Mapping
+  href: api/Mapping/
+  homepage: api/Mapping/OnTopic.Mapping.yml
 - name: Repositories
   href: api/Repositories/
   homepage: api/Repositories/OnTopic.Data.Caching.yml

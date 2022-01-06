@@ -22,6 +22,16 @@
     {
       "src": [
         {
+          "files": "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.dll",
+          "src": "../"
+        }
+      ],
+      "dest": "api/Mapping",
+      "filter": "Filters/Mapping.yml"
+    },
+    {
+      "src": [
+        {
           "files": [
             "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.dll",
             "OnTopic.All/bin/Debug/netcoreapp3.1/OnTopic.Data.*.dll"

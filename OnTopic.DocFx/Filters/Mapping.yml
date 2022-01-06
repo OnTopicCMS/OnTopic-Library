@@ -1,0 +1,7 @@
+﻿apiRules:
+- include:
+    uidRegex: ^OnTopic\.Mapping.*$
+    type: Namespace
+- exclude:
+    uidRegex: ^.*$
+    type: Namespace
