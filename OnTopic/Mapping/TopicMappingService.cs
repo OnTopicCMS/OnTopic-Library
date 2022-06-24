@@ -339,7 +339,7 @@ namespace OnTopic.Mapping {
       if (cache.TryGetValue(topic.Id, target.GetType(), out var cacheEntry)) {
         associations            = cacheEntry.GetMissingAssociations(associations);
         target                  = cacheEntry.MappedTopic;
-        if (associations == AssociationTypes.None) {
+        if (associations is AssociationTypes.None) {
           return cacheEntry.MappedTopic;
         }
         cacheEntry.AddMissingAssociations(associations);

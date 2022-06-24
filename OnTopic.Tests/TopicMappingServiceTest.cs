@@ -86,7 +86,7 @@ namespace OnTopic.Tests {
     ///   </para>
     /// </remarks>
     [Fact]
-    public async Task Map_Bulk_EvaluateThreshold() {
+    public async Task Map_LoadTesting_EvaluateThreshold() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
