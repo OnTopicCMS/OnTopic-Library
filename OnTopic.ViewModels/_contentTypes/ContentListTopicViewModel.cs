@@ -28,8 +28,8 @@ namespace OnTopic.ViewModels {
     /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
     public ContentListTopicViewModel(AttributeDictionary attributes): base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
-      IsIndexed                 = attributes.GetBoolean(nameof(IsIndexed))?? false;
-      IndexLabel                = attributes.GetValue(nameof(IndexLabel))?? "Contents";
+      IsIndexed                 = attributes.GetBoolean(nameof(IsIndexed))?? IsIndexed;
+      IndexLabel                = attributes.GetValue(nameof(IndexLabel))?? IndexLabel;
     }
 
     /// <summary>

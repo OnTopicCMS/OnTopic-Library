@@ -33,7 +33,7 @@ namespace OnTopic.ViewModels {
       MetaTitle                 = attributes.GetValue(nameof(MetaTitle));
       MetaDescription           = attributes.GetValue(nameof(MetaDescription));
       MetaKeywords              = attributes.GetValue(nameof(MetaKeywords));
-      NoIndex                   = attributes.GetBoolean(nameof(NoIndex))?? false;
+      NoIndex                   = attributes.GetBoolean(nameof(NoIndex))?? NoIndex;
       Body                      = attributes.GetValue(nameof(Body));
     }
 
