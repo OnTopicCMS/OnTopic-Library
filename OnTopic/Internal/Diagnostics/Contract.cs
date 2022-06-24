@@ -24,14 +24,14 @@ namespace OnTopic.Internal.Diagnostics {
   ///   <para>
   ///     <see cref="Contract"/> is not a replacement for Microsoft's Code Contract analysis and rewrite modules. Instead, it
   ///     aims to maintain basic synatactical and functional support for the most basic (and important) features of the rewrite
-  ///     module, such as <code>Contract.Requires()</code>, which is necessary to ensure paramater validation in many methods
+  ///     module, such as <c>Contract.Requires()</c>, which is necessary to ensure paramater validation in many methods
   ///     throughout the OnTopic library. <see cref="Contract"/> does not seek to functionally reproduce Code Contract's
-  ///     <code>Ensures()</code>, <code>Assume()</code>, or <code>Invariant()</code>—those methods are not implemented.
+  ///     <c>Ensures()</c>, <c>Assume()</c>, or <c>Invariant()</c>—those methods are not implemented.
   ///   </para>
   ///   <para>
-  ///     C# 8.0 will introduce nullable reference types. This largely mitigates the need for <code>Contract.Requires()</code>.
-  ///     As such, this library can be seen as a temporary bridge to maintain parameter validation until C# 8.0 is released. At
-  ///     that point, nullable reference types should be used in preference for many of the <code>Contract.Requires()</code>
+  ///     C# 8.0 will introduce nullable reference types. This largely mitigates the need for <c>Contract.Requires()</c>. As
+  ///     such, this library can be seen as a temporary bridge to maintain parameter validation until C# 8.0 is released. At
+  ///     that point, nullable reference types should be used in preference for many of the <c>Contract.Requires()</c>
   ///     calls—though, acknowledging, that there are some conditions that won't be satisfied by that (e.g., range checks).
   ///   </para>
   ///   <para>

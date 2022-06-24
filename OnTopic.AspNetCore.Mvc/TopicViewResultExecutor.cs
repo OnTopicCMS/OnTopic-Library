@@ -50,10 +50,10 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   Loops through potential sources for views to identify the most appropriate <see cref="RazorView"/>.
     /// </summary>
     /// <remarks>
-    ///   Will look for a view, in order, from the query string (<code>?View=</code>), <see cref="HttpRequest.Headers"/>
-    ///   collection (for matches in the <code>accepts</code> header), then the <see cref="Topic.View"/> property, if set, and
-    ///   finally falls back to the <see cref="Topic.ContentType"/>. If none of those yield any results, will default to a
-    ///   content type of "Page", which expects to find <code>~/Views/Page/Page.cshtml</code>.
+    ///   Will look for a view, in order, from the query string (<c>?View=</c>), <see cref="HttpRequest.Headers"/> collection
+    ///   (for matches in the <c>accepts</c> header), then the <see cref="Topic.View"/> property, if set, and finally falls back
+    ///   to the <see cref="Topic.ContentType"/>. If none of those yield any results, will default to a content type of "Page",
+    ///   which expects to find <c>~/Views/Page/Page.cshtml</c>.
     /// </remarks>
     /// <param name="actionContext">The <see cref="ActionContext"/> associated with the current request.</param>
     /// <param name="viewResult">The <see cref="TopicViewResult"/>.</param>
