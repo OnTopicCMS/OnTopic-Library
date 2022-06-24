@@ -29,7 +29,7 @@ namespace OnTopic.ViewModels {
     /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
     public TopicViewModel(AttributeDictionary attributes) {
       Contract.Requires(attributes, nameof(attributes));
-      IsHidden                  = attributes.GetBoolean("IsHidden")?? false;
+      IsHidden                  = attributes.GetBoolean("IsHidden")?? IsHidden;
       View                      = attributes.GetValue("View");
     }
 
