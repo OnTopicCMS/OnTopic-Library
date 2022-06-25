@@ -15,25 +15,25 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public record AttributeValueDictionaryConstructorTopicViewModel: PageTopicViewModel {
+  public record AttributeDictionaryConstructorTopicViewModel: PageTopicViewModel {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> with an <paramref name="attributes"
+    ///   Initializes a new <see cref="AttributeDictionaryConstructorTopicViewModel"/> with an <paramref name="attributes"
     ///   /> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> of attribute values.</param>
-    public AttributeValueDictionaryConstructorTopicViewModel(AttributeDictionary attributes) : base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeDictionaryConstructorTopicViewModel"/> of attribute values.</param>
+    public AttributeDictionaryConstructorTopicViewModel(AttributeDictionary attributes) : base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       MappedProperty = attributes.GetValue(nameof(MappedProperty));
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> with no parameters.
+    ///   Initializes a new <see cref="AttributeDictionaryConstructorTopicViewModel"/> with no parameters.
     /// </summary>
-    public AttributeValueDictionaryConstructorTopicViewModel() { }
+    public AttributeDictionaryConstructorTopicViewModel() { }
 
     /*==========================================================================================================================
     | PROPERTIES
