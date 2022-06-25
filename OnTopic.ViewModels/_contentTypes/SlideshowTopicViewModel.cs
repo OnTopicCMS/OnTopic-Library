@@ -25,8 +25,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="SlideshowTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
-    public SlideshowTopicViewModel(AttributeDictionary attributes): base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
+    public SlideshowTopicViewModel(AttributeValueDictionary attributes): base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       TransitionEffect          = attributes.GetValue(nameof(TransitionEffect));
     }

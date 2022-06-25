@@ -12,30 +12,30 @@ namespace OnTopic.Tests.ViewModels {
   | VIEW MODEL: ATTRIBUTE DICTIONARY CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a constructor with a <see cref="AttributeDictionary"/>.
+  ///   Provides a strongly-typed data transfer object for testing a constructor with a <see cref="AttributeValueDictionary"/>.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public record AttributeDictionaryConstructorTopicViewModel: PageTopicViewModel {
+  public record AttributeValueDictionaryConstructorTopicViewModel: PageTopicViewModel {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new <see cref="AttributeDictionaryConstructorTopicViewModel"/> with an <paramref name="attributes"/>
-    ///   dictionary.
+    ///   Initializes a new <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> with an <paramref name="attributes"
+    ///   /> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeDictionaryConstructorTopicViewModel"/> of attribute values.</param>
-    public AttributeDictionaryConstructorTopicViewModel(AttributeDictionary attributes) : base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> of attribute values.</param>
+    public AttributeValueDictionaryConstructorTopicViewModel(AttributeValueDictionary attributes) : base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       MappedProperty = attributes.GetValue(nameof(MappedProperty));
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="AttributeDictionaryConstructorTopicViewModel"/> with no parameters.
+    ///   Initializes a new <see cref="AttributeValueDictionaryConstructorTopicViewModel"/> with no parameters.
     /// </summary>
-    public AttributeDictionaryConstructorTopicViewModel() { }
+    public AttributeValueDictionaryConstructorTopicViewModel() { }
 
     /*==========================================================================================================================
     | PROPERTIES
