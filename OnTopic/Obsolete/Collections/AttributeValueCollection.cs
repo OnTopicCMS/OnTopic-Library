@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using OnTopic.Attributes;
 using OnTopic.Repositories;
 
 #pragma warning disable IDE0060 // Remove unused parameter

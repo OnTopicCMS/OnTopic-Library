@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Internal;

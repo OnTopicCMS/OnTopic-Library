@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
 using System.Globalization;
-using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;

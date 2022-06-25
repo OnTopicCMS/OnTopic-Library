@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.ComponentModel;
 using System.Reflection;
-using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;

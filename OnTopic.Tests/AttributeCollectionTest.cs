@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.Globalization;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Tests.Entities;
 using Xunit;
