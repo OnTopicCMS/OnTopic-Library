@@ -307,7 +307,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("UnmappedProperty", "Unmapped Value");
       topic.VersionHistory.Add(lastModified);
 
-      var target                = await _mappingService.MapAsync<AttributeDictionaryConstructorTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<AttributeValueDictionaryConstructorTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.Equal("Value", target?.Title);
       Assert.Equal("Short Title", target?.ShortTitle);
