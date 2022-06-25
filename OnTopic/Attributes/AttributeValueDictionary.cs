@@ -8,31 +8,31 @@ using OnTopic.Mapping;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE DICTIONARY
+  | CLASS: ATTRIBUTE VALUE DICTIONARY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a light-weight dictionary of attribute values.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="AttributeDictionary"/> is used by the <see cref="TopicMappingService"/> to support self-constructed
+  ///   The <see cref="AttributeValueDictionary"/> is used by the <see cref="TopicMappingService"/> to support self-constructed
   ///   models that don't require the use of the <see cref="TopicMappingService"/> to set the values of scalar properties. Any
-  ///   model that has a primary constructor accepting a single <see cref="AttributeDictionary"/> will be initialized using a
-  ///   <see cref="AttributeDictionary"/> containing all attributes from not only the current <see cref="Topic"/>, but also any
-  ///   <see cref="Topic.BaseTopic"/>s it references.
+  ///   model that has a primary constructor accepting a single <see cref="AttributeValueDictionary"/> will be initialized using
+  ///   a <see cref="AttributeValueDictionary"/> containing all attributes from not only the current <see cref="Topic"/>, but
+  ///   also any <see cref="Topic.BaseTopic"/>s it references.
   /// </remarks>
-  public class AttributeDictionary: Dictionary<string, string?> {
+  public class AttributeValueDictionary: Dictionary<string, string?> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public AttributeDictionary(): base(StringComparer.OrdinalIgnoreCase) { }
+    public AttributeValueDictionary(): base(StringComparer.OrdinalIgnoreCase) { }
 
     /*==========================================================================================================================
     | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as a string from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   Gets an attribute value as a string from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
     ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The key of the attribute to retrieve.</param>
@@ -47,7 +47,7 @@ namespace OnTopic.Attributes {
     | METHOD: GET BOOLEAN VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as a Boolean from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   Gets an attribute value as a Boolean from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
     ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
@@ -58,7 +58,7 @@ namespace OnTopic.Attributes {
     | METHOD: GET INTEGER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as an integer from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   Gets an attribute value as an integer from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
     ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
@@ -69,7 +69,7 @@ namespace OnTopic.Attributes {
     | METHOD: GET DOUBLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as a double from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   Gets an attribute value as a double from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
     ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
@@ -80,7 +80,7 @@ namespace OnTopic.Attributes {
     | METHOD: GET DATETIME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as a date/time from the <see cref="AttributeDictionary"/> based on the <paramref name="
+    ///   Gets an attribute value as a date/time from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
     ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
@@ -91,8 +91,8 @@ namespace OnTopic.Attributes {
     | METHOD: GET URI
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an attribute value as a URI from the <see cref="AttributeDictionary"/> based on the <paramref name="attributeKey
-    ///   "/>.
+    ///   Gets an attribute value as a URI from the <see cref="AttributeValueDictionary"/> based on the <paramref name="
+    ///   attributeKey"/>.
     /// </summary>
     /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <returns>The value for the attribute as a Uri object.</returns>

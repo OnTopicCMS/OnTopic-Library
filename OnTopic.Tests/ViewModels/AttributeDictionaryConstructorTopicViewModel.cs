@@ -12,7 +12,7 @@ namespace OnTopic.Tests.ViewModels {
   | VIEW MODEL: ATTRIBUTE DICTIONARY CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a constructor with a <see cref="AttributeDictionary"/>.
+  ///   Provides a strongly-typed data transfer object for testing a constructor with a <see cref="AttributeValueDictionary"/>.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
@@ -27,7 +27,7 @@ namespace OnTopic.Tests.ViewModels {
     ///   dictionary.
     /// </summary>
     /// <param name="attributes">An <see cref="AttributeDictionaryConstructorTopicViewModel"/> of attribute values.</param>
-    public AttributeDictionaryConstructorTopicViewModel(AttributeDictionary attributes) : base(attributes) {
+    public AttributeDictionaryConstructorTopicViewModel(AttributeValueDictionary attributes) : base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       MappedProperty = attributes.GetValue(nameof(MappedProperty));
     }

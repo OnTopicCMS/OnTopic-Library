@@ -25,8 +25,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="PageGroupTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
-    public PageGroupTopicViewModel(AttributeDictionary attributes): base(attributes) { }
+    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
+    public PageGroupTopicViewModel(AttributeValueDictionary attributes): base(attributes) { }
 
     /// <summary>
     ///   Initializes a new <see cref="PageGroupTopicViewModel"/> with no parameters.

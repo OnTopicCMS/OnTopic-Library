@@ -74,12 +74,12 @@ namespace OnTopic.Tests {
     /// <remarks>
     ///   <para>
     ///     The <see cref="TopicMappingService"/> includes functionality to map properties to attributes via a constructor that
-    ///     accepts a <see cref="AttributeDictionary"/>. This introduces some overhead which is not cost effective if there are
-    ///     not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref="
-    ///     AttributeDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
+    ///     accepts a <see cref="AttributeValueDictionary"/>. This introduces some overhead which is not cost effective if there
+    ///     are not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref="
+    ///     AttributeValueDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
     ///     construction to the model developer. This test is intended to help identify and optimize that threshold based on
-    ///     improvements to the underlying <see cref="AttributeDictionary"/>, <see cref="TopicMappingService.MapAsync(Topic?,
-    ///     AssociationTypes)"/>, and <see cref="AttributeCollection.AsAttributeDictionary(bool)"/> convenience method.
+    ///     improvements to the underlying <see cref="AttributeValueDictionary"/>, <see cref="TopicMappingService.MapAsync(
+    ///     Topic?, AssociationTypes)"/>, and <see cref="AttributeCollection.AsAttributeDictionary(bool)"/> convenience method.
     ///   </para>
     ///   <para>
     ///     This is only intended to be enabled when needed for specialized performance testing.
@@ -287,7 +287,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and attempts to map a view model with a constructor containing a <see
-    ///   cref="AttributeDictionary"/>. Confirms that the expected model is returned.
+    ///   cref="AttributeValueDictionary"/>. Confirms that the expected model is returned.
     /// </summary>
     [Fact]
     public async Task Map_AttributeDictionary_ReturnsNewModel() {
