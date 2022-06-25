@@ -25,8 +25,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="ContentListTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
-    public ContentListTopicViewModel(AttributeValueDictionary attributes): base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public ContentListTopicViewModel(AttributeDictionary attributes): base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       IsIndexed                 = attributes.GetBoolean(nameof(IsIndexed))?? IsIndexed;
       IndexLabel                = attributes.GetValue(nameof(IndexLabel))?? IndexLabel;

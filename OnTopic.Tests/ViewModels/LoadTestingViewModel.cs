@@ -25,8 +25,8 @@ namespace OnTopic.Tests.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="LoadTestingViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
-    public LoadTestingViewModel(AttributeValueDictionary attributes) {
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public LoadTestingViewModel(AttributeDictionary attributes) {
       Contract.Requires(attributes);
       Property0 = attributes.GetInteger("Property0");
       Property1 = attributes.GetInteger("Property1");

@@ -192,7 +192,7 @@ namespace OnTopic.Mapping {
       | the TopicMappingService may optionally pass a lightweight AttributeDictionary, allowing the model's constructor to
       | populate scalar values, instead of relying on reflection.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeValueDictionary)) {
+      if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
 
         // This strategy is only performant if there are quite a several scalar properties and they are well-covered by the
         // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and three or more compatible
