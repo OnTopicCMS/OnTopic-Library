@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;

@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Reflection;
-using OnTopic.Attributes;
 
 namespace OnTopic.Internal.Reflection {
 

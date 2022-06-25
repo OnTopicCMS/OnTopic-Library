@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Microsoft;
-using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;

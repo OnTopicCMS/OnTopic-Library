@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Globalization;
-using OnTopic.Attributes;
 using OnTopic.Associations;
 
 namespace OnTopic.Tests.Entities {

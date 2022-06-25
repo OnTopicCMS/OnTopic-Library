@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using OnTopic.Attributes;
 
 namespace OnTopic.Internal.Reflection {
 

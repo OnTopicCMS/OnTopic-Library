@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.Reflection;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Reflection;
 using OnTopic.Lookup;

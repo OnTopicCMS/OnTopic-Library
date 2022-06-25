@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections;
 using System.Reflection;
-using OnTopic.Attributes;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Internal;
 using OnTopic.Mapping.Reverse;

@@ -7,7 +7,6 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
-using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
