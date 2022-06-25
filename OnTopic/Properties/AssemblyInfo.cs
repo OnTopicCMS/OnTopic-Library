@@ -8,6 +8,7 @@
 | USING DIRECTIVES (GLOBAL)
 \-----------------------------------------------------------------------------------------------------------------------------*/
 global using System.Diagnostics.CodeAnalysis;
+global using OnTopic.Attributes;
 global using OnTopic.Internal.Diagnostics;
 
 /*==============================================================================================================================

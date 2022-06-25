@@ -9,6 +9,7 @@
 \-----------------------------------------------------------------------------------------------------------------------------*/
 global using System.Collections.ObjectModel;
 global using System.Diagnostics.CodeAnalysis;
+global using OnTopic.Attributes;
 global using OnTopic.Internal.Diagnostics;
 global using OnTopic.Mapping.Annotations;
 global using OnTopic.ViewModels;
