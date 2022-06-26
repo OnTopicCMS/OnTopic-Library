@@ -8,10 +8,10 @@ using Xunit;
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE DICTIONARY TEST
+  | CLASS: ATTRIBUTE DICTIONARY TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="AttributeValueDictionary"/> class.
+  ///   Provides unit tests for the <see cref="AttributeDictionary"/> class.
   /// </summary>
   [ExcludeFromCodeCoverage]
   public class AttributeDictionaryTest {
@@ -20,8 +20,8 @@ namespace OnTopic.Tests {
     | TEST: GET VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetValue(String)"/> returns the <paramref name="expected"/> value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see cref=
+    ///   "AttributeDictionary.GetValue(String)"/> returns the <paramref name="expected"/> value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     /// <param name="expected">The value expected to be returned.</param>
@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     [InlineData("Hello", "Hello")]
     public void GetValue_ReturnsExpectedValue(string? input, string? expected) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(expected, attributes.GetValue("Key"));
 
@@ -44,8 +44,8 @@ namespace OnTopic.Tests {
     | TEST: GET BOOLEAN: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetBoolean(String)"/> returns the <paramref name="expected"/> value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see cref=
+    ///   "AttributeDictionary.GetBoolean(String)"/> returns the <paramref name="expected"/> value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     /// <param name="expected">The value expected to be returned.</param>
@@ -58,7 +58,7 @@ namespace OnTopic.Tests {
     [InlineData("Hello", null)]
     public void GetBoolean_ReturnsExpectedValue(string input, bool? expected) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(expected, attributes.GetBoolean("Key"));
 
@@ -68,8 +68,8 @@ namespace OnTopic.Tests {
     | TEST: GET INTEGER: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetInteger(String)"/> returns the <paramref name="expected"/> value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see
+    ///   cref="AttributeDictionary.GetInteger(String)"/> returns the <paramref name="expected"/> value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     /// <param name="expected">The value expected to be returned.</param>
@@ -81,7 +81,7 @@ namespace OnTopic.Tests {
     [InlineData("Hello", null)]
     public void GetInteger_ReturnsExpectedValue(string input, int? expected) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(expected, attributes.GetInteger("Key"));
 
@@ -91,8 +91,8 @@ namespace OnTopic.Tests {
     | TEST: GET DOUBLE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetDouble(String)"/> returns the <paramref name="expected"/> value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see cref=
+    ///   "AttributeDictionary.GetDouble(String)"/> returns the <paramref name="expected"/> value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     /// <param name="expected">The value expected to be returned.</param>
@@ -105,7 +105,7 @@ namespace OnTopic.Tests {
     [InlineData("Hello", null)]
     public void GetDouble_ReturnsExpectedValue(string input, double? expected) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(expected, attributes.GetDouble("Key"));
 
@@ -115,8 +115,8 @@ namespace OnTopic.Tests {
     | TEST: GET DATE/TIME: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetDateTime(String)"/> returns the expected value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see cref=
+    ///   "AttributeDictionary.GetDateTime(String)"/> returns the expected value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     /// <param name="isSet">Determines whether a valid <see cref="DateTime"/> is expected in response.</param>
@@ -129,7 +129,7 @@ namespace OnTopic.Tests {
     [InlineData("Hello", false)]
     public void GetDate_ReturnsExpectedValue(string input, bool isSet) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(isSet? new DateTime(1976, 10, 15, 1, 2, 3) : null, attributes.GetDateTime("Key"));
 
@@ -139,8 +139,8 @@ namespace OnTopic.Tests {
     | TEST: GET URI: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> based on the <paramref name="input"/> data and confirms that <see
-    ///   cref="AttributeValueDictionary.GetUri(String)"/> returns the expected value.
+    ///   Constructs a <see cref="AttributeDictionary"/> based on the <paramref name="input"/> data and confirms that <see cref=
+    ///   "AttributeDictionary.GetUri(String)"/> returns the expected value.
     /// </summary>
     /// <param name="input">The value to add to the dictionary.</param>
     [Theory]
@@ -148,7 +148,7 @@ namespace OnTopic.Tests {
     [InlineData("Some:\\\\URL")]
     public void GetUri_ReturnsExpectedValue(string input) {
 
-      var attributes            = new AttributeValueDictionary() {{"Key", input}};
+      var attributes            = new AttributeDictionary() {{"Key", input}};
 
       Assert.Equal(new Uri(input), attributes.GetUri("Key"));
 
@@ -158,13 +158,13 @@ namespace OnTopic.Tests {
     | TEST: GET {TYPE}: INVALID KEY: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> and confirms that each of the <see cref="AttributeValueDictionary.
-    ///   GetValue(String)"/> methods return <c>null</c> if an invalid key is passed.
+    ///   Constructs a <see cref="AttributeDictionary"/> and confirms that each of the <see cref="AttributeDictionary.GetValue(
+    ///   String)"/> methods return <c>null</c> if an invalid key is passed.
     /// </summary>
     [Fact]
     public void GetType_InvalidKey_ReturnsNull() {
 
-      var attributes            = new AttributeValueDictionary();
+      var attributes            = new AttributeDictionary();
 
       Assert.Null(attributes.GetValue("MissingKey"));
       Assert.Null(attributes.GetBoolean("MissingKey"));
@@ -179,8 +179,8 @@ namespace OnTopic.Tests {
     | TEST: AS ATTRIBUTE DICTIONARY: EXCLUDED KEYS: EXCLUDED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean
-    ///   )"/> and confirms that <see cref="AttributeValueDictionary.GetValue(String)"/> doesn't include the excluded values.
+    ///   Constructs a <see cref="AttributeDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+    ///   and confirms that <see cref="AttributeDictionary.GetValue(String)"/> doesn't include the excluded values.
     /// </summary>
     [Fact]
     public void AsAttributeDictionary_ExcludedKeys_Excluded() {
@@ -204,8 +204,8 @@ namespace OnTopic.Tests {
     | TEST: AS ATTRIBUTE DICTIONARY: INHERIT FROM BASE: INHERITS VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a <see cref="AttributeValueDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean
-    ///   )"/> and confirms that <see cref="AttributeValueDictionary.GetValue(String)"/> correctly inherits values.
+    ///   Constructs a <see cref="AttributeDictionary"/> using <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+    ///   and confirms that <see cref="AttributeDictionary.GetValue(String)"/> correctly inherits values.
     /// </summary>
     [Fact]
     public void AsAttributeDictionary_InheritFromBase_InheritsValues() {

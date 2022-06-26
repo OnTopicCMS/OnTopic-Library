@@ -25,8 +25,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="PageTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
-    public PageTopicViewModel(AttributeValueDictionary attributes): base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public PageTopicViewModel(AttributeDictionary attributes): base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       ShortTitle                = attributes.GetValue(nameof(ShortTitle));
       Subtitle                  = attributes.GetValue(nameof(Subtitle));

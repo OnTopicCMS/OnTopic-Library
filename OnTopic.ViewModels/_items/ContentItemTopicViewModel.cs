@@ -26,8 +26,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="ContentItemTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
-    public ContentItemTopicViewModel(AttributeValueDictionary attributes): base(attributes) {
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public ContentItemTopicViewModel(AttributeDictionary attributes): base(attributes) {
       Contract.Requires(attributes, nameof(attributes));
       Description               = attributes.GetValue(nameof(Description))!;
       LearnMoreUrl              = attributes.GetUri(nameof(LearnMoreUrl));

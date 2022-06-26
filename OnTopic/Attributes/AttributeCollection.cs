@@ -144,7 +144,7 @@ namespace OnTopic.Attributes {
     | METHOD: AS ATTRIBUTE DICTIONARY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets an <see cref="AttributeValueDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref="
+    ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref="
     ///   AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
     /// </summary>
@@ -156,10 +156,10 @@ namespace OnTopic.Attributes {
     /// <param name="inheritFromBase">
     ///   Determines if attributes from the <see cref="Topic.BaseTopic"/> should be included. Defaults to <c>false</c>.
     /// </param>
-    /// <returns>A new <see cref="AttributeValueDictionary"/> containing attributes</returns>
-    public AttributeValueDictionary AsAttributeDictionary(bool inheritFromBase = false) {
+    /// <returns>A new <see cref="AttributeDictionary"/> containing attributes</returns>
+    public AttributeDictionary AsAttributeDictionary(bool inheritFromBase = false) {
       var sourceAttributes      = (AttributeCollection?)this;
-      var attributes            = new AttributeValueDictionary();
+      var attributes            = new AttributeDictionary();
       var count                 = 0;
       while (sourceAttributes is not null && ++count < 5) {
         foreach (var attribute in sourceAttributes) {

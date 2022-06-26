@@ -25,8 +25,8 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Initializes a new <see cref="ItemTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
     /// </summary>
-    /// <param name="attributes">An <see cref="AttributeValueDictionary"/> of attribute values.</param>
-    public ItemTopicViewModel(AttributeValueDictionary attributes): base(attributes) { }
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public ItemTopicViewModel(AttributeDictionary attributes): base(attributes) { }
 
     /// <summary>
     ///   Initializes a new <see cref="ItemTopicViewModel"/> with no parameters.
