@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -118,6 +117,8 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       return type.Name switch {
         nameof(TopicController) =>
           new TopicController(_topicRepository, _topicMappingService),
+        nameof(ErrorController) =>
+          new ErrorController(_topicRepository, _topicMappingService),
         nameof(SitemapController) =>
           new SitemapController(_topicRepository),
         nameof(RedirectController) =>

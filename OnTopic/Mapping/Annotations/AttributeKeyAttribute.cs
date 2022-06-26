@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Mapping.Annotations {
@@ -52,7 +50,7 @@ namespace OnTopic.Mapping.Annotations {
     ///   Gets the value of the attribute key.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The Value property has been renamed to Key for consistency", true)]
+    [Obsolete($"The {nameof(Value)} property has been renamed to {nameof(Key)} for consistency", true)]
     public string? Value { get; }
 
   } //Class

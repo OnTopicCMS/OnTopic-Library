@@ -3,11 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
-using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
 
@@ -152,6 +148,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       var web                   = new Topic("Web", "Page", rootTopic, currentAttributeId++);
       _                         = new Topic("ContentList", "ContentList", web, currentAttributeId++);
       _                         = new Topic("MissingView", "Missing", web, currentAttributeId++);
+      _                         = new Topic("Container", "Container", web, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish area topics
@@ -164,6 +161,29 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       _                         = new Topic("TopicWithView", "ContentList", area, currentAttributeId++) {
         View                    = "Accordion"
       };
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish error topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var error                 = new Topic("Error", "Page", rootTopic, currentAttributeId++);
+
+      _                         = new Topic("400", "Page", error, currentAttributeId++);
+      _                         = new Topic("Unauthorized", "Page", error, currentAttributeId++);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish caching tests
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var cacheProfile          = new Topic("CacheProfile", "CacheProfile", rootTopic, currentAttributeId++);
+      var cachedPage            = new Topic("CachedPage", "Page", web, currentAttributeId++);
+      var uncachedPage          = new Topic("UncachedPage", "Page", web, currentAttributeId++);
+
+      cacheProfile.Attributes.SetValue("Duration", "10");
+      cacheProfile.Attributes.SetValue("Location", "Any");
+
+      cachedPage.References.SetValue("CacheProfile", cacheProfile);
+      cachedPage.Attributes.SetValue("View", "Counter");
+
+      uncachedPage.Attributes.SetValue("View", "Counter");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache

@@ -3,8 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections;
+using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.ViewModels {
 
@@ -28,8 +28,8 @@ namespace OnTopic.ViewModels {
   ///   </para>
   /// </remarks>
   [Obsolete(
-    "There should not be a need for a LookupListItem view model. If these must be referenced, prefer using e.g. [MapAs()] " +
-    "to specify a common view model.",
+    $"There should not be a need for a LookupListItem view model. If these must be referenced, prefer using e.g. " +
+    $"{nameof(MapAsAttribute)} to specify a common view model.",
     false
   )]
   public record ListTopicViewModel: ContentItemTopicViewModel {

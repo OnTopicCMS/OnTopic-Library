@@ -3,8 +3,20 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
+
+/*==============================================================================================================================
+| USING DIRECTIVES (GLOBAL)
+\-----------------------------------------------------------------------------------------------------------------------------*/
+global using System.Collections.ObjectModel;
+global using System.Diagnostics.CodeAnalysis;
+global using OnTopic.Attributes;
+global using OnTopic.Internal.Diagnostics;
+global using OnTopic.Mapping.Annotations;
+global using OnTopic.ViewModels;
+
+/*==============================================================================================================================
+| USING DIRECTIVES (LOCAL)
+\-----------------------------------------------------------------------------------------------------------------------------*/
 using System.Runtime.InteropServices;
 
 /*==============================================================================================================================

@@ -3,12 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Data;
 using System.Globalization;
 using System.Text;
-using Microsoft.Data.SqlClient;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Data.Sql {
 
@@ -126,12 +122,6 @@ namespace OnTopic.Data.Sql {
       SqlDbType sqlDbType,
       ParameterDirection paramDirection = ParameterDirection.Input
     ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(command, "The SQL command object must be specified.");
-      Contract.Requires(command.Parameters, "The SQL command object's parameters collection must be available");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish basic parameter

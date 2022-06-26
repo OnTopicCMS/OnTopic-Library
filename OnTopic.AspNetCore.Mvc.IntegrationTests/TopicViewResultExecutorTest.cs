@@ -3,12 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
-using Xunit;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
@@ -163,7 +158,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var uri = new Uri("/Web/MissingView/", UriKind.Relative);
       var response = await client.GetAsync(uri).ConfigureAwait(false);
 
-      Assert.Equal<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
+      Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
     }
 

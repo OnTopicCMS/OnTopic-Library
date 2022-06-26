@@ -16,9 +16,13 @@ TABLE	[dbo].[Topics] (
   CONSTRAINT	  [PK_Topics]		PRIMARY KEY
   CLUSTERED (     [TopicID]		ASC
   ),
-  CONSTRAINT	[FK_Topics_Topics]
-  FOREIGN KEY (	[ParentID] )
-  REFERENCES	[Topics]([TopicID])
+  CONSTRAINT	  [UK_TopicKey]
+  UNIQUE (	  [TopicKey],
+	  [ParentID]
+  ),
+  CONSTRAINT	  [FK_Topics_Topics]
+  FOREIGN KEY (	  [ParentID] )
+  REFERENCES	  [Topics]([TopicID])
 );
 
 GO

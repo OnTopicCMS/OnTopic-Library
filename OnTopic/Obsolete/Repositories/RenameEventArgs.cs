@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Repositories {
 
@@ -15,7 +13,7 @@ namespace OnTopic.Repositories {
   ///   The RenameEventArgs object defines an event argument type specific to rename events.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The RenameEventArgs have been renamed to TopicEventArgs.", true)]
+  [Obsolete($"The {nameof(RenameEventArgs)} have been renamed to {nameof(TopicEventArgs)}.", true)]
   public class RenameEventArgs : EventArgs {
 
     /*==========================================================================================================================

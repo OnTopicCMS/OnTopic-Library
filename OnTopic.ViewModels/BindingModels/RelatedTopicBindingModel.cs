@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Reverse;
-using OnTopic.Models;
 
 namespace OnTopic.ViewModels.BindingModels {
 

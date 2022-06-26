@@ -3,43 +3,91 @@
 | Client        Ignia, LLC
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ViewComponents;
+using OnTopic.AspNetCore.Mvc;
+using OnTopic.AspNetCore.Mvc.Host;
 
-namespace OnTopic.AspNetCore.Mvc.Host {
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
-  /*============================================================================================================================
-  | CLASS: PROGRAM
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   The <see cref="Program"/> class—and it's <see cref="Program.Main(String[])"/> method—represent the entry point into the
-  ///   ASP.NET Core web application.
-  /// </summary>
-  [ExcludeFromCodeCoverage]
-  public static class Program {
+/*==============================================================================================================================
+| CONFIGURE SERVICES
+\-----------------------------------------------------------------------------------------------------------------------------*/
+var builder = WebApplication.CreateBuilder(args);
 
-    /*==========================================================================================================================
-    | METHOD: MAIN
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Responsible for bootstrapping the web application.
-    /// </summary>
-    public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Cookie Policy
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.Configure<CookiePolicyOptions>(options => {
+  // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+  options.CheckConsentNeeded = context => true;
+  options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 
-    /*==========================================================================================================================
-    | METHOD: CREATE WEB HOST BUILDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Configures a new <see cref="IWebHostBuilder"/> with the default options.
-    /// </summary>
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-      Microsoft.Extensions.Hosting.Host
-        .CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(webBuilder => {
-          webBuilder.UseStartup<Startup>();
-        });
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Output Caching
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.AddResponseCaching();
 
-  } //Class
-} //Namespace
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: MVC
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.AddControllersWithViews()
+
+  //Add OnTopic support
+  .AddTopicSupport();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Register: Activators
+\-----------------------------------------------------------------------------------------------------------------------------*/
+var activator = new SampleActivator(builder.Configuration.GetConnectionString("OnTopic"));
+
+builder.Services.AddSingleton<IControllerActivator>(activator);
+builder.Services.AddSingleton<IViewComponentActivator>(activator);
+
+/*==============================================================================================================================
+| CONFIGURE APPLICATION
+\-----------------------------------------------------------------------------------------------------------------------------*/
+var app = builder.Build();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Error Pages
+\-----------------------------------------------------------------------------------------------------------------------------*/
+  app.UseStatusCodePagesWithReExecute("/Error/{0}/");
+if (!app.Environment.IsDevelopment()) {
+  app.UseExceptionHandler("/Error/500/");
+  // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+  app.UseHsts();
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Server defaults
+\-----------------------------------------------------------------------------------------------------------------------------*/
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseRouting();
+app.UseCors("default");
+app.UseResponseCaching();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: MVC
+\-----------------------------------------------------------------------------------------------------------------------------*/
+app.MapImplicitAreaControllerRoute();                           // {area:exists}/{action=Index}
+app.MapDefaultAreaControllerRoute();                            // {area:exists}/{controller}/{action=Index}/{id?}
+app.MapTopicAreaRoute();                                        // {area:exists}/{**path}
+
+app.MapTopicErrors(includeStaticFiles: false);                  // Error/{statusCode}
+app.MapDefaultControllerRoute();                                // {controller=Home}/{action=Index}/{id?}
+app.MapTopicRoute(rootTopic: "Web");                            // Web/{**path}
+app.MapTopicRoute(rootTopic: "Error");                          // Error/{**path}
+app.MapTopicSitemap();                                          // Sitemap
+app.MapTopicRedirect();                                         // Topic/{topicId}
+app.MapControllers();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Run application
+\-----------------------------------------------------------------------------------------------------------------------------*/
+app.Run();
+
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes

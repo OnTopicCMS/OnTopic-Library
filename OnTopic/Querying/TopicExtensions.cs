@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 
 namespace OnTopic.Querying {
@@ -288,7 +285,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypeDescriptor = rootContentType?.FindFirst(t =>
         t.Key.Equals(topic.ContentType, StringComparison.OrdinalIgnoreCase) &&
-        t.GetType().IsAssignableFrom(typeof(ContentTypeDescriptor))
+        t is ContentTypeDescriptor
       ) as ContentTypeDescriptor;
 
       /*------------------------------------------------------------------------------------------------------------------------

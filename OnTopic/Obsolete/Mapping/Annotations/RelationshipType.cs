@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -11,7 +10,7 @@ namespace OnTopic.Mapping.Annotations {
   | ENUM: RELATIONSHIP TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc cref="CollectionType"/>
-  [Obsolete("RelationshipType has been renamed to CollectionType", true)]
+  [Obsolete($"{nameof(RelationshipType)} has been renamed to {nameof(CollectionType)}", true)]
   public enum RelationshipType {
 
     #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

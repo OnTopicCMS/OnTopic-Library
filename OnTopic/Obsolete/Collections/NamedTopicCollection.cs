@@ -3,11 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using OnTopic.Associations;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Collections {
 
@@ -19,7 +17,10 @@ namespace OnTopic.Collections {
   ///   <see cref="RelatedTopicCollection"/>, or other derivatives of <see cref="KeyedCollection{TKey, TItem}"/>.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("Migrated to KeyValuesPair<T> as part of new TopicRelationshipsMultiMap type.", true)]
+  [Obsolete(
+    $"Migrated to {nameof(KeyValuesPair<Object,ICollection<Topic>>)} as part of new {nameof(TopicRelationshipMultiMap)} type.",
+    true
+  )]
   public class NamedTopicCollection: KeyedTopicCollection {
 
     /*==========================================================================================================================

@@ -1,16 +1,17 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
     <Company>Ignia</Company>
     <Product>OnTopic</Product>
-    <Copyright>©2021 Ignia, LLC</Copyright>
+    <Copyright>©2022 Ignia, LLC</Copyright>
     <Authors>Ignia</Authors>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>

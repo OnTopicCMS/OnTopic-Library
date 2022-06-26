@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace OnTopic.ViewModels {
 
@@ -20,6 +18,24 @@ namespace OnTopic.ViewModels {
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
   public record VideoTopicViewModel: PageTopicViewModel {
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="VideoTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public VideoTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      VideoUrl                  = attributes.GetUri(nameof(VideoUrl))!;
+      PosterUrl                 = attributes.GetUri(nameof(PosterUrl));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="VideoTopicViewModel"/> with no parameters.
+    /// </summary>
+    public VideoTopicViewModel() { }
 
     /*==========================================================================================================================
     | VIDEO URL

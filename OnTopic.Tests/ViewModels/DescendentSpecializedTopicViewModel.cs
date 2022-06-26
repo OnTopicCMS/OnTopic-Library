@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
-using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels {
 

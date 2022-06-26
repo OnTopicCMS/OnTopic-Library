@@ -3,9 +3,6 @@
 | Client        Ignia
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Repositories {
 
@@ -19,7 +16,7 @@ namespace OnTopic.Repositories {
   ///   Allows tracking of the source and destination topics.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The MoveEventArgs have been renamed to TopicMoveEventArgs.", true)]
+  [Obsolete($"The {nameof(MoveEventArgs)} have been renamed to {nameof(TopicMoveEventArgs)}.", true)]
   public class MoveEventArgs : EventArgs {
 
     /*==========================================================================================================================

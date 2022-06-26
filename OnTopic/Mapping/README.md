@@ -13,6 +13,9 @@ The [`ITopicMappingService`](ITopicMappingService.cs) defines a service for mapp
 - [Attributes](#attributes)
   - [ReverseTopicMappingService](#reversetopicmappingservice)
   - [Example](#example-1)
+- [`AttributeDictionary` Constuctor](#attributedictionary-constructor)
+  - [Example](#example-2)
+  - [Considerations](#considerations)
 - [Polymorphism](#polymorphism)
   - [Filtering](#filtering)
   - [Topics](#topics)
@@ -151,6 +154,40 @@ In this example, the properties would map to:
 - `Contacts`: A list of `Employee` nested topics, filtered by those with `IsActive` set to `1` (`true`) and `Role` set to `Account Manager`. Additionally includes any descendants of the nested topics that meet the previous criteria.
 
 > *Note*: Often times, models won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional hints. For instance, the `[Collection(…)]` attribute is useful if the collection key is ambiguous between outgoing relationships and incoming relationships.
+
+## `AttributeDictionary` Constructor
+
+By default, all properties are mapped via reflection. As an optimization, view models may _optionally_ include a constructor that accepts an `AttributeDictionary`, using this to assign scalar values directly to properties. Any attributes in the `AttributeDictionary` won't be mapped via reflection, thus improving performance.
+
+### Example
+The following is an example of a constructor that accepts an `AttributeDictionary`:
+```csharp
+public class PageTopicViewModel: TopicViewModel {
+
+  public PageTopicViewModel(AttributeDictionary attributes): base(attributes) {
+    Contract.Requires(attributes, nameof(attributes));
+    ShortTitle                = attributes.GetValue(nameof(ShortTitle));
+    Subtitle                  = attributes.GetValue(nameof(Subtitle));
+    MetaTitle                 = attributes.GetValue(nameof(MetaTitle));
+    MetaDescription           = attributes.GetValue(nameof(MetaDescription));
+    MetaKeywords              = attributes.GetValue(nameof(MetaKeywords));
+    NoIndex                   = attributes.GetBoolean(nameof(NoIndex))?? NoIndex;
+    Body                      = attributes.GetValue(nameof(Body));
+  }
+
+  pubic PageTopicViewModel(): base() {}
+
+  // View model properties…
+
+}
+```
+
+### Considerations
+- **Mapping Properties:** If attributes in the `AttributeDictionary` are not properly mapped via the constructor, the corresponding properties will _not_ be mapped.
+- **Derived View Models:** If a view model is derived from another view model, it must either implement all inherited attributes, or it must pass the `AttributeDictionary` to the base class's constructor.
+- **Empty Constructor:** It's more efficient to use reflection if there are a small number of attributes; therefore, a view model must still include an empty constructor, as well as any annotations necessary to allow mapping via reflection.
+- **Strongly Typed Methods:** The `AttributeDictionary` includes strongly typed methods for retrieving supported scalar data types with conversion; these include `GetValue()` (for strings), `GetBoolean()`, `GetInteger()`, `GetDouble()`, `GetDateTime()`, `GetUri()`.
+- **Default Values:** If properties include default values, they should be included via a null-coalescing operator to ensure that a null value in the `AttributeDictionary` doesn't override the local defaut.
 
 ## Polymorphism
 If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collection property (e.g., `List<TopicViewModel>`) is defined, then any target instances must be assignable by the base type (in these cases, `TopicViewModel`). If they cannot be, then they will not be included; no error will occur.

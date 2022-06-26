@@ -3,9 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
 namespace OnTopic.Associations {

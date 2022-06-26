@@ -3,11 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Annotations;
-using OnTopic.Models;
 
 namespace OnTopic.ViewModels {
 
@@ -23,6 +19,24 @@ namespace OnTopic.ViewModels {
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
   public record TopicViewModel: ITopicViewModel, ICoreTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="TopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public TopicViewModel(AttributeDictionary attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      IsHidden                  = attributes.GetBoolean("IsHidden")?? IsHidden;
+      View                      = attributes.GetValue("View");
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="TopicViewModel"/> with no parameters.
+    /// </summary>
+    public TopicViewModel() { }
 
     /*==========================================================================================================================
     | ID
@@ -76,7 +90,7 @@ namespace OnTopic.ViewModels {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The IsHidden property is no longer supported by TopicViewModel.", true)]
+    [Obsolete($"The {nameof(IsHidden)} property is no longer supported by {nameof(TopicViewModel)}.", true)]
     [DisableMapping]
     public bool IsHidden { get; init; }
 

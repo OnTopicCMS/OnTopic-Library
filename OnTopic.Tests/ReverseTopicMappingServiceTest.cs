@@ -3,16 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
 using OnTopic.Models;
@@ -21,7 +15,6 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
-using OnTopic.ViewModels;
 using Xunit;
 
 namespace OnTopic.Tests {
@@ -92,7 +85,7 @@ namespace OnTopic.Tests {
       Assert.Equal("TextAttributeDescriptor", target?.ContentType);
       Assert.Equal("Test Attribute", target?.Title);
       Assert.Equal("Hello", target?.DefaultValue);
-      Assert.Equal<bool?>(true, target?.IsRequired);
+      Assert.Equal(true, target?.IsRequired);
 
     }
 
@@ -120,7 +113,7 @@ namespace OnTopic.Tests {
       Assert.Equal("TextAttributeDescriptor", target?.ContentType);
       Assert.Equal("Test Attribute", target?.Title);
       Assert.Equal("Hello", target?.DefaultValue);
-      Assert.Equal<bool?>(true, target?.IsRequired);
+      Assert.Equal(true, target?.IsRequired);
 
     }
 
@@ -158,8 +151,8 @@ namespace OnTopic.Tests {
       Assert.Equal("TextAttributeDescriptor", target?.ContentType);
       Assert.Equal("Test", target?.Title); //Should inherit from "Key" since it will be null
       Assert.Equal("World", target?.DefaultValue);
-      Assert.Equal<bool?>(false, target?.IsRequired);
-      Assert.Equal<bool?>(false, target?.IsExtendedAttribute);
+      Assert.Equal(false, target?.IsRequired);
+      Assert.Equal(false, target?.IsExtendedAttribute);
       Assert.Equal("Original Description", target?.Attributes.GetValue("Description"));
 
     }
@@ -205,7 +198,7 @@ namespace OnTopic.Tests {
       bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
       bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
 
-      var target                = (Topic?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.NotNull(target);
       Assert.Equal("Jeremy", target?.Attributes.GetValue("Name"));
@@ -261,7 +254,7 @@ namespace OnTopic.Tests {
 
       var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(3, target?.PermittedContentTypes.Count);
+      Assert.Equal(3, target?.PermittedContentTypes.Count);
       Assert.True(target?.PermittedContentTypes.Contains(contentTypes[0]));
       Assert.True(target?.PermittedContentTypes.Contains(contentTypes[1]));
       Assert.True(target?.PermittedContentTypes.Contains(contentTypes[2]));
@@ -323,7 +316,7 @@ namespace OnTopic.Tests {
 
       var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.Equal<int?>(3, target?.AttributeDescriptors.Count);
+      Assert.Equal(3, target?.AttributeDescriptors.Count);
       Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
       Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
       Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute3"));

@@ -3,12 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Associations;
 
@@ -89,11 +85,6 @@ namespace OnTopic.Internal.Reflection {
     where TItem: TrackedRecord<TValue>
     where TValue: class
   {
-
-    /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             MemberDispatcher                _typeCache                      = new(typeof(TAttributeType));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -187,8 +178,8 @@ namespace OnTopic.Internal.Reflection {
         type = typeof(TValue);
       }
       if (
-        _typeCache.HasSettableProperty(_associatedTopic.GetType(), itemKey, type) &&
-        !PropertyCache.ContainsKey(itemKey)
+        !PropertyCache.ContainsKey(itemKey) &&
+        TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType()).HasSettableProperty<TAttributeType>(itemKey, type)
       ) {
         PropertyCache.Add(itemKey, initialValue);
         return true;
@@ -258,7 +249,8 @@ namespace OnTopic.Internal.Reflection {
       }
       else if (Register(itemKey, initialObject)) {
         try {
-          _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value);
+          var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
+          typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
         }
         catch (TargetInvocationException ex) {
           if (PropertyCache.ContainsKey(itemKey)) {

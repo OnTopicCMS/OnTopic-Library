@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
@@ -19,7 +16,10 @@ namespace OnTopic.Collections {
   ///   Provides a read-only collection of topics.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The ReadOnlyTopicCollection<T> has been renamed to ReadOnlyKeyedTopicCollection<T>", true)]
+  [Obsolete(
+    $"The {nameof(ReadOnlyTopicCollection <T>)} has been renamed to {nameof(ReadOnlyKeyedTopicCollection<T>)}",
+    true
+  )]
   public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 
     /*==========================================================================================================================

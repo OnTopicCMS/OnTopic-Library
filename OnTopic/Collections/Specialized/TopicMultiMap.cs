@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections.Specialized {
 
@@ -61,7 +58,7 @@ namespace OnTopic.Collections.Specialized {
 
     /// <inheritdoc cref="GetValues(String)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The GetTopics() method has been renamed to GetValues().", true)]
+    [Obsolete($"The {nameof(GetTopics)} method has been renamed to {nameof(GetValues)}.", true)]
     public TopicCollection GetTopics(string key) => GetValues(key);
 
     /*==========================================================================================================================

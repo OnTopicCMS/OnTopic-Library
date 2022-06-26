@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
@@ -36,7 +33,7 @@ namespace OnTopic.Tests {
 
       parent.Relationships.SetValue("Friends", related);
 
-      Assert.Equal<Topic?>(parent.Relationships.GetValues("Friends").First(), related);
+      Assert.Equal(parent.Relationships.GetValues("Friends").First(), related);
 
     }
 
@@ -132,7 +129,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Friends", related);
 
-      Assert.Equal<Topic?>(related.IncomingRelationships.GetValues("Friends").First(), parent);
+      Assert.Equal(related.IncomingRelationships.GetValues("Friends").First(), parent);
 
     }
 
@@ -194,7 +191,7 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
       }
 
-      Assert.Equal<int>(5, relationships.Keys.Count);
+      Assert.Equal(5, relationships.Keys.Count);
       Assert.Contains("Relationship3", relationships.Keys);
 
     }
@@ -222,8 +219,8 @@ namespace OnTopic.Tests {
         counter++;
       }
 
-      Assert.Equal<int>(5, readOnlyRelationships.Count);
-      Assert.Equal<int>(5, counter);
+      Assert.Equal(5, readOnlyRelationships.Count);
+      Assert.Equal(5, counter);
 
     }
 
@@ -247,7 +244,7 @@ namespace OnTopic.Tests {
       multiMap.Add(keyValuesPair);
 
       Assert.Single(readOnlyTopicMultiMap);
-      Assert.Equal<Topic?>(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
+      Assert.Equal(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
 
     }
 
@@ -268,9 +265,9 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
       }
 
-      Assert.Equal<int>(5, relationships.Count);
+      Assert.Equal(5, relationships.Count);
       Assert.Equal("Related3", relationships.GetValues("Relationship3").First().Key);
-      Assert.Equal<int>(5, relationships.GetAllValues().Count);
+      Assert.Equal(5, relationships.GetAllValues().Count);
 
     }
 
@@ -291,7 +288,7 @@ namespace OnTopic.Tests {
         relationships.SetValue("Relationship" + i, new Topic("Related" + i, "ContentType" + i));
       }
 
-      Assert.Equal<int>(5, relationships.Keys.Count);
+      Assert.Equal(5, relationships.Keys.Count);
       Assert.Single(relationships.GetAllValues("ContentType3"));
 
     }

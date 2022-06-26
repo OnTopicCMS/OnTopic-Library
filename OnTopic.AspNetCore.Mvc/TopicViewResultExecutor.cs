@@ -3,21 +3,14 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 
@@ -57,10 +50,10 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   Loops through potential sources for views to identify the most appropriate <see cref="RazorView"/>.
     /// </summary>
     /// <remarks>
-    ///   Will look for a view, in order, from the query string (<code>?View=</code>), <see cref="HttpRequest.Headers"/>
-    ///   collection (for matches in the <code>accepts</code> header), then the <see cref="Topic.View"/> property, if set, and
-    ///   finally falls back to the <see cref="Topic.ContentType"/>. If none of those yield any results, will default to a
-    ///   content type of "Page", which expects to find <code>~/Views/Page/Page.cshtml</code>.
+    ///   Will look for a view, in order, from the query string (<c>?View=</c>), <see cref="HttpRequest.Headers"/> collection
+    ///   (for matches in the <c>accepts</c> header), then the <see cref="Topic.View"/> property, if set, and finally falls back
+    ///   to the <see cref="Topic.ContentType"/>. If none of those yield any results, will default to a content type of "Page",
+    ///   which expects to find <c>~/Views/Page/Page.cshtml</c>.
     /// </remarks>
     /// <param name="actionContext">The <see cref="ActionContext"/> associated with the current request.</param>
     /// <param name="viewResult">The <see cref="TopicViewResult"/>.</param>
@@ -115,10 +108,10 @@ namespace OnTopic.AspNetCore.Mvc {
       if (!(view?.Success ?? false) && requestContext.Headers.ContainsKey("Accept")) {
         foreach (var header in requestContext.Headers["Accept"]) {
           var value = header.Replace("+", "-", StringComparison.Ordinal);
-          if (value.Contains("/", StringComparison.Ordinal)) {
+          if (value.Contains('/', StringComparison.Ordinal)) {
             value = value[(value.IndexOf("/", StringComparison.Ordinal)+1)..];
           }
-          if (value.Contains(";", StringComparison.Ordinal)) {
+          if (value.Contains(';', StringComparison.Ordinal)) {
             value = value[..(value.IndexOf(";", StringComparison.Ordinal))];
           }
           if (value is not null) {

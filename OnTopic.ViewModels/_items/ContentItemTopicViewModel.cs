@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 
 namespace OnTopic.ViewModels {
 
@@ -20,6 +19,26 @@ namespace OnTopic.ViewModels {
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
   public record ContentItemTopicViewModel: ItemTopicViewModel {
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="ContentItemTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public ContentItemTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      Description               = attributes.GetValue(nameof(Description))!;
+      LearnMoreUrl              = attributes.GetUri(nameof(LearnMoreUrl));
+      ThumbnailImage            = attributes.GetUri(nameof(ThumbnailImage));
+      Category                  = attributes.GetValue(nameof(Category));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="ContentItemTopicViewModel"/> with no parameters.
+    /// </summary>
+    public ContentItemTopicViewModel() { }
 
     /*==========================================================================================================================
     | DESCRIPTION

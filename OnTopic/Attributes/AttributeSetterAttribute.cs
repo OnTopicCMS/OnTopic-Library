@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 
@@ -20,9 +19,9 @@ namespace OnTopic.Attributes {
   ///   <para>
   ///     When a call is made to <see cref="AttributeCollection.SetValue(String, String, Boolean?, DateTime?, Boolean?)"/>, the
   ///     code will check to see if a property with the same name as the attribute key exists, and whether that property is
-  ///     decorated with the <see cref="AttributeSetterAttribute"/> (i.e., <code>[AttributeSetter]</code>). If it is, then the
-  ///     update will be routed through that property. This ensures that business logic is enforced by local properties, instead
-  ///     of allowing business logic to be potentially bypassed by writing directly to the <see cref="Topic.Attributes"/>
+  ///     decorated with the <see cref="AttributeSetterAttribute"/> (i.e., <c>[AttributeSetter]</c>). If it is, then the update
+  ///     will be routed through that property. This ensures that business logic is enforced by local properties, instead of
+  ///     allowing business logic to be potentially bypassed by writing directly to the <see cref="Topic.Attributes"/>
   ///     collection.
   ///   </para>
   ///   <para>

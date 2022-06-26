@@ -3,12 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using OnTopic.Collections;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -78,9 +74,9 @@ namespace OnTopic.Tests {
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
       greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.Equal<Topic?>(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
-      Assert.Equal<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.Equal<Topic?>(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
+      Assert.Equal(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
+      Assert.Equal(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
+      Assert.Equal(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
 
     }
 
@@ -100,7 +96,7 @@ namespace OnTopic.Tests {
 
       var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
-      Assert.Equal<Topic?>(childTopic, foundTopic);
+      Assert.Equal(childTopic, foundTopic);
 
     }
 
@@ -138,7 +134,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = greatGrandChildTopic.GetRootTopic();
 
-      Assert.Equal<Topic?>(parentTopic, rootTopic);
+      Assert.Equal(parentTopic, rootTopic);
 
     }
 
@@ -155,7 +151,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = topic.GetRootTopic();
 
-      Assert.Equal<Topic?>(topic, rootTopic);
+      Assert.Equal(topic, rootTopic);
 
     }
 
@@ -174,7 +170,7 @@ namespace OnTopic.Tests {
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
       Assert.NotNull(foundTopic);
-      Assert.Equal<Topic?>(parentTopic, foundTopic);
+      Assert.Equal(parentTopic, foundTopic);
 
     }
 
@@ -195,7 +191,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
-      Assert.Equal<Topic?>(greatGrandChildTopic2, foundTopic);
+      Assert.Equal(greatGrandChildTopic2, foundTopic);
 
     }
 

@@ -3,15 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using Microsoft.Data.SqlClient;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 
 namespace OnTopic.Data.Sql {
@@ -201,7 +195,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && current.Parent?.Id != parentId && topics.Keys.Contains(parentId)) {
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.ContainsKey(parentId)) {
         current.Parent = topics[parentId];
       }
 
@@ -359,7 +353,7 @@ namespace OnTopic.Data.Sql {
       var related               = (Topic?)null;
 
       // Fetch the related topic
-      if (topics.Keys.Contains(targetTopicId)) {
+      if (topics.ContainsKey(targetTopicId)) {
         related                 = topics[targetTopicId];
       }
 
@@ -417,7 +411,7 @@ namespace OnTopic.Data.Sql {
       // Fetch the related topic
       if (targetTopicId is null) {
       }
-      else if (topics.Keys.Contains(targetTopicId.Value)) {
+      else if (topics.ContainsKey(targetTopicId.Value)) {
         referenced              = topics[targetTopicId.Value];
       }
       else {

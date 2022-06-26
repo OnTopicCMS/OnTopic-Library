@@ -3,17 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
-using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
@@ -62,7 +56,7 @@ namespace OnTopic.Mapping.Reverse {
     ///     This helper function is intended to provide reporting to developers about errors in their model. As a result, it
     ///     will exclusively throw exceptions, as opposed to populating validation object for rendering to the view. Because
     ///     it's only evaluating the compiled model, which will not change during the application's life cycle, the <paramref
-    ///     name="sourceType"/> and <paramref name="contentTypeDescriptor"/> are stored as a <see cref="Tuple"/> in a static
+    ///     name="typeAccessor"/> and <paramref name="contentTypeDescriptor"/> are stored as a <see cref="Tuple"/> in a static
     ///     <see cref="ConcurrentBag{T}"/> once a particular combination has passed validation—that way, this check only needs
     ///     to be executed once for any combination, at least for the current application life cycle.
     ///   </para>
@@ -77,19 +71,15 @@ namespace OnTopic.Mapping.Reverse {
     ///     cref="ContentTypeDescriptor"/> may not have undergone explicit testing.
     ///   </para>
     /// </remarks>
-    /// <param name="sourceType">
-    ///   The binding model <see cref="Type"/> to validate.
-    /// </param>
-    /// <param name="properties">
-    ///   A <see cref="MemberInfoCollection{PropertyInfo}"/> describing the <paramref name="sourceType"/>'s properties.
+    /// <param name="typeAccessor">
+    ///   The <see cref="TypeAccessor"/> of the binding model to validate.
     /// </param>
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateModel(
-      [AllowNull]Type sourceType,
-      [AllowNull]MemberInfoCollection<PropertyInfo> properties,
+      [AllowNull]TypeAccessor typeAccessor,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
       [AllowNull]string attributePrefix = ""
       ) {
@@ -97,28 +87,27 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(sourceType, nameof(sourceType));
-      Contract.Requires(properties, nameof(properties));
+      Contract.Requires(typeAccessor, nameof(typeAccessor));
       Contract.Requires(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip validation if this type has already been validated for this content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_modelsValidated.Contains((sourceType, contentTypeDescriptor.Key))) {
+      if (_modelsValidated.Contains((typeAccessor.Type, contentTypeDescriptor.Key))) {
         return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var property in properties) {
-        ValidateProperty(sourceType, property, contentTypeDescriptor, attributePrefix);
+      foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
+        ValidateProperty(typeAccessor.Type, property, contentTypeDescriptor, attributePrefix);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add type, content type to model validation cache so it isn't checked again
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _modelsValidated.Add((sourceType, contentTypeDescriptor.Key));
+      _modelsValidated.Add((typeAccessor.Type, contentTypeDescriptor.Key));
 
       return;
 
@@ -134,8 +123,8 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="sourceType">
     ///   The binding model <see cref="Type"/> to validate.
     /// </param>
-    /// <param name="property">
-    ///   A <see cref="PropertyInfo"/> describing a specific property of the <paramref name="sourceType"/>.
+    /// <param name="propertyAccessor">
+    ///   A <see cref="MemberAccessor"/> describing a specific property of the <paramref name="sourceType"/>.
     /// </param>
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
@@ -143,7 +132,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateProperty(
       [AllowNull]Type sourceType,
-      [AllowNull]PropertyInfo property,
+      [AllowNull]MemberAccessor propertyAccessor,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
       [AllowNull]string attributePrefix = ""
     ) {
@@ -152,15 +141,14 @@ namespace OnTopic.Mapping.Reverse {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sourceType, nameof(sourceType));
-      Contract.Requires(property, nameof(property));
+      Contract.Requires(propertyAccessor, nameof(propertyAccessor));
       Contract.Requires(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var propertyType          = property.PropertyType;
-      var configuration         = new PropertyConfiguration(property, attributePrefix);
-      var compositeAttributeKey = configuration.AttributeKey;
+      var configuration         = propertyAccessor.Configuration;
+      var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
       var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
       var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
@@ -176,7 +164,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties injected by the compiler for record types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.Property.Name is "EqualityContract") {
+      if (propertyAccessor.Name is "EqualityContract") {
         return;
       }
 
@@ -184,10 +172,10 @@ namespace OnTopic.Mapping.Reverse {
       | Handle mapping properties from referenced objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.MapToParent) {
-        var childProperties = new MemberInfoCollection<PropertyInfo>(propertyType, propertyType.GetProperties());
+        var typeAccessor        = TypeAccessorCache.GetTypeAccessor(propertyAccessor.Type);
+
         ValidateModel(
-          propertyType,
-          childProperties,
+          typeAccessor,
           contentTypeDescriptor,
           configuration.AttributePrefix
         );
@@ -197,7 +185,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define list type (if it's a list)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var type in configuration.Property.PropertyType.GetInterfaces()) {
+      foreach (var type in propertyAccessor.Type.GetInterfaces()) {
         if (type.IsGenericType && typeof(IList<>) == type.GetGenericTypeDefinition()) {
           //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
           listType = type.GetGenericArguments().Last();
@@ -220,7 +208,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.AttributeKey is "Parent") {
+      if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
         throw new MappingModelValidationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
@@ -235,7 +223,7 @@ namespace OnTopic.Mapping.Reverse {
         throw new MappingModelValidationException(
           $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
-          $"'{configuration.Property.Name}' property. If this property is not intended to be mapped by the " +
+          $"'{propertyAccessor.Name}' property. If this property is not intended to be mapped by the " +
           $"{nameof(ReverseTopicMappingService)}, then it should be decorated with {nameof(DisableMappingAttribute)}."
         );
       }
@@ -244,7 +232,7 @@ namespace OnTopic.Mapping.Reverse {
       | Detect non-mapped relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor.ModelType is ModelType.Relationship) {
-        ValidateRelationship(sourceType, configuration, attributeDescriptor, listType);
+        ValidateRelationship(sourceType, propertyAccessor, attributeDescriptor, listType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -255,7 +243,7 @@ namespace OnTopic.Mapping.Reverse {
         !typeof(ITopicBindingModel).IsAssignableFrom(listType)
       ) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.CollectionType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(ITopicBindingModel)} interface. This is required for binding models. If this collection is not intended " +
           $"to be mapped as a {ModelType.NestedTopic} then update the definition in the associated " +
@@ -269,11 +257,11 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         attributeDescriptor.ModelType is ModelType.Reference &&
-        !typeof(IAssociatedTopicBindingModel).IsAssignableFrom(propertyType)
+        !typeof(IAssociatedTopicBindingModel).IsAssignableFrom(propertyAccessor.Type)
       ) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
-          $"{ModelType.Reference}, but the generic type '{propertyType.Name}' does not implement the " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"{ModelType.Reference}, but the generic type '{propertyAccessor.Type.Name}' does not implement the " +
           $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for references. If this property is not " +
           $"intended to be mapped as a {ModelType.Reference} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped at all, include the " +
@@ -293,8 +281,8 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="sourceType">
     ///   The binding model <see cref="Type"/> to validate.
     /// </param>
-    /// <param name="configuration">
-    ///   A <see cref="PropertyConfiguration"/> describing a specific property of the <paramref name="sourceType"/>.
+    /// <param name="propertyAccessor">
+    ///   A <see cref="MemberAccessor"/> describing a specific property of the <paramref name="sourceType"/>.
     /// </param>
     /// <param name="attributeDescriptor">
     ///   The <see cref="AttributeDescriptor"/> object against which to validate the model.
@@ -302,7 +290,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="listType">The generic <see cref="Type"/> used for the corresponding <see cref="IList{T}"/>.</param>
     static internal void ValidateRelationship(
       [AllowNull]Type                      sourceType,
-      [AllowNull]PropertyConfiguration     configuration,
+      [AllowNull]MemberAccessor            propertyAccessor,
       [AllowNull]AttributeDescriptor       attributeDescriptor,
       [DisallowNull]Type                   listType
     ) {
@@ -311,21 +299,20 @@ namespace OnTopic.Mapping.Reverse {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sourceType, nameof(sourceType));
-      Contract.Requires(configuration, nameof(configuration));
+      Contract.Requires(propertyAccessor, nameof(propertyAccessor));
       Contract.Requires(attributeDescriptor, nameof(attributeDescriptor));
-      //Contract.Requires(listType, nameof(listType));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var property              = configuration.Property;
+      var configuration         = propertyAccessor.Configuration;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(property.PropertyType)) {
+      if (!typeof(IList).IsAssignableFrom(propertyAccessor.Type)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but does not implement {nameof(IList)}. Relationships must implement " +
           $"{nameof(IList)} or derive from a collection that does."
         );
@@ -336,7 +323,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!new[] { CollectionType.Any, CollectionType.Relationship }.Contains(configuration.CollectionType)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but is configured as a {configuration.CollectionType}. The property should be " +
           $"flagged as either {nameof(CollectionType.Any)} or {nameof(CollectionType.Relationship)}."
         );
@@ -347,7 +334,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IAssociatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new MappingModelValidationException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"The '{propertyAccessor.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.CollectionType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
           $"intended to be mapped as a {configuration.CollectionType} then update the definition in the associated " +

@@ -3,12 +3,8 @@
 | Client        Ignia, LLC
 | Project       Integration Tests Host
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
 
@@ -50,6 +46,11 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
     /// </summary>
     public void ConfigureServices(IServiceCollection services) {
 
+      /*------------------------------------------------------------------------------------------------------------------------------
+      | Configure: Output Caching
+      \-----------------------------------------------------------------------------------------------------------------------------*/
+      services.AddResponseCaching();
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -81,22 +82,26 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       | Configure: Error Pages
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseDeveloperExceptionPage();
+      app.UseStatusCodePagesWithReExecute("/Error/{0}/");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Server defaults
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseStaticFiles();
       app.UseRouting();
+      app.UseResponseCaching();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
+        endpoints.MapTopicErrors(includeStaticFiles: false);
         endpoints.MapDefaultAreaControllerRoute();
         endpoints.MapDefaultControllerRoute();
         endpoints.MapImplicitAreaControllerRoute();
         endpoints.MapTopicAreaRoute();
         endpoints.MapTopicRoute("Web");
+        endpoints.MapTopicRoute("Error");
         endpoints.MapTopicSitemap();
         endpoints.MapTopicRedirect();
         endpoints.MapControllers();

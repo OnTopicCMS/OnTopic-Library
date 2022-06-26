@@ -20,6 +20,19 @@ namespace OnTopic.ViewModels {
   /// </remarks>
   public record SlideTopicViewModel: ContentItemTopicViewModel {
 
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="SlideTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public SlideTopicViewModel(AttributeDictionary attributes): base(attributes) { }
+
+    /// <summary>
+    ///   Initializes a new <see cref="SlideTopicViewModel"/> with no parameters.
+    /// </summary>
+    public SlideTopicViewModel() { }
 
   } //Class
 } //Namespace

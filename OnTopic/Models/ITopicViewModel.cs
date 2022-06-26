@@ -3,9 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping;
 
 namespace OnTopic.Models {
@@ -72,7 +70,7 @@ namespace OnTopic.Models {
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The IsHidden property is no longer supported by ITopicViewModel.", true)]
+    [Obsolete($"The {nameof(IsHidden)} property is no longer supported by {nameof(ITopicViewModel)}.", true)]
     bool IsHidden { get; init; }
 
     /*==========================================================================================================================

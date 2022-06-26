@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Integration Tests Host
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -12,11 +10,9 @@ using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
-using OnTopic.Repositories;
 using OnTopic.ViewModels;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
@@ -110,6 +106,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
           new TopicController(_topicRepository, _topicMappingService),
         nameof(AreaController) =>
           new AreaController(_topicRepository, _topicMappingService),
+        nameof(ErrorController) =>
+          new ErrorController(_topicRepository, _topicMappingService),
         nameof(ControllerController) =>
           new ControllerController(),
         nameof(SitemapController) =>

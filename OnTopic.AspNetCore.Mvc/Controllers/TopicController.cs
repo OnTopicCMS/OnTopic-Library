@@ -3,12 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
-using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
@@ -20,6 +15,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
+  [TopicResponseCache]
   public class TopicController : Controller {
 
     /*==========================================================================================================================
@@ -61,7 +57,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository { get; }
+    protected internal ITopicRepository TopicRepository { get; }
 
     /*==========================================================================================================================
     | CURRENT TOPIC

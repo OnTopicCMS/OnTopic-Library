@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -15,8 +12,6 @@ using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Metadata;
-using OnTopic.TestDoubles;
-using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -49,7 +44,7 @@ namespace OnTopic.Tests {
       var actionExecutingContext = new ActionExecutingContext(
         actionContext,
         new List<IFilterMetadata>(),
-        new Dictionary<string, object>(),
+        new Dictionary<string, object?>(),
         controller
       );
 
@@ -116,7 +111,7 @@ namespace OnTopic.Tests {
     | TEST: NULL TOPIC: RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
+    ///   Ensures that a <see cref="NotFoundResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [Fact]
     public void NullTopic_ReturnsNotFound() {
@@ -129,7 +124,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.IsType<NotFoundObjectResult>(context.Result);
+      Assert.IsType<NotFoundResult>(context.Result);
 
     }
 
@@ -204,7 +199,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.Equal<int?>(403, result?.StatusCode);
+      Assert.Equal(403, result?.StatusCode);
 
     }
 
@@ -231,7 +226,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.Equal<int?>(403, result?.StatusCode);
+      Assert.Equal(403, result?.StatusCode);
 
     }
 
@@ -257,7 +252,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.Equal<int?>(403, result?.StatusCode);
+      Assert.Equal(403, result?.StatusCode);
 
     }
 
@@ -309,7 +304,7 @@ namespace OnTopic.Tests {
       var result = context.Result as StatusCodeResult;
 
       Assert.NotNull(result);
-      Assert.Equal<int?>(403, result?.StatusCode);
+      Assert.Equal(403, result?.StatusCode);
 
     }
 

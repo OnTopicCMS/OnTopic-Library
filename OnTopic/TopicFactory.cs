@@ -3,11 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
 using OnTopic.Metadata;
 

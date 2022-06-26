@@ -3,16 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using OnTopic.Data.Caching;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.Fixtures;
-using OnTopic.ViewModels;
 using Xunit;
 
 namespace OnTopic.Tests {
@@ -150,7 +145,7 @@ namespace OnTopic.Tests {
       var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
 
       Assert.NotNull(viewModel);
-      Assert.Equal<int?>(3, viewModel?.Children.Count);
+      Assert.Equal(3, viewModel?.Children.Count);
       Assert.Empty(viewModel?.Children[0].Children);
 
     }

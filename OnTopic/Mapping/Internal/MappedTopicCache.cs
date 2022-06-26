@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Mapping.Internal {
@@ -58,13 +55,6 @@ namespace OnTopic.Mapping.Internal {
     internal void Register(int topicId, AssociationTypes associations, object viewModel) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicId, nameof(topicId));
-      Contract.Requires(associations, nameof(associations));
-      Contract.Requires(viewModel, nameof(viewModel));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Construct cache entry
       \-----------------------------------------------------------------------------------------------------------------------*/
       var type                  = viewModel.GetType();
@@ -98,12 +88,6 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="topicId">The <see cref="Topic.Id"/> associated with the cache entry.</param>
     /// <param name="type">The <see cref="Type"/> that the <see cref="Topic"/> is being mapped to.</param>
     internal MappedTopicCacheEntry Preregister(int topicId, Type type) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicId, nameof(topicId));
-      Contract.Requires(type, nameof(type));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct cache entry

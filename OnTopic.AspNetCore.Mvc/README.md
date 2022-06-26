@@ -1,5 +1,5 @@
-﻿# OnTopic for ASP.NET Core 3.x, 5.x
-The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with ASP.NET Core 3.x and ASP.NET Core 5.x. It is the recommended client for working with OnTopic.
+﻿# OnTopic for ASP.NET Core
+The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with ASP.NET Core (3.0 and above) . It is the recommended client for working with OnTopic.
 
 [![OnTopic.AspNetCore.Mvc package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/4db5e20c-69c6-4134-823a-c3de06d1176e/Badge)](https://www.nuget.org/packages/OnTopic.AspNetCore.Mvc/)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
@@ -8,6 +8,7 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
 ### Contents
 - [Components](#components)
 - [Controllers and View Components](#controllers-and-view-components)
+- [Filters](#filters)
 - [View Conventions](#view-conventions)
   - [View Matching](#view-matching)
   - [View Locations](#view-locations)
@@ -17,9 +18,10 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
   - [Application](#application)
   - [Route Configuration](#route-configuration)
   - [Composition Root](#composition-root)
+  - [Error Handling](#error-handling)
 
 ## Components
-There are five key components at the heart of the ASP.NET Core implementation.
+There are six components at the heart of the ASP.NET Core implementation.
 - **`TopicController`**: This is a default controller instance that can be used for _any_ topic path. It will automatically validate that the `Topic` exists, that it is not disabled (`!IsDisabled`), and will honor any redirects (e.g., if the `Url` attribute is filled out). Otherwise, it will return a `TopicViewResult` based on a view model, view name, and content type.
 - **`TopicRouteValueTransformer`**: A `DynamicRouteValueTransformer` for use with the ASP.NET Core's `MapDynamicControllerRoute()` method, allowing for route parameters to be implicitly inferred; notably, it will use the `area` as the default `controller` and `rootTopic`, if those route parameters are not otherwise defined.
 - **`TopicViewLocationExpander`**: Assists the out-of-the-box Razor view engine in locating views associated with OnTopic, e.g. by looking in `~/Views/ContentTypes/{ContentType}.cshtml`, or `~/Views/{ContentType}/{View}.cshtml`. See [View Locations](#view-locations) below.
@@ -29,6 +31,7 @@ There are five key components at the heart of the ASP.NET Core implementation.
 
 ## Controllers and View Components
 There are five main controllers and view components that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary classes:
+- **[`ErrorController`](Controllers/ErrorController.cs)**: Provides a specialized `TopicController` with an `Http()` action for handling status code errors (e.g., from `UseStatusCodePages()`).
 - **[`RedirectController`](Controllers/RedirectController.cs)**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`.
 - **[`SitemapController`](Controllers/SitemapController.cs)**: Provides a single `Sitemap` action which recurses over the entire Topic graph, including all attributes, and returns an XML document with a sitemaps.org schema.
 - **[`MenuViewComponentBase<T>`](Components/MenuViewComponentBase{T}.cs)**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance.
@@ -42,6 +45,11 @@ There are five main controllers and view components that ship with the ASP.NET C
 >     IHierarchicalTopicMappingService<NavigationTopicViewModel> hierarchicalTopicMappingService
 >   ): base(topicRepository, hierarchicalTopicMappingService) {}
 > }
+
+## Filters
+There are two filters included with the ASP.NET Core implementation, which are meant to work in conjunction with `TopicController`:
+- **[`[ValidateTopic]`](_filters/ValidateTopicAttribute.cs)**: A filter attribute that handles topics that aren't intended to be served publicly, such as `PageGroup` and `Container` content types, or topics with `Url` or `IsDisabled` set.
+- **[`[TopicResponseCache]`](_filters/TopicResponseCacheAttribute.cs)**: A filter attribute registered on `TopicController` which checks for an affiliated `CacheProfile` topic and sets HTTP response headers accordingly. Compatible with the [ASP.NET Core Response Caching Middleware](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware).
 
 ## View Conventions
 By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
@@ -114,6 +122,8 @@ public class Startup {
 ```
 > *Note:* This will register the `TopicViewLocationExpander`, `TopicViewResultExecutor`, `TopicRouteValueTransformer`, as well as all [Controllers](#controllers) that ship with `OnTopic.AspNetCore.Mvc`.
 
+> *Note:* When using ASP.NET Core 6's minimal hosting model, this will instead be placed in the `Program` class as a top-level statement.
+ 
 In addition, within the same `ConfigureServices()` method, you will need to establish a class that implements `IControllerActivator` and `IViewComponentActivator`, and will represent the site's _Composition Root_ for dependency injection. This will typically look like:
 ```csharp
 var activator = new OrganizationNameActivator(Configuration.GetConnectionString("OnTopic"))
@@ -138,6 +148,7 @@ public class Startup {
       endpoints.MapDefaultControllerRoute();            // {controller=Home}/{action=Index}/{id?}
       endpoints.MapDefaultAreaControllerRoute();        // {area:exists}/{controller}/{action=Index}/{id?}
 
+      endpoints.MapTopicErrors();                       // Error/{errorCode}
       endpoints.MapTopicRoute("Web");                   // Web/{**path}
       endpoints.MapTopicRedirect();                     // Topic/{topicId}
       endpoints.MapControllers();
@@ -147,6 +158,8 @@ public class Startup {
 }
 ```
 > *Note:* Because OnTopic relies on wildcard path names, a new route should be configured for every root namespace (e.g., `/Web`). While it's possible to configure OnTopic to evaluate _all_ paths, this makes it difficult to delegate control to other controllers and handlers, when necessary. As a result, it is recommended that each root container be registered individually.
+
+> *Note:* When using ASP.NET Core 6's minimal hosting model, these will instead be placed in the `Program` class as a top-level statement.
 
 ### Composition Root
 As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator for controllers, and view component activator for view components. For controllers, the basic structure of this might look like:
@@ -166,3 +179,31 @@ return controllerType.Name switch {
 For a complete reference template, including the ancillary controllers, view components, and a more maintainable structure, see the [`OrganizationNameActivator.cs`](https://gist.github.com/JeremyCaney/00c04b1b9f40d9743793cd45dfaaa606) Gist. Optionally, you may use a dependency injection container.
 
 > *Note:* The default `TopicController` will automatically identify the current topic (based on the `RouteData`), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../OnTopic/Mapping/README.md)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`.
+
+### Error Handling
+The `ErrorController` provides support for handling ASP.NET Core's `UseStatusCodePages()` middleware, while continuing to support a range of other options. Routing to the controller can be supported by any of the following options, in isolation or together:
+```csharp
+public class Startup {
+  public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+    app.UseEndpoints(endpoints => {
+      endpoints.MapTopicErrors();                        // Error/{errorCode}
+      endpoints.MapTopicErrors("Errors", false);         // Errors/{errorCode}; disables includeStaticFiles
+      endpoints.MapDefaultControllerRoute();             // Error/Http/{errorCode}
+      endpoints.MapTopicRoute("Error");                  // Error/{path}; e.g., Error/Unauthorized
+    }
+  }
+}
+```
+
+> *Note:* When using ASP.NET Core 6's minimal hosting model, these will instead be placed in the `Program` class as a top-level statement.
+
+The first three of these options all use the `Http()` action, which will provide the following fallback logic:
+- If `Error:{errorCode}` exists, use that (e.g., `Error:404`)
+- If `Error:{errorCode/100*100} exists, use that (e.g., `Error:400`)
+- If `Error` exists, use that (e.g., `Error`)
+
+These are all intended to be used with one of ASP.NET Core's `UseStatusCodePages()` methods. For instance:
+```csharp
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+```
+The last option allows the same `ErrorController` to be used with any other custom error handling that might be configured—such as middleware, or the legacy `<httpErrors />` handler—to handle any custom page under the `Error` topic.

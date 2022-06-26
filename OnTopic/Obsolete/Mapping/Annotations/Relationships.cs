@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -12,7 +11,7 @@ namespace OnTopic.Mapping.Annotations {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc cref="AssociationTypes"/>
   [Flags]
-  [Obsolete("The Relationships enum has been renamed to AssociationTypes.", true)]
+  [Obsolete($"The {nameof(Relationships)} enum has been renamed to {nameof(AssociationTypes)}.", true)]
   public enum Relationships {
 
     /*==========================================================================================================================

@@ -3,12 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Repositories;
 
@@ -49,11 +44,6 @@ namespace OnTopic.Collections.Specialized {
     /// </summary>
     /// <param name="parentTopic">A reference to the topic that the current collection is bound to.</param>
     internal TrackedRecordCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(parentTopic, nameof(parentTopic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set properties
@@ -269,7 +259,7 @@ namespace OnTopic.Collections.Specialized {
         value = this[key].Value;
       }
 
-      if (value is not null && value.ToString().Length == 0) {
+      if (value is "") {
         value = null;
       }
 

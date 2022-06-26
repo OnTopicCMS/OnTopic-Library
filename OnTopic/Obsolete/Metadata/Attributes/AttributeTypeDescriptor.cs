@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Metadata.AttributeTypes {
 
@@ -21,7 +19,10 @@ namespace OnTopic.Metadata.AttributeTypes {
   ///   typed representation of those properties. This class provides a base for those representations.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  [Obsolete("The AttributeTypeDescriptor class is obsolete. Derive from AttributeDescriptor instead.", true)]
+  [Obsolete(
+    $"The {nameof(AttributeTypeDescriptor)} class is obsolete. Derive from {nameof(AttributeDescriptor)} instead.",
+    true
+  )]
   public abstract class AttributeTypeDescriptor : AttributeDescriptor {
 
     /*==========================================================================================================================

@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 
 namespace OnTopic.Repositories {
@@ -59,17 +57,17 @@ namespace OnTopic.Repositories {
 
     /// <inheritdoc cref="TopicDeleted"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The DeleteEvent has been renamed to TopicDeleted")]
+    [Obsolete($"The {nameof(DeleteEvent)} has been renamed to {nameof(TopicDeleted)}")]
     event EventHandler<DeleteEventArgs> DeleteEvent;
 
     /// <inheritdoc cref="TopicMoved"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The MoveEvent has been renamed to TopicMoved")]
+    [Obsolete($"The {nameof(MoveEvent)} has been renamed to {nameof(TopicMoved)}")]
     event EventHandler<DeleteEventArgs> MoveEvent;
 
     /// <inheritdoc cref="TopicRenamed"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The RenameEvent has been renamed to TopicRenamed")]
+    [Obsolete($"The {nameof(RenameEvent)} has been renamed to {nameof(TopicRenamed)}")]
     event EventHandler<RenameEventArgs> RenameEvent;
 
     /*==========================================================================================================================

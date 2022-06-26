@@ -6,7 +6,6 @@
 using OnTopic.Lookup;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.TestDoubles {
 

@@ -3,13 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.Data.Caching;
 using OnTopic.Repositories;
-using OnTopic.TestDoubles;
-using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -62,7 +59,7 @@ namespace OnTopic.Tests {
       var currentTopic          = _topicRepository.Load(routes);
 
       Assert.NotNull(currentTopic);
-      Assert.Equal<Topic?>(topic, currentTopic);
+      Assert.Equal(topic, currentTopic);
       Assert.Equal("Web_0_1_1", currentTopic?.Key);
 
     }
@@ -84,7 +81,7 @@ namespace OnTopic.Tests {
       var currentTopic          = _topicRepository.Load(routes);
 
       Assert.NotNull(currentTopic);
-      Assert.Equal<Topic?>(topic, currentTopic);
+      Assert.Equal(topic, currentTopic);
       Assert.Equal("Root", currentTopic?.Key);
 
     }

@@ -1,0 +1,18 @@
+﻿@getCounter()
+
+@functions {
+
+  //Establish a counter for each page path
+  public static Dictionary<string, int> pageCounter = new();
+
+  //Increment the counter for each call to a given page path
+  public int getCounter() {
+    var path = Context.Request.Path;
+    if (!pageCounter.ContainsKey(path)) {
+      pageCounter.Add(path, 0);
+    }
+    pageCounter[path] = pageCounter[path]+1;
+    return pageCounter[path];
+  }
+
+}

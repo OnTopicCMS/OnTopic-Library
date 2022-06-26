@@ -3,10 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections.Specialized;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 
@@ -77,7 +74,7 @@ namespace OnTopic.Associations {
 
     /// <inheritdoc cref="Clear(String)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The ClearTopics(relationshipKey) method has been renamed to Clear(relationshipKey).", true)]
+    [Obsolete($"The {nameof(ClearTopics)} method has been renamed to {nameof(Clear)}.", true)]
     public void ClearTopics(string relationshipKey) => Clear(relationshipKey);
 
     /*==========================================================================================================================
@@ -149,12 +146,12 @@ namespace OnTopic.Associations {
 
     /// <inheritdoc cref="Remove(String, Topic)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The RemoveTopic() method has been renamed to Remove().", true)]
+    [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
     public bool RemoveTopic(string relationshipKey, Topic topic) => Remove(relationshipKey, topic);
 
     /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The RemoveTopic() method has been renamed to Remove().", true)]
+    [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
     public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) =>
       Remove(relationshipKey, topic, isIncoming);
 
@@ -232,12 +229,12 @@ namespace OnTopic.Associations {
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
+    [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
     public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null) => SetValue(relationshipKey, topic, isDirty);
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
+    [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
     public void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) =>
       SetValue(relationshipKey, topic, isDirty, isIncoming);
 

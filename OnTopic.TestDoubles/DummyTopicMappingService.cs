@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 

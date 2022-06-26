@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.TestDoubles {

@@ -3,17 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Mvc;
 using OnTopic.Attributes;
-using OnTopic.Internal.Diagnostics;
-using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 

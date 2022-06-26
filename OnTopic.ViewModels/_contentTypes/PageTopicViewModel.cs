@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Models;
 
 namespace OnTopic.ViewModels {
 
@@ -19,6 +18,29 @@ namespace OnTopic.ViewModels {
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
   public record PageTopicViewModel: TopicViewModel, INavigableTopicViewModel {
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="PageTopicViewModel"/> with an <paramref name="attributes"/> dictionary.
+    /// </summary>
+    /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
+    public PageTopicViewModel(AttributeDictionary attributes): base(attributes) {
+      Contract.Requires(attributes, nameof(attributes));
+      ShortTitle                = attributes.GetValue(nameof(ShortTitle));
+      Subtitle                  = attributes.GetValue(nameof(Subtitle));
+      MetaTitle                 = attributes.GetValue(nameof(MetaTitle));
+      MetaDescription           = attributes.GetValue(nameof(MetaDescription));
+      MetaKeywords              = attributes.GetValue(nameof(MetaKeywords));
+      NoIndex                   = attributes.GetBoolean(nameof(NoIndex))?? NoIndex;
+      Body                      = attributes.GetValue(nameof(Body));
+    }
+
+    /// <summary>
+    ///   Initializes a new <see cref="PageTopicViewModel"/> with no parameters.
+    /// </summary>
+    public PageTopicViewModel() { }
 
     /*==========================================================================================================================
     | SHORT TITLE

@@ -3,12 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
-using OnTopic.TestDoubles;
 
 namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
 
@@ -73,6 +71,15 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
       var disabledPage          = new Topic("Disabled", "Page", webTopic);
       var pageGroup             = new Topic("PageGroup", "PageGroup", rootTopic);
       _                         = new Topic("PageGroupChild", "Page", pageGroup);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish error topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var error                 = new Topic("Error", "Page", rootTopic);
+
+      _                         = new Topic("400", "Page", error);
+      _                         = new Topic("405", "Page", error);
+      _                         = new Topic("Unauthorized", "Page", error);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define attributes

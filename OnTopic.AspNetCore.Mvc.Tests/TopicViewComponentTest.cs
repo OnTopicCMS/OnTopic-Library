@@ -3,9 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -17,9 +14,7 @@ using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
-using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
-using Xunit;
 
 namespace OnTopic.Tests {
 
@@ -126,12 +121,12 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.Equal("/Web/", model?.NavigationRoot?.WebPath);
-      Assert.Equal<int?>(3, model?.NavigationRoot?.Children.Count);
+      Assert.Equal(3, model?.NavigationRoot?.Children.Count);
 
     }
 
@@ -152,7 +147,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(webPath, model?.CurrentWebPath);
@@ -199,12 +194,12 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.Equal("/Web/Web_3/", model?.NavigationRoot?.WebPath);
-      Assert.Equal<int?>(2, model?.NavigationRoot?.Children.Count);
+      Assert.Equal(2, model?.NavigationRoot?.Children.Count);
       Assert.True(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }
@@ -227,7 +222,7 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(webPath, model?.CurrentWebPath);
@@ -255,7 +250,7 @@ namespace OnTopic.Tests {
 
       var result = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult = result as ViewViewComponentResult;
-      var model = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.NotNull(model);
       Assert.Equal(String.Empty, model?.CurrentWebPath);

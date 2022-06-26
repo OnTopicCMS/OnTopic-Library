@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping;
 using OnTopic.Metadata;
 

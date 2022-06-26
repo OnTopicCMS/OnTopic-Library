@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 

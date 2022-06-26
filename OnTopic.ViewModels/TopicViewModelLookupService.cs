@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using OnTopic.Lookup;
 
@@ -50,6 +48,7 @@ namespace OnTopic.ViewModels {
       \-----------------------------------------------------------------------------------------------------------------------*/
       TryAdd(typeof(ItemTopicViewModel));
       TryAdd(typeof(ContentItemTopicViewModel));
+      TryAdd(typeof(CacheProfileTopicViewModel));
       TryAdd(typeof(LookupListItemTopicViewModel));
       TryAdd(typeof(SlideTopicViewModel));
 
@@ -58,9 +57,7 @@ namespace OnTopic.ViewModels {
       >-------------------------------------------------------------------------------------------------------------------------
       | These will be removed in the next major version of OnTopic.
       \-----------------------------------------------------------------------------------------------------------------------*/
-#pragma warning disable CS0618 // Type or member is obsolete
       TryAdd(typeof(ListTopicViewModel));
-      #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add support types
