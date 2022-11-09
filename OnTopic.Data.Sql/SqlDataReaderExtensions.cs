@@ -146,8 +146,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.ContainsKey(rootTopicId)) {
-        return topics[rootTopicId];
+      if (topics.TryGetValue(rootTopicId, out var rootTopic)) {
+        return rootTopic;
       }
       return topics.Values.FirstOrDefault();
 
