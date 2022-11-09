@@ -253,9 +253,7 @@ namespace OnTopic.Internal.Reflection {
           typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
         }
         catch (TargetInvocationException ex) {
-          if (PropertyCache.ContainsKey(itemKey)) {
-            PropertyCache.Remove(itemKey);
-          }
+          PropertyCache.Remove(itemKey);
           if (ex.InnerException is not null) {
             ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
           }
