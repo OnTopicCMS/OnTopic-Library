@@ -5,8 +5,6 @@
 \=============================================================================================================================*/
 using System.Runtime.Serialization;
 
-#pragma warning disable CA1032 // Implement standard exception constructors
-
 namespace OnTopic {
 
   /*============================================================================================================================
@@ -46,5 +44,3 @@ namespace OnTopic {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CA1032 // Implement standard exception constructors
