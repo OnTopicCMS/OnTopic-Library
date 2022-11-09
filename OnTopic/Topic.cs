@@ -218,9 +218,7 @@ namespace OnTopic {
         else if (_key is not null || IsNew) {
           _dirtyKeys.MarkDirty("Key");
         }
-        if (_originalKey is null) {
-          _originalKey = _key;
-        }
+        _originalKey ??= _key;
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
@@ -481,9 +479,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move topic to new location
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_parent is not null) {
-        _parent.Children.Remove(Key);
-      }
+      _parent?.Children.Remove(Key);
       var insertAt = (sibling is not null)? parent.Children.IndexOf(sibling)+1 : 0;
       parent.Children.Insert(insertAt, this);
       _dirtyKeys.MarkDirty("Parent");
@@ -508,7 +504,6 @@ namespace OnTopic {
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
     /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
-    #pragma warning disable CA1024 // Use properties where appropriate
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -529,7 +524,6 @@ namespace OnTopic {
       return uniqueKey;
 
     }
-    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET WEB PATH

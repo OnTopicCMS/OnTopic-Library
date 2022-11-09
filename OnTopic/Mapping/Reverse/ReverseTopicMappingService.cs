@@ -395,9 +395,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceList = (IList?)memberAccessor.GetValue(source);
 
-      if (sourceList is null) {
-        sourceList = new List<IAssociatedTopicBindingModel>();
-      }
+      sourceList ??= new List<IAssociatedTopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships

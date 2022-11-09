@@ -5,8 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
 
-#pragma warning disable IDE0060 // Remove unused parameter
-
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
@@ -97,5 +95,3 @@ namespace OnTopic.Collections {
 
   } //Class
 } //Namespace
-
-#pragma warning restore IDE0060 // Remove unused parameter

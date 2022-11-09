@@ -69,9 +69,7 @@ namespace OnTopic {
         targetType              = typeof(AttributeDescriptor);
       }
 
-      if (targetType is null) {
-        targetType              = typeof(Topic);
-      }
+      targetType                ??= typeof(Topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic

@@ -84,9 +84,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       if (!String.IsNullOrEmpty(configuredRoot)) {
         navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic);
       }
-      if (navigationRootTopic is null) {
-        navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
-      }
+      navigationRootTopic ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return root
@@ -105,7 +103,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic!,
         3,
-        t => t is not { ContentType: "List" } and not { Parent: { ContentType: "PageGroup" } }
+        t => t is not { ContentType: "List" } and not { Parent.ContentType: "PageGroup" }
       ).ConfigureAwait(false);
 
     /*==========================================================================================================================

@@ -4,10 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Mapping;
-using OnTopic.Tests.BindingModels;
-
-#pragma warning disable CA2227 // Collection properties should be read only
-#pragma warning disable CA1034 // Nested types should not be visible
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -48,6 +44,3 @@ namespace OnTopic.Tests.ViewModels {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CA2227 // Collection properties should be read only
-#pragma warning restore CA1034 // Nested types should not be visible

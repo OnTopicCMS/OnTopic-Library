@@ -161,9 +161,7 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default delegate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (validationDelegate is null) {
-        validationDelegate = (Topic) => true;
-      }
+      validationDelegate ??= (Topic) => true;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map object
@@ -201,11 +199,9 @@ namespace OnTopic.Mapping.Hierarchical {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (viewModel.Children.Count == 0) {
         lock (viewModel) {
-          #pragma warning disable CA1508 // Avoid dead conditional code
           if (viewModel.Children.Count == 0) {
             children.ForEach(c => viewModel.Children.Add(c));
           }
-          #pragma warning restore CA1508 // Avoid dead conditional code
         }
       }
 

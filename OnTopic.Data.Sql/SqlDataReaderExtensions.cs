@@ -97,9 +97,7 @@ namespace OnTopic.Data.Sql {
 
       // Loop through each extended attribute record associated with a specific topic
       while (reader.Read()) {
-        if (sqlDataReader is not null) {
-          sqlDataReader.SetExtendedAttributes(topics, markDirty);
-        }
+        sqlDataReader?.SetExtendedAttributes(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -146,8 +144,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.ContainsKey(rootTopicId)) {
-        return topics[rootTopicId];
+      if (topics.TryGetValue(rootTopicId, out var rootTopic)) {
+        return rootTopic;
       }
       return topics.Values.FirstOrDefault();
 

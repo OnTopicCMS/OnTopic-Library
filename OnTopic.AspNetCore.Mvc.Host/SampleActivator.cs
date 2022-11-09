@@ -57,9 +57,14 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     public SampleActivator(string connectionString) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(connectionString);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Initialize Topic Repository
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       sqlTopicRepository              = new SqlTopicRepository(connectionString);
+      var sqlTopicRepository              = new SqlTopicRepository(connectionString);
       var                       cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
       _                                                         = new PageTopicViewModel();
 

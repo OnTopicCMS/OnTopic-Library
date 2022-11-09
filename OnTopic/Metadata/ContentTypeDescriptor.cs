@@ -135,7 +135,7 @@ namespace OnTopic.Metadata {
         if (_permittedContentTypes is null) {
           var permittedContentTypes = new KeyedTopicCollection<ContentTypeDescriptor>();
           var contentTypes = Relationships.GetValues("ContentTypes");
-          foreach (ContentTypeDescriptor contentType in contentTypes) {
+          foreach (var contentType in contentTypes.Cast<ContentTypeDescriptor>()) {
             permittedContentTypes.Add(contentType);
           }
           _permittedContentTypes = new(permittedContentTypes);
@@ -176,7 +176,7 @@ namespace OnTopic.Metadata {
           | Get values from nested topics
           \-------------------------------------------------------------------------------------------------------------------*/
           if (Children.Contains("Attributes")) {
-            foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
+            foreach (var attribute in Children["Attributes"].Children.Cast<AttributeDescriptor>()) {
               _attributeDescriptors.Add(attribute);
             }
           }

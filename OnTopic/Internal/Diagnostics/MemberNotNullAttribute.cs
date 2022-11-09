@@ -22,11 +22,9 @@ namespace System.Diagnostics.CodeAnalysis {
     /// <param name="member">
     /// The field or property member that is promised to be not-null.
     /// </param>
-    #pragma warning disable CA1019 // Define accessors for attribute arguments
     public MemberNotNullAttribute(string member) {
       Members = new[] { member };
-      }
-    #pragma warning restore CA1019 // Define accessors for attribute arguments
+    }
 
     /// <summary>Initializes the attribute with the list of field and property members.</summary>
     /// <param name="members">
