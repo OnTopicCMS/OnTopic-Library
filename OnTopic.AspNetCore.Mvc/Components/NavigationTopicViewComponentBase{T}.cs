@@ -86,9 +86,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /// <returns>The Topic associated with the current request.</returns>
     protected Topic? CurrentTopic {
       get {
-        if (_currentTopic is null) {
-          _currentTopic = TopicRepository.Load(RouteData);
-        }
+        _currentTopic ??= TopicRepository.Load(RouteData);
         return _currentTopic;
       }
     }

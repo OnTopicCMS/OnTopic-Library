@@ -84,9 +84,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       if (!String.IsNullOrEmpty(configuredRoot)) {
         navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic);
       }
-      if (navigationRootTopic is null) {
-        navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
-      }
+      navigationRootTopic ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return root

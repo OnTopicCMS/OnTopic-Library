@@ -118,9 +118,7 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     internal ItemConfiguration Configuration {
       get {
-        if (_itemConfiguration is null) {
-          _itemConfiguration = new(this);
-        }
+        _itemConfiguration ??= new(this);
         return _itemConfiguration;
       }
     }

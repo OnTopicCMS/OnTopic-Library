@@ -73,14 +73,10 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
 
       // Lookup the default cache profile for reference
-      if (_defaultCacheProfile is null) {
-        _defaultCacheProfile    = controller.TopicRepository.Load("Configuration:CacheProfiles:Default");
-      }
+      _defaultCacheProfile      ??= controller.TopicRepository.Load("Configuration:CacheProfiles:Default");
 
       // Ensure the above lookup is only performed once per application
-      if (_defaultCacheProfile is null) {
-        _defaultCacheProfile    = new Topic("ImplicitDefault", "CacheProfile");
-      }
+      _defaultCacheProfile      ??= new Topic("ImplicitDefault", "CacheProfile");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify cache profile

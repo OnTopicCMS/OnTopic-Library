@@ -663,13 +663,11 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue is null) {
-        attributeValue = source.Attributes.GetValue(
-          configuration.GetCompositeAttributeKey(attributePrefix),
-          configuration.DefaultValue?.ToString(),
-          configuration.InheritValue
-        );
-      }
+      attributeValue ??= source.Attributes.GetValue(
+        configuration.GetCompositeAttributeKey(attributePrefix),
+        configuration.DefaultValue?.ToString(),
+        configuration.InheritValue
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value

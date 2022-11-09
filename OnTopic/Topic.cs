@@ -218,9 +218,7 @@ namespace OnTopic {
         else if (_key is not null || IsNew) {
           _dirtyKeys.MarkDirty("Key");
         }
-        if (_originalKey is null) {
-          _originalKey = _key;
-        }
+        _originalKey ??= _key;
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
