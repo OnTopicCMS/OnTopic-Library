@@ -481,9 +481,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move topic to new location
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_parent is not null) {
-        _parent.Children.Remove(Key);
-      }
+      _parent?.Children.Remove(Key);
       var insertAt = (sibling is not null)? parent.Children.IndexOf(sibling)+1 : 0;
       parent.Children.Insert(insertAt, this);
       _dirtyKeys.MarkDirty("Parent");

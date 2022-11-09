@@ -97,9 +97,7 @@ namespace OnTopic.Data.Sql {
 
       // Loop through each extended attribute record associated with a specific topic
       while (reader.Read()) {
-        if (sqlDataReader is not null) {
-          sqlDataReader.SetExtendedAttributes(topics, markDirty);
-        }
+        sqlDataReader?.SetExtendedAttributes(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
