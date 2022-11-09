@@ -504,7 +504,6 @@ namespace OnTopic {
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
     /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
-    #pragma warning disable CA1024 // Use properties where appropriate
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -525,7 +524,6 @@ namespace OnTopic {
       return uniqueKey;
 
     }
-    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET WEB PATH

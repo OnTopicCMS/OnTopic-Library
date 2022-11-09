@@ -21,9 +21,7 @@ namespace OnTopic.Tests.ViewModels {
 
     public void SetMethod(TopicViewModel? methodValue) => _methodValue = methodValue;
 
-    #pragma warning disable CA1024 // Use properties where appropriate
     public TopicViewModel? GetMethod() => _methodValue;
-    #pragma warning restore CA1024 // Use properties where appropriate
 
   } //Class
 } //Namespace
