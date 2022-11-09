@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Host;
+using OnTopic.Internal.Diagnostics;
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
@@ -40,7 +41,11 @@ builder.Services.AddControllersWithViews()
 /*------------------------------------------------------------------------------------------------------------------------------
 | Register: Activators
 \-----------------------------------------------------------------------------------------------------------------------------*/
-var activator = new SampleActivator(builder.Configuration.GetConnectionString("OnTopic"));
+var connectionString            = builder.Configuration.GetConnectionString("OnTopic");
+
+Contract.Assume(connectionString);
+
+var activator                   = new SampleActivator(connectionString);
 
 builder.Services.AddSingleton<IControllerActivator>(activator);
 builder.Services.AddSingleton<IViewComponentActivator>(activator);
