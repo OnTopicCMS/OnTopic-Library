@@ -243,10 +243,12 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="initialObject">The <typeparamref name="TItem"/> object which is being inserted.</param>
     /// <returns>Returns <c>true</c> if the business logic has been enfored; otherwise <c>false</c>.</returns>
     internal bool Enforce(string itemKey, TItem? initialObject) {
+      #pragma warning disable CA1853 // Unnecessary call to 'Dictionary.ContainsKey(key)'
       if (PropertyCache.ContainsKey(itemKey)) {
         PropertyCache.Remove(itemKey);
         return true;
       }
+      #pragma warning restore CA1853 // Unnecessary call to 'Dictionary.ContainsKey(key)'
       else if (Register(itemKey, initialObject)) {
         try {
           var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
