@@ -65,9 +65,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the <see cref="CollectionType"/>.
     /// </summary>
-    #pragma warning disable CA1019 // Define accessors for attribute arguments
     public CollectionType Type { get; set; }
-    #pragma warning restore CA1019 // Define accessors for attribute arguments
 
   } //Class
 } //Namespace
