@@ -204,7 +204,7 @@ namespace OnTopic.Collections.Specialized {
     ///   order to get the value.
     /// </param>
     /// <returns>The <typeparamref name="TValue"/> for the <see cref="TrackedRecord{T}"/>.</returns>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     public TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? 5 : 0);
@@ -240,7 +240,7 @@ namespace OnTopic.Collections.Specialized {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     internal virtual TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
