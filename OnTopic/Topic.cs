@@ -397,7 +397,7 @@ namespace OnTopic {
     [ExcludeFromCodeCoverage]
     [Obsolete(
       $"The Description convenience property will be removed in OnTopic Library 5.0. Use " +
-      $"{nameof(AttributeValueCollection.SetValue)} instead.",
+      $"{nameof(AttributeCollection.SetValue)} instead.",
       true
     )]
     public string? Description {
