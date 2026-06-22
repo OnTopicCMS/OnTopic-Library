@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22518.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <ProjectReference Include="..\OnTopic.All\OnTopic.All.csproj" />
+    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OnTopic.All\OnTopic.All.csproj" />
-    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.301">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
