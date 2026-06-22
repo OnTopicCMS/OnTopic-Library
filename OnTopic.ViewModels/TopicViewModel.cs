@@ -90,7 +90,7 @@ namespace OnTopic.ViewModels {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    [Obsolete($"The {nameof(IsHidden)} property is no longer supported by {nameof(TopicViewModel)}.", true)]
+    [Obsolete($"The IsHidden property is no longer supported by {nameof(TopicViewModel)}.", true)]
     [DisableMapping]
     public bool IsHidden { get; init; }
 

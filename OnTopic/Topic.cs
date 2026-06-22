@@ -713,7 +713,7 @@ namespace OnTopic {
     /// <inheritdoc cref="BaseTopic"/>
     [ExcludeFromCodeCoverage]
     [Obsolete(
-      $"The {nameof(DerivedTopic)} property has been renamed to {nameof(BaseTopic)}. Please update references.",
+      $"The DerivedTopic property has been renamed to {nameof(BaseTopic)}. Please update references.",
       true
     )]
     public Topic? DerivedTopic {
