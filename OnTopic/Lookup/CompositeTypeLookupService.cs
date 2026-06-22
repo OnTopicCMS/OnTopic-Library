@@ -41,7 +41,8 @@ namespace OnTopic.Lookup {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add types to internal collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _typeLookupServices.AddRange(typeLookupServices.Reverse());
+      typeLookupServices.Reverse();
+      _typeLookupServices.AddRange(typeLookupServices);
 
     }
 
