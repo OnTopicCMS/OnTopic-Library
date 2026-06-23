@@ -34,7 +34,7 @@ namespace OnTopic.Collections {
     public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) : base() {
       Name = name;
       if (topics is not null) {
-        CopyTo(topics.ToArray(), 0);
+        CopyTo([.. topics], 0);
       }
     }
 

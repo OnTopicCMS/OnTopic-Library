@@ -45,7 +45,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of relationship keys.
     /// </returns>
-    public ReadOnlyCollection<string> Keys => new(Items.Select(t => t.Name).ToList());
+    public ReadOnlyCollection<string> Keys => new([.. Items.Select(t => t.Name)]);
 
     /*==========================================================================================================================
     | METHOD: GET ALL TOPICS

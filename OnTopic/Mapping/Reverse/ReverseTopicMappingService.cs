@@ -205,7 +205,7 @@ namespace OnTopic.Mapping.Reverse {
       foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
       }
-      await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
+      await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return result

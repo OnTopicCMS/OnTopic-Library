@@ -47,10 +47,10 @@ namespace OnTopic.AspNetCore.Mvc {
       | Set local variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       ViewData                  = viewData;
-      TempData                  = tempData;
+      TempData                  = tempData!;
       ViewData.Model            = viewModel;
       TopicContentType          = contentType?? TopicContentType;
-      TopicView                 = view ?? ContentType;
+      TopicView                 = view ?? ContentType ?? TopicContentType;
       //ViewName                = TopicView;
 
     }

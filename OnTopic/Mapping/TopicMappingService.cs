@@ -208,7 +208,7 @@ namespace OnTopic.Mapping {
         }
         else {
           parameters            = new();
-          arguments             = Array.Empty<object?>();
+          arguments             = [];
         }
 
       }
@@ -262,7 +262,7 @@ namespace OnTopic.Mapping {
         }
       }
 
-      await Task.WhenAll(propertyQueue.ToArray()).ConfigureAwait(false);
+      await Task.WhenAll([.. propertyQueue]).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return target
@@ -360,7 +360,7 @@ namespace OnTopic.Mapping {
       foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null));
       }
-      await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
+      await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return result
@@ -806,7 +806,7 @@ namespace OnTopic.Mapping {
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       configuration                   = itemMetadata.Configuration;
-      var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
+      var                       listSource                      = (IList<Topic>)[];
       var                       collectionKey                   = configuration.CollectionKey;
       var                       collectionType                  = configuration.CollectionType;
 
@@ -816,7 +816,7 @@ namespace OnTopic.Mapping {
       listSource = getCollection(
         CollectionType.Children,
         s => true,
-        () => source.Children.ToList()
+        () => [.. source.Children]
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -863,7 +863,7 @@ namespace OnTopic.Mapping {
           listSource = getCollection(
             CollectionType.MappedCollection,
             s => true,
-            () => sourcePropertyValue.Cast<Topic>().ToList()
+            () => [.. sourcePropertyValue.Cast<Topic>()]
           );
         }
       }
@@ -875,7 +875,7 @@ namespace OnTopic.Mapping {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
         var metadataParent = _topicRepository.Load(metadataKey, source);
         if (metadataParent is not null) {
-          listSource = metadataParent.Children.ToList();
+          listSource = [.. metadataParent.Children];
         }
       }
 
