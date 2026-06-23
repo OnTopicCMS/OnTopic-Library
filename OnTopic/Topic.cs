@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
@@ -504,6 +505,7 @@ namespace OnTopic {
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
     /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
+    [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "This walks the parent hierarchy and performs string concatenation, so it isn't appropriate as a property.")]
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
