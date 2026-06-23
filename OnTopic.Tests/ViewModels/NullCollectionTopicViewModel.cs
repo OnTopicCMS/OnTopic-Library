@@ -40,6 +40,7 @@ namespace OnTopic.Tests.ViewModels {
     [Collection("Collection")]
     public TypedTopicCollection? NullTypedCollection { get; set; }
 
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "This is a test fixture used solely to provide a concrete collection type for NullTypedCollection; it has no purpose outside this view model.")]
     public class TypedTopicCollection: Collection<KeyOnlyTopicViewModel> { }
 
   } //Class
