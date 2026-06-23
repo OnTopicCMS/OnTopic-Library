@@ -16,6 +16,7 @@ namespace OnTopic.Tests.Fixtures {
   ///   tests using a common <see cref="StubTopicRepository"/>.
   /// </summary>
   [CollectionDefinition("Shared Repository")]
+  [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Follows xUnit's naming convention for collection fixture definitions, not a .NET collection type.")]
   public class SharedRepositoryCollection: ICollectionFixture<TopicInfrastructureFixture<StubTopicRepository>> {
 
   }
