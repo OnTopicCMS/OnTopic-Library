@@ -17,7 +17,7 @@ namespace OnTopic {
   ///   A static class for centralizing logic for creating strongly-typed <see cref="Topic"/> instances based on their content
   ///   type.
   /// </summary>
-  public static class TopicFactory {
+  public static partial class TopicFactory {
 
     /*==========================================================================================================================
     | PROPERTY: TYPE LOOKUP SERVICE
@@ -104,10 +104,19 @@ namespace OnTopic {
     public static void ValidateKey(string? topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || KeyRegex().IsMatch(topicKey),
         "Key names should only contain letters, numbers, hyphens, periods, and/or underscores."
       );
     }
+
+    /*==========================================================================================================================
+    | METHOD: KEY REGEX
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a compiled regular expression for validating topic keys.
+    /// </summary>
+    [GeneratedRegex(@"^[a-zA-Z0-9\.\-_]+$")]
+    private static partial Regex KeyRegex();
 
   } //Class
 } //Namespace
