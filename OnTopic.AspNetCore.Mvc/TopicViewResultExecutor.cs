@@ -107,6 +107,9 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!(view?.Success ?? false) && requestContext.Headers.ContainsKey("Accept")) {
         foreach (var header in requestContext.Headers["Accept"]) {
+          if (header is null) {
+            continue;
+          }
           var value = header.Replace("+", "-", StringComparison.Ordinal);
           if (value.Contains('/', StringComparison.Ordinal)) {
             value = value[(value.IndexOf("/", StringComparison.Ordinal)+1)..];
