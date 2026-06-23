@@ -1003,8 +1003,8 @@ namespace OnTopic.Tests {
       var attribute             = new AttributeRecord("Test", "Value");
       var afterDate             = DateTime.UtcNow;
 
-      Assert.True(attribute.LastModified > beforeDate);
-      Assert.True(attribute.LastModified < afterDate);
+      Assert.True(attribute.LastModified >= beforeDate);
+      Assert.True(attribute.LastModified <= afterDate);
 
     }
 
