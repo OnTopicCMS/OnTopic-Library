@@ -1095,7 +1095,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
-    private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList) {
+    private static IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate source properties
