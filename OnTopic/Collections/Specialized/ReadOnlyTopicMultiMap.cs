@@ -12,7 +12,7 @@ namespace OnTopic.Collections.Specialized {
   | CLASS: READ-ONLY TOPIC MULTIMAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="ReadOnlyTopicMultiMap"/> provides a read-only façade to a <see cref="TopicMultiMap"/>.
+  ///   The <see cref="ReadOnlyTopicMultiMap"/> provides a read-only faÃ§ade to a <see cref="TopicMultiMap"/>.
   /// </summary>
   public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTopicCollection>> {
 

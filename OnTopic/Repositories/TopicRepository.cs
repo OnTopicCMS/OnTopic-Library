@@ -153,8 +153,8 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate cache
       >-------------------------------------------------------------------------------------------------------------------------
-      | If the source cache collection is empty then we'll want to defer to the existing version�or retrieve it from the
-      | persistence layer�via GetContentTypeDescriptors().
+      | If the source cache collection is empty then we'll want to defer to the existing version—or retrieve it from the
+      | persistence layer—via GetContentTypeDescriptors().
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypeDescriptors.Count == 0) {
         GetContentTypeDescriptors();
