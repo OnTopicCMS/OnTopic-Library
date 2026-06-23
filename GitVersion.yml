@@ -1,7 +1,16 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: ContinuousDeployment
+mode: ContinuousDelivery
 branches:
   master:
+    regex: ^master$|^main$
+    mode: ManualDeployment
+  release:
+    mode: ContinuousDelivery
+  feature:
+    mode: ContinuousDelivery
+  hotfix:
+    mode: ContinuousDelivery
+  unknown:
     mode: ContinuousDelivery
 ignore:
   sha: []
