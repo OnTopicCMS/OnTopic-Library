@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Runtime.Serialization;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
 
@@ -24,7 +23,6 @@ namespace OnTopic.Mapping {
   ///   ="ContentTypeDescriptor"/>. Given this, the <see cref="MappingModelValidationException"/> is expected to be thrown for
   ///   validation errors caused by e.g. the <see cref="ReverseTopicMappingService"/>.
   /// </remarks>
-  [Serializable]
   [ExcludeFromCodeCoverage]
   public class MappingModelValidationException: TopicMappingException {
 
@@ -48,16 +46,6 @@ namespace OnTopic.Mapping {
     /// <param name="message">The message to display for this exception.</param>
     /// <param name="innerException">The reference to the original, underlying exception.</param>
     public MappingModelValidationException(string message, Exception innerException) : base(message, innerException) { }
-
-    /// <summary>
-    ///   Instantiates a new <see cref="MappingModelValidationException"/> instance for serialization.
-    /// </summary>
-    /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
-    /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
-    /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
-    protected MappingModelValidationException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires(info);
-    }
 
   } //Class
 } //Namespace

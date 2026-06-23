@@ -3,8 +3,6 @@
 | Client Ignia, LLC
 | Project Topics Library
 \=============================================================================================================================*/
-using System.Runtime.Serialization;
-
 namespace OnTopic {
 
   /*============================================================================================================================
@@ -17,7 +15,6 @@ namespace OnTopic {
   ///   <see cref="Topic.Key"/>s are alphanumeric, and may contain hyphens, periods, or underscores. Any other values, such as
   ///   spaces, slashes, or colons, are not permitted and will throw an exception.
   /// </remarks>
-  [Serializable]
   [ExcludeFromCodeCoverage]
   public class InvalidKeyException: ArgumentException {
 
@@ -68,16 +65,6 @@ namespace OnTopic {
     /// <param name="inner">The inner exception associated with the current exception.</param>
     /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
     public InvalidKeyException(string message, string paramName, Exception inner) : base(message, paramName, inner) {
-    }
-
-    /// <summary>
-    ///   Instantiates a new instance of a <see cref="InvalidKeyException"/> class for serialization.
-    /// </summary>
-    /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
-    /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
-    /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
-    protected InvalidKeyException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires(info);
     }
 
   } //Class

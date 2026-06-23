@@ -3,8 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Runtime.Serialization;
-
 namespace OnTopic.Repositories {
 
   /*============================================================================================================================
@@ -19,7 +17,6 @@ namespace OnTopic.Repositories {
   ///   deleted, but the topic or one of its descendents is the <see cref="Topic.BaseTopic"/> of another <see cref="Topic"/>.
   ///   In that case, deleting the topic will violate the referential integrity of the target topic.
   /// </remarks>
-  [Serializable]
   [ExcludeFromCodeCoverage]
   public class ReferentialIntegrityException: TopicRepositoryException {
 
@@ -45,16 +42,6 @@ namespace OnTopic.Repositories {
     /// <param name="message">The error message to associate with the exception.</param>
     /// <param name="innerException">The reference to the original, underlying exception.</param>
     public ReferentialIntegrityException(string message, Exception innerException) : base(message, innerException) { }
-
-    /// <summary>
-    ///   Instantiates a new <see cref="ReferentialIntegrityException"/> instance for serialization.
-    /// </summary>
-    /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
-    /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
-    /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
-    protected ReferentialIntegrityException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires(info);
-    }
 
   } //Class
 } //Namespace

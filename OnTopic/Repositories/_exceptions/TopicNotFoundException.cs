@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data.Common;
-using System.Runtime.Serialization;
 
 namespace OnTopic.Repositories {
 
@@ -20,7 +19,6 @@ namespace OnTopic.Repositories {
   ///   cref="DbException"/>, it retains compatability with previous exception handling, while offering callers the option of
   ///   capturing a more specific error for this individual use case.
   /// </remarks>
-  [Serializable]
   [ExcludeFromCodeCoverage]
   public class TopicNotFoundException: TopicRepositoryException {
 
@@ -61,16 +59,6 @@ namespace OnTopic.Repositories {
     /// <param name="innerException">The reference to the original, underlying exception.</param>
     public TopicNotFoundException(string? topicKey, Exception innerException):
       base($"The topic {topicKey} cannot be found in the repository.", innerException) { }
-
-    /// <summary>
-    ///   Instantiates a new <see cref="TopicRepositoryException"/> instance for serialization.
-    /// </summary>
-    /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
-    /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
-    /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
-    protected TopicNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires(info);
-    }
 
   } //Class
 } //Namespace
