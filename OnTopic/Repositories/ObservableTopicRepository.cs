@@ -64,6 +64,8 @@ namespace OnTopic.Repositories {
       remove => _topicRenamed -= value;
     }
 
+    #pragma warning disable CS0067 // Events are never used; retained as an obsolete stub which will be removed in the next major version
+
     /// <inheritdoc cref="TopicDeleted"/>
     [ExcludeFromCodeCoverage]
     [Obsolete($"The {nameof(DeleteEvent)} has been renamed to {nameof(TopicDeleted)}", true)]
@@ -78,6 +80,8 @@ namespace OnTopic.Repositories {
     [ExcludeFromCodeCoverage]
     [Obsolete($"The {nameof(RenameEvent)} has been renamed to {nameof(TopicRenamed)}", true)]
     public event EventHandler<RenameEventArgs>? RenameEvent;
+
+    #pragma warning restore CS0067
 
     /*==========================================================================================================================
     | ON TOPIC LOADED
