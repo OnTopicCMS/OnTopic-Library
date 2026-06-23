@@ -363,15 +363,19 @@ namespace OnTopic.Internal.Reflection {
     private Func<object, object?>? Getter {
       get {
         if (_getter is null) {
-          var delegateType      = typeof(Func<,>).MakeGenericType(MemberInfo.DeclaringType, Type);
+          var delegateType      = typeof(Func<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
           var delegateGetter    = (Delegate?)null;
           if (MemberInfo is PropertyInfo propertInfo) {
-            delegateGetter      = propertInfo.GetGetMethod().CreateDelegate(delegateType);
+            var getMethod       = propertInfo.GetGetMethod() ??
+              throw new InvalidOperationException(
+                $"The {propertInfo.Name} property does not have a public getter and cannot be used to retrieve a value."
+              );
+            delegateGetter      = getMethod.CreateDelegate(delegateType);
           }
           else if (MemberInfo is MethodInfo methodInfo) {
             delegateGetter      = methodInfo.CreateDelegate(delegateType);
           }
-          var getterWithTypes   = GetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType, Type);
+          var getterWithTypes   = GetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
           _getter               = (Func<object, object?>?)getterWithTypes.Invoke(null, new[] { delegateGetter });
         }
         return _getter;
@@ -391,15 +395,19 @@ namespace OnTopic.Internal.Reflection {
     private Action<object, object?>? Setter {
       get {
         if (_setter is null) {
-          var delegateType      = typeof(Action<,>).MakeGenericType(MemberInfo.DeclaringType, Type);
+          var delegateType      = typeof(Action<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
           var delegateSetter    = (Delegate?)null;
           if (MemberInfo is PropertyInfo propertInfo) {
-            delegateSetter      = propertInfo.GetSetMethod().CreateDelegate(delegateType);
+            var setMethod       = propertInfo.GetSetMethod() ??
+              throw new InvalidOperationException(
+                $"The {propertInfo.Name} property does not have a public setter and cannot be used to set a value."
+              );
+            delegateSetter      = setMethod.CreateDelegate(delegateType);
           }
           else if (MemberInfo is MethodInfo methodInfo) {
             delegateSetter      = methodInfo.CreateDelegate(delegateType);
           }
-          var setterWithTypes   = SetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType, Type);
+          var setterWithTypes   = SetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
           _setter               = (Action<object, object?>?)setterWithTypes.Invoke(null, new[] { delegateSetter });
         }
         return _setter;
