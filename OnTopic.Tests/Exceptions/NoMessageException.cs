@@ -12,7 +12,7 @@ namespace OnTopic {
   ///   A test exception that doesn't include an expected constructor overload accepting the <c>message</c>.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="Contract.Requires{T}(Boolean, String?)"/> will attempt to initialize an exception of the specified type
+  ///   The <see cref="Contract.Requires{T}(Boolean, String?, String?)"/> will attempt to initialize an exception of the specified type
   ///   with a message. This assumes an expected constructor overload exists that accepts a single <c>message</c> parameter. If
   ///   not, it will fallback to a <see cref="ArgumentException"/>.
   /// </remarks>

@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft;
 
 namespace OnTopic.Internal.Diagnostics {
@@ -48,23 +49,37 @@ namespace OnTopic.Internal.Diagnostics {
     /// </summary>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="isValid"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
-    public static void Requires(bool isValid, string? errorMessage = null) =>
-      Requires<InvalidOperationException>(isValid, errorMessage);
+    public static void Requires(
+      bool isValid,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(isValid))] string? expression = null
+    ) => Requires<InvalidOperationException>(isValid, errorMessage, expression);
 
     /// <summary>
     ///   Will throw an <see cref="ArgumentNullException"/> if the supplied object is <see langword="null"/>.
     /// </summary>
     /// <param name="requiredObject">An object that is required to be provided.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="requiredObject"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="ArgumentNullException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
-    public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
-      Requires<ArgumentNullException>(requiredObject is not null, errorMessage);
+    public static void Requires(
+      [ValidatedNotNull, NotNull]object? requiredObject,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(requiredObject))] string? expression = null
+    ) => Requires<ArgumentNullException>(requiredObject is not null, errorMessage, expression);
     #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
@@ -77,20 +92,29 @@ namespace OnTopic.Internal.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="isValid"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///   Thrown when the <typeparamref name="T"/> does not a constructor accepting a sole <see cref="String"/> parameter
-    ///   representing the error message, and the <paramref name="errorMessage"/> parameter was supplied.
+    ///   representing the error message, and an <paramref name="errorMessage"/> or <paramref name="expression"/> is available.
     /// </exception>
-    public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
+    public static void Requires<T>(
+      bool isValid,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(isValid))] string? expression = null
+    ) where T : Exception, new() {
       if (isValid) return;
-      if (String.IsNullOrEmpty(errorMessage)) {
+      var message               = errorMessage is not null && errorMessage.Length > 0 ? errorMessage : expression;
+      if (String.IsNullOrEmpty(message)) {
         throw new T();
       }
       try {
-        throw (T?)Activator.CreateInstance(typeof(T), [errorMessage])!;
+        throw (T?)Activator.CreateInstance(typeof(T), message)!;
       }
       catch (Exception ex) when (
         ex is MissingMethodException
@@ -115,18 +139,25 @@ namespace OnTopic.Internal.Diagnostics {
     ///   Ensures that a condition is met. If not, an <see cref="InvalidOperationException"/> is thrown.
     /// </summary>
     /// <remarks>
-    ///   This is virtually identical to <see cref="Requires(Boolean, String)"/> except that, syntactically, it is expected to
-    ///   live within the body of a method—where as <see cref="Requires(Boolean, String)"/> is expected to live at the beginning
-    ///   of a method. This communicates to readers that <see cref="Assume(Boolean, String)"/> is validating runtime state,
-    ///   whereas <see cref="Requires(Boolean, String)"/> is validating preconditions.
+    ///   This is virtually identical to <see cref="Requires(Boolean, String, String)"/> except that, syntactically, it is
+    ///   expected to live within the body of a method—where as <see cref="Requires(Boolean, String, String)"/> is expected to
+    ///   live at the beginning of a method. This communicates to readers that <see cref="Assume(Boolean, String, String)"/> is
+    ///   validating runtime state, whereas <see cref="Requires(Boolean, String, String)"/> is validating preconditions.
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="isValid"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
-    public static void Assume(bool isValid, string? errorMessage = null) =>
-      Requires<InvalidOperationException>(isValid, errorMessage);
+    public static void Assume(
+      bool isValid,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(isValid))] string? expression = null
+    ) => Requires<InvalidOperationException>(isValid, errorMessage, expression);
 
     /// <summary>
     ///   Ensures that a condition is met. If not, the provided exception is thrown.
@@ -134,34 +165,48 @@ namespace OnTopic.Internal.Diagnostics {
     /// <remarks>
     ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom overload accepts a generic <typeparamref
     ///   name="T"/>, of type <see cref="Exception"/>, which will be thrown if the condition is not met. This is virtually
-    ///   identical to <see cref="Requires{T}(Boolean, String)"/> except that, syntactically, it is expected to live within the
-    ///   body of a method—where as <see cref="Requires{T}(Boolean, String)"/> is expected to live at the beginning of a method.
-    ///   This communicates to readers that <see cref="Assume{T}(Boolean, String)"/> is validating runtime state, whereas <see
-    ///   cref="Requires{T}(Boolean, String)"/> is validating preconditions.
+    ///   identical to <see cref="Requires{T}(Boolean, String, String)"/> except that, syntactically, it is expected to live
+    ///   within the body of a method—where as <see cref="Requires{T}(Boolean, String, String)"/> is expected to live at the
+    ///   beginning of a method. This communicates to readers that <see cref="Assume{T}(Boolean, String, String)"/> is
+    ///   validating runtime state, whereas <see cref="Requires{T}(Boolean, String, String)"/> is validating preconditions.
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="isValid"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///   Thrown when the <typeparamref name="T"/> does not a constructor accepting a sole <see cref="String"/> parameter
-    ///   representing the error message, and the <paramref name="errorMessage"/> parameter was supplied.
+    ///   representing the error message, and an <paramref name="errorMessage"/> or <paramref name="expression"/> is available.
     /// </exception>
-    public static void Assume<T>(bool isValid, string? errorMessage = null) where T : Exception, new() =>
-      Requires<T>(isValid, errorMessage);
+    public static void Assume<T>(
+      bool isValid,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(isValid))] string? expression = null
+    ) where T : Exception, new() => Requires<T>(isValid, errorMessage, expression);
 
     /// <summary>
     ///   Will throw an <see cref="InvalidOperationException"/> if the supplied object is <see langword="null"/>.
     /// </summary>
     /// <param name="requiredObject">An object that is required to be provided.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <param name="expression">
+    ///   Automatically captures the source text of <paramref name="requiredObject"/>; used as the fallback error message when
+    ///   <paramref name="errorMessage"/> is not supplied.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
-    public static void Assume([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null)
-      => Requires<InvalidOperationException>(requiredObject is not null, errorMessage);
+    public static void Assume(
+      [ValidatedNotNull, NotNull]object? requiredObject,
+      string? errorMessage = null,
+      [CallerArgumentExpression(nameof(requiredObject))] string? expression = null
+    ) => Requires<InvalidOperationException>(requiredObject is not null, errorMessage, expression);
     #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
   } //Class

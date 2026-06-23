@@ -141,13 +141,16 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
-    ///   <see cref="IndexOutOfRangeException"/> using the empty constructor, since no <c>errorMessage</c> is included.
+    ///   <see cref="IndexOutOfRangeException"/>, falling back to the <c>[CallerArgumentExpression]</c>-captured source text of
+    ///   the condition as the message, since no <c>errorMessage</c> is included.
     /// </summary>
     [Fact]
-    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage() =>
-      Assert.Throws<IndexOutOfRangeException>(() =>
+    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage() {
+      var exception = Assert.Throws<IndexOutOfRangeException>(() =>
         Contract.Assume<IndexOutOfRangeException>(false)
       );
+      Assert.Equal("false", exception.Message);
+    }
 
     /*==========================================================================================================================
     | TEST: ASSUME: OBJECT IS NULL: THROW INVALID OPERATION EXCEPTION
