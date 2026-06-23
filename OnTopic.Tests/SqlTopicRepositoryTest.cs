@@ -180,9 +180,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Empty(topic?.Relationships);
-      Assert.False(topic?.Relationships.IsFullyLoaded);
+      Assert.Equal(1, topic.Id);
+      Assert.Empty(topic.Relationships);
+      Assert.False(topic.Relationships.IsFullyLoaded);
 
     }
 
@@ -300,9 +300,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Empty(topic?.References);
-      Assert.False(topic?.References.IsFullyLoaded);
+      Assert.Equal(1, topic.Id);
+      Assert.Empty(topic.References);
+      Assert.False(topic.References.IsFullyLoaded);
 
     }
 
@@ -359,9 +359,9 @@ namespace OnTopic.Tests {
       var topic                 = tableReader.LoadTopicGraph();
 
       Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Single(topic?.VersionHistory);
-      Assert.True(topic?.VersionHistory.Contains(DateTime.MinValue));
+      Assert.Equal(1, topic.Id);
+      Assert.Single(topic.VersionHistory);
+      Assert.True(topic.VersionHistory.Contains(DateTime.MinValue));
 
     }
 
