@@ -618,7 +618,7 @@ namespace OnTopic {
     public void MarkClean() => MarkClean(false);
 
     /// <summary>
-    ///   Resets the <see cref="IsDirty()"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using
+    ///   Resets the <see cref="IsDirty()"/> status of the <see cref="Topic"/>â€”and, optionally, that of all collections, using
     ///   the <paramref name="includeCollections"/> parameter.
     /// </summary>
     /// <param name="includeCollections">
@@ -743,7 +743,7 @@ namespace OnTopic {
     | PROPERTY: RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
+    ///   A faÃ§ade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The relationships property exposes a <see cref="Topic" /> with child topics representing named relationships (e.g.,
@@ -757,7 +757,7 @@ namespace OnTopic {
     | PROPERTY: REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing referenced topics based on a reference key; can be used for base topics, etc.
+    ///   A faÃ§ade for accessing referenced topics based on a reference key; can be used for base topics, etc.
     /// </summary>
     /// <remarks>
     ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
@@ -770,7 +770,7 @@ namespace OnTopic {
     | PROPERTY: INCOMING RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
+    ///   A faÃ§ade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The incoming relationships property provides a reverse index of the <see cref="Relationships" /> property, in order to
