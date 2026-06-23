@@ -98,8 +98,8 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttributes = CustomAttributes.OfType<FilterByAttributeAttribute>();
-      if (filterByAttributes is not null && filterByAttributes.Any()) {
+      var filterByAttributes = CustomAttributes.OfType<FilterByAttributeAttribute>().ToArray();
+      if (filterByAttributes.Length > 0) {
         foreach (var filter in filterByAttributes) {
           AttributeFilters.Add(filter.Key, filter.Value);
         }

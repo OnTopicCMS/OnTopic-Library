@@ -254,7 +254,7 @@ namespace OnTopic.Mapping {
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var propertyQueue         = new List<Task>();
-      var mappedParameters      = parameters.Select(p => p.Name).Union(attributeArguments.Select(a => a.Key));
+      var mappedParameters      = parameters.Select(p => p.Name).Union(attributeArguments.Select(a => a.Key)).ToArray();
 
       foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
         if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
