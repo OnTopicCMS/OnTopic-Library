@@ -23,7 +23,12 @@ namespace OnTopic.Internal.Reflection {
     ///   instance.
     /// </summary>
     /// <param name="parameterInfo">The <see cref="ParameterInfo"/> associated with this instance.</param>
-    internal ParameterMetadata(ParameterInfo parameterInfo): base (parameterInfo.Name, parameterInfo) {
+    internal ParameterMetadata(ParameterInfo parameterInfo): base (
+      parameterInfo.Name ?? throw new InvalidOperationException(
+        $"The {nameof(parameterInfo)} does not have a name and cannot be used to construct a {nameof(ParameterMetadata)}."
+      ),
+      parameterInfo
+    ) {
       ParameterInfo             = parameterInfo;
       Type                      = parameterInfo.ParameterType;
     }
