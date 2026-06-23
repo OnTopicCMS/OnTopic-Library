@@ -6,3 +6,11 @@ indent_size = 2
 [*.sql]
 indent_style = tab
 indent_size = 16
+
+[*.cs]
+
+# CA1859: Use concrete types when possible for improved performance
+# Interface usage in this codebase is deliberate—e.g., to express a shared
+# dependency's contract, or to scope a test to the interface under test—so
+# this suggestion is not adopted.
+dotnet_diagnostic.CA1859.severity = none
