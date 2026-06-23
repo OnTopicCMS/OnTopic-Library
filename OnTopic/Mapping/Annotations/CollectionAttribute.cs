@@ -65,6 +65,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the <see cref="CollectionType"/>.
     /// </summary>
+    [SuppressMessage("Design", "CA1019:Define accessors for attribute arguments", Justification = "The setter is required to support setting Type via named argument syntax when Key is set via the constructor (e.g. [Collection(\"Key\", Type = CollectionType.Children)]).")]
     public CollectionType Type { get; set; }
 
   } //Class

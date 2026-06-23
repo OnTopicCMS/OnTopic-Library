@@ -49,6 +49,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the <see cref="CollectionType"/>.
     /// </summary>
+    [SuppressMessage("Design", "CA1019:Define accessors for attribute arguments", Justification = "Retained for symmetry with CollectionAttribute; this class is marked [Obsolete(error: true)] and cannot be used in compiled code.")]
     public RelationshipType Type { get; set; }
 
   } //Class
