@@ -689,7 +689,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void GetTypeAccessor_ValidType_ReturnsTypeAccessor() {
 
-      var typeAccessor          = TypeAccessorCache.GetTypeAccessor(typeof(MemberAccessorViewModel));
+      var typeAccessor          = TypeAccessorCache.GetTypeAccessor<MemberAccessorViewModel>();
 
       Assert.NotNull(typeAccessor);
       Assert.Equal(typeof(MemberAccessorViewModel), typeAccessor.Type);
