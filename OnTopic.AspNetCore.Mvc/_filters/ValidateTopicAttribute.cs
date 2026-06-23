@@ -93,8 +93,10 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(currentTopic.Attributes.GetValue("URL"))) {
-        context.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
+      var redirectUrl            = currentTopic.Attributes.GetValue("URL");
+
+      if (!String.IsNullOrEmpty(redirectUrl)) {
+        context.Result = controller.RedirectPermanent(redirectUrl);
         return;
       }
 
