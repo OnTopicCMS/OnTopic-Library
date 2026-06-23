@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Mapping.Hierarchical;
@@ -68,6 +69,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /// <remarks>
     ///   The navigation root in the case of the page-level navigation any parent of content type <c>PageGroup</c>.
     /// </remarks>
+    [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "This walks the parent hierarchy, so it isn't appropriate as a property.")]
     protected Topic? GetNavigationRoot() {
 
       /*------------------------------------------------------------------------------------------------------------------------
