@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
       var viewModel             = await _hierarchicalMappingService
-        .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith("1", StringComparison.Ordinal));
+        .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith('1'));
 
       Assert.NotNull(viewModel);
       Assert.Single(viewModel.Children);
