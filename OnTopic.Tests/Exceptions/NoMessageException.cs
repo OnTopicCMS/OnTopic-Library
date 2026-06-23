@@ -3,8 +3,6 @@
 | Client Ignia, LLC
 | Project Topics Library
 \=============================================================================================================================*/
-using System.Runtime.Serialization;
-
 namespace OnTopic {
 
   /*============================================================================================================================
@@ -18,7 +16,6 @@ namespace OnTopic {
   ///   with a message. This assumes an expected constructor overload exists that accepts a single <c>message</c> parameter. If
   ///   not, it will fallback to a <see cref="ArgumentException"/>.
   /// </remarks>
-  [Serializable]
   [ExcludeFromCodeCoverage]
   public class NoMessageException: ArgumentException {
 
@@ -30,16 +27,6 @@ namespace OnTopic {
     /// </summary>
     /// <returns>A new <see cref="NoMessageException"/> instance.</returns>
     public NoMessageException(): base() {
-    }
-
-    /// <summary>
-    ///   Instantiates a new instance of a <see cref="NoMessageException"/> class for serialization.
-    /// </summary>
-    /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
-    /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
-    /// <returns>A new <see cref="NoMessageException"/> instance.</returns>
-    protected NoMessageException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires(info);
     }
 
   } //Class
