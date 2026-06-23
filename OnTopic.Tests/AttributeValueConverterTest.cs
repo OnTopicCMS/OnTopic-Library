@@ -84,8 +84,8 @@ namespace OnTopic.Tests {
     /// </summary>
     [Fact]
     public void Convert_ToUri_Succeeds() {
-      Assert.Equal("/OnTopicCMS/", ((Uri?)AttributeValueConverter.Convert("https://www.github.com/OnTopicCMS/", typeof(Uri)))?.LocalPath);
-      Assert.False(((Uri?)AttributeValueConverter.Convert("/OnTopicCMS/", typeof(Uri)))?.IsAbsoluteUri);
+      Assert.Equal("/OnTopicCMS/", AttributeValueConverter.Convert<Uri>("https://www.github.com/OnTopicCMS/")?.LocalPath);
+      Assert.False(AttributeValueConverter.Convert<Uri>("/OnTopicCMS/")?.IsAbsoluteUri);
     }
 
     /*==========================================================================================================================
