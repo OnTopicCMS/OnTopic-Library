@@ -132,7 +132,7 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (MemberInfo.DeclaringType != source.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(source.GetType())) {
+      if (MemberInfo.DeclaringType != source.GetType() && !MemberInfo.DeclaringType!.IsAssignableFrom(source.GetType())) {
         throw new ArgumentException(
           $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to access a member of {source.GetType()}",
           nameof(source)
@@ -181,7 +181,7 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (MemberInfo.DeclaringType != target.GetType() && !MemberInfo.DeclaringType.IsAssignableFrom(target.GetType())) {
+      if (MemberInfo.DeclaringType != target.GetType() && !MemberInfo.DeclaringType!.IsAssignableFrom(target.GetType())) {
         throw new ArgumentException(
           $"The {nameof(MemberAccessor)} for {MemberInfo.DeclaringType} cannot be used to set a member of {target.GetType()}",
           nameof(target)
