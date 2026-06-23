@@ -54,8 +54,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri(path, UriKind.Relative);
-      var response              = await client.GetAsync(uri);
-      var actualContent         = await response.Content.ReadAsStringAsync();
+      var response              = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+      var actualContent         = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
       response.EnsureSuccessStatusCode();
 
@@ -76,8 +76,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri($"/Sitemap/", UriKind.Relative);
-      var response              = await client.GetAsync(uri);
-      var content               = await response.Content.ReadAsStringAsync();
+      var response              = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+      var content               = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
       response.EnsureSuccessStatusCode();
 
@@ -101,8 +101,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri(path, UriKind.Relative);
-      var response              = await client.GetAsync(uri);
-      var actualContent         = await response.Content.ReadAsStringAsync();
+      var response              = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+      var actualContent         = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
       Assert.Equal(statusCode, response.StatusCode);
       Assert.Equal(expectedContent, actualContent);
@@ -133,11 +133,11 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var client                = _factory.CreateClient();
       var uri                   = new Uri(path, UriKind.Relative);
 
-      var response1             = await client.GetAsync(uri);
-      var content1              = await response1.Content.ReadAsStringAsync();
+      var response1             = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+      var content1              = await response1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-      var response2             = await client.GetAsync(uri);
-      var content2              = await response2.Content.ReadAsStringAsync();
+      var response2             = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+      var content2              = await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
       response1.EnsureSuccessStatusCode();
 
