@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
     [InlineData(405, "405")]                               // Exact match
     [InlineData(412, "400")]                               // Fallback to category
     [InlineData(512, "Error")]                             // Fallback to root topic
-    public async void ErrorController_Http_ReturnsExpectedError(int errorCode, string expectedContent) {
+    public async Task ErrorController_Http_ReturnsExpectedError(int errorCode, string expectedContent) {
 
       var controller            = new ErrorController(_topicRepository, _topicMappingService) {
         ControllerContext       = new(_context)
