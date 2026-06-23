@@ -244,7 +244,7 @@ namespace OnTopic.Querying {
       if (uniqueKey.StartsWith(currentTopic.Key + ":", StringComparison.OrdinalIgnoreCase)) {
         uniqueKey = uniqueKey[(currentTopic.Key.Length + 1)..];
       }
-      var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+      var keys                  = uniqueKey.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Navigate to the specific path
