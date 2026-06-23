@@ -23,6 +23,7 @@ namespace OnTopic.Tests.ViewModels {
   ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   ///   </para>
   /// </remarks>
+  [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "This view model intentionally exposes settable, nullable collection properties to test the TopicMappingService's fallback collection-initialization behavior.")]
   public class NullCollectionTopicViewModel {
 
     [Collection("Collection")]
