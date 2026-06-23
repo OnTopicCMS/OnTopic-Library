@@ -361,7 +361,7 @@ namespace OnTopic.Tests {
       Assert.NotNull(topic);
       Assert.Equal(1, topic.Id);
       Assert.Single(topic.VersionHistory);
-      Assert.True(topic.VersionHistory.Contains(DateTime.MinValue));
+      Assert.Contains(DateTime.MinValue, topic.VersionHistory);
 
     }
 
