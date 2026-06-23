@@ -296,7 +296,7 @@ namespace OnTopic.Internal.Reflection {
       return (
         property is not null and { CanWrite: true, MemberType: MemberTypes.Property } &&
         property.IsSettable(targetType, true) &&
-        (attributeFlag is null || Attribute.IsDefined(property.MemberInfo as PropertyInfo, attributeFlag))
+        (attributeFlag is null || Attribute.IsDefined((PropertyInfo)property.MemberInfo, attributeFlag))
       );
     }
 
