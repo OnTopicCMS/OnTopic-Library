@@ -620,7 +620,7 @@ namespace OnTopic.Data.Sql {
       | Return blank if the topic has no relations.
       \-----------------------------------------------------------------------------------------------------------------------*/
       // return if the topic has no relations
-      if (!topic.Relationships.Keys.Any()) {
+      if (topic.Relationships.Keys.Count == 0) {
         return;
       }
 
