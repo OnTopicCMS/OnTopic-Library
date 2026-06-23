@@ -27,6 +27,7 @@ namespace OnTopic.Tests.ViewModels {
     public int NonNullableProperty { get; set; }
     public Type NonNullableReferenceGetter { get; set; } = typeof(MemberAccessorViewModel);
     public int? ReadOnlyProperty { get; }
+    [SuppressMessage("Design", "CA1044:Properties should not be write only", Justification = "This is a test fixture used to verify mapping behavior against write-only properties.")]
     public int WriteOnlyProperty { set { } }
     public int? GetMethod() => _methodValue;
     public int InvalidGetMethod(int value) => value;
