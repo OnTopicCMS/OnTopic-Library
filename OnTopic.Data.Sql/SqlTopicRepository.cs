@@ -352,13 +352,13 @@ namespace OnTopic.Data.Sql {
       var areRelationshipsDirty = topic.Relationships.IsDirty();
       var areReferencesDirty    = topic.References.IsDirty();
       var areAttributesDirty    = topic.Attributes.IsDirty(true);
-      var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
+      var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true).ToList();
       var indexedAttributeList  = GetAttributes(
         topic                   : topic,
         isExtendedAttribute     : false,
         isDirty                 : true,
         excludeLastModified     : !areAttributesDirty
-      );
+      ).ToList();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect whether anything has changed
