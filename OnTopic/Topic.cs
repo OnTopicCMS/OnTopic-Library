@@ -27,7 +27,6 @@ namespace OnTopic {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     string                          _key;
     private                     string                          _contentType;
-    private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
     readonly                    DirtyKeyCollection              _dirtyKeys                      = new();
@@ -110,15 +109,15 @@ namespace OnTopic {
     ///   value &gt; 0
     /// </requires>
     public int Id {
-      get => _id;
+      get => field;
       set {
         Contract.Requires<ArgumentOutOfRangeException>(value > 0, "The id is expected to be a positive value.");
-        if (_id > 0 && !_id.Equals(value)) {
-          throw new InvalidOperationException($"The value of this topic has already been set to {_id}; it cannot be changed.");
+        if (field > 0 && !field.Equals(value)) {
+          throw new InvalidOperationException($"The value of this topic has already been set to {field}; it cannot be changed.");
         }
-        _id = value;
+        field = value;
       }
-    }
+    } = -1;
 
     /*==========================================================================================================================
     | PROPERTY: PARENT

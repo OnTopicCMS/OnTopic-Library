@@ -24,9 +24,6 @@ namespace OnTopic.Internal.Reflection {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly static     List<Type>                      _listTypes                      = new();
     private readonly            ICustomAttributeProvider        _attributeProvider;
-    private readonly            Type                            _type                           = default!;
-    private                     List<Attribute>                 _customAttributes               = default!;
-    private                     ItemConfiguration?              _itemConfiguration;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -90,13 +87,13 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     public Type Type {
       get {
-        return _type?? throw new ArgumentNullException(
+        return field?? throw new ArgumentNullException(
           nameof(Type),
           $"This {nameof(Type)} property must be initialized by classes derived by {nameof(ItemMetadata)}"
         );
       }
       init {
-        _type                   = value;
+        field                   = value;
         IsNullable              = !Type.IsValueType || Nullable.GetUnderlyingType(Type) != null;
         IsList                  = isList();
         IsConvertible           = AttributeValueConverter.IsConvertible(Type);
@@ -118,8 +115,8 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     internal ItemConfiguration Configuration {
       get {
-        _itemConfiguration ??= new(this);
-        return _itemConfiguration;
+        field ??= new(this);
+        return field;
       }
     }
 
@@ -190,8 +187,8 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     internal List<Attribute> CustomAttributes {
       get {
-        _customAttributes ??= [.. _attributeProvider.GetCustomAttributes(true).OfType<Attribute>()];
-        return _customAttributes;
+        field ??= [.. _attributeProvider.GetCustomAttributes(true).OfType<Attribute>()];
+        return field;
       }
     }
 

@@ -34,11 +34,6 @@ namespace OnTopic.Mapping.Annotations {
   public sealed class MapToParentAttribute : Attribute {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string?                         _attributePrefix;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -54,10 +49,10 @@ namespace OnTopic.Mapping.Annotations {
     ///   property being annotated.
     /// </summary>
     public string? AttributePrefix {
-      get => _attributePrefix;
+      get => field;
       set {
         TopicFactory.ValidateKey(value, true);
-        _attributePrefix = value;
+        field = value;
       }
     }
 

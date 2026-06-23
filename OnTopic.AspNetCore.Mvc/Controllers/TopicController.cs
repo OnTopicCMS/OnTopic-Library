@@ -22,7 +22,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicMappingService            _topicMappingService;
-    private                     Topic?                          _currentTopic;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -68,10 +67,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>The Topic associated with the current request.</returns>
     public Topic? CurrentTopic {
       get {
-        _currentTopic ??= TopicRepository.Load(RouteData);
-        return _currentTopic;
+        field ??= TopicRepository.Load(RouteData);
+        return field;
       }
-      set => _currentTopic = value;
+      set => field = value;
     }
 
     /*==========================================================================================================================

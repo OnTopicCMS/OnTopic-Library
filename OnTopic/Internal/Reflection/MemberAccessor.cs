@@ -22,12 +22,6 @@ namespace OnTopic.Internal.Reflection {
   internal class MemberAccessor: ItemMetadata {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Action<object, object?>?        _setter;
-    private                     Func<object, object?>?          _getter;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -362,7 +356,7 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     private Func<object, object?>? Getter {
       get {
-        if (_getter is null) {
+        if (field is null) {
           var delegateType      = typeof(Func<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
           var delegateGetter    = (Delegate?)null;
           if (MemberInfo is PropertyInfo propertInfo) {
@@ -376,9 +370,9 @@ namespace OnTopic.Internal.Reflection {
             delegateGetter      = methodInfo.CreateDelegate(delegateType);
           }
           var getterWithTypes   = GetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
-          _getter               = (Func<object, object?>?)getterWithTypes.Invoke(null, [delegateGetter]);
+          field                 = (Func<object, object?>?)getterWithTypes.Invoke(null, [delegateGetter]);
         }
-        return _getter;
+        return field;
       }
     }
 
@@ -394,7 +388,7 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     private Action<object, object?>? Setter {
       get {
-        if (_setter is null) {
+        if (field is null) {
           var delegateType      = typeof(Action<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
           var delegateSetter    = (Delegate?)null;
           if (MemberInfo is PropertyInfo propertInfo) {
@@ -408,9 +402,9 @@ namespace OnTopic.Internal.Reflection {
             delegateSetter      = methodInfo.CreateDelegate(delegateType);
           }
           var setterWithTypes   = SetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
-          _setter               = (Action<object, object?>?)setterWithTypes.Invoke(null, [delegateSetter]);
+          field                 = (Action<object, object?>?)setterWithTypes.Invoke(null, [delegateSetter]);
         }
-        return _setter;
+        return field;
       }
     }
 
