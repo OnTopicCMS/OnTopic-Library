@@ -150,7 +150,10 @@ namespace OnTopic.Internal.Reflection {
         BindingFlags.Instance |
         BindingFlags.FlattenHierarchy |
         BindingFlags.Public
-      ).FirstOrDefault();
+      ).FirstOrDefault() ??
+      throw new InvalidOperationException(
+        $"The {Type.Name} type does not have a public constructor."
+      );
 
     /*==========================================================================================================================
     | HAS GETTER?
