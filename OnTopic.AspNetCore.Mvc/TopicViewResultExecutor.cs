@@ -112,10 +112,10 @@ namespace OnTopic.AspNetCore.Mvc {
           }
           var value = header.Replace("+", "-", StringComparison.Ordinal);
           if (value.Contains('/', StringComparison.Ordinal)) {
-            value = value[(value.IndexOf("/", StringComparison.Ordinal)+1)..];
+            value = value[(value.IndexOf('/', StringComparison.Ordinal)+1)..];
           }
           if (value.Contains(';', StringComparison.Ordinal)) {
-            value = value[..(value.IndexOf(";", StringComparison.Ordinal))];
+            value = value[..(value.IndexOf(';', StringComparison.Ordinal))];
           }
           if (value is not null) {
             view = viewEngine.FindView(actionContext, value, isMainPage: true);
