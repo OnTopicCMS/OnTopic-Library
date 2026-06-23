@@ -246,7 +246,7 @@ namespace OnTopic.Tests {
     [InlineData(nameof(MemberAccessorViewModel.NonNullableReferenceGetter), typeof(MemberAccessorTest))]
     [InlineData(nameof(MemberAccessorViewModel.GetMethod), 3)]
     [InlineData(nameof(MemberAccessorViewModel.ReadOnlyProperty), null)]
-    public void GetValue_Names_ReturnsResult(string name, object result) {
+    public void GetValue_Names_ReturnsResult(string name, object? result) {
 
       var sourceObject          = new MemberAccessorViewModel() {
         NonNullableProperty     = 1,

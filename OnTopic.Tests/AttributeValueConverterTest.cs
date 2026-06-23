@@ -121,7 +121,7 @@ namespace OnTopic.Tests {
     [InlineData(                1,                              "1")]
     [InlineData(                null,                           null)]
     [InlineData(                typeof(string),                 "System.String")]
-    public void Convert_FromValueType_Succeeds(object input, string? expected) =>
+    public void Convert_FromValueType_Succeeds(object? input, string? expected) =>
       Assert.Equal(expected, AttributeValueConverter.Convert(input));
 
 
