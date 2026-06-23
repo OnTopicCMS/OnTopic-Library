@@ -193,8 +193,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && current.Parent?.Id != parentId && topics.ContainsKey(parentId)) {
-        current.Parent = topics[parentId];
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var parentTopic)) {
+        current.Parent = parentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -351,8 +351,8 @@ namespace OnTopic.Data.Sql {
       var related               = (Topic?)null;
 
       // Fetch the related topic
-      if (topics.ContainsKey(targetTopicId)) {
-        related                 = topics[targetTopicId];
+      if (topics.TryGetValue(targetTopicId, out var relatedTopic)) {
+        related                 = relatedTopic;
       }
 
       // Bypass if the target object is missing
@@ -409,8 +409,8 @@ namespace OnTopic.Data.Sql {
       // Fetch the related topic
       if (targetTopicId is null) {
       }
-      else if (topics.ContainsKey(targetTopicId.Value)) {
-        referenced              = topics[targetTopicId.Value];
+      else if (topics.TryGetValue(targetTopicId.Value, out var referencedTopic)) {
+        referenced              = referencedTopic;
       }
       else {
         current.References.IsFullyLoaded = false;

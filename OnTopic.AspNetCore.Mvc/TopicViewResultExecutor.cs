@@ -105,8 +105,8 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Pull Headers
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!(view?.Success ?? false) && requestContext.Headers.ContainsKey("Accept")) {
-        foreach (var header in requestContext.Headers["Accept"]) {
+      if (!(view?.Success ?? false) && requestContext.Headers.TryGetValue("Accept", out var acceptHeaders)) {
+        foreach (var header in acceptHeaders) {
           if (header is null) {
             continue;
           }
