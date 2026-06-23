@@ -142,7 +142,7 @@ namespace OnTopic.Tests {
     public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
-      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
+      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1);
 
       Assert.NotNull(viewModel);
       Assert.Equal(3, viewModel.Children.Count);
@@ -162,8 +162,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load("Root:Web");
       var viewModel             = await _hierarchicalMappingService
-        .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith("1", StringComparison.Ordinal))
-        .ConfigureAwait(false);
+        .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith("1", StringComparison.Ordinal));
 
       Assert.NotNull(viewModel);
       Assert.Single(viewModel.Children);
@@ -189,7 +188,7 @@ namespace OnTopic.Tests {
       rootTopic.IsDisabled      = true;
       disabledTopic.IsDisabled  = true;
 
-      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
+      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1);
 
       Assert.NotNull(viewModel);
       Assert.Single(viewModel.Children);

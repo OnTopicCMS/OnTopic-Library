@@ -119,7 +119,7 @@ namespace OnTopic.Tests {
         ViewComponentContext    = _context
       };
 
-      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var result                = await viewComponent.InvokeAsync();
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
@@ -145,7 +145,7 @@ namespace OnTopic.Tests {
         ViewComponentContext    = GetViewComponentContext(webPath)
       };
 
-      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var result                = await viewComponent.InvokeAsync();
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
@@ -192,7 +192,7 @@ namespace OnTopic.Tests {
         ViewComponentContext    = _context
       };
 
-      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var result                = await viewComponent.InvokeAsync();
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
@@ -220,7 +220,7 @@ namespace OnTopic.Tests {
         ViewComponentContext    = GetViewComponentContext(webPath)
       };
 
-      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var result                = await viewComponent.InvokeAsync();
       var concreteResult        = result as ViewViewComponentResult;
       var model                 = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
@@ -248,7 +248,7 @@ namespace OnTopic.Tests {
         ViewComponentContext = GetViewComponentContext(webPath)
       };
 
-      var result = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var result = await viewComponent.InvokeAsync();
       var concreteResult = result as ViewViewComponentResult;
       var model = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 

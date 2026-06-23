@@ -70,7 +70,7 @@ namespace OnTopic.Tests {
       var controller            = new ErrorController(_topicRepository, _topicMappingService) {
         ControllerContext       = new(_context)
       };
-      var result                = await controller.HttpAsync(errorCode).ConfigureAwait(false) as TopicViewResult;
+      var result                = await controller.HttpAsync(errorCode) as TopicViewResult;
       var model                 = result?.Model as PageTopicViewModel;
 
       controller.Dispose();

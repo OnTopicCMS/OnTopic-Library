@@ -44,8 +44,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri("/Web/ContentList/?View=Accordion", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -68,8 +68,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       client.DefaultRequestHeaders.Add("Accept", "application/json, string/Accordion;level=2;q=0.4, text/html");
 
       var uri                   = new Uri("/Web/ContentList/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -90,8 +90,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var client                = _factory.CreateClient();
 
       var uri                   = new Uri("/Area/Area/Accordion", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -112,8 +112,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       var client                = _factory.CreateClient();
 
       var uri                   = new Uri("/Area/TopicWithView/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -134,8 +134,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri("/Web/ContentList/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -156,7 +156,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client = _factory.CreateClient();
       var uri = new Uri("/Web/MissingView/", UriKind.Relative);
-      var response = await client.GetAsync(uri).ConfigureAwait(false);
+      var response = await client.GetAsync(uri);
 
       Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 

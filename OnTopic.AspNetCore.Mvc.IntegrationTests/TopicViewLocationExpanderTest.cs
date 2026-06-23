@@ -64,8 +64,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri($"/Area/?View={viewName}", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 
@@ -102,8 +102,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
       var uri                   = new Uri($"/Area/Controller/{viewName}/", UriKind.Relative);
-      var response              = await client.GetAsync(uri).ConfigureAwait(false);
-      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+      var response              = await client.GetAsync(uri);
+      var content               = await response.Content.ReadAsStringAsync();
 
       response.EnsureSuccessStatusCode();
 

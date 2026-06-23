@@ -70,7 +70,7 @@ namespace OnTopic.Tests {
         ControllerContext       = _context
       };
 
-      var result                = await controller.IndexAsync(_topic.GetWebPath()).ConfigureAwait(false) as TopicViewResult;
+      var result                = await controller.IndexAsync(_topic.GetWebPath()) as TopicViewResult;
       var model                 = result?.Model as PageTopicViewModel;
 
       controller.Dispose();

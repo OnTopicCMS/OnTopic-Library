@@ -79,7 +79,7 @@ namespace OnTopic.Tests {
         IsRequired              = true
       };
 
-      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel);
 
       Assert.Equal("Test", target?.Key);
       Assert.Equal("TextAttributeDescriptor", target?.ContentType);
@@ -106,7 +106,7 @@ namespace OnTopic.Tests {
         IsRequired              = true
       };
 
-      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel);
 
       Assert.NotNull(target);
       Assert.Equal("Test", target?.Key);
@@ -145,7 +145,7 @@ namespace OnTopic.Tests {
 
       target.Attributes.SetValue("Description", "Original Description");
 
-      target                    = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+      target                    = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel, target);
 
       Assert.Equal("Test", target?.Key);
       Assert.Equal("TextAttributeDescriptor", target?.ContentType);
@@ -172,7 +172,7 @@ namespace OnTopic.Tests {
         ContentType             = "TextAttributeDescriptor"
       };
 
-      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<TextAttributeDescriptor>(bindingModel);
 
       Assert.NotNull(target);
       Assert.Equal("Test", target?.Key);
@@ -198,7 +198,7 @@ namespace OnTopic.Tests {
       bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
       bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
 
-      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel);
 
       Assert.NotNull(target);
       Assert.Equal("Jeremy", target?.Attributes.GetValue("Name"));
@@ -223,7 +223,7 @@ namespace OnTopic.Tests {
         BrowserTitle            = "Browser Title"
       };
 
-      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel);
 
       Assert.Equal("Browser Title", target?.Attributes.GetValue("MetaTitle"));
 
@@ -252,7 +252,7 @@ namespace OnTopic.Tests {
         );
       }
 
-      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic);
 
       Assert.Equal(3, target?.PermittedContentTypes.Count);
       Assert.True(target?.PermittedContentTypes.Contains(contentTypes[0]));
@@ -286,7 +286,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -314,7 +314,7 @@ namespace OnTopic.Tests {
 
       attribute3.DefaultValue   = "Original Value";
 
-      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, topic);
 
       Assert.Equal(3, target?.AttributeDescriptors.Count);
       Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
@@ -344,7 +344,7 @@ namespace OnTopic.Tests {
         }
       };
 
-      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await _mappingService.MapAsync(bindingModel);
 
       Assert.NotNull(target?.BaseTopic);
       Assert.Equal("Title", target?.BaseTopic?.Key);
@@ -376,7 +376,7 @@ namespace OnTopic.Tests {
         }
       };
 
-      await _mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      await _mappingService.MapAsync(bindingModel, topic);
 
       Assert.Null(topic.BaseTopic);
 
@@ -398,7 +398,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -419,7 +419,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -442,7 +442,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -459,7 +459,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<ValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -476,7 +476,7 @@ namespace OnTopic.Tests {
         Title                   = "Required Title"
       };
 
-      var target                = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync(bindingModel);
 
       Assert.Equal("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
@@ -497,7 +497,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync <ValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -515,7 +515,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -535,7 +535,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -553,7 +553,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -571,7 +571,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -590,7 +590,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -609,7 +609,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -628,7 +628,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -647,7 +647,7 @@ namespace OnTopic.Tests {
 
       await Assert.ThrowsAsync<MappingModelValidationException>(async () =>
         await _mappingService.MapAsync(bindingModel).ConfigureAwait(false)
-      ).ConfigureAwait(false);
+      );
 
     }
 
@@ -666,7 +666,7 @@ namespace OnTopic.Tests {
         UnmappedAttribute       = "Hello World"
       };
 
-      var target = await _mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync(bindingModel);
 
       Assert.Null(target?.Attributes.GetValue("UnmappedAttribute", null));
 
