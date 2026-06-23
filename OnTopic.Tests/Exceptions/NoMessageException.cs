@@ -17,6 +17,7 @@ namespace OnTopic {
   ///   not, it will fallback to a <see cref="ArgumentException"/>.
   /// </remarks>
   [ExcludeFromCodeCoverage]
+  [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "This exception intentionally omits the message constructor to test the fallback behavior in Contract.Requires{T}.")]
   public class NoMessageException: ArgumentException {
 
     /*==========================================================================================================================
