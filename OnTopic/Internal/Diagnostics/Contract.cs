@@ -90,7 +90,7 @@ namespace OnTopic.Internal.Diagnostics {
         throw new T();
       }
       try {
-        throw (T?)Activator.CreateInstance(typeof(T), new object[] { errorMessage })!;
+        throw (T?)Activator.CreateInstance(typeof(T), [errorMessage])!;
       }
       catch (Exception ex) when (
         ex is MissingMethodException

@@ -37,7 +37,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <summary>
     ///   Retrieves a static copy of all view locations associated with OnTopic.
     /// </summary>
-    public static IEnumerable<string> ViewLocations => new[] {
+    public static IEnumerable<string> ViewLocations => [
       "/Views/{1}/{0}.cshtml",                                  //Views/Controller/Action.cshtml
       "/Views/{3}/{0}.cshtml",                                  //Views/ContentType/View.cshtml
       "/Views/{3}/Shared/{0}.cshtml",                           //Views/ContentType/Shared/View.cshtml
@@ -46,7 +46,7 @@ namespace OnTopic.AspNetCore.Mvc {
       "/Views/ContentTypes/Shared/{0}.cshtml",                  //Views/ContentTypes/Shared/View.cshtml
       "/Views/ContentTypes/{0}.cshtml",                         //Views/ContentTypes/View.cshtml
       "/Views/Shared/{0}.cshtml",                               //Views/Shared/View.cshtml
-    };
+    ];
 
     /*==========================================================================================================================
     | PROPERTY: AREA VIEW LOCATIONS
@@ -54,7 +54,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <summary>
     ///   Retrieves a static copy of all areas view locations associated with OnTopic.
     /// </summary>
-    public static IEnumerable<string> AreaViewLocations => new[] {
+    public static IEnumerable<string> AreaViewLocations => [
       "/Areas/{2}/Views/{1}/{0}.cshtml",                        //Areas/Area/Views/Controller/Action.cshtml
       "/Areas/{2}/Views/{3}/{0}.cshtml",                        //Areas/Area/Views/ContentType/View.cshtml
       "/Areas/{2}/Views/{3}/Shared/{0}.cshtml",                 //Areas/Area/Views/ContentType/Shared/View.cshtml
@@ -63,7 +63,7 @@ namespace OnTopic.AspNetCore.Mvc {
       "/Areas/{2}/Views/ContentTypes/Shared/{0}.cshtml",        //Areas/Area/Views/ContentTypes/Shared/View.cshtml
       "/Areas/{2}/Views/ContentTypes/{0}.cshtml",               //Areas/Area/Views/ContentTypes/View.cshtml
       "/Areas/{2}/Views/Shared/{0}.cshtml",                     //Areas/Area/Views/Shared/View.cshtml
-    };
+    ];
 
     /*==========================================================================================================================
     | METHOD: POPULATE VALUES

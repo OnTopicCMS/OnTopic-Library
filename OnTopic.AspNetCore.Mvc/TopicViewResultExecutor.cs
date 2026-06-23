@@ -98,7 +98,7 @@ namespace OnTopic.AspNetCore.Mvc {
         var queryStringValue = requestContext.Query["View"].First<string>();
         if (queryStringValue is not null) {
           view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
-          searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+          searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
         }
       }
 
@@ -119,7 +119,7 @@ namespace OnTopic.AspNetCore.Mvc {
           }
           if (value is not null) {
             view = viewEngine.FindView(actionContext, value, isMainPage: true);
-            searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+            searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
           }
           if (view?.Success ?? false) {
             break;
@@ -138,8 +138,8 @@ namespace OnTopic.AspNetCore.Mvc {
       if (!view?.Success ?? true) {
         if (routeData.Values.TryGetValue("action", out var action)) {
           var actionName = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
-          view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
-          searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+            view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
+            searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
         }
       }
 
@@ -151,7 +151,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!(view?.Success ?? false) && !String.IsNullOrEmpty(topicView)) {
         view = viewEngine.FindView(actionContext, topicView, isMainPage: true);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+        searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!view?.Success ?? true) {
         view = viewEngine.FindView(actionContext, contentType, isMainPage: true);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+        searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

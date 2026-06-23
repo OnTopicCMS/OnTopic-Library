@@ -52,7 +52,7 @@ namespace OnTopic.Collections.Specialized {
     /// <returns>
     ///   Returns an enumerable list of keys.
     /// </returns>
-    public ReadOnlyCollection<string> Keys => new(Source.Select(m => m.Key).ToList());
+    public ReadOnlyCollection<string> Keys => new([.. Source.Select(m => m.Key)]);
 
     /*==========================================================================================================================
     | PROPERTY: COUNT
@@ -119,7 +119,7 @@ namespace OnTopic.Collections.Specialized {
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
     public ReadOnlyTopicCollection GetAllValues() =>
-      new(Source.SelectMany(list => list.Values).Distinct().ToList());
+      new([.. Source.SelectMany(list => list.Values).Distinct()]);
 
     /// <summary>
     ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of key, filtered by content
@@ -129,7 +129,7 @@ namespace OnTopic.Collections.Specialized {
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
     public ReadOnlyTopicCollection GetAllValues(string contentType) =>
-      new(GetAllValues().Where(t => t.ContentType == contentType).ToList());
+      new([.. GetAllValues().Where(t => t.ContentType == contentType)]);
 
     /// <inheritdoc cref="GetAllValues(String)"/>
     [ExcludeFromCodeCoverage]

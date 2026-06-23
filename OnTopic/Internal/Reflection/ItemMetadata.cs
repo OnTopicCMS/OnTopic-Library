@@ -190,7 +190,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     internal List<Attribute> CustomAttributes {
       get {
-        _customAttributes ??= _attributeProvider.GetCustomAttributes(true).OfType<Attribute>().ToList();
+        _customAttributes ??= [.. _attributeProvider.GetCustomAttributes(true).OfType<Attribute>()];
         return _customAttributes;
       }
     }
