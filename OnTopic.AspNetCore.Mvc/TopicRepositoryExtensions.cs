@@ -101,7 +101,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Clean path
       \-----------------------------------------------------------------------------------------------------------------------*/
       static string? cleanPath(string? path) => path?
-        .Trim(['/'])
+        .Trim('/')
         .Replace("//", "/", StringComparison.Ordinal)
         .Replace("/", ":", StringComparison.Ordinal);
 
