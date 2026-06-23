@@ -138,8 +138,10 @@ namespace OnTopic.AspNetCore.Mvc {
       if (!view?.Success ?? true) {
         if (routeData.Values.TryGetValue("action", out var action)) {
           var actionName = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
+          if (actionName is not null) {
             view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
             searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+          }
         }
       }
 
