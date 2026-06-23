@@ -181,7 +181,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
-    private IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
+    private List<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish return collection
