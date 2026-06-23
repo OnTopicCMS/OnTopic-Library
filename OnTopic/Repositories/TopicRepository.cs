@@ -297,7 +297,7 @@ namespace OnTopic.Repositories {
       if (unresolvedTopics.Count > 0) {
         throw new ReferentialIntegrityException(
           $"The call to ITopicRepository.Save() introduced unresolved references on {unresolvedTopics.Count} topics, " +
-          $"including '{unresolvedTopics.LastOrDefault().GetUniqueKey()}'. This is usually due to relationships or topic " +
+          $"including '{unresolvedTopics.Last().GetUniqueKey()}'. This is usually due to relationships or topic " +
           $"references outside the scope of the Save() which, themselves, have not yet been persisted to the data store. If " +
           $"this is not resolved, these items will not be correctly persisted."
         );
