@@ -541,7 +541,7 @@ namespace OnTopic {
       var uniqueKey = GetUniqueKey()
         .Replace("Root:", "/", StringComparison.Ordinal)
         .Replace(":", "/", StringComparison.Ordinal) + "/";
-      if (!uniqueKey.StartsWith("/", StringComparison.Ordinal)) {
+      if (!uniqueKey.StartsWith('/')) {
         uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
