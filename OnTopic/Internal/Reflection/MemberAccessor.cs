@@ -372,7 +372,7 @@ namespace OnTopic.Internal.Reflection {
             delegateGetter      = methodInfo.CreateDelegate(delegateType);
           }
           var getterWithTypes   = GetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType, Type);
-          _getter               = (Func<object, object?>)getterWithTypes.Invoke(null, new[] { delegateGetter });
+          _getter               = (Func<object, object?>?)getterWithTypes.Invoke(null, new[] { delegateGetter });
         }
         return _getter;
       }
@@ -400,7 +400,7 @@ namespace OnTopic.Internal.Reflection {
             delegateSetter      = methodInfo.CreateDelegate(delegateType);
           }
           var setterWithTypes   = SetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType, Type);
-          _setter               = (Action<object, object?>)setterWithTypes.Invoke(null, new[] { delegateSetter });
+          _setter               = (Action<object, object?>?)setterWithTypes.Invoke(null, new[] { delegateSetter });
         }
         return _setter;
       }
