@@ -58,6 +58,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
+    [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "This constructs a new object graph, so it isn't appropriate as a property.")]
     public static ControllerContext GetControllerContext() =>
       new(
         new() {
