@@ -238,7 +238,7 @@ namespace OnTopic.Repositories {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, nameof(topic));
-      Contract.Requires(version, nameof(version));
+      Contract.Requires(version != default, nameof(version));
       Contract.Requires<ArgumentException>(
         topic.VersionHistory.Contains(version),
         "The version requested for rollback does not exist in the version history"
