@@ -63,23 +63,29 @@ namespace OnTopic.Internal.Diagnostics {
     ) => Requires<InvalidOperationException>(isValid, errorMessage, expression);
 
     /// <summary>
-    ///   Will throw an <see cref="ArgumentNullException"/> if the supplied object is <see langword="null"/>.
+    ///   Will throw an <see cref="ArgumentNullException"/> if the supplied value is <see langword="null"/>; otherwise,
+    ///   returns the value.
     /// </summary>
+    /// <typeparam name="T">The type of value being validated.</typeparam>
     /// <param name="requiredObject">An object that is required to be provided.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     /// <param name="expression">
     ///   Automatically captures the source text of <paramref name="requiredObject"/>; used as the fallback error message when
     ///   <paramref name="errorMessage"/> is not supplied.
     /// </param>
+    /// <returns>The supplied <paramref name="requiredObject"/> when it is not <see langword="null"/>.</returns>
     /// <exception cref="ArgumentNullException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
-    public static void Requires(
-      [ValidatedNotNull, NotNull]object? requiredObject,
+    public static T Requires<T>(
+      [AllowNull, ValidatedNotNull, NotNull]T requiredObject,
       string? errorMessage = null,
       [CallerArgumentExpression(nameof(requiredObject))] string? expression = null
-    ) => Requires<ArgumentNullException>(requiredObject is not null, errorMessage, expression);
+    ) {
+      Requires<ArgumentNullException>(requiredObject is not null, errorMessage, expression);
+      return requiredObject!;
+    }
     #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
