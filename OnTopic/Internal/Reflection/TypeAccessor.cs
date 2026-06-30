@@ -41,7 +41,7 @@ namespace OnTopic.Internal.Reflection {
   ///     derived version of a member.
   ///   </para>
   /// </remarks>
-  internal class TypeAccessor {
+  internal sealed class TypeAccessor {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

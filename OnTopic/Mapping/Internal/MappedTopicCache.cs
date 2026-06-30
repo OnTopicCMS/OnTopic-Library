@@ -14,7 +14,7 @@ namespace OnTopic.Mapping.Internal {
   /// <summary>
   ///   Provides a collection intended to track local caching of objects mapped using the <see cref="TopicMappingService"/>.
   /// </summary>
-  internal class MappedTopicCache {
+  internal sealed class MappedTopicCache {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

@@ -17,7 +17,7 @@ namespace OnTopic.Collections.Specialized {
   ///   This collection does not track the values of those keys or attempt to determine if a value is dirty. It simply provides
   ///   a convenient way for other collections to track dirty keys based on their own internal logic.
   /// </remarks>
-  internal class DirtyKeyCollection : Collection<string>, ITrackDirtyKeys {
+  internal sealed class DirtyKeyCollection : Collection<string>, ITrackDirtyKeys {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

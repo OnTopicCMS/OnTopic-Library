@@ -13,7 +13,7 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   Provides metadata associated with a given parameter.
   /// </summary>
-  internal class ParameterMetadata: ItemMetadata {
+  internal sealed class ParameterMetadata: ItemMetadata {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

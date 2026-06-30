@@ -80,7 +80,7 @@ namespace OnTopic.Internal.Reflection {
   ///     the business logic has already occurred.
   ///   </para>
   /// </remarks>
-  internal class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
+  internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
     where TAttributeType: Attribute
     where TItem: TrackedRecord<TValue>
     where TValue: class

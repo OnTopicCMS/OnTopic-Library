@@ -12,7 +12,7 @@ namespace OnTopic.Data.Sql.Models {
   /// <summary>
   ///   Extends <see cref="DataTable"/> to model the schema for the <c>TopicReferences</c> user-defined table type.
   /// </summary>
-  internal class TopicReferencesDataTable: DataTable {
+  internal sealed class TopicReferencesDataTable: DataTable {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

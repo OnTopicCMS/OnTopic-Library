@@ -16,7 +16,7 @@ namespace OnTopic.Lookup {
   ///   Provides a <see cref="KeyedCollection{TKey, TItem}"/> of <see cref="Type"/> instances indexed by <see
   ///   cref="String"/>.
   /// </summary>
-  internal class TypeCollection : KeyedCollection<string, Type> {
+  internal sealed class TypeCollection : KeyedCollection<string, Type> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

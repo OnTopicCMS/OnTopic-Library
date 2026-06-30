@@ -19,7 +19,7 @@ namespace OnTopic.Internal.Reflection {
   ///   compatible with the property or method parameter type being set, nor does it make any effort to provide explicit
   ///   conversions. Those capabilities will be handled by higher-level libraries.
   /// </remarks>
-  internal class MemberAccessor: ItemMetadata {
+  internal sealed class MemberAccessor: ItemMetadata {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

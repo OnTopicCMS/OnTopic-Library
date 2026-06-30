@@ -14,7 +14,7 @@ namespace OnTopic.Data.Sql.Models {
   /// <summary>
   ///   Extends <see cref="DataTable"/> to model the schema for the <c>AttributeValues</c> user-defined table type.
   /// </summary>
-  internal class AttributeValuesDataTable: DataTable {
+  internal sealed class AttributeValuesDataTable: DataTable {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

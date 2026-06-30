@@ -21,7 +21,7 @@ namespace OnTopic.Mapping.Internal {
   ///   associations by using <see cref="AddMissingAssociations(AssociationTypes)"/>. This ensures that even if a topic has
   ///   already been mapped, its scope can be expanded without duplicating effort.
   /// </remarks>
-  internal class MappedTopicCacheEntry {
+  internal sealed class MappedTopicCacheEntry {
 
     /*==========================================================================================================================
     | PROPERTY: MAPPED TOPIC

@@ -32,7 +32,7 @@ namespace OnTopic.Mapping.Internal {
   ///     property on the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
   ///   </para>
   /// </remarks>
-  internal class ItemConfiguration {
+  internal sealed class ItemConfiguration {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
