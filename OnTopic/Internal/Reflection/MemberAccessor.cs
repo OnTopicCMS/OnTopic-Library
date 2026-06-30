@@ -358,17 +358,14 @@ namespace OnTopic.Internal.Reflection {
       get {
         if (field is null) {
           var delegateType      = typeof(Func<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
-          var delegateGetter    = (Delegate?)null;
-          if (MemberInfo is PropertyInfo propertInfo) {
-            var getMethod       = propertInfo.GetGetMethod() ??
+          var delegateGetter    = MemberInfo switch {
+            PropertyInfo propertInfo => (propertInfo.GetGetMethod() ??
               throw new InvalidOperationException(
                 $"The {propertInfo.Name} property does not have a public getter and cannot be used to retrieve a value."
-              );
-            delegateGetter      = getMethod.CreateDelegate(delegateType);
-          }
-          else if (MemberInfo is MethodInfo methodInfo) {
-            delegateGetter      = methodInfo.CreateDelegate(delegateType);
-          }
+              )).CreateDelegate(delegateType),
+            MethodInfo methodInfo => methodInfo.CreateDelegate(delegateType),
+            _                   => (Delegate?)null
+          };
           var getterWithTypes   = GetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
           field                 = (Func<object, object?>?)getterWithTypes.Invoke(null, [delegateGetter]);
         }
@@ -390,17 +387,14 @@ namespace OnTopic.Internal.Reflection {
       get {
         if (field is null) {
           var delegateType      = typeof(Action<,>).MakeGenericType(MemberInfo.DeclaringType!, Type);
-          var delegateSetter    = (Delegate?)null;
-          if (MemberInfo is PropertyInfo propertInfo) {
-            var setMethod       = propertInfo.GetSetMethod() ??
+          var delegateSetter    = MemberInfo switch {
+            PropertyInfo propertInfo => (propertInfo.GetSetMethod() ??
               throw new InvalidOperationException(
                 $"The {propertInfo.Name} property does not have a public setter and cannot be used to set a value."
-              );
-            delegateSetter      = setMethod.CreateDelegate(delegateType);
-          }
-          else if (MemberInfo is MethodInfo methodInfo) {
-            delegateSetter      = methodInfo.CreateDelegate(delegateType);
-          }
+              )).CreateDelegate(delegateType),
+            MethodInfo methodInfo => methodInfo.CreateDelegate(delegateType),
+            _                   => (Delegate?)null
+          };
           var setterWithTypes   = SetterDelegateMethod.MakeGenericMethod(MemberInfo.DeclaringType!, Type);
           field                 = (Action<object, object?>?)setterWithTypes.Invoke(null, [delegateSetter]);
         }

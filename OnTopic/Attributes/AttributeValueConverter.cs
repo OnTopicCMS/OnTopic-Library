@@ -118,38 +118,18 @@ namespace OnTopic.Attributes {
     internal static string? Convert(object? value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle null values
+      | Convert to string by type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (value is null) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle type-specific rules
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (value is string stringValue) {
-        return stringValue;
-      }
-      else if (value is bool boolValue) {
-        return boolValue ? "1" : "0";
-      }
-      else if (value is int intValue) {
-        return intValue.ToString(CultureInfo.InvariantCulture);
-      }
-      else if (value is double doubleValue) {
-        return doubleValue.ToString(CultureInfo.InvariantCulture);
-      }
-      else if (value is DateTime dateTimeValue) {
-        return dateTimeValue.ToString(CultureInfo.InvariantCulture);
-      }
-      else if (value is Uri uriValue) {
-        return uriValue.ToString();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Fallback to default
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return value.ToString();
+      return value switch {
+        null                    => null,
+        string stringValue      => stringValue,
+        bool boolValue          => boolValue ? "1" : "0",
+        int intValue            => intValue.ToString(CultureInfo.InvariantCulture),
+        double doubleValue      => doubleValue.ToString(CultureInfo.InvariantCulture),
+        DateTime dateTimeValue  => dateTimeValue.ToString(CultureInfo.InvariantCulture),
+        Uri uriValue            => uriValue.ToString(),
+        _                       => value.ToString()
+      };
 
     }
 

@@ -350,12 +350,8 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle type conversion
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue is not null) {
-        switch (memberAccessor.Type.Name) {
-          case nameof(Boolean):
-            attributeValue = attributeValue is "True" ? "1" : "0";
-            break;
-        }
+      if (attributeValue is not null && memberAccessor.Type.Name is nameof(Boolean)) {
+        attributeValue          = attributeValue is "True" ? "1" : "0";
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
