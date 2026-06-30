@@ -186,9 +186,14 @@ namespace OnTopic.Data.Sql {
     public override Topic Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Normalize parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      version                     = NormalizeToUtc(version);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
       Contract.Requires(
         version.Date >= new DateTime(2014, 12, 9),
         "The version is expected to have been created since version support was introduced into the topic library."
@@ -293,11 +298,16 @@ namespace OnTopic.Data.Sql {
     public override void Refresh(Topic referenceTopic, DateTime since) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Normalize parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      since                       = NormalizeToUtc(since);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(referenceTopic, "A referenceTopic from the topic graph must be provided.");
       Contract.Requires(
-        since.Date >= DateTime.Now.AddHours(-24),
+        since.Date >= DateTime.UtcNow.AddHours(-24),
         "The since date is expected to be within the last twenty four hours."
       );
 

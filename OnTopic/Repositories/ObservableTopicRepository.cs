@@ -263,5 +263,20 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public abstract void Delete(Topic topic, bool isRecursive = false);
 
+    /*==========================================================================================================================
+    | METHOD: NORMALIZE TO UTC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Normalizes a <see cref="DateTime"/> value to UTC by converting local time or tagging unspecified kind as UTC.
+    /// </summary>
+    /// <remarks>
+    ///   Incoming <see cref="DateTime"/> arguments whose <see cref="DateTime.Kind"/> is <see cref="DateTimeKind.Unspecified"/>
+    ///   are assumed to already represent UTC; only the tag is updated, not the ticks. Callers are expected to pass UTC values;
+    ///   this helper defends against the common case where the caller omits the kind.
+    /// </remarks>
+    /// <param name="value">The <see cref="DateTime"/> value to normalize.</param>
+    protected static DateTime NormalizeToUtc(DateTime value) =>
+      value.Kind is DateTimeKind.Local? value.ToUniversalTime() : DateTime.SpecifyKind(value, DateTimeKind.Utc);
+
   } //Class
 } //Namespace
