@@ -60,7 +60,7 @@ namespace OnTopic.Tests {
     [Fact]
     public void Requires_ObjectIsNull_ThrowArgumentNullException() =>
       Assert.Throws<ArgumentNullException>(() =>
-        Contract.Requires(null, "The argument cannot be null")
+        Contract.Requires((object?)null, "The argument cannot be null")
       );
 
     /*==========================================================================================================================
