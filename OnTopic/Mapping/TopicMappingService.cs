@@ -22,27 +22,20 @@ namespace OnTopic.Mapping {
   ///   Provides a concrete implementation of the <see cref="ITopicMappingService"/> for mapping <see cref="Topic"/> instances
   ///   to data transfer objects (such as view models) based on set conventions and attribute-based hints.
   /// </summary>
-  public class TopicMappingService : ITopicMappingService {
+  /// <param name="topicRepository">
+  ///   An instance of an <see cref="ITopicRepository"/> for looking up associated topics during mapping.
+  /// </param>
+  /// <param name="typeLookupService">
+  ///   An instance of an <see cref="ITypeLookupService"/> for resolving view model types by name.
+  /// </param>
+  public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) : ITopicMappingService {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository;
-    readonly                    ITypeLookupService              _typeLookupService;
+    readonly                    ITopicRepository                _topicRepository                = Contract.Requires(topicRepository);
+    readonly                    ITypeLookupService              _typeLookupService              = Contract.Requires(typeLookupService);
     static readonly             TypeAccessor                    _topicTypeAccessor              = TypeAccessorCache.GetTypeAccessor<Topic>();
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
-    /// </summary>
-    public TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
-      Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
-      Contract.Requires(typeLookupService, "An instance of an ITypeLookupService is required.");
-      _topicRepository = topicRepository;
-      _typeLookupService = typeLookupService;
-    }
 
     /*==========================================================================================================================
     | METHOD: MAP (DYNAMIC)

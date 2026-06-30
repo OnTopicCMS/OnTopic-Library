@@ -19,26 +19,15 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///   permanent references to page, therefore, the <see cref="RedirectController"/> accepts paths based on the <see
   ///   cref="Topic.Id"/>, which is expected to be stable for the lifetime of a <see cref="Topic"/> entity.
   /// </remarks>
-  public class RedirectController : Controller {
+  /// <param name="topicRepository">
+  ///   An implementation of an <see cref="ITopicRepository"/> to retrieve the current <see cref="Topic"/> from.
+  /// </param>
+  public class RedirectController(ITopicRepository topicRepository) : Controller {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _topicRepository;
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of a Topic Controller with necessary dependencies.
-    /// </summary>
-    /// <param name="topicRepository">
-    ///   An implementation of an <see cref="ITopicRepository"/> to retrieve the current <see cref="Topic"/> from.
-    /// </param>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
-    public RedirectController(ITopicRepository topicRepository) : base() {
-      _topicRepository          = topicRepository;
-    }
+    private readonly            ITopicRepository                _topicRepository                = topicRepository;
 
     /*==========================================================================================================================
     | REDIRECT

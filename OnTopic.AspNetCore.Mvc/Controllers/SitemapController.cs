@@ -33,12 +33,15 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///     can be modified by updating the static <see cref="ExcludedAttributes"/> collection.
   ///   </para>
   /// </remarks>
-  public class SitemapController : Controller {
+  /// <param name="topicRepository">
+  ///   The <see cref="ITopicRepository"/> used to retrieve <see cref="Topic"/> instances for the sitemap.
+  /// </param>
+  public class SitemapController(ITopicRepository topicRepository) : Controller {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _topicRepository;
+    private readonly            ITopicRepository                _topicRepository                = Contract.Requires(topicRepository);
 
     /*==========================================================================================================================
     | CONSTANTS
@@ -83,27 +86,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       "NoIndex",
       "SortOrder"
     };
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of a Topic Controller with necessary dependencies.
-    /// </summary>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
-    public SitemapController(ITopicRepository topicRepository) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository, nameof(topicRepository));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set dependencies
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository = topicRepository;
-
-    }
 
     /*==========================================================================================================================
     | GET: /SITEMAP

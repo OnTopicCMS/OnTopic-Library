@@ -15,39 +15,19 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
+  /// <param name="topicRepository">
+  ///   A concrete implementation of an <see cref="ITopicRepository"/> for loading topics.
+  /// </param>
+  /// <param name="topicMappingService">
+  ///   A concrete implementation of an <see cref="ITopicMappingService"/> for mapping topics to view models.
+  /// </param>
   [TopicResponseCache]
-  public class TopicController : Controller {
+  public class TopicController(ITopicRepository topicRepository, ITopicMappingService topicMappingService) : Controller {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicMappingService            _topicMappingService;
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of a Topic Controller with necessary dependencies.
-    /// </summary>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(
-      ITopicRepository topicRepository,
-      ITopicMappingService topicMappingService
-     ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(topicMappingService, "A concrete implementation of an ITopicMappingService is required.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set values locally
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicRepository = topicRepository;
-      _topicMappingService = topicMappingService;
-
-    }
+    private readonly            ITopicMappingService            _topicMappingService            = Contract.Requires(topicMappingService);
 
     /*==========================================================================================================================
     | TOPIC REPOSITORY
@@ -56,7 +36,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected internal ITopicRepository TopicRepository { get; }
+    protected internal ITopicRepository TopicRepository { get; } = Contract.Requires(topicRepository);
 
     /*==========================================================================================================================
     | CURRENT TOPIC

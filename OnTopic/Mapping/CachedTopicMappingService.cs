@@ -15,28 +15,20 @@ namespace OnTopic.Mapping {
   ///   Provides a caching interface for an underlying <see cref="ITopicMappingService"/>, by caching entire mapped object
   ///   graphs based on the <see cref="Topic.Id"/> of the root topic.
   /// </summary>
-  public class CachedTopicMappingService : ITopicMappingService {
+  /// <param name="topicMappingService">
+  ///   The underlying <see cref="ITopicMappingService"/> to delegate topic mapping to.
+  /// </param>
+  public class CachedTopicMappingService(ITopicMappingService topicMappingService) : ITopicMappingService {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicMappingService            _topicMappingService;
+    private readonly            ITopicMappingService            _topicMappingService            = Contract.Requires(topicMappingService);
 
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly ConcurrentDictionary<(int, Type?, AssociationTypes), object> _cache = new();
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="CachedTopicMappingService"/> with required dependencies.
-    /// </summary>
-    public CachedTopicMappingService(ITopicMappingService topicMappingService) {
-      Contract.Requires(topicMappingService, "An instance of topicMappingService is required.");
-      _topicMappingService = topicMappingService;
-    }
 
     /*==========================================================================================================================
     | METHOD: MAP

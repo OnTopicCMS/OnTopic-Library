@@ -31,7 +31,13 @@ namespace OnTopic.Mapping.Hierarchical {
   ///   </para>
   /// </remarks>
   /// <typeparam name="T">A view model implementing the <see cref="IHierarchicalTopicViewModel{T}"/> interface.</typeparam>
-  public class HierarchicalTopicMappingService<T>
+  /// <param name="topicRepository">
+  ///   The <see cref="ITopicRepository"/> for loading topics to map.
+  /// </param>
+  /// <param name="topicMappingService">
+  ///   The <see cref="ITopicMappingService"/> for mapping individual <see cref="Topic"/> instances.
+  /// </param>
+  public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository, ITopicMappingService topicMappingService)
     : IHierarchicalTopicMappingService<T>
     where T : class, IHierarchicalTopicViewModel<T>, new()
   {
@@ -39,22 +45,7 @@ namespace OnTopic.Mapping.Hierarchical {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicMappingService            _topicMappingService;
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of a <see cref="HierarchicalTopicMappingService{T}"/> with necessary dependencies.
-    /// </summary>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
-    public HierarchicalTopicMappingService(
-      ITopicRepository topicRepository,
-      ITopicMappingService topicMappingService
-    ) {
-      TopicRepository           = topicRepository;
-      _topicMappingService      = topicMappingService;
-    }
+    private readonly            ITopicMappingService            _topicMappingService            = topicMappingService;
 
     /*==========================================================================================================================
     | TOPIC REPOSITORY
@@ -63,7 +54,7 @@ namespace OnTopic.Mapping.Hierarchical {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    private ITopicRepository TopicRepository { get; }
+    private ITopicRepository TopicRepository { get; } = topicRepository;
 
     /*==========================================================================================================================
     | GET HIERARCHICAL ROOT
