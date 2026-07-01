@@ -8,6 +8,7 @@ indent_style = tab
 indent_size = 16
 
 [*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
 
 # CA1859: Use concrete types when possible for improved performance
 # Interface usage in this codebase is deliberate—e.g., to express a shared

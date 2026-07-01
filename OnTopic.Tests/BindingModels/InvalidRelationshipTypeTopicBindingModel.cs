@@ -5,25 +5,24 @@
 \=============================================================================================================================*/
 using OnTopic.ViewModels.BindingModels;
 
-namespace OnTopic.Tests.BindingModels {
+namespace OnTopic.Tests.BindingModels;
 
-  /*============================================================================================================================
-  | BINDING MODEL: RELATIONSHIP TYPE TOPIC (INVALID)
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Provides a custom binding model with an invalid <see cref="CollectionType"/>—i.e., it refers to <see cref="
-  ///   CollectionType.NestedTopics"/>, even though the property is associated with a <see cref="CollectionType.Relationship"/>.
-  ///   An <see cref="InvalidOperationException"/> should be thrown when it is mapped.
-  /// </summary>
-  /// <remarks>
-  ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
-  /// </remarks>
-  public class InvalidRelationshipTypeTopicBindingModel : BasicTopicBindingModel {
+/*==============================================================================================================================
+| BINDING MODEL: RELATIONSHIP TYPE TOPIC (INVALID)
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides a custom binding model with an invalid <see cref="CollectionType"/>—i.e., it refers to <see cref="
+///   CollectionType.NestedTopics"/>, even though the property is associated with a <see cref="CollectionType.Relationship"/>.
+///   An <see cref="InvalidOperationException"/> should be thrown when it is mapped.
+/// </summary>
+/// <remarks>
+///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+/// </remarks>
+public class InvalidRelationshipTypeTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidRelationshipTypeTopicBindingModel(string key) : base(key, "ContentTypeDescriptor") { }
+  public InvalidRelationshipTypeTopicBindingModel(string key) : base(key, "ContentTypeDescriptor") { }
 
-    [Collection(CollectionType.NestedTopics)]
-    public Collection<AssociatedTopicBindingModel> ContentTypes { get; } = new();
+  [Collection(CollectionType.NestedTopics)]
+  public Collection<AssociatedTopicBindingModel> ContentTypes { get; } = new();
 
-  } //Class
-} //Namespace
+} //Class

@@ -6,66 +6,65 @@
 using System.Reflection;
 using OnTopic.Lookup;
 
-namespace OnTopic.ViewModels {
+namespace OnTopic.ViewModels;
+
+/*==============================================================================================================================
+| CLASS: TYPE INDEX
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="TopicViewModelLookupService"/> can be configured to provide a lookup of .
+/// </summary>
+public class TopicViewModelLookupService : StaticTypeLookupService {
 
   /*============================================================================================================================
-  | CLASS: TYPE INDEX
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="TopicViewModelLookupService"/> can be configured to provide a lookup of .
+  ///   Establishes a new instance of a <see cref="DefaultTopicLookupService"/>. Optionally accepts a list of <see
+  ///   cref="Type"/> instances and a default <see cref="Type"/> value.
   /// </summary>
-  public class TopicViewModelLookupService : StaticTypeLookupService {
+  /// <remarks>
+  ///   Any <see cref="Type"/> instances submitted via <paramref name="types"/> should be unique by <see
+  ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
+  /// </remarks>
+  /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
+  public TopicViewModelLookupService(IEnumerable<Type>? types = null) : base(types) {
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure local view models are accounted for
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="DefaultTopicLookupService"/>. Optionally accepts a list of <see
-    ///   cref="Type"/> instances and a default <see cref="Type"/> value.
-    /// </summary>
-    /// <remarks>
-    ///   Any <see cref="Type"/> instances submitted via <paramref name="types"/> should be unique by <see
-    ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
-    /// </remarks>
-    /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    public TopicViewModelLookupService(IEnumerable<Type>? types = null) : base(types) {
+    TryAdd(typeof(ContentListTopicViewModel));
+    TryAdd(typeof(IndexTopicViewModel));
+    TryAdd(typeof(NavigationTopicViewModel));
+    TryAdd(typeof(PageGroupTopicViewModel));
+    TryAdd(typeof(PageTopicViewModel));
+    TryAdd(typeof(SectionTopicViewModel));
+    TryAdd(typeof(SlideshowTopicViewModel));
+    TryAdd(typeof(TopicViewModel));
+    TryAdd(typeof(VideoTopicViewModel));
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure local view models are accounted for
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      TryAdd(typeof(ContentListTopicViewModel));
-      TryAdd(typeof(IndexTopicViewModel));
-      TryAdd(typeof(NavigationTopicViewModel));
-      TryAdd(typeof(PageGroupTopicViewModel));
-      TryAdd(typeof(PageTopicViewModel));
-      TryAdd(typeof(SectionTopicViewModel));
-      TryAdd(typeof(SlideshowTopicViewModel));
-      TryAdd(typeof(TopicViewModel));
-      TryAdd(typeof(VideoTopicViewModel));
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add item types
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    TryAdd(typeof(ItemTopicViewModel));
+    TryAdd(typeof(ContentItemTopicViewModel));
+    TryAdd(typeof(CacheProfileTopicViewModel));
+    TryAdd(typeof(LookupListItemTopicViewModel));
+    TryAdd(typeof(SlideTopicViewModel));
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add item types
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      TryAdd(typeof(ItemTopicViewModel));
-      TryAdd(typeof(ContentItemTopicViewModel));
-      TryAdd(typeof(CacheProfileTopicViewModel));
-      TryAdd(typeof(LookupListItemTopicViewModel));
-      TryAdd(typeof(SlideTopicViewModel));
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add obsolete types
+    >-------------------------------------------------------------------------------------------------------------------------
+    | These will be removed in the next major version of OnTopic.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    #pragma warning disable CS0618 // Type is obsolete; retained for backward compatibility until the next major version
+    TryAdd(typeof(ListTopicViewModel));
+    #pragma warning restore CS0618
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add obsolete types
-      >-------------------------------------------------------------------------------------------------------------------------
-      | These will be removed in the next major version of OnTopic.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      #pragma warning disable CS0618 // Type is obsolete; retained for backward compatibility until the next major version
-      TryAdd(typeof(ListTopicViewModel));
-      #pragma warning restore CS0618
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add support types
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add support types
-      \-----------------------------------------------------------------------------------------------------------------------*/
+  }
 
-    }
-
-  } //Class
-} //Namespace
+} //Class

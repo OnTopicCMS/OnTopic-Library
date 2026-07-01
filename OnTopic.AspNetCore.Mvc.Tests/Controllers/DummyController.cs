@@ -5,15 +5,14 @@
 \=============================================================================================================================*/
 using Microsoft.AspNetCore.Mvc;
 
-namespace OnTopic.AspNetCore.Mvc.Controllers {
+namespace OnTopic.AspNetCore.Mvc.Controllers;
 
-  /*============================================================================================================================
-  | CLASS: DUMMY CONTROLLER
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Provides a barebones controller without any actions to act as a stand-in for unit tests.
-  /// </summary>
-  public class DummyController : Controller {
+/*==============================================================================================================================
+| CLASS: DUMMY CONTROLLER
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides a barebones controller without any actions to act as a stand-in for unit tests.
+/// </summary>
+public class DummyController :  Controller {
 
-  } //Class
-} //Namespace
+} //Class

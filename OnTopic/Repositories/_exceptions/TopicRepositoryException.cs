@@ -5,45 +5,44 @@
 \=============================================================================================================================*/
 using System.Data.Common;
 
-namespace OnTopic.Repositories {
+namespace OnTopic.Repositories;
+
+/*==============================================================================================================================
+| CLASS: TOPIC REPOSITORY EXCEPTION
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="TopicRepositoryException"/> provides a general exception that can be thrown for any persistence errors
+///   that arise from concrete <see cref="ITopicRepository"/> implementations.
+/// </summary>
+/// <remarks>
+///   Microsoft provides a set of <see cref="DbException"/> classes, such as <c>SqlException</c>, which are specific to their
+///   target implementations. Since <see cref="ITopicRepository"/>, however, is intended to be database agnostic, none of
+///   these are appropriate to catch when implementing <see cref="ITopicRepository"/>. Instead, the <see
+///   cref="TopicRepositoryException"/> provides a database agnostic version of an exception that can provide a wrapper around
+///   any of these more concrete exceptions.
+/// </remarks>
+[ExcludeFromCodeCoverage]
+public class TopicRepositoryException : DbException {
 
   /*============================================================================================================================
-  | CLASS: TOPIC REPOSITORY EXCEPTION
+  | CONSTRUCTOR: TOPIC REPOSITORY EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="TopicRepositoryException"/> provides a general exception that can be thrown for any persistence errors
-  ///   that arise from concrete <see cref="ITopicRepository"/> implementations.
+  ///   Initializes a new <see cref="TopicRepositoryException" /> instance.
   /// </summary>
-  /// <remarks>
-  ///   Microsoft provides a set of <see cref="DbException"/> classes, such as <c>SqlException</c>, which are specific to their
-  ///   target implementations. Since <see cref="ITopicRepository"/>, however, is intended to be database agnostic, none of
-  ///   these are appropriate to catch when implementing <see cref="ITopicRepository"/>. Instead, the <see
-  ///   cref="TopicRepositoryException"/> provides a database agnostic version of an exception that can provide a wrapper around
-  ///   any of these more concrete exceptions.
-  /// </remarks>
-  [ExcludeFromCodeCoverage]
-  public class TopicRepositoryException : DbException {
+  public TopicRepositoryException() : base() { }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR: TOPIC REPOSITORY EXCEPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new <see cref="TopicRepositoryException" /> instance.
-    /// </summary>
-    public TopicRepositoryException() : base() { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message.
+  /// </summary>
+  /// <param name="message">The message to display for this exception.</param>
+  public TopicRepositoryException(string message) : base(message) { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message.
-    /// </summary>
-    /// <param name="message">The message to display for this exception.</param>
-    public TopicRepositoryException(string message) : base(message) { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message and nested exception.
+  /// </summary>
+  /// <param name="message">The message to display for this exception.</param>
+  /// <param name="innerException">The reference to the original, underlying exception.</param>
+  public TopicRepositoryException(string message, Exception innerException) : base(message, innerException) { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message and nested exception.
-    /// </summary>
-    /// <param name="message">The message to display for this exception.</param>
-    /// <param name="innerException">The reference to the original, underlying exception.</param>
-    public TopicRepositoryException(string message, Exception innerException) : base(message, innerException) { }
-
-  } //Class
-} //Namespace
+} //Class

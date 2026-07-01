@@ -4,35 +4,34 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
-namespace OnTopic.Mapping.Annotations {
+namespace OnTopic.Mapping.Annotations;
+
+/*==============================================================================================================================
+| ATTRIBUTE: FOLLOW
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <inheritdoc cref="IncludeAttribute"/>
+[ExcludeFromCodeCoverage]
+[AttributeUsage(AttributeTargets.Property)]
+[Obsolete($"The {nameof(FollowAttribute)} has been renamed to {nameof(IncludeAttribute)}.", true)]
+public sealed class FollowAttribute : Attribute {
 
   /*============================================================================================================================
-  | ATTRIBUTE: FOLLOW
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <inheritdoc cref="IncludeAttribute"/>
-  [ExcludeFromCodeCoverage]
-  [AttributeUsage(AttributeTargets.Property)]
-  [Obsolete($"The {nameof(FollowAttribute)} has been renamed to {nameof(IncludeAttribute)}.", true)]
-  public sealed class FollowAttribute : Attribute {
+  /// <summary>
+  ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="relationships"/>.
+  /// </summary>
+  /// <param name="relationships">The specific relationships that should be crawled.</param>
+  public FollowAttribute(Relationships relationships) {
+    Relationships = relationships;
+  }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="relationships"/>.
-    /// </summary>
-    /// <param name="relationships">The specific relationships that should be crawled.</param>
-    public FollowAttribute(Relationships relationships) {
-      Relationships = relationships;
-    }
+  /*============================================================================================================================
+  | PROPERTY: RELATIONSHIPS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Gets the type(s) of relationships that should be recursed over.
+  /// </summary>
+  public Relationships Relationships { get; }
 
-    /*==========================================================================================================================
-    | PROPERTY: RELATIONSHIPS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the type(s) of relationships that should be recursed over.
-    /// </summary>
-    public Relationships Relationships { get; }
-
-  } //Class
-} //Namespace
+} //Class

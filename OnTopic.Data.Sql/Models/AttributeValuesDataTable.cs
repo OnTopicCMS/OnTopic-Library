@@ -6,73 +6,73 @@
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 
-namespace OnTopic.Data.Sql.Models {
+namespace OnTopic.Data.Sql.Models;
+
+/*==============================================================================================================================
+| CLASS: ATTRIBUTE VALUES (DATA TABLE)
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Extends <see cref="DataTable"/> to model the schema for the <c>AttributeValues</c> user-defined table type.
+/// </summary>
+internal sealed class AttributeValuesDataTable: DataTable {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUES (DATA TABLE)
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Extends <see cref="DataTable"/> to model the schema for the <c>AttributeValues</c> user-defined table type.
+  ///   Establishes a new <see cref="DataTable"/> with the appropriate schema for the <c>AttributeValues</c> user-defined
+  ///   table type.
   /// </summary>
-  internal sealed class AttributeValuesDataTable: DataTable {
+  internal AttributeValuesDataTable() {
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | COLUMN: Attribute Key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new <see cref="DataTable"/> with the appropriate schema for the <c>AttributeValues</c> user-defined
-    ///   table type.
-    /// </summary>
-    internal AttributeValuesDataTable() {
+    Columns.Add(
+      new DataColumn("AttributeKey") {
+        MaxLength               = 128
+      }
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | COLUMN: Attribute Key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(
-        new DataColumn("AttributeKey") {
-          MaxLength             = 128
-        }
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | COLUMN: Attribute Value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(
-        new DataColumn("AttributeRecord") {
-          MaxLength             = 255
-        }
-      );
-
-    }
-
-    /*==========================================================================================================================
-    | ADD ROW
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | COLUMN: Attribute Value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
-    /// </summary>
-    /// <param name="attributeKey">The <see cref="TrackedRecord{T}.Key"/>.</param>
-    /// <param name="attributeValue">The <see cref="TrackedRecord{T}.Value"/>.</param>
-    internal DataRow AddRow(string attributeKey, string? attributeValue = null) {
+    Columns.Add(
+      new DataColumn("AttributeRecord") {
+        MaxLength               = 255
+      }
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var record                = NewRow();
-      record["AttributeKey"]    = attributeKey;
-      record["AttributeRecord"]  = attributeValue;
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Rows.Add(record);
+  /*============================================================================================================================
+  | ADD ROW
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
+  /// </summary>
+  /// <param name="attributeKey">The <see cref="TrackedRecord{T}.Key"/>.</param>
+  /// <param name="attributeValue">The <see cref="TrackedRecord{T}.Value"/>.</param>
+  internal DataRow AddRow(string attributeKey, string? attributeValue = null) {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return record;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Define record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var record                  = NewRow();
+    record["AttributeKey"]      = attributeKey;
+    record["AttributeRecord"]   = attributeValue;
 
-    }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Rows.Add(record);
 
-  } //Class
-} //Namespaces
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Return record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return record;
+
+  }
+
+} //Class
+//Namespaces

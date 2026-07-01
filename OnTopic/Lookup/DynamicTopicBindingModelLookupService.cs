@@ -5,24 +5,23 @@
 \=============================================================================================================================*/
 using OnTopic.Models;
 
-namespace OnTopic.Lookup {
+namespace OnTopic.Lookup;
+
+/*==============================================================================================================================
+| CLASS: DYNAMIC TOPIC BINDING MODEL LOOKUP SERVICE
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="DynamicTopicBindingModelLookupService"/> will search all assemblies for <see cref="Type"/>s that
+///   implement <see cref="ITopicBindingModel"/>.
+/// </summary>
+public class DynamicTopicBindingModelLookupService : DynamicTypeLookupService {
 
   /*============================================================================================================================
-  | CLASS: DYNAMIC TOPIC BINDING MODEL LOOKUP SERVICE
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="DynamicTopicBindingModelLookupService"/> will search all assemblies for <see cref="Type"/>s that
-  ///   implement <see cref="ITopicBindingModel"/>.
+  ///   Establishes a new instance of a <see cref="DynamicTopicBindingModelLookupService"/>.
   /// </summary>
-  public class DynamicTopicBindingModelLookupService : DynamicTypeLookupService {
+  public DynamicTopicBindingModelLookupService() : base(t => typeof(ITopicBindingModel).IsAssignableFrom(t)) { }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="DynamicTopicBindingModelLookupService"/>.
-    /// </summary>
-    public DynamicTopicBindingModelLookupService() : base(t => typeof(ITopicBindingModel).IsAssignableFrom(t)) { }
-
-  } //Class
-} //Namespace
+} //Class

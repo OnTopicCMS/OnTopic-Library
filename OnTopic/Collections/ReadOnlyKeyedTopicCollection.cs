@@ -4,25 +4,24 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
-namespace OnTopic.Collections {
+namespace OnTopic.Collections;
+
+/*==============================================================================================================================
+| CLASS: READ-ONLY KEYED TOPIC COLLECTION
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Represents a collection of <see cref="Topic"/> objects.
+/// </summary>
+public class ReadOnlyKeyedTopicCollection : ReadOnlyKeyedTopicCollection<Topic> {
 
   /*============================================================================================================================
-  | CLASS: READ-ONLY KEYED TOPIC COLLECTION
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents a collection of <see cref="Topic"/> objects.
+  ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection"/> based on an existing <see cref="KeyedTopicCollection"/>.
   /// </summary>
-  public class ReadOnlyKeyedTopicCollection : ReadOnlyKeyedTopicCollection<Topic> {
+  /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection"/>.</param>
+  public ReadOnlyKeyedTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection) {
+  }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection"/> based on an existing <see cref="KeyedTopicCollection"/>.
-    /// </summary>
-    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection"/>.</param>
-    public ReadOnlyKeyedTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection) {
-    }
-
-  } //Class
-} //Namespace
+} //Class

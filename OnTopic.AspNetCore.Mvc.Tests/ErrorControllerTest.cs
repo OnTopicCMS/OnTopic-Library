@@ -12,73 +12,72 @@ using OnTopic.Mapping;
 using OnTopic.Repositories;
 using OnTopic.ViewModels;
 
-namespace OnTopic.Tests {
+namespace OnTopic.Tests;
+
+/*==============================================================================================================================
+| CLASS: ERROR CONTROLLER TEST
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides unit tests for the <see cref="ErrorController"/>.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public class ErrorControllerTest: IClassFixture<TestTopicRepository> {
 
   /*============================================================================================================================
-  | CLASS: ERROR CONTROLLER TEST
+  | PRIVATE VARIABLES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  readonly                      ITopicRepository                _topicRepository;
+  readonly                      ITopicMappingService            _topicMappingService;
+  readonly                      ControllerContext               _context;
+
+  /*============================================================================================================================
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="ErrorController"/>.
+  ///   Initializes a new instance of the <see cref="ErrorControllerTest"/> with shared resources.
   /// </summary>
-  [ExcludeFromCodeCoverage]
-  public class ErrorControllerTest: IClassFixture<TestTopicRepository> {
+  /// <remarks>
+  ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
+  ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
+  ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
+  ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
+  ///   tests.
+  /// </remarks>
+  public ErrorControllerTest(TestTopicRepository topicRepository) {
 
-    /*==========================================================================================================================
-    | PRIVATE VARIABLES
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository;
-    readonly                    ITopicMappingService            _topicMappingService;
-    readonly                    ControllerContext               _context;
+    _topicRepository            = new CachedTopicRepository(topicRepository);
+    _topicMappingService        = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
+    _context                    = FakeControllerContext.GetControllerContext("Error");
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="ErrorControllerTest"/> with shared resources.
-    /// </summary>
-    /// <remarks>
-    ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
-    ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
-    ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
-    ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
-    ///   tests.
-    /// </remarks>
-    public ErrorControllerTest(TestTopicRepository topicRepository) {
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish dependencies
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(topicRepository);
-      _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
-      _context                  = FakeControllerContext.GetControllerContext("Error");
+  /*============================================================================================================================
+  | TEST: ERROR CONTROLLER: HTTP: RETURNS EXPECTED ERROR
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Triggers the <see cref="ErrorController.HttpAsync(Int32, Boolean)" /> action with different status codes, and ensures
+  ///   that the expected <see cref="Topic"/> is returned in the <see cref="TopicViewResult"/>.
+  /// </summary>
+  [Theory]
+  [InlineData(405, "405")]                               // Exact match
+  [InlineData(412, "400")]                               // Fallback to category
+  [InlineData(512, "Error")]                             // Fallback to root topic
+  public async Task ErrorController_Http_ReturnsExpectedError(int errorCode, string expectedContent) {
 
-    }
+    var controller              = new ErrorController(_topicRepository, _topicMappingService) {
+      ControllerContext         = new(_context)
+    };
+    var result                  = await controller.HttpAsync(errorCode) as TopicViewResult;
+    var model                   = result?.Model as PageTopicViewModel;
 
-    /*==========================================================================================================================
-    | TEST: ERROR CONTROLLER: HTTP: RETURNS EXPECTED ERROR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Triggers the <see cref="ErrorController.HttpAsync(Int32, Boolean)" /> action with different status codes, and ensures
-    ///   that the expected <see cref="Topic"/> is returned in the <see cref="TopicViewResult"/>.
-    /// </summary>
-    [Theory]
-    [InlineData(405, "405")]                               // Exact match
-    [InlineData(412, "400")]                               // Fallback to category
-    [InlineData(512, "Error")]                             // Fallback to root topic
-    public async Task ErrorController_Http_ReturnsExpectedError(int errorCode, string expectedContent) {
+    controller.Dispose();
 
-      var controller            = new ErrorController(_topicRepository, _topicMappingService) {
-        ControllerContext       = new(_context)
-      };
-      var result                = await controller.HttpAsync(errorCode) as TopicViewResult;
-      var model                 = result?.Model as PageTopicViewModel;
+    Assert.NotNull(result);
+    Assert.Equal(expectedContent, model?.Title);
 
-      controller.Dispose();
+  }
 
-      Assert.NotNull(result);
-      Assert.Equal(expectedContent, model?.Title);
-
-    }
-
-  } //Class
-} //Namespace
+} //Class

@@ -5,26 +5,25 @@
 \=============================================================================================================================*/
 using OnTopic.Metadata;
 
-namespace OnTopic.Lookup {
+namespace OnTopic.Lookup;
+
+/*==============================================================================================================================
+| CLASS: DYNAMIC TOPIC LOOKUP SERVICE
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="DynamicTopicLookupService"/> will search all assemblies for <see cref="Type"/>s that derive from <see
+///   cref="Topic"/>.
+/// </summary>
+public class DynamicTopicLookupService : DynamicTypeLookupService {
 
   /*============================================================================================================================
-  | CLASS: DYNAMIC TOPIC LOOKUP SERVICE
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="DynamicTopicLookupService"/> will search all assemblies for <see cref="Type"/>s that derive from <see
-  ///   cref="Topic"/>.
+  ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
   /// </summary>
-  public class DynamicTopicLookupService : DynamicTypeLookupService {
+  public DynamicTopicLookupService() : base(
+    t => typeof(Topic).IsAssignableFrom(t)
+  ) { }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
-    /// </summary>
-    public DynamicTopicLookupService() : base(
-      t => typeof(Topic).IsAssignableFrom(t)
-    ) { }
-
-  } //Class
-} //Namespace
+} //Class

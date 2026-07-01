@@ -5,60 +5,59 @@
 \=============================================================================================================================*/
 using System.Data.Common;
 
-namespace OnTopic.Repositories {
+namespace OnTopic.Repositories;
+
+/*==============================================================================================================================
+| CLASS: TOPIC NOT FOUND EXCEPTION
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="TopicNotFoundException"/> will be thrown when a topic is requested from the repository, but one cannot be
+///   found and there is not a logical fallback.
+/// </summary>
+/// <remarks>
+///   As the <see cref="TopicNotFoundException"/> derives from both <see cref="TopicRepositoryException"/> and <see
+///   cref="DbException"/>, it retains compatability with previous exception handling, while offering callers the option of
+///   capturing a more specific error for this individual use case.
+/// </remarks>
+[ExcludeFromCodeCoverage]
+public class TopicNotFoundException: TopicRepositoryException {
 
   /*============================================================================================================================
-  | CLASS: TOPIC NOT FOUND EXCEPTION
+  | CONSTRUCTOR: TOPIC NOT FOUND EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="TopicNotFoundException"/> will be thrown when a topic is requested from the repository, but one cannot be
-  ///   found and there is not a logical fallback.
+  ///   Initializes a new <see cref="TopicNotFoundException" /> instance.
   /// </summary>
-  /// <remarks>
-  ///   As the <see cref="TopicNotFoundException"/> derives from both <see cref="TopicRepositoryException"/> and <see
-  ///   cref="DbException"/>, it retains compatability with previous exception handling, while offering callers the option of
-  ///   capturing a more specific error for this individual use case.
-  /// </remarks>
-  [ExcludeFromCodeCoverage]
-  public class TopicNotFoundException: TopicRepositoryException {
+  public TopicNotFoundException() : base() { }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR: TOPIC NOT FOUND EXCEPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new <see cref="TopicNotFoundException" /> instance.
-    /// </summary>
-    public TopicNotFoundException() : base() { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic ID.
+  /// </summary>
+  /// <param name="topicId">The requested <see cref="Topic.Id"/> which cannot be found.</param>
+  public TopicNotFoundException(int topicId):
+    base($"The topic {topicId}  cannot be found in the repository.") { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic ID.
-    /// </summary>
-    /// <param name="topicId">The requested <see cref="Topic.Id"/> which cannot be found.</param>
-    public TopicNotFoundException(int topicId):
-      base($"The topic {topicId} cannot be found in the repository.") { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic ID.
+  /// </summary>
+  /// <param name="topicId">The requested <see cref="Topic.Id"/> which cannot be found.</param>
+  /// <param name="innerException">The reference to the original, underlying exception.</param>
+  public TopicNotFoundException(int topicId, Exception innerException):
+    base($"The topic {topicId}  cannot be found in the repository.", innerException) { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic ID.
-    /// </summary>
-    /// <param name="topicId">The requested <see cref="Topic.Id"/> which cannot be found.</param>
-    /// <param name="innerException">The reference to the original, underlying exception.</param>
-    public TopicNotFoundException(int topicId, Exception innerException):
-      base($"The topic {topicId} cannot be found in the repository.", innerException) { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic key.
+  /// </summary>
+  /// <param name="topicKey">The requests <see cref="Topic.Key"/> which cannot be found.</param>
+  public TopicNotFoundException(string? topicKey):
+    base($"The topic {topicKey} cannot be found in the repository.") { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic key.
-    /// </summary>
-    /// <param name="topicKey">The requests <see cref="Topic.Key"/> which cannot be found.</param>
-    public TopicNotFoundException(string? topicKey):
-      base($"The topic {topicKey} cannot be found in the repository.") { }
+  /// <summary>
+  ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic key.
+  /// </summary>
+  /// <param name="topicKey">The requests <see cref="Topic.Key"/> which cannot be found.</param>
+  /// <param name="innerException">The reference to the original, underlying exception.</param>
+  public TopicNotFoundException(string? topicKey, Exception innerException):
+    base($"The topic {topicKey} cannot be found in the repository.", innerException) { }
 
-    /// <summary>
-    ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic key.
-    /// </summary>
-    /// <param name="topicKey">The requests <see cref="Topic.Key"/> which cannot be found.</param>
-    /// <param name="innerException">The reference to the original, underlying exception.</param>
-    public TopicNotFoundException(string? topicKey, Exception innerException):
-      base($"The topic {topicKey} cannot be found in the repository.", innerException) { }
-
-  } //Class
-} //Namespace
+} //Class
