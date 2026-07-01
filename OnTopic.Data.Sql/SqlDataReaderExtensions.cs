@@ -357,7 +357,7 @@ internal static class SqlDataReaderExtensions {
 
     // Bypass if the target object is missing
     if (related is null) {
-      current.Relationships.IsFullyLoaded = false;
+      current.Relationships.LoadState = LoadState.NotLoaded;
       return;
     }
 
@@ -413,7 +413,7 @@ internal static class SqlDataReaderExtensions {
       referenced                = referencedTopic;
     }
     else {
-      current.References.IsFullyLoaded = false;
+      current.References.LoadState = LoadState.NotLoaded;
       return;
     }
 

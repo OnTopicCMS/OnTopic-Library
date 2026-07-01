@@ -153,7 +153,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic?.Id);
     Assert.Equal(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
-    Assert.True(topic?.Relationships.IsFullyLoaded);
+    Assert.Equal(LoadState.Loaded, topic?.Relationships.LoadState);
 
   }
 
@@ -161,9 +161,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: NOT FULLY LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.IsFullyLoaded"
-  ///   /> returns <c>false</c>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
+  ///   "RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/>
+  ///   returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
@@ -182,7 +182,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.Relationships);
-    Assert.False(topic.Relationships.IsFullyLoaded);
+    Assert.Equal(LoadState.NotLoaded, topic.Relationships.LoadState);
 
   }
 
@@ -241,7 +241,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic?.Id);
     Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
-    Assert.True(topic?.References.IsFullyLoaded);
+    Assert.Equal(LoadState.Loaded, topic?.References.LoadState);
     Assert.False(topic?.References.IsDirty());
 
   }
@@ -273,7 +273,7 @@ public class SqlTopicRepositoryTest {
     tableReader.LoadTopicGraph(referenceTopic, false);
 
     Assert.Null(referenceTopic.References.GetValue("Reference"));
-    Assert.True(referenceTopic.References.IsFullyLoaded);
+    Assert.Equal(LoadState.Loaded, referenceTopic.References.LoadState);
 
   }
 
@@ -281,9 +281,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.IsFullyLoaded
-  ///   "/> returns <c>false</c>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
+  ///   "TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.LoadState"/>
+  ///   returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
@@ -302,7 +302,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.References);
-    Assert.False(topic.References.IsFullyLoaded);
+    Assert.Equal(LoadState.NotLoaded, topic.References.LoadState);
 
   }
 

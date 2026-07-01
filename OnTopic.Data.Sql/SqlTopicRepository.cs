@@ -253,8 +253,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     catch (SqlException exception) {
       if (topic is not null) {
-        topic.Relationships.IsFullyLoaded = false;
-        topic.References.IsFullyLoaded = false;
+        topic.Relationships.LoadState = LoadState.NotLoaded;
+        topic.References.LoadState = LoadState.NotLoaded;
       }
       throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
     }
@@ -657,7 +657,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
         command.AddParameter("RelationshipKey", key);
         command.AddParameter("RelatedTopics", targetIds);
         command.AddParameter("Version", version);
-        command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
+        command.AddParameter("DeleteUnmatched", topic.Relationships.LoadState is LoadState.Loaded);
 
         command.ExecuteNonQuery();
 
@@ -713,7 +713,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
       command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
       command.AddParameter("ReferencedTopics", references);
       command.AddParameter("Version", version);
-      command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
+      command.AddParameter("DeleteUnmatched", topic.References.LoadState is LoadState.Loaded);
 
       command.ExecuteNonQuery();
 

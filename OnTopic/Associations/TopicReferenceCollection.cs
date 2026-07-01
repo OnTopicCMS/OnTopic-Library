@@ -75,7 +75,10 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   ///     back to a valid <see cref="Topic"/> reference in memory.
   ///   </para>
   /// </remarks>
-  public bool IsFullyLoaded {   get; set; } = true;
+  public bool IsFullyLoaded {
+    get => LoadState is LoadState.Loaded;
+    set => LoadState = value? LoadState.Loaded : LoadState.NotLoaded;
+  }
 
   /*============================================================================================================================
   | INSERT ITEM
