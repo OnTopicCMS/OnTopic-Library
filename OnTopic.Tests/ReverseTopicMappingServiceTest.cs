@@ -478,7 +478,7 @@ public class ReverseTopicMappingServiceTest {
 
     var target                  = await _mappingService.MapAsync(bindingModel);
 
-    Assert.Equal("Default page  description", target?.Attributes.GetValue("MetaDescription"));
+    Assert.Equal("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
   }
 
