@@ -137,7 +137,7 @@ namespace OnTopic.Collections {
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true)
        => throw new NotImplementedException();
 
@@ -168,7 +168,7 @@ namespace OnTopic.Collections {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     internal string? GetValue(string name, string? defaultValue, bool inheritFromParent, int maxHops)
       => throw new NotImplementedException();
 

@@ -48,7 +48,7 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (DYNAMIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [return: NotNullIfNotNull("topic")]
+    [return: NotNullIfNotNull(nameof(topic))]
     public async Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All) =>
       await MapAsync(topic, associations, new()).ConfigureAwait(false);
 

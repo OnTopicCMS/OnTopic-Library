@@ -75,7 +75,7 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     /// </summary>
     /// <inheritdoc cref="CurrentWebPath"/>
     [ExcludeFromCodeCoverage]
-    [Obsolete($"The {nameof(CurrentKey)} property has been replaced in favor of {nameof(CurrentWebPath)}.", true)]
+    [Obsolete($"The CurrentKey property has been replaced in favor of {nameof(CurrentWebPath)}.", true)]
     public string CurrentKey { get; set; } = default!;
 
   } //Class

@@ -29,7 +29,6 @@ namespace OnTopic.ViewModels {
     /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
     public TopicViewModel(AttributeDictionary attributes) {
       Contract.Requires(attributes, nameof(attributes));
-      IsHidden                  = attributes.GetBoolean("IsHidden")?? IsHidden;
       View                      = attributes.GetValue("View");
     }
 
@@ -90,7 +89,7 @@ namespace OnTopic.ViewModels {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    [Obsolete($"The {nameof(IsHidden)} property is no longer supported by {nameof(TopicViewModel)}.", true)]
+    [Obsolete($"The IsHidden property is no longer supported by {nameof(TopicViewModel)}.", true)]
     [DisableMapping]
     public bool IsHidden { get; init; }
 

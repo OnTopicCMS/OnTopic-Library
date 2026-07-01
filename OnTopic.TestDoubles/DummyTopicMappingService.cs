@@ -33,7 +33,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [return: NotNullIfNotNull("topic")]
+    [return: NotNullIfNotNull(nameof(topic))]
     public async Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All)
       => throw new NotImplementedException();
 

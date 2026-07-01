@@ -62,7 +62,7 @@ namespace OnTopic.Lookup {
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
     [ExcludeFromCodeCoverage]
     [Obsolete(
-      $"The {nameof(DefaultType)} property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
+      $"The DefaultType property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
       true
     )]
     public StaticTypeLookupService(
@@ -80,7 +80,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     [ExcludeFromCodeCoverage]
     [Obsolete(
-      $"The {nameof(DefaultType)} property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
+      $"The DefaultType property has been removed. Fallbacks types can now be added to {nameof(Lookup)} directly.",
       true
     )]
     public Type? DefaultType { get; }
