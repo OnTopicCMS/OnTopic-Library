@@ -65,7 +65,10 @@ IF @DeepLoad = 1
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT TOPIC ONLY
+-- SELECT TOPIC AND ANCESTOR CHAIN
+--------------------------------------------------------------------------------------------------------------------------------
+-- Ancestors are rows whose nested-set range contains the requested node's RangeLeft, i.e., the mirror of the descendant query
+-- above. This guarantees the full parent chain is always materialized, even on a shallow (non-recursive) load.
 --------------------------------------------------------------------------------------------------------------------------------
 ELSE
   BEGIN
@@ -73,10 +76,15 @@ ELSE
 	  TopicID,
 	  SortOrder
 	)
-    SELECT	TopicID,
-	1
-    FROM	Topics
-    WHERE	TopicID		= @TopicID
+    SELECT	T1.TopicID,
+	T1.RangeLeft
+    FROM	Topics		AS T1
+    INNER JOIN	Topics		AS T2
+    ON	T2.RangeLeft
+      BETWEEN	T1.RangeLeft
+        AND	T1.RangeRight
+      AND	T2.TopicID		= @TopicID
+    ORDER BY	T1.RangeLeft
     OPTION (
       OPTIMIZE
       FOR (	@TopicID		UNKNOWN
