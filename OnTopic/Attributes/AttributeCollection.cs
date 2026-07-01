@@ -58,6 +58,22 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
     AssociatedTopic.BaseTopic?.Attributes;
 
   /*============================================================================================================================
+  | PROPERTY: LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
+  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
+  /// </summary>
+  /// <remarks>
+  ///   Defaults to <see cref="LoadState.Loaded"/>. When a topic is loaded without extended attributes (e.g., on a shallow
+  ///   load), the repository conditionally sets this to <see cref="LoadState.NotLoaded"/> to indicate that the extended
+  ///   attribute blob has not yet been retrieved. The persistence store may optionally provide an indicator of the count
+  ///   without returning the full data, thus allowing this to be set to <see cref="LoadState.Loaded"/> if, in fact, there are
+  ///   no extended attributes. Indexed attributes are never deferred regardless of this state.
+  /// </remarks>
+  public LoadState LoadState { get; set; } = LoadState.Loaded;
+
+  /*============================================================================================================================
   | METHOD: IS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

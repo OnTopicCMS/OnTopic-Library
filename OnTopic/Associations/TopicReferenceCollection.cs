@@ -40,6 +40,22 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     AssociatedTopic.BaseTopic?.References;
 
   /*============================================================================================================================
+  | PROPERTY: LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
+  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
+  /// </summary>
+  /// <remarks>
+  ///   Defaults to <see cref="LoadState.Loaded"/>. The repository sets this to <see cref="LoadState.NotLoaded"/> when any
+  ///   referenced topic cannot be resolved to an in-memory instance during load. The persistence store may optionally
+  ///   provide an indicator of the count without returning the full data, thus allowing this to be set to <see cref=
+  ///   "LoadState.Loaded"/> if, in fact, there are no topic references. While in that state, the <see cref="ITopicRepository"/>
+  ///   will not delete unmatched references on save, preventing unintended data loss.
+  /// </remarks>
+  public LoadState LoadState {   get; set; } = LoadState.Loaded;
+
+  /*============================================================================================================================
   | IS FULLY LOADED?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
