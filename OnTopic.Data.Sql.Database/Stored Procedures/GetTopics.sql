@@ -6,8 +6,14 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[GetTopics]
-	@TopicID		INT	= -1,
-	@DeepLoad		BIT	= 1,
+	@TopicID		INT		= -1,
+	@LoadDescendants	BIT		= 1,
+	@LoadAscendants		BIT		= 0,
+	@IncludeIndexed		BIT		= 1,
+	@IncludeExtended	BIT		= 1,
+	@IncludeRelationships	BIT		= 1,
+	@IncludeReferences	BIT		= 1,
+	@IncludeHistory		BIT		= 1,
 	@UniqueKey		NVARCHAR(255)	= NULL
 AS
 
@@ -42,7 +48,7 @@ CLUSTERED INDEX	IX_C_Topics_TopicID
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC AND DESCENDENTS
 --------------------------------------------------------------------------------------------------------------------------------
-IF @DeepLoad = 1
+IF @LoadDescendants = 1
   BEGIN
     INSERT	#Topics (
 	  TopicID,
@@ -70,7 +76,7 @@ IF @DeepLoad = 1
 -- Ancestors are rows whose nested-set range contains the requested node's RangeLeft, i.e., the mirror of the descendant query
 -- above. This guarantees the full parent chain is always materialized, even on a shallow (non-recursive) load.
 --------------------------------------------------------------------------------------------------------------------------------
-ELSE
+ELSE IF @LoadAscendants = 1
   BEGIN
     INSERT	#Topics (
 	  TopicID,
@@ -90,6 +96,22 @@ ELSE
       FOR (	@TopicID		UNKNOWN
       )
     )
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SELECT SINGLE TOPIC (NO SCOPE)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Inserts only the requested topic; used by the lazy-load resolver to fill a single topic's extended attributes without
+-- traversing the tree in either direction.
+--------------------------------------------------------------------------------------------------------------------------------
+ELSE
+  BEGIN
+    INSERT	#Topics (
+	  TopicID,
+	  SortOrder
+	)
+    SELECT	@TopicID,
+	0
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -115,6 +137,7 @@ SELECT	Attributes.TopicID,
 FROM	AttributeIndex		AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
+WHERE	@IncludeIndexed		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT EXTENDED ATTRIBUTES
@@ -125,6 +148,7 @@ SELECT	Attributes.TopicID,
 FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
+WHERE	@IncludeExtended	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
@@ -136,6 +160,7 @@ SELECT	Source_TopicID,
 FROM	RelationshipIndex	AS Relationships
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
+WHERE	@IncludeRelationships	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT REFERENCES
@@ -146,6 +171,7 @@ SELECT	Source_TopicID,
 FROM	ReferenceIndex		AS TopicReferences
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= TopicReferences.Source_TopicID
+WHERE	@IncludeReferences	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
@@ -154,4 +180,5 @@ SELECT	History.TopicID,
 	Version
 FROM	VersionHistoryIndex	AS History
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= History.TopicID;
+  ON	Storage.TopicID		= History.TopicID
+WHERE	@IncludeHistory		= 1;
