@@ -30,6 +30,7 @@ public class Topic: ITrackDirtyKeys {
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
   readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
+  internal                      ITopicLoadResolver?             _resolver;
 
   /*============================================================================================================================
   | CONSTRUCTOR

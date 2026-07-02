@@ -111,7 +111,10 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Save(Topic topic, bool isRecursive = false) => TopicRepository.Save(topic, isRecursive);
+  public override void Save(Topic topic, bool isRecursive = false) {
+    TopicRepository.Save(topic, isRecursive);
+    StampResolver(topic);
+  }
 
   /*============================================================================================================================
   | METHOD: MOVE
