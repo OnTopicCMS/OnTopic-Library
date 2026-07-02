@@ -6,6 +6,7 @@
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -520,12 +521,58 @@ public class TopicTest {
     var topic                   = new Topic("Topic", "Page");
 
     topic.Attributes.SetValue("Attribute", "Test");
-
     topic.MarkClean("Attribute", true);
     topic.MarkClean(true);
 
     Assert.True(topic.IsDirty());
     Assert.True(topic.IsDirty("Attribute", true));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: NULL RESOLVER: DOES NOT THROW
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> on an in-memory topic with no resolver and confirms it completes
+  ///   without throwing.
+  /// </summary>
+  [Fact]
+  public void EnsureLoaded_NullResolver_DoesNotThrow() {
+    var topic                   = new Topic("Topic", "Page");
+    topic.EnsureLoaded(LoadBoundaries.All);
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: IS NEW: DOES NOT INVOKE RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> on a new topic (no <see cref="Topic.Id"/>) that has a resolver
+  ///   stamped on it and confirms the resolver is not invoked.
+  /// </summary>
+  /// <remarks>
+  ///   A new topic may carry a resolver if it was created as a child of a loaded node; it must not trigger a fill until it has
+  ///   been persisted and has a stable <see cref="Topic.Id"/>.
+  /// </remarks>
+  [Fact]
+  public void EnsureLoaded_IsNew_DoesNotInvokeResolver() {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish variables
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var topic                   = new Topic("Topic", "Page"); // Id = -1 → IsNew = true
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish tracking resolver
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var tracker                 = new TrackingTopicLoadResolver();
+    topic._resolver             = tracker;
+    topic.Children.LoadState    = LoadState.NotLoaded;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Verify resolver is not called
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    topic.EnsureLoaded(LoadBoundaries.Children);
+    Assert.False(tracker.WasCalled);
 
   }
 
