@@ -162,6 +162,45 @@ public class Topic: ITrackDirtyKeys {
   public KeyedTopicCollection   Children { get; }
 
   /*============================================================================================================================
+  | METHOD: IS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns <see langword="true"/> if every boundary flag in <paramref name="boundaries"/> has already been fetched from
+  ///   the underlying persistence store; <see langword="false"/> if any one of them are <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Reads each collection's <see cref="LoadState"/> directly without touching any autoloading getter, making it safe to
+  ///   use in traversal and "gating" logic that should not trigger lazy-loading.
+  /// </remarks>
+  /// <param name="boundaries">One or more <see cref="LoadBoundaries"/> flags to test.</param>
+  public bool IsLoaded(LoadBoundaries boundaries) {
+
+    // Children
+    if (boundaries.HasFlag(LoadBoundaries.Children) && Children.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Extended Attributes
+    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Relationships
+    if (boundaries.HasFlag(LoadBoundaries.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // References
+    if (boundaries.HasFlag(LoadBoundaries.References) && References.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Unexpected
+    return true;
+
+  }
+
+  /*============================================================================================================================
   | PROPERTY: CONTENT TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
