@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 
@@ -96,6 +97,32 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
       a.IsDirty &&
       (!excludeLastModified ||  !a.Key.StartsWith("LastModified", StringComparison.OrdinalIgnoreCase))
     );
+
+  /*============================================================================================================================
+  | METHOD: GET VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves the value associated with the specified <paramref name="key"/>, autoloading the extended-attribute blob if the
+  ///   key is not yet loaded and the extended-attribute boundary is <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Indexed attributes are always loaded in the local collection; the autoload is skipped for them. A deferred key that has
+  ///   never been fetched triggers a single synchronous blob fill through the stamped resolver; all subsequent reads find the
+  ///   boundary <see cref="LoadState.Loaded"/> and return immediately without an additional round-trip.
+  /// </remarks>
+  /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+  /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+  /// <param name="inheritFromParent">
+  ///   Determines if the value should be inherited from the parent topic when not found locally.
+  /// </param>
+  /// <param name="maxHops">The maximum number of ancestor hops when inheriting from parent topics.</param>
+  [return: NotNullIfNotNull(nameof(defaultValue))]
+  internal override string? GetValue(string key, string? defaultValue, bool inheritFromParent, int maxHops) {
+    if (LoadState is LoadState.NotLoaded && !Contains(key)) {
+      AssociatedTopic.EnsureLoaded(LoadBoundaries.ExtendedAttributes);
+    }
+    return base.GetValue(key, defaultValue, inheritFromParent, maxHops);
+  }
 
   /*============================================================================================================================
   | METHOD: SET VALUE
