@@ -6,10 +6,11 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
-using OnTopic.Associations;
+using OnTopic.Repositories;
 
 namespace OnTopic;
 
@@ -198,6 +199,114 @@ public class Topic: ITrackDirtyKeys {
 
     // Unexpected
     return true;
+
+  }
+
+  /*============================================================================================================================
+  | METHODS: ENSURE LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Ensures each requested <paramref name="boundaries"/> flag has been retrieved, while fetching and merging whichever of
+  ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those already are. Returns immediately if the
+  ///   resolver is absent or the topic is new.
+  /// </summary>
+  /// <remarks>
+  ///   The synchronous form backs the autoloading property getters (e.g., the <see cref="Children"/> getter); the asynchronous
+  ///   form is for callers, such as a mapping or navigation service, that need to prepopulate one or more boundaries before
+  ///   accessing them, thus avoiding a synchronous block on a "cold" node. A flag call lets those callers request everything a
+  ///   node's mapping needs in a single round trip.
+  /// </remarks>
+  /// <param name="boundaries">
+  ///   One or more <see cref="LoadBoundaries"/> flags identifying the boundaries that should be ensured to be loaded.
+  /// </param>
+  public void EnsureLoaded(LoadBoundaries boundaries) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip for obvious reasons
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (_resolver is null || IsNew) {
+      return;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to boundaries that are not yet loaded
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (IsLoaded(LoadBoundaries.Children)) {
+      boundaries                &= ~LoadBoundaries.Children;
+    }
+
+    // ExtendedAttributes
+    if (IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // Relationships
+    if (IsLoaded(LoadBoundaries.Relationships)) {
+      boundaries                &= ~LoadBoundaries.Relationships;
+    }
+
+    // References
+    if (IsLoaded(LoadBoundaries.References)) {
+      boundaries                &= ~LoadBoundaries.References;
+    }
+
+    // None
+    if (boundaries is LoadBoundaries.None) {
+      return;
+    }
+
+    // Ensure the appropriate boundaries are loaded
+    _resolver.EnsureLoaded(this, boundaries);
+
+  }
+
+  /// <inheritdoc cref="EnsureLoaded(LoadBoundaries)"/>
+  /// <param name="boundaries">
+  ///   One or more <see cref="LoadBoundaries"/> flags identifying the boundaries that should be ensured to be loaded.
+  /// </param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
+  public Task EnsureLoadedAsync(LoadBoundaries boundaries, CancellationToken cancellationToken = default) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip for obvious reasons
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (_resolver is null || IsNew) {
+      return Task.CompletedTask;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to boundaries that are not yet loaded
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (IsLoaded(LoadBoundaries.Children)) {
+      boundaries                &= ~LoadBoundaries.Children;
+    }
+
+    // Extended Attributes
+    if (IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // Relationships
+    if (IsLoaded(LoadBoundaries.Relationships)) {
+      boundaries                &= ~LoadBoundaries.Relationships;
+    }
+
+    // References
+    if (IsLoaded(LoadBoundaries.References)) {
+      boundaries                &= ~LoadBoundaries.References;
+    }
+
+    // None
+    if (boundaries is LoadBoundaries.None) {
+      return Task.CompletedTask;
+    }
+
+    // Ensure the appropriate boundaries are loaded
+    return _resolver.EnsureLoadedAsync(this, boundaries, cancellationToken);
 
   }
 
