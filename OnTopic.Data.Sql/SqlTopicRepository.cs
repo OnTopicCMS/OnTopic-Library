@@ -21,7 +21,7 @@ namespace OnTopic.Data.Sql;
 /// <remarks>
 ///   Concrete implementation of the <see cref="ITopicRepository"/> class.
 /// </remarks>
-public class SqlTopicRepository : TopicRepository, ITopicRepository {
+public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadResolver {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -342,6 +342,70 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     catch (SqlException exception) {
       throw new TopicRepositoryException($"Topics failed to update: '{exception.Message}'", exception);
     }
+
+  }
+
+  /*============================================================================================================================
+  | METHODS: TOPIC LOAD RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to pending (not yet Loaded) boundaries
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (topic.IsLoaded(LoadBoundaries.Children)) {
+      boundaries                &= ~LoadBoundaries.Children;
+    }
+
+    // Extended Attributes
+    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // None
+    if (boundaries is 0) {
+      return;
+    }
+
+  }
+
+  /// <inheritdoc />
+  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to pending (not yet Loaded) boundaries
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (topic.IsLoaded(LoadBoundaries.Children)) {
+      boundaries                &= ~LoadBoundaries.Children;
+    }
+
+    // Extended Attributes
+    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // None
+    if (boundaries is 0) {
+      return Task.CompletedTask;
+    }
+
+    return Task.CompletedTask;
 
   }
 

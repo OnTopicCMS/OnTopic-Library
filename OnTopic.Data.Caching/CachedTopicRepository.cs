@@ -20,7 +20,7 @@ namespace OnTopic.Data.Caching;
 ///   for an actual data access class.
 /// </remarks>
 
-public class CachedTopicRepository : TopicRepositoryDecorator {
+public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolver {
 
   /*============================================================================================================================
   | VARIABLES
@@ -116,6 +116,67 @@ public class CachedTopicRepository : TopicRepositoryDecorator {
     | Return appropriate topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     return TopicRepository.Load(topicId, version, referenceTopic?? _cache);
+  /*============================================================================================================================
+  | METHODS: TOPIC LOAD RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to pending (not yet loaded) boundaries
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (topic.IsLoaded(LoadBoundaries.Children)) {
+      boundaries                &= ~LoadBoundaries.Children;
+    }
+
+    // Extended Attributes
+    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // None
+    if (boundaries is 0) {
+      return;
+    }
+
+  }
+
+  /// <inheritdoc />
+  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to pending (i.e., not yet Loaded) boundaries
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    // Children
+    if (topic.IsLoaded(LoadBoundaries.Children)) {
+      boundaries &= ~LoadBoundaries.Children;
+    }
+
+    // Extended Attributes
+    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
+      boundaries &= ~LoadBoundaries.ExtendedAttributes;
+    }
+
+    // None
+    if (boundaries is 0) {
+      return Task.CompletedTask;
+    }
+
+    return Task.CompletedTask;
 
   }
 

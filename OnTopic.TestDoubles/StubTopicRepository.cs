@@ -23,7 +23,7 @@ namespace OnTopic.TestDoubles;
 ///   dependency on a live database or persistent data.
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public class StubTopicRepository : TopicRepository, ITopicRepository {
+public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoadResolver {
 
   /*============================================================================================================================
   | VARIABLES
@@ -165,6 +165,38 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
       topic.Id = _identity++;
     }
 
+  }
+
+  /*============================================================================================================================
+  | METHODS: TOPIC LOAD RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Stub topics always have their children fully populated in memory. For extended attributes, the boundary is promoted to
+  ///   <see cref="LoadState.Loaded"/> without merging real blob data, allowing tests to exercise the fill path without a live
+  ///   database.
+  /// </remarks>
+  /// <inheritdoc />
+  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Mark extended attribute boundary as loaded; this is a no-op for children, as it's already populated in the stubs
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
+      topic.Attributes.LoadState = LoadState.Loaded;
+    }
+
+  }
+
+  /// <inheritdoc />
+  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+    EnsureLoaded(topic, boundaries);
+    return Task.CompletedTask;
   }
 
   /*============================================================================================================================
