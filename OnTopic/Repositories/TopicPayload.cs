@@ -7,21 +7,22 @@
 namespace OnTopic.Repositories;
 
 /*==============================================================================================================================
-| ENUM: LOAD BOUNDARIES
+| ENUM: TOPIC PAYLOAD
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Identifies one or more deferred boundaries on a <see cref="Topic"/> that have not yet been retrieved from the underlying
-///   <see cref="ITopicRepository"/>. Used by <see cref="ITopicLoadResolver"/> to specify which boundaries to ensure are loaded.
+///   Specifies which data ensure is loaded on a <see cref="Topic"/>. Used as a parameter on <see cref="ITopicRepository"/>'s
+///   <c>Load()</c> overloads to control how much data is fetched in the first place, and on <see cref="ITopicLoadResolver"/>'s
+///   <c>Ensure()</c> method to specify which previously deferred data to fill on demand.
 /// </summary>
 [Flags]
-public enum LoadBoundaries {
+public enum TopicPayload {
 
   /*----------------------------------------------------------------------------------------------------------------------------
   | NONE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   No boundaries are requested. Passing this value to <see cref="ITopicLoadResolver.EnsureLoaded"/> will result in nothing
-  ///   being loaded.
+  ///   No additional payload is requested. Indexed attributes are always returned as part of the base graph; this value
+  ///   represents the lean baseline, with all available by specifying the additional values.
   /// </summary>
   None                          = 0,
 
@@ -38,8 +39,7 @@ public enum LoadBoundaries {
   | EXTENDED ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The topic's extended attributes have not been fetched. Accessing a deferred attribute on <see cref="Topic.Attributes"/>
-  ///   will trigger an on-demand load of the entire extended attributes blob for the topic.
+  ///   Extended attributes are loaded alongside the indexed attributes.
   /// </summary>
   ExtendedAttributes            = 2,
 
@@ -47,8 +47,7 @@ public enum LoadBoundaries {
   | RELATIONSHIPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The topic's relationship targets have not been fully resolved. Accessing <see cref="Topic.Relationships"/> will trigger
-  ///   an on-demand load of all relationships associated with the topic.
+  ///   Relationship targets are included.
   /// </summary>
   Relationships                 = 4,
 
@@ -56,8 +55,7 @@ public enum LoadBoundaries {
   | REFERENCES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The topic's reference targets have not been fully resolved. Accessing <see cref="Topic.References"/> will trigger an
-  ///   on-demand load of all references associated with the topic.
+  ///   Topic reference targets are included.
   /// </summary>
   References                    = 8,
 
@@ -65,8 +63,7 @@ public enum LoadBoundaries {
   | ALL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   All four deferred boundaries. Passing this flag to <see cref="ITopicLoadResolver.EnsureLoaded"/> ensures that every
-  ///   deferred boundary on the topic is populated.
+  ///   All payload data. This ensures a comprehensive loading of all available data.
   /// </summary>
   All                           = Children | ExtendedAttributes | Relationships | References,
 

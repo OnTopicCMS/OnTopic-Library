@@ -363,7 +363,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -389,7 +389,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Children not yet implemented; guard before opening a connection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(LoadBoundaries.Children)) {
+    if (boundaries.HasFlag(TopicPayload.Children)) {
       throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
     }
 
@@ -401,7 +401,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       CommandType               = CommandType.StoredProcedure
     };
 
-    // Set the stored procedure parameters based on the LoadBoundaries enum values
+    // Set the stored procedure parameters based on the TopicPayload enum values
     AddEnsureLoadedParameters(command, topic.Id, boundaries);
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -453,7 +453,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   }
 
   /// <inheritdoc />
-  public virtual async Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+  public virtual async Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -479,7 +479,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Children not yet implemented; guard before opening a connection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(LoadBoundaries.Children)) {
+    if (boundaries.HasFlag(TopicPayload.Children)) {
       throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
     }
 
@@ -491,7 +491,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       CommandType               = CommandType.StoredProcedure
     };
 
-    // Set the stored procedure parameters based on the LoadBoundaries enum values
+    // Set the stored procedure parameters based on the TopicPayload enum values
     AddEnsureLoadedParameters(command, topic.Id, boundaries);
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -577,7 +577,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!extendedBoundaryLoaded) {
       if (extendedAttributeList.Any(a => a.IsDirty)) {
-        EnsureLoaded(topic, LoadBoundaries.ExtendedAttributes);
+        EnsureLoaded(topic, TopicPayload.ExtendedAttributes);
         extendedBoundaryLoaded  = true;
         extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
       }
@@ -841,20 +841,20 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   ///   Marks each boundary in <paramref name="boundaries"/> as <see cref="LoadState.Loaded"/> on the given
   ///   <paramref name="topic"/> after a successful resolver fill.
   /// </summary>
-  private static void MarkBoundariesLoaded(Topic topic, LoadBoundaries boundaries) {
+  private static void MarkBoundariesLoaded(Topic topic, TopicPayload boundaries) {
 
     // Extended attributes
-    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes)) {
+    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes)) {
       topic.Attributes.LoadState = LoadState.Loaded;
     }
 
     // Relationships
-    if (boundaries.HasFlag(LoadBoundaries.Relationships)) {
+    if (boundaries.HasFlag(TopicPayload.Relationships)) {
       topic.Relationships.LoadState = LoadState.Loaded;
     }
 
     // References
-    if (boundaries.HasFlag(LoadBoundaries.References)) {
+    if (boundaries.HasFlag(TopicPayload.References)) {
       topic.References.LoadState = LoadState.Loaded;
     }
 
@@ -868,11 +868,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   ///   setting the payload parameters based on the requested <paramref name="boundaries"/>.
   /// </summary>
   /// <remarks>
-  ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. History
-  ///   is never a lazy-load boundary and so is always excluded. Indexed attributes are only requested when filling the <see
-  ///   cref="LoadBoundaries.Children"/> boundary.
+  ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. <see
+  ///   cref="TopicPayload.History"/> is hardcoded to <c>false</c> here because its fill path is not yet implemented; once
+  ///   it is, this method will map it from the <paramref name="boundaries"/> flag. Indexed attributes are only requested when
+  ///   filling the <see cref="TopicPayload.Children"/> boundary.
   /// </remarks>
-  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, LoadBoundaries boundaries) {
+  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload boundaries) {
 
     // Set the topic we're working with
     command.AddParameter("TopicID",                             topicId);
@@ -882,10 +883,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("LoadAscendants",                      false);
 
     // Payload: Include only what the requested boundaries require
-    command.AddParameter("IncludeIndexed",                      boundaries.HasFlag(LoadBoundaries.Children));
-    command.AddParameter("IncludeExtended",                     boundaries.HasFlag(LoadBoundaries.ExtendedAttributes));
-    command.AddParameter("IncludeRelationships",                boundaries.HasFlag(LoadBoundaries.Relationships));
-    command.AddParameter("IncludeReferences",                   boundaries.HasFlag(LoadBoundaries.References));
+    command.AddParameter("IncludeIndexed",                      boundaries.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeExtended",                     boundaries.HasFlag(TopicPayload.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships",                boundaries.HasFlag(TopicPayload.Relationships));
+    command.AddParameter("IncludeReferences",                   boundaries.HasFlag(TopicPayload.References));
     command.AddParameter("IncludeHistory",                      false);
 
   }
@@ -897,13 +898,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   ///   Returns <paramref name="boundaries"/> with any already-<see cref="LoadState.Loaded"/> flags cleared, so that <see cref=
   ///   "EnsureLoaded"/> and <see cref="EnsureLoadedAsync"/> skip redundant round-trips.
   /// </summary>
-  private static LoadBoundaries FilterLoadedBoundaries(Topic topic, LoadBoundaries boundaries) {
+  private static TopicPayload FilterLoadedBoundaries(Topic topic, TopicPayload boundaries) {
 
     // Loop through all boundaries
-    foreach (LoadBoundaries flag in Enum.GetValues<LoadBoundaries>()) {
+    foreach (TopicPayload flag in Enum.GetValues<TopicPayload>()) {
 
       // Skip None (0) and All (composite)
-      if (flag is LoadBoundaries.None or LoadBoundaries.All) {
+      if (flag is TopicPayload.None or TopicPayload.All) {
         continue;
       }
 

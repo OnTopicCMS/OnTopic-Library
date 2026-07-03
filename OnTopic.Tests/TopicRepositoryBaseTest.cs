@@ -1124,7 +1124,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose extended-attribute boundary has been manually set to <see cref="LoadState.NotLoaded"/>
-  ///   and confirms that <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> promotes the boundary to <see cref="LoadState.Loaded"
+  ///   and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"
   ///   /> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
@@ -1133,9 +1133,9 @@ public class TopicRepositoryBaseTest {
     var topic                   = _topicRepository.Load(11111);
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    topic.EnsureLoaded(LoadBoundaries.ExtendedAttributes);
+    topic.EnsureLoaded(TopicPayload.ExtendedAttributes);
 
-    Assert.True(topic.IsLoaded(LoadBoundaries.ExtendedAttributes));
+    Assert.True(topic.IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -1143,7 +1143,7 @@ public class TopicRepositoryBaseTest {
   | TEST: ENSURE LOADED: MIXED BOUNDARIES: SKIPS LOADED BOUNDARIES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> with a mixed set of flags, including one already set to <see
+  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> with a mixed set of flags, including one already set to <see
   ///   cref="LoadState.Loaded"/> and one <see cref="LoadState.NotLoaded"/>, and confirms that only the pending boundary is
   ///   forwarded to the resolver, leaving the already-loaded boundary unchanged.
   /// </summary>
@@ -1153,11 +1153,11 @@ public class TopicRepositoryBaseTest {
     var topic                   = _topicRepository.Load(11111);
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    Assert.True(topic.IsLoaded(LoadBoundaries.Children));
-    topic.EnsureLoaded(LoadBoundaries.Children | LoadBoundaries.ExtendedAttributes);
+    Assert.True(topic.IsLoaded(TopicPayload.Children));
+    topic.EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
 
-    Assert.True(topic.IsLoaded(LoadBoundaries.ExtendedAttributes));
-    Assert.True(topic.IsLoaded(LoadBoundaries.Children));
+    Assert.True(topic.IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(topic.IsLoaded(TopicPayload.Children));
 
   }
 

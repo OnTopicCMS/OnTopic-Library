@@ -533,20 +533,20 @@ public class TopicTest {
   | TEST: ENSURE LOADED: NULL RESOLVER: DOES NOT THROW
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> on an in-memory topic with no resolver and confirms it completes
+  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> on an in-memory topic with no resolver and confirms it completes
   ///   without throwing.
   /// </summary>
   [Fact]
   public void EnsureLoaded_NullResolver_DoesNotThrow() {
     var topic                   = new Topic("Topic", "Page");
-    topic.EnsureLoaded(LoadBoundaries.All);
+    topic.EnsureLoaded(TopicPayload.All);
   }
 
   /*============================================================================================================================
   | TEST: ENSURE LOADED: IS NEW: DOES NOT INVOKE RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(LoadBoundaries)"/> on a new topic (no <see cref="Topic.Id"/>) that has a resolver
+  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> on a new topic (no <see cref="Topic.Id"/>) that has a resolver
   ///   stamped on it and confirms the resolver is not invoked.
   /// </summary>
   /// <remarks>
@@ -571,7 +571,7 @@ public class TopicTest {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Verify resolver is not called
     \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.EnsureLoaded(LoadBoundaries.Children);
+    topic.EnsureLoaded(TopicPayload.Children);
     Assert.False(tracker.WasCalled);
 
   }

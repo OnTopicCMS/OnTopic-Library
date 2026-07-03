@@ -294,7 +294,7 @@ public abstract class ObservableTopicRepository : ITopicRepository {
     topic._resolver             = resolver;
 
     // If the children aren't yet loaded, don't bother with them yet
-    if (!topic.IsLoaded(LoadBoundaries.Children)) {
+    if (!topic.IsLoaded(TopicPayload.Children)) {
       return;
     }
 

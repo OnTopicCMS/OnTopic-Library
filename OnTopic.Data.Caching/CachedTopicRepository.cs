@@ -131,7 +131,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -143,13 +143,13 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     // Children
-    if (topic.IsLoaded(LoadBoundaries.Children)) {
-      boundaries                &= ~LoadBoundaries.Children;
+    if (topic.IsLoaded(TopicPayload.Children)) {
+      boundaries                &= ~TopicPayload.Children;
     }
 
     // Extended Attributes
-    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    if (topic.IsLoaded(TopicPayload.ExtendedAttributes)) {
+      boundaries                &= ~TopicPayload.ExtendedAttributes;
     }
 
     // None
@@ -160,7 +160,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   }
 
   /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -172,13 +172,13 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     // Children
-    if (topic.IsLoaded(LoadBoundaries.Children)) {
-      boundaries &= ~LoadBoundaries.Children;
+    if (topic.IsLoaded(TopicPayload.Children)) {
+      boundaries &= ~TopicPayload.Children;
     }
 
     // Extended Attributes
-    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries &= ~LoadBoundaries.ExtendedAttributes;
+    if (topic.IsLoaded(TopicPayload.ExtendedAttributes)) {
+      boundaries &= ~TopicPayload.ExtendedAttributes;
     }
 
     // None

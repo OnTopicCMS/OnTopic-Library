@@ -24,9 +24,9 @@ public interface ITopicLoadResolver {
   ///   fetching and merging whichever of them are not yet <see cref="LoadState.Loaded"/> and silently skipping those already
   ///   loaded. Invoked by the autoloading property getters, each with its own flag.
   /// </summary>
-  void EnsureLoaded(Topic topic, LoadBoundaries boundaries);
+  void EnsureLoaded(Topic topic, TopicPayload boundaries);
 
-  /// <inheritdoc cref="EnsureLoaded(Topic, LoadBoundaries)"/>
-  Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken = default);
+  /// <inheritdoc cref="EnsureLoaded(Topic, TopicPayload)"/>
+  Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken = default);
 
 } //Interface

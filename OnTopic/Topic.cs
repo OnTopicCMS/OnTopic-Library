@@ -174,26 +174,26 @@ public class Topic: ITrackDirtyKeys {
   ///   Reads each collection's <see cref="LoadState"/> directly without touching any autoloading getter, making it safe to
   ///   use in traversal and "gating" logic that should not trigger lazy-loading.
   /// </remarks>
-  /// <param name="boundaries">One or more <see cref="LoadBoundaries"/> flags to test.</param>
-  public bool IsLoaded(LoadBoundaries boundaries) {
+  /// <param name="boundaries">One or more <see cref="TopicPayload"/> flags to test.</param>
+  public bool IsLoaded(TopicPayload boundaries) {
 
     // Children
-    if (boundaries.HasFlag(LoadBoundaries.Children) && Children.LoadState is not LoadState.Loaded) {
+    if (boundaries.HasFlag(TopicPayload.Children) && Children.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // Extended Attributes
-    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
+    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // Relationships
-    if (boundaries.HasFlag(LoadBoundaries.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
+    if (boundaries.HasFlag(TopicPayload.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // References
-    if (boundaries.HasFlag(LoadBoundaries.References) && References.LoadState is not LoadState.Loaded) {
+    if (boundaries.HasFlag(TopicPayload.References) && References.LoadState is not LoadState.Loaded) {
       return false;
     }
 
@@ -217,9 +217,9 @@ public class Topic: ITrackDirtyKeys {
   ///   node's mapping needs in a single round trip.
   /// </remarks>
   /// <param name="boundaries">
-  ///   One or more <see cref="LoadBoundaries"/> flags identifying the boundaries that should be ensured to be loaded.
+  ///   One or more <see cref="TopicPayload"/> flags identifying the boundaries that should be ensured to be loaded.
   /// </param>
-  public void EnsureLoaded(LoadBoundaries boundaries) {
+  public void EnsureLoaded(TopicPayload boundaries) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
@@ -233,27 +233,27 @@ public class Topic: ITrackDirtyKeys {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     // Children
-    if (IsLoaded(LoadBoundaries.Children)) {
-      boundaries                &= ~LoadBoundaries.Children;
+    if (IsLoaded(TopicPayload.Children)) {
+      boundaries                &= ~TopicPayload.Children;
     }
 
     // ExtendedAttributes
-    if (IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    if (IsLoaded(TopicPayload.ExtendedAttributes)) {
+      boundaries                &= ~TopicPayload.ExtendedAttributes;
     }
 
     // Relationships
-    if (IsLoaded(LoadBoundaries.Relationships)) {
-      boundaries                &= ~LoadBoundaries.Relationships;
+    if (IsLoaded(TopicPayload.Relationships)) {
+      boundaries                &= ~TopicPayload.Relationships;
     }
 
     // References
-    if (IsLoaded(LoadBoundaries.References)) {
-      boundaries                &= ~LoadBoundaries.References;
+    if (IsLoaded(TopicPayload.References)) {
+      boundaries                &= ~TopicPayload.References;
     }
 
     // None
-    if (boundaries is LoadBoundaries.None) {
+    if (boundaries is TopicPayload.None) {
       return;
     }
 
@@ -262,12 +262,12 @@ public class Topic: ITrackDirtyKeys {
 
   }
 
-  /// <inheritdoc cref="EnsureLoaded(LoadBoundaries)"/>
+  /// <inheritdoc cref="EnsureLoaded(TopicPayload)"/>
   /// <param name="boundaries">
-  ///   One or more <see cref="LoadBoundaries"/> flags identifying the boundaries that should be ensured to be loaded.
+  ///   One or more <see cref="TopicPayload"/> flags identifying the boundaries that should be ensured to be loaded.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  public Task EnsureLoadedAsync(LoadBoundaries boundaries, CancellationToken cancellationToken = default) {
+  public Task EnsureLoadedAsync(TopicPayload boundaries, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
@@ -281,27 +281,27 @@ public class Topic: ITrackDirtyKeys {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     // Children
-    if (IsLoaded(LoadBoundaries.Children)) {
-      boundaries                &= ~LoadBoundaries.Children;
+    if (IsLoaded(TopicPayload.Children)) {
+      boundaries                &= ~TopicPayload.Children;
     }
 
     // Extended Attributes
-    if (IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
+    if (IsLoaded(TopicPayload.ExtendedAttributes)) {
+      boundaries                &= ~TopicPayload.ExtendedAttributes;
     }
 
     // Relationships
-    if (IsLoaded(LoadBoundaries.Relationships)) {
-      boundaries                &= ~LoadBoundaries.Relationships;
+    if (IsLoaded(TopicPayload.Relationships)) {
+      boundaries                &= ~TopicPayload.Relationships;
     }
 
     // References
-    if (IsLoaded(LoadBoundaries.References)) {
-      boundaries                &= ~LoadBoundaries.References;
+    if (IsLoaded(TopicPayload.References)) {
+      boundaries                &= ~TopicPayload.References;
     }
 
     // None
-    if (boundaries is LoadBoundaries.None) {
+    if (boundaries is TopicPayload.None) {
       return Task.CompletedTask;
     }
 

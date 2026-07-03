@@ -119,7 +119,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   [return: NotNullIfNotNull(nameof(defaultValue))]
   internal override string? GetValue(string key, string? defaultValue, bool inheritFromParent, int maxHops) {
     if (LoadState is LoadState.NotLoaded && !Contains(key)) {
-      AssociatedTopic.EnsureLoaded(LoadBoundaries.ExtendedAttributes);
+      AssociatedTopic.EnsureLoaded(TopicPayload.ExtendedAttributes);
     }
     return base.GetValue(key, defaultValue, inheritFromParent, maxHops);
   }
