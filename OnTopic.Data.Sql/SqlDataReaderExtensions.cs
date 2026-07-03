@@ -52,8 +52,8 @@ internal static class SqlDataReaderExtensions {
   /// </param>
   internal static Topic? LoadTopicGraph(
     this IDataReader reader,
-    Topic? referenceTopic = null,
-    bool? markDirty = null,
+    Topic? referenceTopic       = null,
+    bool? markDirty             = null,
     bool includeExternalReferences = true
   ) {
 
@@ -62,17 +62,20 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var sqlDataReader           = reader as SqlDataReader;
     var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
-    var rootTopicId             = -1;
+    var rootTopic               = (Topic?)null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
     while (reader.Read()) {
-      if (rootTopicId < 0) {
-        rootTopicId             = reader.GetTopicId();
-      }
-      reader.AddTopic(topics, markDirty);
+
+      // Add the topic to the topic graph
+      var addedTopic = reader.AddTopic(topics, markDirty);
+
+      // The first topic returned is the root topic; store it for the return value
+      rootTopic                 ??= addedTopic;
+
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -144,10 +147,7 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topics.TryGetValue(rootTopicId, out var rootTopic)) {
-      return rootTopic;
-    }
-    return topics.Values.FirstOrDefault();
+    return rootTopic;
 
   }
 
@@ -166,7 +166,7 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void AddTopic(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  private static Topic AddTopic(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -200,9 +200,14 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark clean
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (wasDirty is false && markDirty is not null and false) {
+    if (wasDirty is false && markDirty is false) {
       current.MarkClean();
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Return the topic created
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return current;
 
   }
 
@@ -271,7 +276,7 @@ internal static class SqlDataReaderExtensions {
     this SqlDataReader reader,
     TopicIndex topics,
     bool? markDirty,
-    bool preserveDirty = false
+    bool preserveDirty          = false
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
