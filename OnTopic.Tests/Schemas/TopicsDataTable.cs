@@ -63,6 +63,15 @@ public class TopicsDataTable:   DataTable {
       AllowDBNull               = true
     });
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add HasExtendedAttributes column
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(bool),
+      ColumnName                = "HasExtendedAttributes",
+      AllowDBNull               = true
+    });
+
   }
 
   /*============================================================================================================================
@@ -71,7 +80,13 @@ public class TopicsDataTable:   DataTable {
   /// <summary>
   ///   Adds a new <see cref="DataRow"/> to the <see cref="TopicsDataTable"/>.
   /// </summary>
-  public void AddRow(int topicId, string topicKey, string contentType, int? parentId = null) {
+  public void AddRow(
+    int topicId,
+    string topicKey,
+    string contentType,
+    int? parentId               = null,
+    bool? hasExtendedAttributes = null
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Verify parameters
@@ -88,7 +103,8 @@ public class TopicsDataTable:   DataTable {
     row["TopicId"]              = topicId;
     row["TopicKey"]             = topicKey;
     row["ContentType"]          = contentType;
-    row["ParentId"]             = parentId.HasValue? (object)parentId : DBNull.Value;
+    row["ParentId"]             = parentId.HasValue? parentId : DBNull.Value;
+    row["HasExtendedAttributes"] = hasExtendedAttributes.HasValue? hasExtendedAttributes.Value : DBNull.Value;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add row to table
