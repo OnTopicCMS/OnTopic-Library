@@ -131,6 +131,7 @@ SELECT	Topics.TopicID,
   	          SELECT	1
   	          FROM		ExtendedAttributeIndex	AS Extended
   	          WHERE		Extended.TopicID	= Topics.TopicID
+  	          AND		Extended.AttributesXml	<> '<attributes></attributes>'
   	        )
 	        THEN 		1
 	        ELSE 		0
