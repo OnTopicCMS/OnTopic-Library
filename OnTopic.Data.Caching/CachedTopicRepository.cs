@@ -67,7 +67,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle request for entire tree
@@ -84,7 +89,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   }
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

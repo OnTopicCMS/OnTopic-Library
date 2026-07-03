@@ -212,12 +212,22 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   public virtual Topic? Load()  => Load(-1);
 
   /// <inheritdoc />
-  public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
+  public abstract Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  );
 
   /// <inheritdoc />
-  public abstract Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
+  public abstract Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  );
 
-  /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+  /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   [ExcludeFromCodeCoverage]
   [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
   public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();

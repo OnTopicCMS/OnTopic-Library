@@ -42,7 +42,13 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
+
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
@@ -68,7 +74,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   }
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

@@ -57,7 +57,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -110,12 +115,17 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return Load(topicId, referenceTopic, isRecursive);
+    return Load(topicId, referenceTopic, isRecursive, payload);
 
   }
 
   /// <inheritdoc />
-  public override Topic Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
@@ -134,6 +144,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("TopicID", topicId);
     command.AddParameter("LoadDescendants", isRecursive);
     command.AddParameter("LoadAscendants", !isRecursive);
+    command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query

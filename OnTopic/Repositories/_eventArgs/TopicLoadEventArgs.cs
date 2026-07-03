@@ -19,7 +19,7 @@ public class TopicLoadEventArgs : TopicEventArgs {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="TopicLoadEventArgs"/> object defines the event arguments relevant to a <see cref="ITopicRepository.
-  ///   Load(Int32, Topic?, Boolean)"/> operation and its overloads.
+  ///   Load(Int32, Topic?, Boolean, TopicPayload)"/> operation and its overloads.
   /// </summary>
   /// <param name="topic">The <see cref="Topic"/> object associated with the rename event.</param>
   /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>

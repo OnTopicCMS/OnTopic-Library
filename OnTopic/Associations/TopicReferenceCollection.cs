@@ -71,8 +71,8 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   ///   </para>
   ///   <para>
   ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see
-  ///     cref="ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped
-  ///     back to a valid <see cref="Topic"/> reference in memory.
+  ///     cref="ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> method if any members of the collection cannot
+  ///     be mapped back to a valid <see cref="Topic"/> reference in memory.
   ///   </para>
   /// </remarks>
   public bool IsFullyLoaded {

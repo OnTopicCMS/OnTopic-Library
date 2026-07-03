@@ -20,8 +20,8 @@ public interface ITopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <summary>
-  ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref="
-  ///   ITopicRepository.Load(String?, Topic?, Boolean)"/> operation, or one of its overloads.
+  ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref=
+  ///   "ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> operation, or one of its overloads.
   /// </summary>
   /// <remarks>
   ///   The <see cref="TopicLoaded"/> event should only be raised when a new <see cref="Topic"/> is loaded from the underlying
@@ -98,8 +98,9 @@ public interface ITopicRepository {
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
   /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+  /// <param name="payload">Specifies which data to include with each topic.</param>
   /// <returns>A topic object.</returns>
-  Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
+  Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true, TopicPayload payload = TopicPayload.All);
 
   /// <summary>
   ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="uniqueKey
@@ -111,10 +112,14 @@ public interface ITopicRepository {
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
   /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+  /// <param name="payload">
+  ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
+  ///   for details.
+  /// </param>
   /// <returns>A topic object.</returns>
-  Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
+  Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true, TopicPayload payload = TopicPayload.All);
 
-  /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+  /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   [ExcludeFromCodeCoverage]
   [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
   Topic? Load(string? uniqueKey, bool isRecursive);

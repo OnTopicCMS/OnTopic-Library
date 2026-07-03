@@ -47,7 +47,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
@@ -80,7 +85,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   }
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -198,7 +208,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   database.
   /// </remarks>
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, LoadBoundaries boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -208,14 +218,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark extended attribute boundary as loaded; this is a no-op for children, as it's already populated in the stubs
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
+    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
       topic.Attributes.LoadState = LoadState.Loaded;
     }
 
   }
 
   /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
     EnsureLoaded(topic, boundaries);
     return Task.CompletedTask;
   }

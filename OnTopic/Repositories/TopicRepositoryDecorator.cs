@@ -80,12 +80,22 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   public override Topic? Load() => Load(-1);
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
-    TopicRepository.Load(topicId, referenceTopic, isRecursive);
+  public override Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) =>
+    TopicRepository.Load(topicId, referenceTopic, isRecursive, payload);
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) =>
-    TopicRepository.Load(uniqueKey, referenceTopic, isRecursive);
+  public override Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) =>
+    TopicRepository.Load(uniqueKey, referenceTopic, isRecursive, payload);
 
   /// <inheritdoc />
   public override Topic? Load(Topic topic, DateTime version)
