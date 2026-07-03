@@ -87,6 +87,41 @@ public class TopicRepositoryBaseTest {
     Assert.Equal("Root", _cachedTopicRepository.Load(-2)?.GetUniqueKey());
 
   /*============================================================================================================================
+  | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with <c>payload</c> set to <see cref=
+  ///   "TopicPayload.None"/> and confirms that a topic is still returned. The stub always returns fully-loaded topics
+  ///   regardless of this parameter; the test simply verifies the signature is accepted.
+  /// </summary>
+  [Fact]
+  public void Load_WithNarrowPayload_ReturnsTopic() {
+
+    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None);
+
+    Assert.NotNull(topic);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: NARROW PAYLOAD: EXTENDED ATTRIBUTES LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with <c>payload</c> set to <see cref=
+  ///   "TopicPayload.None"/> and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>. The stub does not
+  ///   defer extended attributes; this simply confirms no regression for stub-backed tests.
+  /// </summary>
+  [Fact]
+  public void Load_WithNarrowPayload_ExtendedAttributesLoaded() {
+
+    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None);
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD: VALID DATE: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
