@@ -234,14 +234,12 @@ EXECUTE	[dbo].[GetTopicVersion]
 -- ESTABLISH VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@TopicID		AS INT,
-	@DeepLoad		AS BIT,
 	@UniqueKey		AS NVARCHAR (255);
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	@DeepLoad		= 1,
-	@UniqueKey		= 'GetTopicsTest';
+SELECT	@UniqueKey		= 'GetTopicsTest';
 
 SELECT	@TopicID		= TopicID
 FROM	Topics
@@ -251,9 +249,8 @@ WHERE	TopicKey		= @UniqueKey
 -- EXECUTE PROCEDURE
 --------------------------------------------------------------------------------------------------------------------------------
 EXECUTE	[dbo].[GetTopics]
-	@TopicID,
-	@DeepLoad,
-	NULL;</value>
+	@TopicID		= @TopicID,
+	@LoadDescendants	= 1;</value>
   </data>
   <data name="dbo_MoveTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
