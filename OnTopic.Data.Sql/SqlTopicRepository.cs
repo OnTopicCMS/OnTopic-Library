@@ -424,7 +424,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       // Extended attributes
       reader.NextResult();
       while (reader.Read()) {
-        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirtyKeys: true);
+        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
       }
 
       // Relationships
@@ -514,7 +514,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       // Extended attributes
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirtyKeys: true);
+        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
       }
 
       // Relationships
