@@ -6,6 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using OnTopic.Collections.Specialized;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -130,7 +131,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Establish query parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
-    command.AddParameter("DeepLoad", isRecursive);
+    command.AddParameter("LoadDescendants", isRecursive);
+    command.AddParameter("LoadAscendants", !isRecursive);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
@@ -368,6 +370,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip for new topics, as there's no persistent data to fetch
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (topic.IsNew) {
+      return;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) boundaries
     \-------------------------------------------------------------------------------------------------------------------------*/
 
@@ -386,15 +395,86 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       return;
     }
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Children not yet implemented; guard before opening a connection
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (boundaries.HasFlag(LoadBoundaries.Children)) {
+      throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish database connection
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    using var connection          = new SqlConnection(_connectionString);
+    using var command             = new SqlCommand("GetTopics", connection) {
+      CommandType                 = CommandType.StoredProcedure
+    };
+
+    // Set the stored procedure parameters based on the LoadBoundaries enum values
+    AddEnsureLoadedParameters(command, topic.Id, boundaries);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Process database query
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    try {
+
+      // Setup
+      connection.Open();
+      var topics                = new TopicIndex { [topic.Id] = topic };
+      using var reader          = command.ExecuteReader();
+
+      // Skip key-attributes result set; these were populated when the topic was first loaded
+      reader.NextResult();
+
+      // Indexed attributes (will be populated when Children boundary is implemented)
+      while (reader.Read()) {
+
+      }
+
+      // Extended attributes
+      reader.NextResult();
+      while (reader.Read()) {
+        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirtyKeys: true);
+      }
+
+      // Relationships
+      reader.NextResult();
+      while (reader.Read()) {
+        reader.SetRelationships(topics, markDirty: false);
+      }
+
+      // References
+      reader.NextResult();
+      while (reader.Read()) {
+        reader.SetReferences(topics, markDirty: false);
+      }
+
+    }
+    catch (SqlException exception) {
+      throw new TopicRepositoryException($"Topic boundaries failed to load: '{exception.Message}'", exception);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Mark loaded boundaries as confirmed
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    MarkBoundariesLoaded(topic, boundaries);
+
   }
 
   /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
+  public virtual async Task EnsureLoadedAsync(Topic topic, LoadBoundaries boundaries, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip for new topics, as there's no persistent data to fetch
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (topic.IsNew) {
+      return;
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) boundaries
@@ -412,10 +492,72 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     // None
     if (boundaries is 0) {
-      return Task.CompletedTask;
+      return;
     }
 
-    return Task.CompletedTask;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Children not yet implemented; guard before opening a connection
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (boundaries.HasFlag(LoadBoundaries.Children)) {
+      throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish database connection
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    using var connection        = new SqlConnection(_connectionString);
+    using var command           = new SqlCommand("GetTopics", connection) {
+      CommandType               = CommandType.StoredProcedure
+    };
+
+    // Set the stored procedure parameters based on the LoadBoundaries enum values
+    AddEnsureLoadedParameters(command, topic.Id, boundaries);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Process database query
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    try {
+
+      // Setup
+      await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+      var topics                = new TopicIndex { [topic.Id] = topic };
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+      // Skip key-attributes result set; these were populated when the topic was first loaded
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+
+      // Indexed attributes (will be populated when Children boundary is implemented)
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+
+      }
+
+      // Extended attributes
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirtyKeys: true);
+      }
+
+      // Relationships
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetRelationships(topics, markDirty: false);
+      }
+
+      // References
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetReferences(topics, markDirty: false);
+      }
+
+    }
+    catch (SqlException exception) {
+      throw new TopicRepositoryException($"Topic boundaries failed to load: '{exception.Message}'", exception);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Mark loaded boundaries as confirmed
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    MarkBoundariesLoaded(topic, boundaries);
 
   }
 
@@ -686,6 +828,62 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         exception
       );
     }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: MARK BOUNDARIES LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Marks each boundary in <paramref name="boundaries"/> as <see cref="LoadState.Loaded"/> on the given
+  ///   <paramref name="topic"/> after a successful resolver fill.
+  /// </summary>
+  private static void MarkBoundariesLoaded(Topic topic, LoadBoundaries boundaries) {
+
+    // Extended attributes
+    if (boundaries.HasFlag(LoadBoundaries.ExtendedAttributes)) {
+      topic.Attributes.LoadState = LoadState.Loaded;
+    }
+
+    // Relationships
+    if (boundaries.HasFlag(LoadBoundaries.Relationships)) {
+      topic.Relationships.LoadState = LoadState.Loaded;
+    }
+
+    // References
+    if (boundaries.HasFlag(LoadBoundaries.References)) {
+      topic.References.LoadState = LoadState.Loaded;
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: ADD ENSURE LOADED PARAMETERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Configures a <see cref="SqlCommand"/> targeting <c>GetTopics</c> for use by the <see cref="ITopicLoadResolver"/>,
+  ///   setting the payload parameters based on the requested <paramref name="boundaries"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. History
+  ///   is never a lazy-load boundary and so is always excluded. Indexed attributes are only requested when filling the <see
+  ///   cref="LoadBoundaries.Children"/> boundary.
+  /// </remarks>
+  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, LoadBoundaries boundaries) {
+
+    // Set the topic we're working with
+    command.AddParameter("TopicID",                             topicId);
+
+    // Scope: Always None (i.e., single node) for resolver fills
+    command.AddParameter("LoadDescendants",                     false);
+    command.AddParameter("LoadAscendants",                      false);
+
+    // Payload: Include only what the requested boundaries require
+    command.AddParameter("IncludeIndexed",                      boundaries.HasFlag(LoadBoundaries.Children));
+    command.AddParameter("IncludeExtended",                     boundaries.HasFlag(LoadBoundaries.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships",                boundaries.HasFlag(LoadBoundaries.Relationships));
+    command.AddParameter("IncludeReferences",                   boundaries.HasFlag(LoadBoundaries.References));
+    command.AddParameter("IncludeHistory",                      false);
 
   }
 
