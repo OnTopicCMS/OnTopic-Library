@@ -262,7 +262,17 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  internal static void SetExtendedAttributes(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
+  /// <param name="preserveDirty">
+  ///   When <c>true</c>, skips any attribute key whose in-memory record is already dirty. This is used by the lazy-load
+  ///   resolver so that a value set by the call while the extended boundary was <see cref="LoadState.NotLoaded"/> is not
+  ///   silently overwritten by the blob merge.
+  /// </param>
+  internal static void SetExtendedAttributes(
+    this SqlDataReader reader,
+    TopicIndex topics,
+    bool? markDirty,
+    bool preserveDirty = false
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
