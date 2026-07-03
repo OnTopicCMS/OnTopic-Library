@@ -6,6 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Querying;
@@ -555,16 +556,35 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Define variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var isTopicDirty            = topic.IsDirty();
-    var areRelationshipsDirty = topic.Relationships.IsDirty();
+    var areRelationshipsDirty   = topic.Relationships.IsDirty();
     var areReferencesDirty      = topic.References.IsDirty();
     var areAttributesDirty      = topic.Attributes.IsDirty(true);
-    var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true).ToList();
+    var extendedBoundaryLoaded  = topic.Attributes.LoadState is LoadState.Loaded;
+    var extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
     var indexedAttributeList    = GetAttributes(
       topic                     : topic,
       isExtendedAttribute       : false,
       isDirty                   : true,
       excludeLastModified       : !areAttributesDirty
     ).ToList();
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure extended attribute blob is available before save
+    >-------------------------------------------------------------------------------------------------------------------------
+    | If the extended attribute boundary is NotLoaded and at least one extended attribute is dirty, call EnsureLoaded first so
+    | we write a complete snapshot rather than a partial one. When the boundary is NotLoaded and no extended attrs are dirty,
+    | @ExtendedAttributes is omitted (NULL), leaving the persisted blob untouched (UpdateTopic guards on IS NOT NULL).
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (!extendedBoundaryLoaded) {
+      if (extendedAttributeList.Any(a => a.IsDirty)) {
+        EnsureLoaded(topic, LoadBoundaries.ExtendedAttributes);
+        extendedBoundaryLoaded  = true;
+        extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
+      }
+      else {
+        extendedAttributeList   = [];
+      }
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Detect whether anything has changed
@@ -614,10 +634,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add extended attributes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var extendedAttributes      = new StringBuilder();
+    var extendedAttributes      = (StringBuilder?)null;
 
-    if (areAttributesDirty) {
+    if (areAttributesDirty && extendedBoundaryLoaded) {
 
+      extendedAttributes        = new();
       extendedAttributes.Append("<attributes>");
 
       foreach (var attributeValue in extendedAttributeList) {
@@ -668,7 +689,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("Version", version);
     if (areAttributesDirty) {
       command.AddParameter("Attributes", attributeValues);
-      command.AddParameter("ExtendedAttributes", extendedAttributes);
+      if (extendedAttributes is not null) {
+        command.AddParameter("ExtendedAttributes", extendedAttributes);
+      }
     }
     command.AddOutputParameter();
 
