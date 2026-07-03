@@ -216,10 +216,19 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Mark extended attribute boundary as loaded; this is a no-op for children, as it's already populated in the stubs
+    | Mark boundaries as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
+    | and marking Loaded is always safe. Children is already populated in the stubs and needs no action.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
       topic.Attributes.LoadState = LoadState.Loaded;
+    }
+
+    if (boundaries.HasFlag(TopicPayload.Relationships) && topic.Relationships.LoadState is LoadState.NotLoaded) {
+      topic.Relationships.LoadState = LoadState.Loaded;
+    }
+
+    if (boundaries.HasFlag(TopicPayload.References) && topic.References.LoadState is LoadState.NotLoaded) {
+      topic.References.LoadState = LoadState.Loaded;
     }
 
   }
