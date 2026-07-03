@@ -121,7 +121,23 @@ SELECT	Topics.TopicID,
   	ContentType,
   	ParentID,
   	TopicKey,
-  	SortOrder
+  	SortOrder,
+  	HasExtendedAttributes	=
+  	  CASE
+  	    WHEN		@IncludeExtended = 0
+  	    THEN		CAST(
+	      CASE
+	        WHEN EXISTS (
+  	          SELECT	1
+  	          FROM		ExtendedAttributeIndex	AS Extended
+  	          WHERE		Extended.TopicID	= Topics.TopicID
+  	        )
+	        THEN 		1
+	        ELSE 		0
+	      END 		AS BIT
+  	    )
+  	    ELSE NULL
+  	  END
 FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Topics.TopicID
