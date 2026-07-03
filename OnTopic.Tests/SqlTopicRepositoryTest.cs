@@ -366,6 +366,78 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH EXTENDED DEFERRED AND BLOB: RETURNS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
+  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="true"/> (blob deferred), and confirms the
+  ///   extended-attribute boundary is <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithExtendedDeferredAndBlob_ReturnsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.NotLoaded, topic.Attributes.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH EXTENDED DEFERRED AND NO BLOB: RETURNS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
+  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="false"/> (blob deferred, but empty), and
+  ///   confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>, thus avoiding a wasted round-trip.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithExtendedDeferredAndNoBlob_ReturnsLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: false);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH EXTENDED INCLUDED AND BLOB: RETURNS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
+  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="null"/> (extended included in result set),
+  ///   and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithExtendedIncludedAndBlob_ReturnsLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
+
+  }
+
+  /*============================================================================================================================
   | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
