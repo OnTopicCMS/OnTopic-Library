@@ -379,18 +379,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) boundaries
     \-------------------------------------------------------------------------------------------------------------------------*/
+    boundaries                  = FilterLoadedBoundaries(topic, boundaries);
 
-    // Children
-    if (topic.IsLoaded(LoadBoundaries.Children)) {
-      boundaries                &= ~LoadBoundaries.Children;
-    }
-
-    // Extended Attributes
-    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
-    }
-
-    // None
     if (boundaries is 0) {
       return;
     }
@@ -405,9 +395,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    using var connection          = new SqlConnection(_connectionString);
-    using var command             = new SqlCommand("GetTopics", connection) {
-      CommandType                 = CommandType.StoredProcedure
+    using var connection        = new SqlConnection(_connectionString);
+    using var command           = new SqlCommand("GetTopics", connection) {
+      CommandType               = CommandType.StoredProcedure
     };
 
     // Set the stored procedure parameters based on the LoadBoundaries enum values
@@ -479,18 +469,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) boundaries
     \-------------------------------------------------------------------------------------------------------------------------*/
+    boundaries                  = FilterLoadedBoundaries(topic, boundaries);
 
-    // Children
-    if (topic.IsLoaded(LoadBoundaries.Children)) {
-      boundaries                &= ~LoadBoundaries.Children;
-    }
-
-    // Extended Attributes
-    if (topic.IsLoaded(LoadBoundaries.ExtendedAttributes)) {
-      boundaries                &= ~LoadBoundaries.ExtendedAttributes;
-    }
-
-    // None
     if (boundaries is 0) {
       return;
     }
@@ -884,6 +864,35 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("IncludeRelationships",                boundaries.HasFlag(LoadBoundaries.Relationships));
     command.AddParameter("IncludeReferences",                   boundaries.HasFlag(LoadBoundaries.References));
     command.AddParameter("IncludeHistory",                      false);
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: FILTER LOADED BOUNDARIES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns <paramref name="boundaries"/> with any already-<see cref="LoadState.Loaded"/> flags cleared, so that <see cref=
+  ///   "EnsureLoaded"/> and <see cref="EnsureLoadedAsync"/> skip redundant round-trips.
+  /// </summary>
+  private static LoadBoundaries FilterLoadedBoundaries(Topic topic, LoadBoundaries boundaries) {
+
+    // Loop through all boundaries
+    foreach (LoadBoundaries flag in Enum.GetValues<LoadBoundaries>()) {
+
+      // Skip None (0) and All (composite)
+      if (flag is LoadBoundaries.None or LoadBoundaries.All) {
+        continue;
+      }
+
+      // Strip the boundary if is is already fully loaded
+      if (topic.IsLoaded(flag)) {
+        boundaries              &= ~flag;
+      }
+
+    }
+
+    // Return filtered boundaries
+    return boundaries;
 
   }
 
