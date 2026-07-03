@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Diagnostics;
 using System.Net;
+using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
 
@@ -75,6 +76,12 @@ internal static class SqlDataReaderExtensions {
 
       // The first topic returned is the root topic; store it for the return value
       rootTopic                 ??= addedTopic;
+
+      // HasExtendedAttribute is NULL when extended attributes are included
+      // HasExtendedAttribute is true when the blob wasn't loaded, but exists
+      if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
+        addedTopic.Attributes.LoadState = LoadState.NotLoaded;
+      }
 
     }
 
@@ -510,6 +517,17 @@ internal static class SqlDataReaderExtensions {
   /// <param name="columnName">The name of the column to retrieve the value from.</param>
   private static bool GetBoolean(this IDataReader reader, string columnName) =>
     reader.GetBoolean(reader.GetOrdinal(columnName));
+
+  /*============================================================================================================================
+  | METHOD: GET NULLABLE BOOLEAN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves a nullable boolean value by column name.
+  /// </summary>
+  /// <param name="reader">The <see cref="IDataReader"/> object.</param>
+  /// <param name="columnName">The name of the column to retrieve the value from.</param>
+  private static bool? GetNullableBoolean(this IDataReader reader, string columnName) =>
+    reader.IsDBNull(reader.GetOrdinal(columnName))? null : reader.GetBoolean(reader.GetOrdinal(columnName));
 
   /*============================================================================================================================
   | METHOD: GET INTEGER
