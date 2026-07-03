@@ -1197,6 +1197,47 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: ENSURE LOADED: RELATIONSHIPS NOT LOADED: MARKS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose relationship boundary has been manually set to <see cref="LoadState.NotLoaded"/>
+  ///   and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"
+  ///   /> via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  /// </remarks>
+  [Fact]
+  public void EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.Relationships.LoadState = LoadState.NotLoaded;
+    topic.EnsureLoaded(TopicPayload.Relationships);
+
+    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: REFERENCES NOT LOADED: MARKS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose reference boundary has been manually set to <see cref="LoadState.NotLoaded"/> and
+  ///   confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"/>
+  ///   via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  [Fact]
+  public void EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.References.LoadState = LoadState.NotLoaded;
+    topic.EnsureLoaded(TopicPayload.References);
+
+    Assert.True(topic.IsLoaded(TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
   | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

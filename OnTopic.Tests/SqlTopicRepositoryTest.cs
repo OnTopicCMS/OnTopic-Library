@@ -335,7 +335,115 @@ public class SqlTopicRepositoryTest {
 
   }
 
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH RELATIONSHIP: RETURNS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
+  ///   load (i.e., extended attributes deferred via <c>HasExtendedAttributes = true</c>) with a relationship whose target is
+  ///   resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.Loaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_IndexedOnlyWithRelationship_ReturnsLoaded() {
 
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
+    relationships.AddRow(1, "Test", 2, false);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic?.Relationships.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH MISSING RELATIONSHIP: RETURNS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
+  ///   load with a relationship whose target is non-resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"
+  ///   /> returns <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_IndexedOnlyWithMissingRelationship_ReturnsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    relationships.AddRow(1, "Test", 99, false);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.NotLoaded, topic!.Relationships.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH REFERENCE: RETURNS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
+  ///   load with a reference whose target is resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/>
+  ///   returns <see cref="LoadState.Loaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_IndexedOnlyWithReference_ReturnsLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
+    references.AddRow(1, "Test", 2);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic?.References.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH MISSING REFERENCE: RETURNS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
+  ///   load with a reference whose target is non-resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/>
+  ///   returns <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_IndexedOnlyWithMissingReference_ReturnsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    references.AddRow(1, "Test", 99);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.NotLoaded, topic!.References.LoadState);
+
+  }
 
   /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
