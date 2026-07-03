@@ -105,8 +105,8 @@ public abstract record TrackedRecord<T> {
   ///   If loaded from a data store from e.g. <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, the
   ///   <see cref="LastModified"/> should be set to the <c>Version</c>. If the <see cref="Value"/> is novel, however, then it
   ///   should be set to the current date. That won't be the same date established by <see cref=
-        "ITopicRepository.Save(Topic, Boolean)"/> for the <c>Version</c>, however, which is why this property is labeled <see
-        cref="LastModified"/>.
+  ///   "ITopicRepository.Save(Topic, Boolean)"/> for the <c>Version</c>, however, which is why this property is labeled <see
+  ///   cref="LastModified"/>.
   /// </remarks>
   public DateTime LastModified  { get; init; }
 
