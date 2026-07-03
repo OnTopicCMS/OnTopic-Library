@@ -6,96 +6,95 @@
 using System.Data;
 using OnTopic.Data.Sql;
 
-namespace OnTopic.Tests.Schemas {
+namespace OnTopic.Tests.Schemas;
+
+/*==============================================================================================================================
+| CLASS: TOPICS DATA TABLE
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides a <see cref="DataTable"/> which maps to the expected schema of the <c>Topics</c> table.
+/// </summary>
+/// <remarks>
+///   This allows testing of the <see cref="SqlTopicRepository"/> via its <see cref="SqlDataReaderExtensions"/> methods.
+/// </remarks>
+[ExcludeFromCodeCoverage]
+public class TopicsDataTable:   DataTable {
 
   /*============================================================================================================================
-  | CLASS: TOPICS DATA TABLE
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a <see cref="DataTable"/> which maps to the expected schema of the <c>Topics</c> table.
+  ///   Instantiates a new instance of the <see cref="TopicsDataTable"/>.
   /// </summary>
-  /// <remarks>
-  ///   This allows testing of the <see cref="SqlTopicRepository"/> via its <see cref="SqlDataReaderExtensions"/> methods.
-  /// </remarks>
-  [ExcludeFromCodeCoverage]
-  public class TopicsDataTable: DataTable {
+  /// <returns>A new instance of the <see cref="TopicsDataTable"/>.</returns>
+  public TopicsDataTable() : base("Topics") {
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Instantiates a new instance of the <see cref="TopicsDataTable"/>.
-    /// </summary>
-    /// <returns>A new instance of the <see cref="TopicsDataTable"/>.</returns>
-    public TopicsDataTable() : base("Topics") {
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(int),
+      ColumnName                = "TopicId",
+      Unique                    = true
+    });
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add TopicId column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(int),
-        ColumnName              = "TopicId",
-        Unique                  = true
-      });
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add TopicKey column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(string),
-        ColumnName              = "TopicKey"
-      });
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add ContentType column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(string),
-        ColumnName              = "ContentType"
-      });
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add ParentId column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(int),
-        ColumnName              = "ParentId",
-        AllowDBNull             = true
-      });
-
-    }
-
-    /*==========================================================================================================================
-    | ADD ROW
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add TopicKey column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds a new <see cref="DataRow"/> to the <see cref="TopicsDataTable"/>.
-    /// </summary>
-    public void AddRow(int topicId, string topicKey, string contentType, int? parentId = null) {
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(string),
+      ColumnName                = "TopicKey"
+    });
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Verify parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicId, nameof(topicId));
-      Contract.Requires(topicKey, nameof(topicKey));
-      Contract.Requires(contentType, nameof(contentType));
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add ContentType column
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(string),
+      ColumnName                = "ContentType"
+    });
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Create new row
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var row = NewRow();
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add ParentId column
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(int),
+      ColumnName                = "ParentId",
+      AllowDBNull               = true
+    });
 
-      row["TopicId"]            = topicId;
-      row["TopicKey"]           = topicKey;
-      row["ContentType"]        = contentType;
-      row["ParentId"]           = parentId.HasValue? (object)parentId : DBNull.Value;
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add row to table
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Rows.Add(row);
+  /*============================================================================================================================
+  | ADD ROW
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Adds a new <see cref="DataRow"/> to the <see cref="TopicsDataTable"/>.
+  /// </summary>
+  public void AddRow(int topicId, string topicKey, string contentType, int? parentId = null) {
 
-    }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Verify parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topicId,  nameof(topicId));
+    Contract.Requires(topicKey, nameof(topicKey));
+    Contract.Requires(contentType, nameof(contentType));
 
-  } //Class
-} //Namespace
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Create new row
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var row = NewRow();
+
+    row["TopicId"]              = topicId;
+    row["TopicKey"]             = topicKey;
+    row["ContentType"]          = contentType;
+    row["ParentId"]             = parentId.HasValue? (object)parentId : DBNull.Value;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add row to table
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Rows.Add(row);
+
+  }
+
+} //Class

@@ -9,7 +9,7 @@ using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Host;
 using OnTopic.Internal.Diagnostics;
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+#pragma warning disable CA1812  // Avoid uninstantiated internal classes
 
 /*==============================================================================================================================
 | CONFIGURE SERVICES
@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.Configure<CookiePolicyOptions>(options => {
   // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-  options.CheckConsentNeeded = context => true;
+  options.CheckConsentNeeded =  context => true;
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
@@ -95,4 +95,4 @@ app.MapControllers();
 \-----------------------------------------------------------------------------------------------------------------------------*/
 app.Run();
 
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
+#pragma warning restore CA1812  // Avoid uninstantiated internal classes

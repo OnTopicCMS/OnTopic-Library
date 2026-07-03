@@ -7,112 +7,116 @@ using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 
-namespace OnTopic.Data.Caching {
+namespace OnTopic.Data.Caching;
+
+/*==============================================================================================================================
+| CLASS: CACHED TOPIC DATA REPOSITORY
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides data access to topics stored in memory.
+/// </summary>
+/// <remarks>
+///   Concrete implementation of the <see cref="OnTopic.Repositories.ITopicRepository"/> class, which provides a wrapper
+///   for an actual data access class.
+/// </remarks>
+
+public class CachedTopicRepository : TopicRepositoryDecorator {
 
   /*============================================================================================================================
-  | CLASS: CACHED TOPIC DATA REPOSITORY
+  | VARIABLES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private readonly              Topic                           _cache;
+
+  /*============================================================================================================================
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides data access to topics stored in memory.
+  ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref="
+  ///   ITopicRepository"/> in order to provide necessary data access.
   /// </summary>
-  /// <remarks>
-  ///   Concrete implementation of the <see cref="OnTopic.Repositories.ITopicRepository"/> class, which provides a wrapper
-  ///   for an actual data access class.
-  /// </remarks>
+  /// <param name="topicRepository">
+  ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
+  /// </param>
+  /// <returns>A new instance of a <see cref="CachedTopicRepository"/>.</returns>
+  public CachedTopicRepository(ITopicRepository topicRepository) : base(topicRepository) {
 
-  public class CachedTopicRepository : TopicRepositoryDecorator {
-
-    /*==========================================================================================================================
-    | VARIABLES
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure topics are loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            Topic                           _cache;
+    var rootTopic               = TopicRepository.Load();
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    Contract.Assume(
+      rootTopic,
+      $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
+      $"{nameof(CachedTopicRepository)} is unable to establish the cache."
+    );
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure topics are loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref="
-    ///   ITopicRepository"/> in order to provide necessary data access.
-    /// </summary>
-    /// <param name="topicRepository">
-    ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
-    /// </param>
-    /// <returns>A new instance of a <see cref="CachedTopicRepository"/>.</returns>
-    public CachedTopicRepository(ITopicRepository topicRepository) : base(topicRepository) {
+    _cache                      = rootTopic;
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = TopicRepository.Load();
+  }
 
-      Contract.Assume(
-        rootTopic,
-        $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
-        $"{nameof(CachedTopicRepository)} is unable to establish the cache."
-      );
+  /*============================================================================================================================
+  | METHOD: LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _cache = rootTopic;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: LOAD
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Handle request for entire tree
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle request for entire tree
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicId < 0) {
-        return _cache;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recursive search
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache.FindFirst(t => t.Id.Equals(topicId));
-
+    if (topicId < 0) {
+      return _cache;
     }
 
-    /// <inheritdoc />
-    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Recursive search
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return _cache.FindFirst(t => t.Id.Equals(topicId));
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(uniqueKey)) {
-        return null;
-      }
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Lookup by TopicKey
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache.GetByUniqueKey(uniqueKey);
+  /// <inheritdoc />
+  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (String.IsNullOrEmpty(uniqueKey)) {
+      return null;
     }
 
-    /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Lookup by TopicKey
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return _cache.GetByUniqueKey(uniqueKey);
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
-      Contract.Requires(
-        version.Date > new DateTime(2014, 12, 9),
-        "The version is expected to have been created since version support was introduced into the topic library."
-      );
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return appropriate topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return TopicRepository.Load(topicId, version, referenceTopic?? _cache);
+  /// <inheritdoc />
+  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
-    }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Normalize parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    version                     = NormalizeToUtc(version);
 
-  } //Class
-} //Namespace
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
+    Contract.Requires(
+      version.Date >= new DateTime(2014, 12, 9),
+      "The version is expected to have been created since version support was introduced into the topic library."
+    );
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Return appropriate topic
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return TopicRepository.Load(topicId, version, referenceTopic?? _cache);
+
+  }
+
+} //Class

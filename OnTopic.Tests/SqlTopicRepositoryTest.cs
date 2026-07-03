@@ -11,664 +11,663 @@ using OnTopic.Data.Sql;
 using OnTopic.Tests.Schemas;
 using Xunit;
 
-namespace OnTopic.Tests {
+namespace OnTopic.Tests;
+
+/*==============================================================================================================================
+| CLASS: SQL TOPIC REPOSITORY TEST
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides unit tests for the <see cref="SqlTopicRepository"/> class.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public class SqlTopicRepositoryTest {
 
   /*============================================================================================================================
-  | CLASS: SQL TOPIC REPOSITORY TEST
+  | TEST: LOAD TOPIC GRAPH: WITH TOPIC: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="SqlTopicRepository"/> class.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicsDataTable"/> record and confirms that a topic with those values is returned.
   /// </summary>
-  [ExcludeFromCodeCoverage]
-  public class SqlTopicRepositoryTest {
+  [Fact]
+  public void LoadTopicGraph_WithTopic_ReturnsTopic() {
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH TOPIC: RETURNS TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicsDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithTopic_ReturnsTopic() {
+    using var topics            = new TopicsDataTable();
 
-      using var topics          = new TopicsDataTable();
+    topics.AddRow(1, "Root", "Container", null);
 
-      topics.AddRow(1, "Root", "Container", null);
+    using var tableReader       = new DataTableReader(topics);
 
-      using var tableReader     = new DataTableReader(topics);
+    var topic                   = tableReader.LoadTopicGraph();
 
-      var topic                 = tableReader.LoadTopicGraph();
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic?.Id);
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
+  }
 
-    }
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH NEW PARENT: UPDATES PARENT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicsDataTable"/> record that represents a different parent than the existing <c>referenceTopic</c> and confirms that
+  ///   the topic's parent is updated.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithNewParent_UpdatesParent() {
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH NEW PARENT: UPDATES PARENT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicsDataTable"/> record that represents a different parent than the existing <c>referenceTopic</c> and confirms that
-    ///   the topic's parent is updated.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithNewParent_UpdatesParent() {
+    using var topics            = new TopicsDataTable();
 
-      using var topics          = new TopicsDataTable();
+    var topic                   = new Topic("Root", "Container", null, 1);
+    var parent1                 = new Topic("Parent1", "Container", topic, 2);
+    var parent2                 = new Topic("Parent2", "Container", topic, 3);
+    var child                   = new Topic("Child", "Page", parent1, 4);
 
-      var topic                 = new Topic("Root", "Container", null, 1);
-      var parent1               = new Topic("Parent1", "Container", topic, 2);
-      var parent2               = new Topic("Parent2", "Container", topic, 3);
-      var child                 = new Topic("Child", "Page", parent1, 4);
+    topics.AddRow(4, "Child", "Page", parent2.Id);
 
-      topics.AddRow(4, "Child", "Page", parent2.Id);
+    using var tableReader       = new DataTableReader(topics);
 
-      using var tableReader     = new DataTableReader(topics);
+    tableReader.LoadTopicGraph(topic);
 
-      tableReader.LoadTopicGraph(topic);
+    Assert.Equal(parent2, child.Parent);
 
-      Assert.Equal(parent2, child.Parent);
+  }
 
-    }
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH ATTRIBUTES: RETURNS ATTRIBUTES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
+  ///   AttributesDataTable"/> record and confirms that a topic with those values is returned.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithAttributes_ReturnsAttributes() {
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH ATTRIBUTES: RETURNS ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-    ///   AttributesDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithAttributes_ReturnsAttributes() {
+    using var topics            = new TopicsDataTable();
+    using var attributes        = new AttributesDataTable();
 
-      using var topics          = new TopicsDataTable();
-      using var attributes      = new AttributesDataTable();
+    topics.AddRow(1, "Root", "Container", null);
+    attributes.AddRow(1, "Test", "Value");
 
-      topics.AddRow(1, "Root", "Container", null);
-      attributes.AddRow(1, "Test", "Value");
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, attributes });
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, attributes });
+    var topic                   = tableReader.LoadTopicGraph();
 
-      var topic                 = tableReader.LoadTopicGraph();
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic?.Id);
+    Assert.Equal("Value", topic?.Attributes.GetValue("Test"));
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Equal("Value", topic?.Attributes.GetValue("Test"));
+  }
 
-    }
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH NULL ATTRIBUTES: REMOVES ATTRIBUTE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
+  ///   AttributesDataTable"/> record representing a deleted attribute and confirms that an existing reference topic with that
+  ///   attribute has the value removed.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH NULL ATTRIBUTES: REMOVES ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-    ///   AttributesDataTable"/> record representing a deleted attribute and confirms that an existing reference topic with that
-    ///   attribute has the value removed.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
+    using var topics            = new TopicsDataTable();
+    using var attributes        = new AttributesDataTable();
 
-      using var topics          = new TopicsDataTable();
-      using var attributes      = new AttributesDataTable();
+    var topic                   = new Topic("Root", "Container", null, 1);
 
-      var topic                 = new Topic("Root", "Container", null, 1);
+    topic.Attributes.SetValue("Test", "Initial Value");
 
-      topic.Attributes.SetValue("Test", "Initial Value");
+    topics.AddRow(1, "Root", "Container");
+    attributes.AddRow(1, "Test", null);
 
-      topics.AddRow(1, "Root", "Container");
-      attributes.AddRow(1, "Test", null);
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, attributes });
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, attributes });
+    tableReader.LoadTopicGraph(topic);
 
-      tableReader.LoadTopicGraph(topic);
+    Assert.Null(topic.Attributes.GetValue("Test"));
 
-      Assert.Null(topic.Attributes.GetValue("Test"));
+  }
 
-    }
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH RELATIONSHIP: RETURNS RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   RelationshipsDataTable"/> record and confirms that a topic with those values is returned.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithRelationship_ReturnsRelationship() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(2, "Web", "Container", 1);
+    relationships.AddRow(1, "Test", 2, false);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic?.Id);
+    Assert.Equal(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
+    Assert.True(topic?.Relationships.IsFullyLoaded);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: NOT FULLY LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.IsFullyLoaded"
+  ///   /> returns <c>false</c>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null);
+    relationships.AddRow(1, "Test", 2, false);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH RELATIONSHIP: RETURNS RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   RelationshipsDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithRelationship_ReturnsRelationship() {
+    var topic                   = tableReader.LoadTopicGraph();
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var relationships   = new RelationshipsDataTable();
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic.Id);
+    Assert.Empty(topic.Relationships);
+    Assert.False(topic.Relationships.IsFullyLoaded);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH REFERENCE: RETURNS REFERENCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithReference_ReturnsReference() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
 
-      topics.AddRow(1, "Root", "Container", null);
-      topics.AddRow(2, "Web", "Container", 1);
-      relationships.AddRow(1, "Test", 2, false);
+    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(2, "Web", "Container", 1);
+    references.AddRow(1, "Test", 2);
+
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    var topic                   = tableReader.LoadTopicGraph();
 
-      var topic                 = tableReader.LoadTopicGraph();
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic?.Id);
+    Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
+    Assert.True(topic?.References.IsDirty());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH EXTERNAL REFERENCE: RETURNS REFERENCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithExternalReference_ReturnsReference() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Equal(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
-      Assert.True(topic?.Relationships.IsFullyLoaded);
+    var referenceTopic          = new Topic("Web", "Container", null, 2);
 
-    }
-
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: NOT FULLY LOADED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.IsFullyLoaded"
-    ///   /> returns <c>false</c>.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
+    topics.AddRow(1, "Root", "Container", null);
+    references.AddRow(1, "Test", 2);
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var relationships   = new RelationshipsDataTable();
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-      topics.AddRow(1, "Root", "Container", null);
-      relationships.AddRow(1, "Test", 2, false);
+    var topic                   = tableReader.LoadTopicGraph(referenceTopic, false);
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic?.Id);
+    Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
+    Assert.True(topic?.References.IsFullyLoaded);
+    Assert.False(topic?.References.IsDirty());
 
-      var topic                 = tableReader.LoadTopicGraph();
+  }
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Empty(topic?.Relationships);
-      Assert.False(topic?.Relationships.IsFullyLoaded);
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicReferencesDataTable"/> record and confirms that existing references on a reference topic are deleted if they are
+  ///   <c>null</c> in the <see cref="TopicReferencesDataTable"/>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
 
-    }
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH REFERENCE: RETURNS REFERENCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithReference_ReturnsReference() {
+    var referenceTopic          = new Topic("Web", "Container", null, 1);
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var references      = new TopicReferencesDataTable();
+    referenceTopic.References.SetValue("Reference", referenceTopic);
 
-      topics.AddRow(1, "Root", "Container", null);
-      topics.AddRow(2, "Web", "Container", 1);
-      references.AddRow(1, "Test", 2);
+    topics.AddRow(1, "Web", "Container", null);
+    references.AddRow(1, "Reference", null);
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-      var topic                 = tableReader.LoadTopicGraph();
+    tableReader.LoadTopicGraph(referenceTopic, false);
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
-      Assert.True(topic?.References.IsDirty());
+    Assert.Null(referenceTopic.References.GetValue("Reference"));
+    Assert.True(referenceTopic.References.IsFullyLoaded);
 
-    }
+  }
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH EXTERNAL REFERENCE: RETURNS REFERENCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithExternalReference_ReturnsReference() {
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+  ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.IsFullyLoaded
+  ///   "/> returns <c>false</c>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var references      = new TopicReferencesDataTable();
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
 
-      var referenceTopic        = new Topic("Web", "Container", null, 2);
+    topics.AddRow(1, "Root", "Container", null);
+    references.AddRow(1, "Test", 2);
 
-      topics.AddRow(1, "Root", "Container", null);
-      references.AddRow(1, "Test", 2);
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    var topic                   = tableReader.LoadTopicGraph();
 
-      var topic                 = tableReader.LoadTopicGraph(referenceTopic, false);
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic.Id);
+    Assert.Empty(topic.References);
+    Assert.False(topic.References.IsFullyLoaded);
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
-      Assert.True(topic?.References.IsFullyLoaded);
-      Assert.False(topic?.References.IsDirty());
+  }
 
-    }
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH DELETED RELATIONSHIP: REMOVES RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a deleted <see
+  ///   cref="RelationshipsDataTable"/> record and confirms that it is deleted from the <c>referenceTopic</c> graph.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicReferencesDataTable"/> record and confirms that existing references on a reference topic are deleted if they are
-    ///   <c>null</c> in the <see cref="TopicReferencesDataTable"/>.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
+    var topic                   = new Topic("Test", "Container", null, 1);
+    var child                   = new Topic("Child", "Container", topic, 2);
+    var related                 = new Topic("Related", "Container", topic, 3);
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var references      = new TopicReferencesDataTable();
+    child.Relationships.SetValue("Test", related);
 
-      var referenceTopic        = new Topic("Web", "Container", null, 1);
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
 
-      referenceTopic.References.SetValue("Reference", referenceTopic);
+    relationships.AddRow(2, "Test", 3, true);
 
-      topics.AddRow(1, "Web", "Container", null);
-      references.AddRow(1, "Reference", null);
+    using var tableReader       = new DataTableReader(new DataTable[] { empty, empty, empty, relationships });
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    tableReader.LoadTopicGraph(related);
 
-      tableReader.LoadTopicGraph(referenceTopic, false);
+    Assert.Empty(topic.Relationships.GetValues("Test"));
 
-      Assert.Null(referenceTopic.References.GetValue("Reference"));
-      Assert.True(referenceTopic.References.IsFullyLoaded);
+  }
 
-    }
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.IsFullyLoaded
-    ///   "/> returns <c>false</c>.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var references      = new TopicReferencesDataTable();
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
+  ///   VersionHistoryDataTable"/> record and confirms that a topic with those values is returned.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
 
-      topics.AddRow(1, "Root", "Container", null);
-      references.AddRow(1, "Test", 2);
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var versions          = new VersionHistoryDataTable();
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    topics.AddRow(1, "Root", "Container", null);
+    versions.AddRow(1, DateTime.MinValue);
 
-      var topic                 = tableReader.LoadTopicGraph();
+    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, empty, versions });
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Empty(topic?.References);
-      Assert.False(topic?.References.IsFullyLoaded);
+    var topic                   = tableReader.LoadTopicGraph();
 
-    }
+    Assert.NotNull(topic);
+    Assert.Equal(1, topic.Id);
+    Assert.Single(topic.VersionHistory);
+    Assert.Contains(DateTime.MinValue, topic.VersionHistory);
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH DELETED RELATIONSHIP: REMOVES RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a deleted <see
-    ///   cref="RelationshipsDataTable"/> record and confirms that it is deleted from the <c>referenceTopic</c> graph.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
+  }
 
-      var topic                 = new Topic("Test", "Container", null, 1);
-      var child                 = new Topic("Child", "Container", topic, 2);
-      var related               = new Topic("Related", "Container", topic, 3);
+  /*============================================================================================================================
+  | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Constructs a <see cref="Data.Sql.Models.TopicListDataTable"/> and calls <see cref="Data.Sql.Models.TopicListDataTable.
+  ///   AddRow(Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is returned.
+  /// </summary>
+  [Fact]
+  public void TopicListDataTable_AddRow_Succeeds() {
 
-      child.Relationships.SetValue("Test", related);
+    var dataTable               = new Data.Sql.Models.TopicListDataTable();
 
-      using var empty           = new AttributesDataTable();
-      using var relationships   = new RelationshipsDataTable();
+    dataTable.AddRow(1);
+    dataTable.AddRow(2);
+    dataTable.AddRow(2);
 
-      relationships.AddRow(2, "Test", 3, true);
+    Assert.Equal(3, dataTable.Rows.Count);
+    Assert.Single(dataTable.Columns);
 
-      using var tableReader     = new DataTableReader(new DataTable[] { empty, empty, empty, relationships });
+    dataTable.Dispose();
 
-      tableReader.LoadTopicGraph(related);
+  }
 
-      Assert.Empty(topic.Relationships.GetValues("Test"));
+  /*============================================================================================================================
+  | TEST: ATTRIBUTE VALUES DATA TABLE: ADD ROW: SUCCEEDS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
+  ///   AttributeValuesDataTable.AddRow(String, String?)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
+  ///   returned.
+  /// </summary>
+  [Fact]
+  public void AttributeValuesDataTable_AddRow_Succeeds() {
 
-    }
+    var dataTable               = new Data.Sql.Models.AttributeValuesDataTable();
 
+    dataTable.AddRow("Key", "Test");
+    dataTable.AddRow("ContentType", "Page");
+    dataTable.AddRow("ParentId", "4");
 
+    Assert.Equal(3, dataTable.Rows.Count);
+    Assert.Equal(2, dataTable.Columns.Count);
 
-    /*==========================================================================================================================
-    | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-    ///   VersionHistoryDataTable"/> record and confirms that a topic with those values is returned.
-    /// </summary>
-    [Fact]
-    public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
+    dataTable.Dispose();
 
-      using var topics          = new TopicsDataTable();
-      using var empty           = new AttributesDataTable();
-      using var versions        = new VersionHistoryDataTable();
+  }
 
-      topics.AddRow(1, "Root", "Container", null);
-      versions.AddRow(1, DateTime.MinValue);
+  /*============================================================================================================================
+  | TEST: TOPIC REFERENCES DATA TABLE: ADD ROW: SUCCEEDS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
+  ///   TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
+  ///   returned.
+  /// </summary>
+  [Fact]
+  public void TopicReferencesDataTable_AddRow_Succeeds() {
 
-      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, empty, versions });
+    var dataTable               = new Data.Sql.Models.TopicReferencesDataTable();
 
-      var topic                 = tableReader.LoadTopicGraph();
+    dataTable.AddRow("BaseTopic", 1);
+    dataTable.AddRow("Parent",  2);
+    dataTable.AddRow("RootTopic", 3);
 
-      Assert.NotNull(topic);
-      Assert.Equal(1, topic?.Id);
-      Assert.Single(topic?.VersionHistory);
-      Assert.True(topic?.VersionHistory.Contains(DateTime.MinValue));
+    Assert.Equal(3, dataTable.Rows.Count);
+    Assert.Equal(2, dataTable.Columns.Count);
 
-    }
+    dataTable.Dispose();
 
-    /*==========================================================================================================================
-    | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Constructs a <see cref="Data.Sql.Models.TopicListDataTable"/> and calls <see cref="Data.Sql.Models.TopicListDataTable.
-    ///   AddRow(Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is returned.
-    /// </summary>
-    [Fact]
-    public void TopicListDataTable_AddRow_Succeeds() {
+  }
 
-      var dataTable             = new Data.Sql.Models.TopicListDataTable();
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: STRING
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_String() {
 
-      dataTable.AddRow(1);
-      dataTable.AddRow(2);
-      dataTable.AddRow(2);
+    var command                 = new SqlCommand();
 
-      Assert.Equal(3, dataTable.Rows.Count);
-      Assert.Single(dataTable.Columns);
+    command.AddParameter("TopicKey", "Root");
 
-      dataTable.Dispose();
+    var sqlParameter            = command.Parameters["@TopicKey"];
 
-    }
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@TopicKey"));
+    Assert.Equal("Root", (string?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
-    /*==========================================================================================================================
-    | TEST: ATTRIBUTE VALUES DATA TABLE: ADD ROW: SUCCEEDS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
-    ///   AttributeValuesDataTable.AddRow(String, String?)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
-    ///   returned.
-    /// </summary>
-    [Fact]
-    public void AttributeValuesDataTable_AddRow_Succeeds() {
+    command.Dispose();
 
-      var dataTable             = new Data.Sql.Models.AttributeValuesDataTable();
+  }
 
-      dataTable.AddRow("Key", "Test");
-      dataTable.AddRow("ContentType", "Page");
-      dataTable.AddRow("ParentId", "4");
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: NULL STRING
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_NullString() {
 
-      Assert.Equal(3, dataTable.Rows.Count);
-      Assert.Equal(2, dataTable.Columns.Count);
+    var command                 = new SqlCommand();
 
-      dataTable.Dispose();
+    command.AddParameter("TopicKey", (string?)null);
 
-    }
+    var sqlParameter            = command.Parameters["@TopicKey"];
 
-    /*==========================================================================================================================
-    | TEST: TOPIC REFERENCES DATA TABLE: ADD ROW: SUCCEEDS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
-    ///   TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
-    ///   returned.
-    /// </summary>
-    [Fact]
-    public void TopicReferencesDataTable_AddRow_Succeeds() {
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@TopicKey"));
+    Assert.Null(sqlParameter?.Value);
+    Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
 
-      var dataTable             = new Data.Sql.Models.TopicReferencesDataTable();
+    command.Dispose();
 
-      dataTable.AddRow("BaseTopic", 1);
-      dataTable.AddRow("Parent", 2);
-      dataTable.AddRow("RootTopic", 3);
+  }
 
-      Assert.Equal(3, dataTable.Rows.Count);
-      Assert.Equal(2, dataTable.Columns.Count);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: INT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_Int() {
 
-      dataTable.Dispose();
+    var command                 = new SqlCommand();
 
-    }
+    command.AddParameter("TopicId", 5);
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: STRING
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_String() {
+    var sqlParameter            = command.Parameters["@TopicId"];
 
-      var command               = new SqlCommand();
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@TopicId"));
+    Assert.Equal(5, (int?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
-      command.AddParameter("TopicKey", "Root");
+    command.Dispose();
 
-      var sqlParameter          = command.Parameters["@TopicKey"];
+  }
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@TopicKey"));
-      Assert.Equal("Root", (string?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: BOOL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_Bool() {
 
-      command.Dispose();
+    var command                 = new SqlCommand();
 
-    }
+    command.AddParameter("IsHidden", true);
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: NULL STRING
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_NullString() {
+    var sqlParameter            = command.Parameters["@IsHidden"];
 
-      var command               = new SqlCommand();
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@IsHidden"));
+    Assert.Equal(true, (bool?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.Bit, sqlParameter?.SqlDbType);
 
-      command.AddParameter("TopicKey", (string?)null);
+    command.Dispose();
 
-      var sqlParameter          = command.Parameters["@TopicKey"];
+  }
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@TopicKey"));
-      Assert.Null(sqlParameter?.Value);
-      Assert.Equal(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: DATE/TIME
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_DateTime() {
 
-      command.Dispose();
+    var command                 = new SqlCommand();
+    var lastModified            = DateTime.UtcNow;
 
-    }
+    command.AddParameter("LastModified", lastModified);
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: INT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_Int() {
+    var sqlParameter            = command.Parameters["@LastModified"];
 
-      var command               = new SqlCommand();
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@LastModified"));
+    Assert.Equal(lastModified,  (DateTime?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
 
-      command.AddParameter("TopicId", 5);
+    command.Dispose();
 
-      var sqlParameter          = command.Parameters["@TopicId"];
+  }
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal(5, (int?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: DATA TABLE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_DataTable() {
 
-      command.Dispose();
+    var command                 = new SqlCommand();
+    var dataTable               = new Data.Sql.Models.TopicListDataTable();
 
-    }
+    command.AddParameter("Relationships", dataTable);
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: BOOL
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_Bool() {
+    var sqlParameter            = command.Parameters["@Relationships"];
 
-      var command               = new SqlCommand();
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@Relationships"));
+    Assert.Equal(dataTable, (DataTable?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.Structured, sqlParameter?.SqlDbType);
 
-      command.AddParameter("IsHidden", true);
+    command.Dispose();
+    dataTable.Dispose();
 
-      var sqlParameter          = command.Parameters["@IsHidden"];
+  }
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@IsHidden"));
-      Assert.Equal(true, (bool?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.Bit, sqlParameter?.SqlDbType);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD PARAMETER: STRING BUILDER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddParameter_StringBuilder() {
 
-      command.Dispose();
+    var command                 = new SqlCommand();
+    var xml                     = new StringBuilder();
 
-    }
+    command.AddParameter("AttributesXml", xml);
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: DATE/TIME
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_DateTime() {
+    var sqlParameter            = command.Parameters["@AttributesXml"];
 
-      var command               = new SqlCommand();
-      var lastModified          = DateTime.UtcNow;
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@AttributesXml"));
+    Assert.Equal(xml.ToString(), (string?)sqlParameter?.Value);
+    Assert.Equal(SqlDbType.Xml, sqlParameter?.SqlDbType);
 
-      command.AddParameter("LastModified", lastModified);
+    command.Dispose();
 
-      var sqlParameter          = command.Parameters["@LastModified"];
+  }
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@LastModified"));
-      Assert.Equal(lastModified, (DateTime?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN CODE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddOutputParameter_ReturnCode() {
 
-      command.Dispose();
+    var command                 = new SqlCommand();
 
-    }
+    command.AddOutputParameter("TopicId");
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: DATA TABLE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_DataTable() {
+    var sqlParameter            = command.Parameters["@TopicId"];
 
-      var command               = new SqlCommand();
-      var dataTable             = new Data.Sql.Models.TopicListDataTable();
+    sqlParameter.Value          = 5;
 
-      command.AddParameter("Relationships", dataTable);
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@TopicId"));
+    Assert.Equal(5, command.GetReturnCode("TopicId"));
+    Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+    Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
-      var sqlParameter          = command.Parameters["@Relationships"];
+    command.Dispose();
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@Relationships"));
-      Assert.Equal(dataTable, (DataTable?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.Structured, sqlParameter?.SqlDbType);
+  }
 
-      command.Dispose();
-      dataTable.Dispose();
+  /*============================================================================================================================
+  | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN DEFAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+  ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method. Ensures the default return code is
+  ///   returned, if the value isn't explicitly set.
+  /// </summary>
+  [Fact]
+  public void SqlCommand_AddOutputParameter_ReturnsDefault() {
 
-    }
+    var command                 = new SqlCommand();
 
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD PARAMETER: STRING BUILDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddParameter_StringBuilder() {
+    command.AddOutputParameter("TopicId");
 
-      var command               = new SqlCommand();
-      var xml                   = new StringBuilder();
+    var sqlParameter            = command.Parameters["@TopicId"];
 
-      command.AddParameter("AttributesXml", xml);
+    Assert.Single(command.Parameters);
+    Assert.True(command.Parameters.Contains("@TopicId"));
+    Assert.Equal(-1, command.GetReturnCode("TopicId"));
+    Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+    Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
 
-      var sqlParameter          = command.Parameters["@AttributesXml"];
+    command.Dispose();
 
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@AttributesXml"));
-      Assert.Equal(xml.ToString(), (string?)sqlParameter?.Value);
-      Assert.Equal(SqlDbType.Xml, sqlParameter?.SqlDbType);
+  }
 
-      command.Dispose();
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN CODE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddOutputParameter_ReturnCode() {
-
-      var command               = new SqlCommand();
-
-      command.AddOutputParameter("TopicId");
-
-      var sqlParameter          = command.Parameters["@TopicId"];
-
-      sqlParameter.Value        = 5;
-
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal(5, command.GetReturnCode("TopicId"));
-      Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
-
-      command.Dispose();
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN DEFAULT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method. Ensures the default return code is
-    ///   returned, if the value isn't explicitly set.
-    /// </summary>
-    [Fact]
-    public void SqlCommand_AddOutputParameter_ReturnsDefault() {
-
-      var command               = new SqlCommand();
-
-      command.AddOutputParameter("TopicId");
-
-      var sqlParameter          = command.Parameters["@TopicId"];
-
-      Assert.Single(command.Parameters);
-      Assert.True(command.Parameters.Contains("@TopicId"));
-      Assert.Equal(-1, command.GetReturnCode("TopicId"));
-      Assert.Equal(ParameterDirection.ReturnValue, sqlParameter?.Direction);
-      Assert.Equal(SqlDbType.Int, sqlParameter?.SqlDbType);
-
-      command.Dispose();
-
-    }
-
-  } //Class
-} //Namespace
+} //Class

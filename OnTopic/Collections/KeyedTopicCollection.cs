@@ -4,25 +4,24 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
-namespace OnTopic.Collections {
+namespace OnTopic.Collections;
+
+/*==============================================================================================================================
+| CLASS: KEYED TOPIC COLLECTION
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Represents a collection of <see cref="Topic"/> objects.
+/// </summary>
+public class KeyedTopicCollection : KeyedTopicCollection<Topic> {
 
   /*============================================================================================================================
-  | CLASS: KEYED TOPIC COLLECTION
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents a collection of <see cref="Topic"/> objects.
+  ///   Initializes a new instance of the <see cref="KeyedTopicCollection{T}"/>.
   /// </summary>
-  public class KeyedTopicCollection : KeyedTopicCollection<Topic> {
+  /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
+  public KeyedTopicCollection(IEnumerable<Topic>? topics = null) : base(topics) {
+  }
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="KeyedTopicCollection{T}"/>.
-    /// </summary>
-    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public KeyedTopicCollection(IEnumerable<Topic>? topics = null) : base(topics) {
-    }
-
-  } //Class
-} //Namespace
+} //Class

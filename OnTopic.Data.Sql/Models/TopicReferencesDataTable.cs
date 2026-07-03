@@ -4,71 +4,71 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
-namespace OnTopic.Data.Sql.Models {
+namespace OnTopic.Data.Sql.Models;
+
+/*==============================================================================================================================
+| CLASS: TOPIC REFERENCES (DATA TABLE)
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Extends <see cref="DataTable"/> to model the schema for the <c>TopicReferences</c> user-defined table type.
+/// </summary>
+internal sealed class TopicReferencesDataTable: DataTable {
 
   /*============================================================================================================================
-  | CLASS: TOPIC REFERENCES (DATA TABLE)
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Extends <see cref="DataTable"/> to model the schema for the <c>TopicReferences</c> user-defined table type.
+  ///   Establishes a new <see cref="DataTable"/> with the appropriate schema for the <c>TopicReferences</c> user-defined
+  ///   table type.
   /// </summary>
-  internal class TopicReferencesDataTable: DataTable {
+  internal TopicReferencesDataTable() {
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | COLUMN: Reference Key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new <see cref="DataTable"/> with the appropriate schema for the <c>TopicReferences</c> user-defined
-    ///   table type.
-    /// </summary>
-    internal TopicReferencesDataTable() {
+    Columns.Add(
+      new DataColumn("ReferenceKey") {
+        MaxLength               = 128
+      }
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | COLUMN: Reference Key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(
-        new DataColumn("ReferenceKey") {
-          MaxLength             = 128
-        }
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | COLUMN: Topic ID
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(
-        new DataColumn("TopicID", typeof(int))
-      );
-
-    }
-
-    /*==========================================================================================================================
-    | ADD ROW
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | COLUMN: Topic ID
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
-    /// </summary>
-    /// <param name="referenceKey">The key to associated the referenced <see cref="Topic"/> with.</param>
-    /// <param name="topicId">The <see cref="Topic.Id"/> of the related <see cref="Topic"/>.</param>
-    internal DataRow AddRow(string referenceKey, int topicId) {
+    Columns.Add(
+      new DataColumn("TopicID", typeof(int))
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var record                = NewRow();
-      record["ReferenceKey"]    = referenceKey;
-      record["TopicID"]         = topicId;
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Rows.Add(record);
+  /*============================================================================================================================
+  | ADD ROW
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
+  /// </summary>
+  /// <param name="referenceKey">The key to associated the referenced <see cref="Topic"/> with.</param>
+  /// <param name="topicId">The <see cref="Topic.Id"/> of the related <see cref="Topic"/>.</param>
+  internal DataRow AddRow(string referenceKey, int topicId) {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return record
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return record;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Define record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var record                  = NewRow();
+    record["ReferenceKey"]      = referenceKey;
+    record["TopicID"]           = topicId;
 
-    }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Add record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Rows.Add(record);
 
-  } //Class
-} //Namespaces
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Return record
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return record;
+
+  }
+
+} //Class
+//Namespaces

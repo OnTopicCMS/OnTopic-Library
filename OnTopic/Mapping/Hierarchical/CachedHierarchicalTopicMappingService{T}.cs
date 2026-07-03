@@ -6,98 +6,97 @@
 using System.Collections.Concurrent;
 using OnTopic.Models;
 
-namespace OnTopic.Mapping.Hierarchical {
+namespace OnTopic.Mapping.Hierarchical;
+
+/*==============================================================================================================================
+| CLASS: CACHED HIERARCHICAL TOPIC MAPPING SERVICE
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides a wrapper to a <see cref="IHierarchicalTopicMappingService{T}"/> implementation with support for caching.
+/// </summary>
+/// <remarks>
+///   By comparison to the <see cref="HierarchicalTopicMappingService{T}"/>, the <see
+///   cref="CachedHierarchicalTopicMappingService{T}"/> will automatically cache the <see
+///   cref="IHierarchicalTopicViewModel{T}"/> graph for each action that uses the protected <see
+///   cref="IHierarchicalTopicMappingService{T}.GetViewModelAsync(Topic, Int32, Func{Topic, Boolean})"/> method to construct
+///   the graph. This is preferable over using e.g. the <see cref="CachedTopicMappingService"/> since the <see
+///   cref="IHierarchicalTopicMappingService{T}"/> requires tight control over the shape of the <see
+///   cref="IHierarchicalTopicViewModel{T}"/> graph. For instance, using a generic caching decorator for the mapping might
+///   result in the edges of the graph being expanded due to other actions reusing cached instances (e.g., for page-level
+///   navigation). To mitigate this, the <see cref="CachedHierarchicalTopicMappingService{T}"/> handles top-level caching at
+///   the level of the hierarchy's root.
+/// </remarks>
+public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappingService<T>
+  where T : class, IHierarchicalTopicViewModel<T>, new() {
 
   /*============================================================================================================================
-  | CLASS: CACHED HIERARCHICAL TOPIC MAPPING SERVICE
+  | STATIC VARIABLES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private readonly ConcurrentDictionary<int, T?> _cache = new();
+  private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService;
+
+  /*============================================================================================================================
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a wrapper to a <see cref="IHierarchicalTopicMappingService{T}"/> implementation with support for caching.
+  ///   Initializes a new instance of a <see cref="CachedHierarchicalTopicMappingService{T}"/> based on an underlying
+  ///   implementation of a <see cref="HierarchicalTopicMappingService{T}"/>.
   /// </summary>
-  /// <remarks>
-  ///   By comparison to the <see cref="HierarchicalTopicMappingService{T}"/>, the <see
-  ///   cref="CachedHierarchicalTopicMappingService{T}"/> will automatically cache the <see
-  ///   cref="IHierarchicalTopicViewModel{T}"/> graph for each action that uses the protected <see
-  ///   cref="IHierarchicalTopicMappingService{T}.GetViewModelAsync(Topic, Int32, Func{Topic, Boolean})"/> method to construct
-  ///   the graph. This is preferable over using e.g. the <see cref="CachedTopicMappingService"/> since the <see
-  ///   cref="IHierarchicalTopicMappingService{T}"/> requires tight control over the shape of the <see
-  ///   cref="IHierarchicalTopicViewModel{T}"/> graph. For instance, using a generic caching decorator for the mapping might
-  ///   result in the edges of the graph being expanded due to other actions reusing cached instances (e.g., for page-level
-  ///   navigation). To mitigate this, the <see cref="CachedHierarchicalTopicMappingService{T}"/> handles top-level caching at
-  ///   the level of the hierarchy's root.
-  /// </remarks>
-  public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappingService<T>
-    where T : class, IHierarchicalTopicViewModel<T>, new() {
+  /// <returns>An instance of a <see cref="CachedHierarchicalTopicMappingService{T}"/>.</returns>
+  public CachedHierarchicalTopicMappingService(
+    IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
+  ) {
+    _hierarchicalTopicMappingService = hierarchicalTopicMappingService;
+  }
 
-    /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<int, T?> _cache = new();
-    private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService;
+  /*============================================================================================================================
+  | GET HIERARCHICAL ROOT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
+    _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+  /*============================================================================================================================
+  | GET ROOT VIEW MODEL (ASYNC)
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  public async Task<T?> GetRootViewModelAsync(
+    Topic? sourceTopic,
+    int tiers = 1,
+    Func<Topic, bool>? validationDelegate = null
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Handle empty results
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of a <see cref="CachedHierarchicalTopicMappingService{T}"/> based on an underlying
-    ///   implementation of a <see cref="HierarchicalTopicMappingService{T}"/>.
-    /// </summary>
-    /// <returns>An instance of a <see cref="CachedHierarchicalTopicMappingService{T}"/>.</returns>
-    public CachedHierarchicalTopicMappingService(
-      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
-    ) {
-      _hierarchicalTopicMappingService = hierarchicalTopicMappingService;
+    if (sourceTopic is null) {
+      return await Task<T?>.FromResult<T?>(null).ConfigureAwait(false);
     }
 
-    /*==========================================================================================================================
-    | GET HIERARCHICAL ROOT
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Handle cache hits
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
-      _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
-
-    /*==========================================================================================================================
-    | GET ROOT VIEW MODEL (ASYNC)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public async Task<T?> GetRootViewModelAsync(
-      Topic? sourceTopic,
-      int tiers = 1,
-      Func<Topic, bool>? validationDelegate = null
-    ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle empty results
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceTopic is null) {
-        return await Task<T?>.FromResult<T?>(null).ConfigureAwait(false);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle cache hits
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_cache.TryGetValue(sourceTopic.Id, out var dto)) {
-        return await Task<T?>.FromResult<T?>(dto).ConfigureAwait(false);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Cache and return new version
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel = await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
-      return _cache.GetOrAdd(sourceTopic.Id, viewModel);
-
+    if (_cache.TryGetValue(sourceTopic.Id, out var dto)) {
+      return await Task<T?>.FromResult<T?>(dto).ConfigureAwait(false);
     }
 
-    /*==========================================================================================================================
-    | GET VIEW MODEL (ASYNC)
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Cache and return new version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public async Task<T?> GetViewModelAsync(
-      Topic? sourceTopic,
-      int tiers = 1,
-      Func<Topic, bool>? validationDelegate = null
-    ) =>
-      await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
+    var viewModel = await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
+    return _cache.GetOrAdd(sourceTopic.Id, viewModel);
 
-  } //Class
-} //Namespace
+  }
+
+  /*============================================================================================================================
+  | GET VIEW MODEL (ASYNC)
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  public async Task<T?> GetViewModelAsync(
+    Topic? sourceTopic,
+    int tiers = 1,
+    Func<Topic, bool>? validationDelegate = null
+  ) =>
+    await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
+
+} //Class

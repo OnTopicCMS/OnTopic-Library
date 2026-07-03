@@ -5,21 +5,20 @@
 \=============================================================================================================================*/
 using OnTopic.TestDoubles.Metadata;
 
-namespace OnTopic.Tests.BindingModels {
+namespace OnTopic.Tests.BindingModels;
 
-  /*============================================================================================================================
-  | BINDING MODEL: TEXT ATTRIBUTE (DESCRIPTOR)
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Provides a minimal implementation of a custom topic binding model with a couple of scalar values mapping to properties
-  ///   on the <see cref="TextAttributeDescriptor"/> content type.
-  /// </summary>
-  /// <remarks>
-  ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
-  /// </remarks>
-  public class TextAttributeTopicBindingModel : AttributeDescriptorTopicBindingModel {
+/*==============================================================================================================================
+| BINDING MODEL: TEXT ATTRIBUTE (DESCRIPTOR)
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Provides a minimal implementation of a custom topic binding model with a couple of scalar values mapping to properties
+///   on the <see cref="TextAttributeDescriptor"/> content type.
+/// </summary>
+/// <remarks>
+///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+/// </remarks>
+public class TextAttributeTopicBindingModel : AttributeDescriptorTopicBindingModel {
 
-    public TextAttributeTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
+  public TextAttributeTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
 
-  } //Class
-} //Namespace
+} //Class

@@ -15,147 +15,146 @@ using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.ViewModels;
 
-namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
+namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
+
+/*==============================================================================================================================
+| CLASS: SAMPLE ACTIVATOR
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   Responsible for creating instances of factories in response to web requests. Represents the Composition Root for
+///   Dependency Injection.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public class SampleActivator :  IControllerActivator, IViewComponentActivator {
 
   /*============================================================================================================================
-  | CLASS: SAMPLE ACTIVATOR
+  | PRIVATE INSTANCES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private readonly              ITypeLookupService              _typeLookupService;
+  private readonly              ITopicMappingService            _topicMappingService;
+  private readonly              ITopicRepository                _topicRepository;
+
+  /*============================================================================================================================
+  | HIERARCHICAL TOPIC MAPPING SERVICE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
+
+  /*============================================================================================================================
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Responsible for creating instances of factories in response to web requests. Represents the Composition Root for
-  ///   Dependency Injection.
+  ///   Establishes a new instance of the <see cref="SampleActivator"/>, including any shared dependencies to be used across
+  ///   instances of controllers.
   /// </summary>
-  [ExcludeFromCodeCoverage]
-  public class SampleActivator : IControllerActivator, IViewComponentActivator {
+  /// <remarks>
+  ///   The constructor is responsible for establishing dependencies with the singleton lifestyle so that they are available
+  ///   to all requests.
+  /// </remarks>
+  public SampleActivator() {
 
-    /*==========================================================================================================================
-    | PRIVATE INSTANCES
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Initialize Topic Repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITypeLookupService              _typeLookupService;
-    private readonly            ITopicMappingService            _topicMappingService;
-    private readonly            ITopicRepository                _topicRepository;
+    var                         sqlTopicRepository              = new StubTopicRepository();
+    var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
+    _                                                         = new PageTopicViewModel();
 
-    /*==========================================================================================================================
-    | HIERARCHICAL TOPIC MAPPING SERVICE
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
+    _topicRepository                                          = cachedTopicRepository;
+    _typeLookupService                                        = new DynamicTopicViewModelLookupService();
+    _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
+    _                                                         = _topicRepository.Load();
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish hierarchical topic mapping service
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new instance of the <see cref="SampleActivator"/>, including any shared dependencies to be used across
-    ///   instances of controllers.
-    /// </summary>
-    /// <remarks>
-    ///   The constructor is responsible for establishing dependencies with the singleton lifestyle so that they are available
-    ///   to all requests.
-    /// </remarks>
-    public SampleActivator() {
+    _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
+      new HierarchicalTopicMappingService<NavigationTopicViewModel>(
+        _topicRepository,
+        _topicMappingService
+      )
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize Topic Repository
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       sqlTopicRepository              = new StubTopicRepository();
-      var                       cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-      _                                                         = new PageTopicViewModel();
+  }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Preload repository
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository                                          = cachedTopicRepository;
-      _typeLookupService                                        = new DynamicTopicViewModelLookupService();
-      _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-      _                                                         = _topicRepository.Load();
+  /*============================================================================================================================
+  | METHOD: CREATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Registers dependencies, and injects them into new instances of controllers in response to each request.
+  /// </summary>
+  /// <returns>A concrete instance of an <see cref="Controller"/>.</returns>
+  public object Create(ControllerContext context) {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish hierarchical topic mapping service
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
-        new HierarchicalTopicMappingService<NavigationTopicViewModel>(
-          _topicRepository,
-          _topicMappingService
-        )
-      );
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: CREATE
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Registers dependencies, and injects them into new instances of controllers in response to each request.
-    /// </summary>
-    /// <returns>A concrete instance of an <see cref="Controller"/>.</returns>
-    public object Create(ControllerContext context) {
+    Contract.Requires(context,  nameof(context));
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(context, nameof(context));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Determine controller type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Configure and return appropriate controller
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return type.Name switch {
-        nameof(TopicController) =>
-          new TopicController(_topicRepository, _topicMappingService),
-        nameof(AreaController) =>
-          new AreaController(_topicRepository, _topicMappingService),
-        nameof(ErrorController) =>
-          new ErrorController(_topicRepository, _topicMappingService),
-        nameof(ControllerController) =>
-          new ControllerController(),
-        nameof(SitemapController) =>
-          new SitemapController(_topicRepository),
-        nameof(RedirectController) =>
-          new RedirectController(_topicRepository),
-        _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
-      };
-
-    }
-
-    /// <summary>
-    ///   Registers dependencies, and injects them into new instances of view components in response to each request.
-    /// </summary>
-    /// <returns>A concrete instance of an <see cref="ViewComponent"/>.</returns>
-    public object Create(ViewComponentContext context) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(context, nameof(context));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Determine view component type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var type = context.ViewComponentDescriptor.TypeInfo.AsType();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Configure and return appropriate view component
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return type.Name switch {
-        _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
-      };
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: RELEASE
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Determine controller type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Responds to a request to release resources associated with a particular controller.
-    /// </summary>
-    public void Release(ControllerContext context, object controller) { }
+    var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
-    /// <summary>
-    ///   Responds to a request to release resources associated with a particular view component.
-    /// </summary>
-    public void Release(ViewComponentContext context, object viewComponent) { }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Configure and return appropriate controller
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return type.Name switch {
+      nameof(TopicController) =>
+        new TopicController(_topicRepository, _topicMappingService),
+      nameof(AreaController) =>
+        new AreaController(_topicRepository, _topicMappingService),
+      nameof(ErrorController) =>
+        new ErrorController(_topicRepository, _topicMappingService),
+      nameof(ControllerController) =>
+        new ControllerController(),
+      nameof(SitemapController) =>
+        new SitemapController(_topicRepository),
+      nameof(RedirectController) =>
+        new RedirectController(_topicRepository),
+      _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
+    };
 
-  } //Class
-} //Namespace
+  }
+
+  /// <summary>
+  ///   Registers dependencies, and injects them into new instances of view components in response to each request.
+  /// </summary>
+  /// <returns>A concrete instance of an <see cref="ViewComponent"/>.</returns>
+  public object Create(ViewComponentContext context) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(context,  nameof(context));
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Determine view component type
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var type = context.ViewComponentDescriptor.TypeInfo.AsType();
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Configure and return appropriate view component
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return type.Name switch {
+      _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
+    };
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: RELEASE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Responds to a request to release resources associated with a particular controller.
+  /// </summary>
+  public void Release(ControllerContext context, object controller) { }
+
+  /// <summary>
+  ///   Responds to a request to release resources associated with a particular view component.
+  /// </summary>
+  public void Release(ViewComponentContext context, object viewComponent) { }
+
+} //Class

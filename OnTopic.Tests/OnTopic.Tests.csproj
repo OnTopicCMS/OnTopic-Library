@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <NoWarn>CS1591</NoWarn>
+    <NoWarn>CS1591;CA1515;CA1024</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

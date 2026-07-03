@@ -4,61 +4,60 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
-namespace OnTopic.Repositories {
+namespace OnTopic.Repositories;
+
+/*==============================================================================================================================
+| CLASS: TOPIC EVENT ARGUMENTS
+\-----------------------------------------------------------------------------------------------------------------------------*/
+/// <summary>
+///   The <see cref="TopicEventArgs"/> class defines an event argument type shared among <see cref="ITopicRepository"/>
+///   events. It contains the <see cref="Topic"/> being operated against.
+/// </summary>
+/// <remarks>
+///   All <see cref="ITopicRepository"/> events share at least one shared element: the <see cref="Topic"/> being operated
+///   against. Some, such as the <see cref="ITopicRepository.TopicDeleted"/>, <i>only</i> relate to that information. Others,
+///   such as <see cref="ITopicRepository.TopicMoved"/>, need additional information, and thus offer derived classes, such as
+///   <see cref="TopicMoveEventArgs"/>, to capture additional information.
+/// </remarks>
+public class TopicEventArgs :   EventArgs {
 
   /*============================================================================================================================
-  | CLASS: TOPIC EVENT ARGUMENTS
+  | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="TopicEventArgs"/> class defines an event argument type shared among <see cref="ITopicRepository"/>
-  ///   events. It contains the <see cref="Topic"/> being operated against.
+  ///   Initializes a new instance of the <see cref="TopicEventArgs"/> class.
   /// </summary>
-  /// <remarks>
-  ///   All <see cref="ITopicRepository"/> events share at least one shared element: the <see cref="Topic"/> being operated
-  ///   against. Some, such as the <see cref="ITopicRepository.TopicDeleted"/>, <i>only</i> relate to that information. Others,
-  ///   such as <see cref="ITopicRepository.TopicMoved"/>, need additional information, and thus offer derived classes, such as
-  ///   <see cref="TopicMoveEventArgs"/>, to capture additional information.
-  /// </remarks>
-  public class TopicEventArgs : EventArgs {
+  /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
+  /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
+  public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
 
-    /*==========================================================================================================================
-    | CONSTRUCTOR
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Vaidate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicEventArgs"/> class.
-    /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
-    /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
-    public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
+    Contract.Requires(topic, nameof(topic));
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Vaidate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, nameof(topic));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize properties
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic                     = topic;
-      IsRecursive               = isRecursive;
-
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: TOPIC
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Initialize properties
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Getter that returns the Topic object associated with the event
-    /// </summary>
-    public Topic Topic { get; set; }
+    Topic                       = topic;
+    IsRecursive                 = isRecursive;
 
-    /*==========================================================================================================================
-    | PROPERTY: IS RECURSIVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the descendents of the <see cref="Topic"/> are also impacted by this operation.
-    /// </summary>
-    public bool IsRecursive { get; set; }
+  }
 
-  } //Class
-} //Namespace
+  /*============================================================================================================================
+  | PROPERTY: TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Getter that returns the Topic object associated with the event
+  /// </summary>
+  public Topic Topic { get; set; }
+
+  /*============================================================================================================================
+  | PROPERTY: IS RECURSIVE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Gets or sets the descendents of the <see cref="Topic"/> are also impacted by this operation.
+  /// </summary>
+  public bool IsRecursive { get; set; }
+
+} //Class
