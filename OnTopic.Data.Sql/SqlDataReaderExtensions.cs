@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Diagnostics;
 using System.Net;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
 
@@ -71,6 +70,8 @@ internal static class SqlDataReaderExtensions {
     var sqlDataReader           = reader as SqlDataReader;
     var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
     var rootTopic               = (Topic?)null;
+    var preExistingIds          = new HashSet<int>(topics.Keys);
+    var hasChildrenMap          = new Dictionary<int, bool>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate topics
@@ -79,7 +80,7 @@ internal static class SqlDataReaderExtensions {
     while (reader.Read()) {
 
       // Add the topic to the topic graph
-      var addedTopic = reader.AddTopic(topics, markDirty);
+      var addedTopic            = reader.AddTopic(topics, markDirty);
 
       // The first topic returned is the root topic; store it for the return value
       rootTopic                 ??= addedTopic;
@@ -90,6 +91,37 @@ internal static class SqlDataReaderExtensions {
         addedTopic.Attributes.LoadState = LoadState.NotLoaded;
       }
 
+      // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics.
+      // Pre-existing topics are excluded; their LoadState is already established, and they may have the lazy resolver wired up.
+      if (!preExistingIds.Contains(addedTopic.Id) && reader.GetNullableBoolean("HasChildren") is { } hasChildren) {
+        hasChildrenMap[addedTopic.Id] = hasChildren;
+      }
+
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Stamp Children.LoadState
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    // Identifies the ancestor tree, stopping at the first pre-existing (i.e., not newly loaded) topic. Newly introduced
+    // ancestors have exactly one child loaded (from the ancestor crawl), but may have more; as such, they will be marked as
+    // NotLoaded. Note: An ancestor whose sole database child is part of the ancestor chain is still marked NotLoaded, since we
+    // don't have enough information to verify that. This is an unlikely scenario, but will cost one extra round-trip to verify.
+    var ancestorIds             = new HashSet<int>();
+    if (topics.TryGetValue(seedTopicId, out var seedTopic)) {
+      var ancestor              = seedTopic.Parent;
+      while (ancestor is not null && hasChildrenMap.ContainsKey(ancestor.Id)) {
+        ancestorIds.Add(ancestor.Id);
+        ancestor                = ancestor.Parent;
+      }
+    }
+
+    // HasChildren NULL (i.e., absent from the map) means the topic was not newly loaded or the column is not applicable;
+    // either way, skip. Ancestors with children are NotLoaded (partial load); other topics check whether any children were
+    // loaded, implying that @HasChildren or @LoadDescendants was passed, and thus its children are fully loaded.
+    foreach (var (id, hasChildren) in hasChildrenMap) {
+      var topic                 = topics[id];
+      var isNotLoaded           = hasChildren && (ancestorIds.Contains(id) || topic.Children.Count == 0);
+      topic.Children.LoadState  = isNotLoaded? LoadState.NotLoaded : LoadState.Loaded;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +141,7 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
 
-    // Move to extened attributes dataset
+    // Move to extended attributes dataset
     reader.NextResult();
 
     // Loop through each extended attribute record associated with a specific topic
