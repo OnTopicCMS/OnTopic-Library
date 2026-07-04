@@ -616,8 +616,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: STRING
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_String() {
@@ -641,8 +641,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: NULL STRING
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_NullString() {
@@ -666,8 +666,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: INT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_Int() {
@@ -691,8 +691,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: BOOL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_Bool() {
@@ -716,8 +716,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: DATE/TIME
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_DateTime() {
@@ -742,8 +742,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: DATA TABLE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_DataTable() {
@@ -769,8 +769,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD PARAMETER: STRING BUILDER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddParameter_StringBuilder() {
@@ -795,8 +795,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN CODE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
   /// </summary>
   [Fact]
   public void SqlCommand_AddOutputParameter_ReturnCode() {
@@ -823,8 +823,8 @@ public class SqlTopicRepositoryTest {
   | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN DEFAULT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
-  ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method. Ensures the default return code is
+  ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref=
+  ///   "SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method. Ensures the default return code is
   ///   returned, if the value isn't explicitly set.
   /// </summary>
   [Fact]
