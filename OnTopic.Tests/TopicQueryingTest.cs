@@ -351,4 +351,56 @@ public class TopicQueryingTest  {
 
   }
 
+  /*============================================================================================================================
+  | TEST: FIND FIRST: NOT LOADED CHILD: DOES NOT DESCEND
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a three-level topic hierarchy and manually sets the middle topic's <see cref="Topic.Children"/> to <see cref=
+  ///   "LoadState.NotLoaded"/>. Verifies that <see cref="TopicExtensions.FindFirst"/> stops at that node and does not return
+  ///   the grandchild, which would only be reachable by descending into the not-loaded subtree.
+  /// </summary>
+  [Fact]
+  public void FindFirst_WithNotLoadedChild_DoesNotDescend() {
+
+    var parent                  = new Topic("Parent", "Page", null, 1);
+    var child                   = new Topic("Child", "Page", parent, 2);
+    var grandchild              = new Topic("Grandchild", "Page", child, 3);
+
+    child.Children.LoadState    = LoadState.NotLoaded;
+
+    var result                  = parent.FindFirst(t => t == grandchild);
+
+    Assert.Null(result);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: FIND ALL: PARTIALLY LOADED GRAPH: EXCLUDES NOT LOADED SUBTREES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic graph where one branch has a <see cref="LoadState.NotLoaded"/> children collection. Verifies that <see
+  ///   cref="TopicExtensions.FindAll(Topic)"/> includes the not-loaded node itself (it is resident) but excludes its
+  ///   descendants, which are unreachable without triggering a load.
+  /// </summary>
+  [Fact]
+  public void FindAll_WithPartiallyLoadedGraph_ExcludesNotLoadedSubtrees() {
+
+    var parent                  = new Topic("Parent", "Page", null, 1);
+    var childA                  = new Topic("ChildA", "Page", parent, 2);
+    var childB                  = new Topic("ChildB", "Page", parent, 3);
+    var grandchildA             = new Topic("GrandchildA", "Page", childA, 4);
+    var grandchildB             = new Topic("GrandchildB", "Page", childB, 5);
+
+    childB.Children.LoadState   = LoadState.NotLoaded;
+
+    var results                 = parent.FindAll();
+
+    Assert.Contains(parent, results);
+    Assert.Contains(childA, results);
+    Assert.Contains(grandchildA, results);
+    Assert.Contains(childB, results);
+    Assert.DoesNotContain(grandchildB, results);
+
+  }
+
 } //Class
