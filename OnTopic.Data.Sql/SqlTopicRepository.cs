@@ -891,9 +891,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     // Set the topic we're working with
     command.AddParameter("TopicID",                             topicId);
 
-    // Scope: Always None (i.e., single node) for resolver fills
+    // Scope: LoadChildren when filling the Children, otherwise we're only interested in this topic's content
     command.AddParameter("LoadDescendants",                     false);
     command.AddParameter("LoadAscendants",                      false);
+    command.AddParameter("LoadChildren",                        boundaries.HasFlag(TopicPayload.Children));
 
     // Payload: Include only what the requested boundaries require
     command.AddParameter("IncludeIndexed",                      boundaries.HasFlag(TopicPayload.Children));
