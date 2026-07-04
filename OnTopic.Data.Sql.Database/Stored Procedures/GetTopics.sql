@@ -9,6 +9,7 @@ CREATE PROCEDURE [dbo].[GetTopics]
 	@TopicID		INT		= -1,
 	@LoadDescendants	BIT		= 1,
 	@LoadAscendants		BIT		= 0,
+	@LoadChildren		BIT		= 0,
 	@IncludeIndexed		BIT		= 1,
 	@IncludeExtended	BIT		= 1,
 	@IncludeRelationships	BIT		= 1,
@@ -71,12 +72,37 @@ IF @LoadDescendants = 1
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- SELECT IMMEDIATE CHILDREN
+--------------------------------------------------------------------------------------------------------------------------------
+-- Loads only the direct children of the requested topic. Mutually exclusive with LoadDescendants, as loading children of a
+-- subtree that is already being loaded is redundant.
+--------------------------------------------------------------------------------------------------------------------------------
+ELSE IF @LoadChildren = 1
+  BEGIN
+    INSERT	#Topics (
+	  TopicID,
+	  SortOrder
+	)
+    SELECT	T1.TopicID,
+	T1.RangeLeft
+    FROM	Topics		AS T1
+    WHERE	T1.ParentID		= @TopicID
+    ORDER BY	T1.RangeLeft
+    OPTION (
+      OPTIMIZE
+      FOR (	@TopicID		UNKNOWN
+      )
+    )
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC AND ANCESTOR CHAIN
 --------------------------------------------------------------------------------------------------------------------------------
 -- Ancestors are rows whose nested-set range contains the requested node's RangeLeft, i.e., the mirror of the descendant query
--- above. This guarantees the full parent chain is always materialized, even on a shallow (non-recursive) load.
+-- above. This can be combined with LoadDescendants to load both the subtree and its ancestor chain in a single query. The NOT
+-- EXISTS guard prevents duplicate inserts when both are requested.
 --------------------------------------------------------------------------------------------------------------------------------
-ELSE IF @LoadAscendants = 1
+IF @LoadAscendants = 1
   BEGIN
     INSERT	#Topics (
 	  TopicID,
@@ -90,6 +116,11 @@ ELSE IF @LoadAscendants = 1
       BETWEEN	T1.RangeLeft
         AND	T1.RangeRight
       AND	T2.TopicID		= @TopicID
+    WHERE	NOT EXISTS (
+	  SELECT	1
+	  FROM		#Topics
+	  WHERE		TopicID		= T1.TopicID
+	)
     ORDER BY	T1.RangeLeft
     OPTION (
       OPTIMIZE
@@ -104,7 +135,7 @@ ELSE IF @LoadAscendants = 1
 -- Inserts only the requested topic; used by the lazy-load resolver to fill a single topic's extended attributes without
 -- traversing the tree in either direction.
 --------------------------------------------------------------------------------------------------------------------------------
-ELSE
+IF @LoadDescendants = 0 AND @LoadChildren = 0 AND @LoadAscendants = 0
   BEGIN
     INSERT	#Topics (
 	  TopicID,
