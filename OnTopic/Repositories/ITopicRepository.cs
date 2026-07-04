@@ -97,10 +97,18 @@ public interface ITopicRepository {
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
-  /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+  /// <param name="isRecursive">
+  ///   Whether to load the full descendant subtree rooted at the seed topic. When <see langword="false"/>, only the seed topic
+  ///   itself is loaded. Ancestor topics are always loaded when needed to place the seed topic within the graph.
+  /// </param>
   /// <param name="payload">Specifies which data to include with each topic.</param>
   /// <returns>A topic object.</returns>
-  Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true, TopicPayload payload = TopicPayload.All);
+  Topic? Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  );
 
   /// <summary>
   ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="uniqueKey
@@ -111,13 +119,20 @@ public interface ITopicRepository {
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
-  /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+  /// <param name="isRecursive">
+  ///   Whether to load the full descendant subtree. See <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> for details.
+  /// </param>
   /// <param name="payload">
   ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   ///   for details.
   /// </param>
   /// <returns>A topic object.</returns>
-  Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true, TopicPayload payload = TopicPayload.All);
+  Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  );
 
   /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   [ExcludeFromCodeCoverage]
