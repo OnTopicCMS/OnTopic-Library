@@ -543,6 +543,83 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH HAS CHILDREN FALSE: RETURNS CHILDREN LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> row where <c>HasChildren
+  ///   </c> is <see langword="false"/> and confirms that <see cref="Topic.Children"/> is <see cref="LoadState.Loaded"/> (the
+  ///   topic is a leaf with nothing to lazy-load).
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithHasChildrenFalse_ReturnsChildrenLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasChildren: false);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = tableReader.LoadTopicGraph(1);
+
+    Assert.Equal(LoadState.Loaded, topic?.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH HAS CHILDREN AND LOADED CHILDREN: RETURNS CHILDREN LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a parent row where <c>HasChildren</c> is <see langword=
+  ///   "true"/> and the child rows are present in the result set, confirming that <see cref="Topic.Children"/> is <see cref=
+  ///    "LoadState.Loaded"/> (i.e., the subtree was loaded in full).
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithHasChildrenAndLoadedChildren_ReturnsChildrenLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasChildren: true);
+    topics.AddRow(2, "Child", "Page", 1, hasChildren: false);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = tableReader.LoadTopicGraph(1);
+
+    Assert.Equal(LoadState.Loaded, topic?.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH HAS CHILDREN ON ANCESTOR AND LOADED SUBTREE: SETS LOAD STATE CORRECTLY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a result set that includes both ancestor and a fully
+  ///   loaded subtree, confirming that ancestor topics are stamped <see cref="LoadState.NotLoaded"/> (i.e., partial children)
+  ///   while subtree topics are stamped <see cref="LoadState.Loaded"/> (i.e., all children present). This is the primary
+  ///   scenario addressed by the <c>seedTopicId</c> parameter; i.e., loading ascendants and descendants.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithHasChildrenOnAncestorAndLoadedSubtree_SetsLoadStateCorrectly() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", null, hasChildren: true);
+    topics.AddRow(2, "Child", "Container", 1, hasChildren: true);
+    topics.AddRow(3, "Grandchild", "Page", 2, hasChildren: false);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    // The seed topic is Child (2); Root (1) is on the ancestor chain and is NotLoaded.
+    // The Child (seed) and Grandchild are in the fully loaded subtree and are Loaded.
+    var rootTopic               = tableReader.LoadTopicGraph(2);
+    var childTopic              = rootTopic?.Children.FirstOrDefault();
+
+    Assert.Equal(LoadState.NotLoaded, rootTopic?.Children.LoadState);
+    Assert.Equal(LoadState.Loaded, childTopic?.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
   | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
