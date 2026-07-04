@@ -8,8 +8,10 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Associations;
 using OnTopic.Data.Sql;
+using OnTopic.Data.Sql.Models;
 using OnTopic.Tests.Schemas;
 using Xunit;
+using TopicReferencesDataTable = OnTopic.Tests.Schemas.TopicReferencesDataTable;
 
 namespace OnTopic.Tests;
 
@@ -544,13 +546,13 @@ public class SqlTopicRepositoryTest {
   | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Constructs a <see cref="Data.Sql.Models.TopicListDataTable"/> and calls <see cref="Data.Sql.Models.TopicListDataTable.
-  ///   AddRow(Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is returned.
+  ///   Constructs a <see cref="TopicListDataTable"/> and calls <see cref="TopicListDataTable.AddRow(Int32)"/>. Confirms that a
+  ///   <see cref="DataRow"/> with the expected data is returned.
   /// </summary>
   [Fact]
   public void TopicListDataTable_AddRow_Succeeds() {
 
-    var dataTable               = new Data.Sql.Models.TopicListDataTable();
+    var dataTable               = new TopicListDataTable();
 
     dataTable.AddRow(1);
     dataTable.AddRow(2);
@@ -567,14 +569,13 @@ public class SqlTopicRepositoryTest {
   | TEST: ATTRIBUTE VALUES DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
-  ///   AttributeValuesDataTable.AddRow(String, String?)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
-  ///   returned.
+  ///   Constructs a <see cref="AttributeValuesDataTable"/>, calls <see cref="AttributeValuesDataTable.AddRow(String, String?)"
+  ///   />. Confirms that a <see cref="DataRow"/> with the expected data is returned.
   /// </summary>
   [Fact]
   public void AttributeValuesDataTable_AddRow_Succeeds() {
 
-    var dataTable               = new Data.Sql.Models.AttributeValuesDataTable();
+    var dataTable               = new AttributeValuesDataTable();
 
     dataTable.AddRow("Key", "Test");
     dataTable.AddRow("ContentType", "Page");
@@ -591,9 +592,9 @@ public class SqlTopicRepositoryTest {
   | TEST: TOPIC REFERENCES DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
-  ///   TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
-  ///   returned.
+  ///   Constructs a <see cref="AttributeValuesDataTable"/> and calls <see cref=
+  ///   "Data.Sql.Models.TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the
+  ///   expected data is returned.
   /// </summary>
   [Fact]
   public void TopicReferencesDataTable_AddRow_Succeeds() {
