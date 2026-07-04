@@ -64,6 +64,15 @@ public class TopicsDataTable:   DataTable {
     });
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Add HasChildren column
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Columns.Add(new DataColumn() {
+      DataType                  = typeof(bool),
+      ColumnName                = "HasChildren",
+      AllowDBNull               = true
+    });
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Add HasExtendedAttributes column
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(new DataColumn() {
@@ -85,6 +94,7 @@ public class TopicsDataTable:   DataTable {
     string topicKey,
     string contentType,
     int? parentId               = null,
+    bool? hasChildren           = null,
     bool? hasExtendedAttributes = null
   ) {
 
@@ -104,6 +114,7 @@ public class TopicsDataTable:   DataTable {
     row["TopicKey"]             = topicKey;
     row["ContentType"]          = contentType;
     row["ParentId"]             = parentId.HasValue? parentId : DBNull.Value;
+    row["HasChildren"]          = hasChildren.HasValue? hasChildren.Value : DBNull.Value;
     row["HasExtendedAttributes"] = hasExtendedAttributes.HasValue? hasExtendedAttributes.Value : DBNull.Value;
 
     /*--------------------------------------------------------------------------------------------------------------------------
