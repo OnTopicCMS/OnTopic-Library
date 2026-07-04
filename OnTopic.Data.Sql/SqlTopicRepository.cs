@@ -152,7 +152,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       connection.Open();
       using var reader          = command.ExecuteReader();
-      topic                     = reader.LoadTopicGraph(referenceTopic, false);
+      topic                     = reader.LoadTopicGraph(topicId, referenceTopic, false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -264,7 +264,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       connection.Open();
       using var reader          = command.ExecuteReader();
-      topic                     = reader.LoadTopicGraph(referenceTopic, includeExternalReferences: referenceTopic is not null);
+      topic                     = reader.LoadTopicGraph(
+        topicId,
+        referenceTopic,
+        includeExternalReferences: referenceTopic is not null
+      );
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -357,7 +361,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       connection.Open();
       using var reader          = command.ExecuteReader();
-      reader.LoadTopicGraph(referenceTopic.GetRootTopic(), false);
+      reader.LoadTopicGraph(-1, referenceTopic.GetRootTopic(), false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

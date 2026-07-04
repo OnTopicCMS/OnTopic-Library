@@ -26,8 +26,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH TOPIC: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicsDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> record and confirms that
+  ///   a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithTopic_ReturnsTopic() {
@@ -49,9 +49,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH NEW PARENT: UPDATES PARENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicsDataTable"/> record that represents a different parent than the existing <c>referenceTopic</c> and confirms that
-  ///   the topic's parent is updated.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> record that represents a
+  ///   different parent than the existing <c>referenceTopic</c> and confirms that the topic's parent is updated.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithNewParent_UpdatesParent() {
@@ -67,7 +66,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    tableReader.LoadTopicGraph(topic);
+    tableReader.LoadTopicGraph(referenceTopic: topic);
 
     Assert.Equal(parent2, child.Parent);
 
@@ -77,8 +76,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH ATTRIBUTES: RETURNS ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-  ///   AttributesDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with an <see cref="AttributesDataTable"/> record and confirms
+  ///   that a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithAttributes_ReturnsAttributes() {
@@ -103,9 +102,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH NULL ATTRIBUTES: REMOVES ATTRIBUTE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-  ///   AttributesDataTable"/> record representing a deleted attribute and confirms that an existing reference topic with that
-  ///   attribute has the value removed.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with an <see cref="AttributesDataTable"/> record representing
+  ///   a deleted attribute and confirms that an existing reference topic with that attribute has the value removed.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
@@ -122,7 +120,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(new DataTable[] { topics, attributes });
 
-    tableReader.LoadTopicGraph(topic);
+    tableReader.LoadTopicGraph(referenceTopic: topic);
 
     Assert.Null(topic.Attributes.GetValue("Test"));
 
@@ -132,8 +130,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH RELATIONSHIP: RETURNS RELATIONSHIP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   RelationshipsDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="RelationshipsDataTable"/> record and
+  ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithRelationship_ReturnsRelationship() {
@@ -161,9 +159,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: NOT FULLY LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
-  ///   "RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/>
-  ///   returns <see cref="LoadState.NotLoaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="RelationshipsDataTable"/> record that is
+  ///   missing and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
@@ -190,8 +187,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH REFERENCE: RETURNS REFERENCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record and
+  ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithReference_ReturnsReference() {
@@ -219,8 +216,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH EXTERNAL REFERENCE: RETURNS REFERENCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record and
+  ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithExternalReference_ReturnsReference() {
@@ -236,7 +233,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-    var topic                   = tableReader.LoadTopicGraph(referenceTopic, false);
+    var topic                   = tableReader.LoadTopicGraph(1, referenceTopic, false);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic?.Id);
@@ -250,9 +247,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-  ///   TopicReferencesDataTable"/> record and confirms that existing references on a reference topic are deleted if they are
-  ///   <c>null</c> in the <see cref="TopicReferencesDataTable"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record and
+  ///   confirms that existing references on a reference topic are deleted if they are <c>null</c> in the <see cref=
+  ///   "TopicReferencesDataTable"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
@@ -270,7 +267,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
 
-    tableReader.LoadTopicGraph(referenceTopic, false);
+    tableReader.LoadTopicGraph(1, referenceTopic, false);
 
     Assert.Null(referenceTopic.References.GetValue("Reference"));
     Assert.Equal(LoadState.Loaded, referenceTopic.References.LoadState);
@@ -281,9 +278,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
-  ///   "TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.LoadState"/>
-  ///   returns <see cref="LoadState.NotLoaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record that is
+  ///   missing and confirms that <see cref="TopicReferenceCollection.LoadState"/> returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
@@ -310,8 +306,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH DELETED RELATIONSHIP: REMOVES RELATIONSHIP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a deleted <see
-  ///   cref="RelationshipsDataTable"/> record and confirms that it is deleted from the <c>referenceTopic</c> graph.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a deleted <see cref="RelationshipsDataTable"/> record
+  ///   and confirms that it is deleted from the <c>referenceTopic</c> graph.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
@@ -329,7 +325,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(new DataTable[] { empty, empty, empty, relationships });
 
-    tableReader.LoadTopicGraph(related);
+    tableReader.LoadTopicGraph(referenceTopic: related);
 
     Assert.Empty(topic.Relationships.GetValues("Test"));
 
@@ -339,9 +335,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH RELATIONSHIP: RETURNS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
-  ///   load (i.e., extended attributes deferred via <c>HasExtendedAttributes = true</c>) with a relationship whose target is
-  ///   resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.Loaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> under an indexed-only load (i.e., extended attributes
+  ///   deferred via <c>HasExtendedAttributes = true</c>) with a relationship whose target is resident, and confirms that
+  ///   <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.Loaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithRelationship_ReturnsLoaded() {
@@ -367,9 +363,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH MISSING RELATIONSHIP: RETURNS NOT LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
-  ///   load with a relationship whose target is non-resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"
-  ///   /> returns <see cref="LoadState.NotLoaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> under an indexed-only load with a relationship whose target is
+  ///   non-resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref=
+  ///   "LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithMissingRelationship_ReturnsNotLoaded() {
@@ -394,9 +390,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH REFERENCE: RETURNS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
-  ///   load with a reference whose target is resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/>
-  ///   returns <see cref="LoadState.Loaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> under an indexed-only load with a reference whose target is
+  ///   resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/> returns <see cref="LoadState.Loaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithReference_ReturnsLoaded() {
@@ -422,9 +417,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: INDEXED-ONLY WITH MISSING REFERENCE: RETURNS NOT LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> under an indexed-only
-  ///   load with a reference whose target is non-resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/>
-  ///   returns <see cref="LoadState.NotLoaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> under an indexed-only load with a reference whose target is
+  ///   non-resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/> returns <see cref=
+  ///   "LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithMissingReference_ReturnsNotLoaded() {
@@ -449,8 +444,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
-  ///   VersionHistoryDataTable"/> record and confirms that a topic with those values is returned.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with an <see cref="VersionHistoryDataTable"/> record and
+  ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
@@ -477,9 +472,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH EXTENDED DEFERRED AND BLOB: RETURNS NOT LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
-  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="true"/> (blob deferred), and confirms the
-  ///   extended-attribute boundary is <see cref="LoadState.NotLoaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> row where
+  ///   <c>HasExtendedAttributes</c> is <see langword="true"/> (blob deferred), and confirms the extended-attribute boundary is
+  ///   <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithExtendedDeferredAndBlob_ReturnsNotLoaded() {
@@ -501,9 +496,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH EXTENDED DEFERRED AND NO BLOB: RETURNS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
-  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="false"/> (blob deferred, but empty), and
-  ///   confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>, thus avoiding a wasted round-trip.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> row where
+  ///   <c>HasExtendedAttributes</c> is <see langword="false"/> (blob deferred, but empty), and confirms the extended-attribute
+  ///   boundary is <see cref="LoadState.Loaded"/>, thus avoiding a wasted round-trip.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithExtendedDeferredAndNoBlob_ReturnsLoaded() {
@@ -525,9 +520,9 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH EXTENDED INCLUDED AND BLOB: RETURNS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref=
-  ///   "TopicsDataTable"/> row where <c>HasExtendedAttributes</c> is <see langword="null"/> (extended included in result set),
-  ///   and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>.
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicsDataTable"/> row where
+  ///   <c>HasExtendedAttributes</c> is <see langword="null"/> (extended included in result set), and confirms the
+  ///   extended-attribute boundary is <see cref="LoadState.Loaded"/>.
   /// </summary>
   [Fact]
   public void LoadTopicGraph_WithExtendedIncludedAndBlob_ReturnsLoaded() {

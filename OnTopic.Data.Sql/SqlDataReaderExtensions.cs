@@ -36,6 +36,12 @@ internal static class SqlDataReaderExtensions {
   ///   topics and populate their attributes, associations, and children.
   /// </summary>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+  /// <param name="seedTopicId">
+  ///   The <see cref="Topic.Id"/> that was passed to the underlying query (i.e., the root of the requested subtree or the topic
+  ///   whose ancestors were requested). Used to identify which newly loaded topics are ancestors so that their <see cref=
+  ///   "Topic.Children"/> can be correctly stamped as <see cref="LoadState.NotLoaded"/>. The default is <c>-1</c>, which
+  ///   applies when the root was loaded, or when no single seed applies (e.g., the <c>GetTopicUpdates</c> path).
+  /// </param>
   /// <param name="referenceTopic">
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
@@ -53,6 +59,7 @@ internal static class SqlDataReaderExtensions {
   /// </param>
   internal static Topic? LoadTopicGraph(
     this IDataReader reader,
+    int seedTopicId             = -1,
     Topic? referenceTopic       = null,
     bool? markDirty             = null,
     bool includeExternalReferences = true
