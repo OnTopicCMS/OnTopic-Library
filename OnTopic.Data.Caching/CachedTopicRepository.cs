@@ -26,6 +26,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              Topic                           _cache;
+  private readonly              Dictionary<int, Topic>          _topicById                      = new();
+  private readonly              Dictionary<string, Topic>       _topicByKey                     = new(StringComparer.OrdinalIgnoreCase);
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -52,9 +54,17 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     );
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Ensure topics are loaded
+    | Establish cache
     \-------------------------------------------------------------------------------------------------------------------------*/
     _cache                      = rootTopic;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Populate flat index from loaded graph
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    foreach (var topic in _cache.FindAll()) {
+      _topicById[topic.Id]      = topic;
+      _topicByKey[topic.GetUniqueKey()] = topic;
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Stamp resolver on loaded graph
@@ -82,9 +92,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Recursive search
+    | Lookup by topic identifier
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return _cache.FindFirst(t => t.Id.Equals(topicId));
+    _topicById.TryGetValue(topicId, out var topic);
+    return topic;
 
   }
 
@@ -104,9 +115,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by TopicKey
+    | Lookup by unique key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return _cache.GetByUniqueKey(uniqueKey);
+    _topicByKey.TryGetValue(uniqueKey, out var topic);
+    return topic;
 
   }
 
