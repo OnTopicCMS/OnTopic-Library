@@ -153,9 +153,16 @@ SELECT	Topics.TopicID,
   	ParentID,
   	TopicKey,
   	SortOrder,
+  	HasChildren		= CAST(
+	  CASE
+	    WHEN		Topics.RangeRight - Topics.RangeLeft > 1
+	    THEN		1
+	    ELSE		0
+	  END AS BIT
+	),
   	HasExtendedAttributes	=
   	  CASE
-  	    WHEN		@IncludeExtended = 0
+  	    WHEN		@IncludeExtended 	= 0
   	    THEN		CAST(
 	      CASE
 	        WHEN EXISTS (
