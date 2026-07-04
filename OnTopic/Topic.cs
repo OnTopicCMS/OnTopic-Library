@@ -30,6 +30,7 @@ public class Topic: ITrackDirtyKeys {
   private                       string                          _contentType;
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
+  private readonly              KeyedTopicCollection            _children                       = new();
   readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
   internal                      ITopicLoadResolver?             _resolver;
 
@@ -60,7 +61,6 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set collections
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Children                    = new();
     Attributes                  = new(this);
     IncomingRelationships       = new(this, true);
     Relationships               = new(this, false);
@@ -147,7 +147,7 @@ public class Topic: ITrackDirtyKeys {
     set {
       if (_parent != value) {
         Contract.Requires(value, "Parent cannot be explicitly set to null.");
-        SetParent(value, value.Children.LastOrDefault());
+        SetParent(value, value._children.LastOrDefault());
       }
     }
   }
@@ -161,7 +161,7 @@ public class Topic: ITrackDirtyKeys {
   /// <value>
   ///   The children of the current <see cref="Topic"/>.
   /// </value>
-  public KeyedTopicCollection   Children { get; }
+  public KeyedTopicCollection Children => _children;
 
   /*============================================================================================================================
   | METHOD: IS LOADED
@@ -178,7 +178,7 @@ public class Topic: ITrackDirtyKeys {
   public bool IsLoaded(TopicPayload boundaries) {
 
     // Children
-    if (boundaries.HasFlag(TopicPayload.Children) && Children.LoadState is not LoadState.Loaded) {
+    if (boundaries.HasFlag(TopicPayload.Children) && _children.LoadState is not LoadState.Loaded) {
       return false;
     }
 
@@ -370,7 +370,7 @@ public class Topic: ITrackDirtyKeys {
       _originalKey ??= _key;
       //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
       if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
-        Parent.Children.ChangeKey(this, value);
+        Parent._children.ChangeKey(this, value);
       }
       _key                      = value;
     }
@@ -618,7 +618,7 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Check to ensure that the topic isn't being moved to a parent with a duplicate key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (parent != _parent && parent.Children.Contains(Key)) {
+    if (parent != _parent && parent._children.Contains(Key)) {
       throw new InvalidKeyException(
         $"Duplicate key when setting Parent property: the topic with the name '{Key}' already exists in the '{parent.Key}' " +
         $"topic."
@@ -628,9 +628,9 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Move topic to new location
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _parent?.Children.Remove(Key);
-    var insertAt = (sibling is  not null)? parent.Children.IndexOf(sibling)+1 : 0;
-    parent.Children.Insert(insertAt, this);
+    _parent?._children.Remove(Key);
+    var insertAt                = (sibling is  not null)? parent._children.IndexOf(sibling)+1 : 0;
+    parent._children.Insert(insertAt, this);
     _dirtyKeys.MarkDirty("Parent");
 
     /*--------------------------------------------------------------------------------------------------------------------------
