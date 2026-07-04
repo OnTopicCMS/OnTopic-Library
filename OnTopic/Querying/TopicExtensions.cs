@@ -6,6 +6,7 @@
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
+using OnTopic.Repositories;
 
 namespace OnTopic.Querying;
 
@@ -15,6 +16,12 @@ namespace OnTopic.Querying;
 /// <summary>
 ///   Provides extensions for querying <see cref="OnTopic.Topic"/>.
 /// </summary>
+/// <remarks>
+///   These extensions, while powerful, were intended to be used against fully loaded, in-memory topic trees. Their usefulness
+///   with lazy-loaded trees is limited and, potentially, even expensive, as innocent seeming queries may trigger lazy-loading
+///   of attributes, relationships, references, children, &c. Children are gated in <see cref="FindFirst"/> and <see cref=
+///   "FindAll(Topic)"/>, but the <c>predicate</c> parameter can easily call into any of these.
+/// </remarks>
 public static class TopicExtensions {
 
   /*============================================================================================================================
@@ -23,6 +30,11 @@ public static class TopicExtensions {
   /// <summary>
   ///   Finds the first instance of a <see cref="Topic"/> in the topic tree that satisfies the delegate.
   /// </summary>
+  /// <remarks>
+  ///   When using this with a lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes,
+  ///   relationships, references, and children if they're included in the <paramref name="predicate"/>. It is recommended to
+  ///   avoid use with lazy-loaded trees, or to use extreme caution.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
   /// <returns>The first instance of the topic to be satisfied.</returns>
@@ -44,10 +56,12 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    foreach (var child in topic.Children) {
-      var nestedResult = child.FindFirst(predicate);
-      if (nestedResult is not null) {
-        return nestedResult;
+    if (topic.IsLoaded(TopicPayload.Children)) {
+      foreach (var child in topic.Children) {
+        var nestedResult = child.FindFirst(predicate);
+        if (nestedResult is not null) {
+          return nestedResult;
+        }
       }
     }
 
@@ -103,7 +117,8 @@ public static class TopicExtensions {
   | METHOD: FIND ALL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves a collection of all topics descending from—and including—the current topic.
+  ///   Retrieves a collection of all in-memory topics in the <paramref name="topic"/> tree, descending from—and including—the
+  ///   current topic.
   /// </summary>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <returns>A collection of topics descending from the current topic.</returns>
@@ -112,6 +127,11 @@ public static class TopicExtensions {
   /// <summary>
   ///   Retrieves a collection of topics based on a supplied function.
   /// </summary>
+  /// <remarks>
+  ///   When using this with a lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes,
+  ///   relationships, references, and children if they're included in the <paramref name="predicate"/>. It is recommended to
+  ///   avoid use with lazy-loaded trees, or to use extreme caution.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
   /// <returns>A collection of topics matching the input parameters.</returns>
@@ -135,11 +155,13 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    foreach (var child in topic.Children) {
-      var nestedResults = child.FindAll(predicate);
-      foreach (var matchedTopic in nestedResults) {
-        if (!results.Contains(matchedTopic)) {
-          results.Add(matchedTopic);
+    if (topic.IsLoaded(TopicPayload.Children)) {
+      foreach (var child in topic.Children) {
+        var nestedResults = child.FindAll(predicate);
+        foreach (var matchedTopic in nestedResults) {
+          if (!results.Contains(matchedTopic)) {
+            results.Add(matchedTopic);
+          }
         }
       }
     }
@@ -157,6 +179,11 @@ public static class TopicExtensions {
   /// <summary>
   ///   Retrieves a collection of topics based on an attribute name and value.
   /// </summary>
+  /// <remarks>
+  ///   If querying a lazy-loaded topic tree, this will trigger a query for any extended attributes that aren't yet (fully)
+  ///   loaded. At the same time, however, it will not trigger lazy-loading of any children that aren't yet (fully) loaded. As a
+  ///   result, queries against lazy-loaded topic trees can be slow while also being incomplete.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/> against which to be searched.</param>
   /// <param name="attributeValue">The text value for the <see cref="AttributeRecord"/> against which to be searched.</param>
@@ -193,8 +220,12 @@ public static class TopicExtensions {
   | METHOD: GET TOPIC INDEX
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves all topics from the topic cache, and places them in an dictionary indexed by <see cref="Topic.Id"/>.
+  ///   Retrieves all topics from the in-memory topic graph, and places them in a dictionary indexed by <see cref="Topic.Id"/>.
   /// </summary>
+  /// <remarks>
+  ///   This only loads topics from the in-memory topic graph. Any topics that aren't yet loaded in the in-memory topic graph
+  ///   will not be included.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <returns>A dictionary of topics indexed by <see cref="Topic.Id"/>.</returns>
   public static TopicIndex GetTopicIndex(this Topic topic) => new(topic.FindAll());
@@ -215,6 +246,11 @@ public static class TopicExtensions {
   /// <summary>
   ///   Retrieves a <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if available.
   /// </summary>
+  /// <remarks>
+  ///   This will trigger synchronous lazy-loading calls to any topics in the chain whose children aren't yet loaded. That can
+  ///   make initial calls to this unexpectedly expensive on a lazy-loaded topic tree, resulting in multiple calls to the
+  ///   underlying persistance store.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey()"/> of the <see cref="Topic"/> to return.</param>
   /// <returns>A <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if found.</returns>
@@ -266,6 +302,11 @@ public static class TopicExtensions {
   /// <summary>
   ///   Retrieves the <see cref="ContentTypeDescriptor"/> for the current <see cref="Topic"/>.
   /// </summary>
+  /// <remarks>
+  ///   This assumes that the Configuration tree is fully loaded as part of the <paramref name="topic"/>'s graph. In a standard
+  ///   configuration, this portion of the tree should be eagerly loaded as part of the cache initialization, since it's a
+  ///   commonly referenced dependency with a lot of internal dependencies in terms of relationships and references.
+  /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <returns>The <see cref="ContentTypeDescriptor"/> associated with the <see cref="Topic.ContentType"/>.</returns>
   public static ContentTypeDescriptor? GetContentTypeDescriptor(this Topic topic) {
