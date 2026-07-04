@@ -212,4 +212,116 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
 
   }
 
+  /*============================================================================================================================
+  | METHODS: EVENT HANDLERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Adds newly-created topics to the flat index. When the save is recursive, all resident descendants are indexed as well,
+  ///   since only one <see cref="ITopicRepository.TopicSaved"/> event fires for the root of a recursive save.
+  /// </remarks>
+  protected override void OnTopicSaved(TopicSaveEventArgs args) {
+
+    // Setup
+    Contract.Requires(args);
+    base.OnTopicSaved(args);
+
+    // Index newly created topics and, when saved recursively, any new descendants
+    if (args.IsNew) {
+      foreach (var topic in args.Topic.FindAll()) {
+        _topicById[topic.Id]    = topic;
+        _topicByKey[topic.GetUniqueKey()] = topic;
+      }
+    }
+
+  }
+
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Removes the deleted topic and all of its descendants from the flat index. Called after the topic has been detached from
+  ///   its parent's <see cref="Topic.Children"/> collection but before the topic graph is torn down, so <see cref=
+  ///   "TopicExtensions.FindAll(Topic)"/> on the deleted topic still returns the full subtree.
+  /// </remarks>
+  protected override void OnTopicDeleted(TopicEventArgs args) {
+
+    // Setup
+    Contract.Requires(args);
+    base.OnTopicDeleted(args);
+
+    // Remove the deleted subtree from both indices
+    foreach (var topic in args.Topic.FindAll()) {
+      _topicById.Remove(topic.Id);
+      _topicByKey.Remove(topic.GetUniqueKey());
+    }
+
+  }
+
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Rebuilds the unique-key index entries for the moved topic and all of its descendants. The move has already completed by
+  ///   the time this fires, so the old root key is reconstructed from <see cref="TopicMoveEventArgs.Source"/> and the topic's
+  ///   (unchanged) <see cref="Topic.Key"/>.
+  /// </remarks>
+  protected override void OnTopicMoved(TopicMoveEventArgs args) {
+
+    // Setup
+    Contract.Requires(args);
+    base.OnTopicMoved(args);
+
+    // Reconstruct the old root unique key from the source parent and the (unchanged) topic key
+    var oldRootUniqueKey        = args.Source is null
+      ? args.Topic.Key
+      : $"{args.Source.GetUniqueKey()}:{args.Topic.Key}";
+
+    // Reindex topic and children
+    RekeyTopicSubtree(args.Topic, oldRootUniqueKey);
+
+  }
+
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Rebuilds the unique-key index entries for the renamed topic and all of its descendants. The rename has already been
+  ///   applied to <see cref="Topic.Key"/> by the time this fires, so the old root key is reconstructed from the (unchanged)
+  ///   parent path and <see cref="TopicRenameEventArgs.OriginalKey"/>.
+  /// </remarks>
+  protected override void OnTopicRenamed(TopicRenameEventArgs args) {
+
+    // Setup
+    Contract.Requires(args);
+    base.OnTopicRenamed(args);
+
+    // Reconstruct the old root unique key from the (unchanged) parent path and the original key
+    var oldRootUniqueKey        = args.Topic.Parent is null
+      ? args.OriginalKey
+      : $"{args.Topic.Parent.GetUniqueKey()}:{args.OriginalKey}";
+
+    // Reindex topic and children
+    RekeyTopicSubtree(args.Topic, oldRootUniqueKey);
+
+  }
+
+  /*============================================================================================================================
+  | METHODS: PRIVATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Removes stale <see cref="_topicByKey"/> entries for <paramref name="topic"/> and its descendants by swapping the
+  ///   <paramref name="oldRootUniqueKey"/> prefix for the current one, then re-indexes the subtree under its current unique
+  ///   keys.
+  /// </summary>
+  private void RekeyTopicSubtree(Topic topic, string oldRootUniqueKey) {
+
+    // Establish variables
+    var newRootUniqueKey        = topic.GetUniqueKey();
+
+    // Remove each stale unique-key entry and replace it with the current unique key
+    foreach (var subtopic in topic.FindAll()) {
+      var currentKey            = subtopic.GetUniqueKey();
+      var oldKey                = oldRootUniqueKey + currentKey[newRootUniqueKey.Length..];
+      _topicByKey.Remove(oldKey);
+      _topicByKey[currentKey]   = subtopic;
+    }
+
+  }
+
 } //Class
