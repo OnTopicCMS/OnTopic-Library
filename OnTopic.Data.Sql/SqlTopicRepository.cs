@@ -143,7 +143,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
     command.AddParameter("LoadDescendants", isRecursive);
-    command.AddParameter("LoadAscendants", !isRecursive);
+    command.AddParameter("LoadAscendants", topicId >= 0 && referenceTopic is null);
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
 
     /*--------------------------------------------------------------------------------------------------------------------------
