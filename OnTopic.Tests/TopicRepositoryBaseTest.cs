@@ -1155,6 +1155,28 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: SAVE: NOT LOADED CHILDREN: SKIPS RECURSIVE DESCENT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a parent topic with a child, marks the parent's <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"
+  ///   />, then saves recursively. Verifies that the child is not saved; the recursive-save loop is gated on <see cref=
+  ///   "Topic.IsLoaded(TopicPayload)"/>, so a not-loaded children collection prevents descent.
+  /// </summary>
+  [Fact]
+  public void Save_NotLoadedChildren_SkipsRecursiveDescent() {
+
+    var parent                  = new Topic("Parent", "Page");
+    var child                   = new Topic("Child", "Page", parent);
+
+    parent.Children.LoadState   = LoadState.NotLoaded;
+
+    _topicRepository.Save(parent, isRecursive: true);
+
+    Assert.True(child.IsNew);
+
+  }
+
+  /*============================================================================================================================
   | TEST: ENSURE LOADED: EXTENDED ATTRIBUTES NOT LOADED: MARKS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1204,6 +1226,10 @@ public class TopicRepositoryBaseTest {
   ///   and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"
   ///   /> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
+  /// <remarks>
+  ///   On-demand fetching of non-resident relationship targets is deferred to <c>lazy-loading-plan.md</c> Task 6. A stub fill
+  ///   simply marks the boundary <see cref="LoadState.Loaded"/>; the SQL resolver leaves it <see cref="LoadState.NotLoaded"/>
+  ///   whenever any target is not resident in the single-node topic index it currently uses.
   /// </remarks>
   [Fact]
   public void EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
@@ -1225,6 +1251,11 @@ public class TopicRepositoryBaseTest {
   ///   confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"/>
   ///   via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
+  /// <remarks>
+  ///   On-demand fetching of non-resident reference targets is deferred to <c>lazy-loading-plan.md</c> Task 6. A stub fill
+  ///   simply marks the boundary <see cref="LoadState.Loaded"/>; the SQL resolver leaves it <see cref="LoadState.NotLoaded"/>
+  ///   whenever any target is not resident in the single-node topic index it currently uses.
+  /// </remarks>
   [Fact]
   public void EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {
 
