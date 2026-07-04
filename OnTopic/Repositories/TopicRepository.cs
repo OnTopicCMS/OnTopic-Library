@@ -452,7 +452,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (isRecursive) {
+    if (isRecursive && topic.IsLoaded(TopicPayload.Children)) {
       foreach (var childTopic in topic.Children.ToList()) {
         Save(childTopic, isRecursive, unresolvedTopics, version);
       }
