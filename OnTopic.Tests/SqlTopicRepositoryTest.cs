@@ -611,11 +611,11 @@ public class SqlTopicRepositoryTest {
 
     // The seed topic is Child (2); Root (1) is on the ancestor chain and is NotLoaded.
     // The Child (seed) and Grandchild are in the fully loaded subtree and are Loaded.
-    var rootTopic               = tableReader.LoadTopicGraph(2);
-    var childTopic              = rootTopic?.Children.FirstOrDefault();
+    var seedTopic               = tableReader.LoadTopicGraph(2);
+    var rootTopic               = seedTopic?.Parent;
 
     Assert.Equal(LoadState.NotLoaded, rootTopic?.Children.LoadState);
-    Assert.Equal(LoadState.Loaded, childTopic?.Children.LoadState);
+    Assert.Equal(LoadState.Loaded, seedTopic?.Children.LoadState);
 
   }
 
