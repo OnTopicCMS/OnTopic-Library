@@ -462,6 +462,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Relationships and References are intentionally excluded: Their LoadState is set by SetRelationships()/SetReferences()
+    | based on whether each target is present in the graph (NotLoaded when a target is absent) which blocks DeleteUnmatched on
+    | save and prevents silent data loss. Overwriting that guard here would defeat that.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
@@ -552,6 +556,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Relationships and References are intentionally excluded: Their LoadState is set by SetRelationships()/SetReferences()
+    | based on whether each target is present in the graph (NotLoaded when a target is absent) which blocks DeleteUnmatched on
+    | save and prevents silent data loss. Overwriting that guard here would defeat that.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
