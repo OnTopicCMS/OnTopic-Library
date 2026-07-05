@@ -41,7 +41,7 @@ public enum TopicPayload {
   /// <summary>
   ///   Extended attributes are loaded alongside the indexed attributes.
   /// </summary>
-  ExtendedAttributes            = 2,
+  ExtendedAttributes            = 1 << 1,
 
   /*----------------------------------------------------------------------------------------------------------------------------
   | RELATIONSHIPS
@@ -49,7 +49,7 @@ public enum TopicPayload {
   /// <summary>
   ///   Relationship targets are included.
   /// </summary>
-  Relationships                 = 4,
+  Relationships                 = 1 << 2,
 
   /*----------------------------------------------------------------------------------------------------------------------------
   | REFERENCES
@@ -57,7 +57,7 @@ public enum TopicPayload {
   /// <summary>
   ///   Topic reference targets are included.
   /// </summary>
-  References                    = 8,
+  References                    = 1 << 3,
 
   /*----------------------------------------------------------------------------------------------------------------------------
   | ALL
