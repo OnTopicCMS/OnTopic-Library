@@ -208,7 +208,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   database.
   /// </remarks>
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -219,17 +219,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     | Mark payload as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
     | and marking Loaded is always safe. Children is already populated in the stubs and needs no action.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
-      topic.Attributes.LoadState = LoadState.Loaded;
-    }
-
-    if (boundaries.HasFlag(TopicPayload.Relationships) && topic.Relationships.LoadState is LoadState.NotLoaded) {
-      topic.Relationships.LoadState = LoadState.Loaded;
-    }
-
-    if (boundaries.HasFlag(TopicPayload.References) && topic.References.LoadState is LoadState.NotLoaded) {
-      topic.References.LoadState = LoadState.Loaded;
-    }
+    topic.SetLoadState(payload, LoadState.Loaded);
 
   }
 

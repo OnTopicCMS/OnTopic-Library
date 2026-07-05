@@ -463,12 +463,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    MarkBoundariesLoaded(topic, payload);
+    topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
   }
 
   /// <inheritdoc />
-  public virtual async Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
+  public virtual async Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -553,7 +553,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    MarkBoundariesLoaded(topic, payload);
+    topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
   }
 
@@ -845,30 +845,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         $"Failed to delete Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
         exception
       );
-    }
-
-  }
-
-  /*============================================================================================================================
-  | METHOD: MARK BOUNDARIES LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Marks each boundary in <paramref name="boundaries"/> as <see cref="LoadState.Loaded"/> on the given <paramref name=
-  ///   "topic"/> after a successful resolver fill.
-  /// </summary>
-  /// <remarks>
-  ///   <see cref="TopicPayload.Relationships"/> and <see cref="TopicPayload.References"/> are intentionally excluded. Their
-  ///   <see cref="LoadState"/> is set by <see cref="SqlDataReaderExtensions.SetRelationships"/> and <see cref=
-  ///   "SqlDataReaderExtensions.SetReferences"/> based on whether each target is resident in the topic graph: a non-resident
-  ///   target sets <see cref="LoadState.NotLoaded"/>, which blocks <c>DeleteUnmatched</c> on save and prevents silent data
-  ///   loss. Overwriting that state here, before the resolver has access to the live graph, would defeat that guard.
-  /// </remarks>
-  private static void MarkBoundariesLoaded(Topic topic, TopicPayload boundaries) {
-
-    // Extended attributes: Mark Loaded unconditionally; the whole blob is fetched as a unit and is complete regardless of
-    // whether related topics are resident
-    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes)) {
-      topic.Attributes.LoadState = LoadState.Loaded;
     }
 
   }
