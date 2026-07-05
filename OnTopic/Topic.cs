@@ -237,14 +237,14 @@ public class Topic: ITrackDirtyKeys {
   /// </summary>
   /// <remarks>
   ///   The synchronous form backs the autoloading property getters (e.g., the <see cref="Children"/> getter); the asynchronous
-  ///   form is for callers, such as a mapping or navigation service, that need to prepopulate one or more boundaries before
+  ///   form is for callers, such as a mapping or navigation service, that need to prepopulate one or more payload before
   ///   accessing them, thus avoiding a synchronous block on a "cold" node. A flag call lets those callers request everything a
   ///   node's mapping needs in a single round trip.
   /// </remarks>
-  /// <param name="boundaries">
-  ///   One or more <see cref="TopicPayload"/> flags identifying the boundaries that should be ensured to be loaded.
+  /// <param name="payload">
+  ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
   /// </param>
-  public void EnsureLoaded(TopicPayload boundaries) {
+  public void EnsureLoaded(TopicPayload payload) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
@@ -254,45 +254,25 @@ public class Topic: ITrackDirtyKeys {
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to boundaries that are not yet loaded
+    | Filter to payload that are not yet loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
+    payload                    = FilterPayload(payload);
 
-    // Children
-    if (IsLoaded(TopicPayload.Children)) {
-      boundaries                &= ~TopicPayload.Children;
-    }
-
-    // ExtendedAttributes
-    if (IsLoaded(TopicPayload.ExtendedAttributes)) {
-      boundaries                &= ~TopicPayload.ExtendedAttributes;
-    }
-
-    // Relationships
-    if (IsLoaded(TopicPayload.Relationships)) {
-      boundaries                &= ~TopicPayload.Relationships;
-    }
-
-    // References
-    if (IsLoaded(TopicPayload.References)) {
-      boundaries                &= ~TopicPayload.References;
-    }
-
-    // None
-    if (boundaries is TopicPayload.None) {
+    if (payload is TopicPayload.None) {
       return;
     }
 
-    // Ensure the appropriate boundaries are loaded
-    _resolver.EnsureLoaded(this, boundaries);
+    // Ensure the appropriate payload are loaded
+    _resolver.EnsureLoaded(this, payload);
 
   }
 
   /// <inheritdoc cref="EnsureLoaded(TopicPayload)"/>
-  /// <param name="boundaries">
-  ///   One or more <see cref="TopicPayload"/> flags identifying the boundaries that should be ensured to be loaded.
+  /// <param name="payload">
+  ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  public Task EnsureLoadedAsync(TopicPayload boundaries, CancellationToken cancellationToken = default) {
+  public Task EnsureLoadedAsync(TopicPayload payload, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
@@ -302,36 +282,16 @@ public class Topic: ITrackDirtyKeys {
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to boundaries that are not yet loaded
+    | Filter to payload that are not yet loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
+    payload                    = FilterPayload(payload);
 
-    // Children
-    if (IsLoaded(TopicPayload.Children)) {
-      boundaries                &= ~TopicPayload.Children;
-    }
-
-    // Extended Attributes
-    if (IsLoaded(TopicPayload.ExtendedAttributes)) {
-      boundaries                &= ~TopicPayload.ExtendedAttributes;
-    }
-
-    // Relationships
-    if (IsLoaded(TopicPayload.Relationships)) {
-      boundaries                &= ~TopicPayload.Relationships;
-    }
-
-    // References
-    if (IsLoaded(TopicPayload.References)) {
-      boundaries                &= ~TopicPayload.References;
-    }
-
-    // None
-    if (boundaries is TopicPayload.None) {
+    if (payload is TopicPayload.None) {
       return Task.CompletedTask;
     }
 
-    // Ensure the appropriate boundaries are loaded
-    return _resolver.EnsureLoadedAsync(this, boundaries, cancellationToken);
+    // Ensure the appropriate payload are loaded
+    return _resolver.EnsureLoadedAsync(this, payload, cancellationToken);
 
   }
 

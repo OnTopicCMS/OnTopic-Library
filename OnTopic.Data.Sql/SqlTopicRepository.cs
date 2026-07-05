@@ -906,35 +906,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   }
 
   /*============================================================================================================================
-  | METHOD: FILTER LOADED BOUNDARIES
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Returns <paramref name="boundaries"/> with any already-<see cref="LoadState.Loaded"/> flags cleared, so that <see cref=
-  ///   "EnsureLoaded"/> and <see cref="EnsureLoadedAsync"/> skip redundant round-trips.
-  /// </summary>
-  private static TopicPayload FilterLoadedBoundaries(Topic topic, TopicPayload boundaries) {
-
-    // Loop through all boundaries
-    foreach (TopicPayload flag in Enum.GetValues<TopicPayload>()) {
-
-      // Skip None (0) and All (composite)
-      if (flag is TopicPayload.None or TopicPayload.All) {
-        continue;
-      }
-
-      // Strip the boundary if is is already fully loaded
-      if (topic.IsLoaded(flag)) {
-        boundaries              &= ~flag;
-      }
-
-    }
-
-    // Return filtered boundaries
-    return boundaries;
-
-  }
-
-  /*============================================================================================================================
   | METHOD: PERSIST RELATIONSHIPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

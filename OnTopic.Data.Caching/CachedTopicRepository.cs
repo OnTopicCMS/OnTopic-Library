@@ -153,7 +153,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -161,28 +161,22 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (not yet loaded) boundaries
+    | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
+    payload                    = topic.FilterPayload(payload);
 
-    // Children
-    if (topic.IsLoaded(TopicPayload.Children)) {
-      boundaries                &= ~TopicPayload.Children;
-    }
-
-    // Extended Attributes
-    if (topic.IsLoaded(TopicPayload.ExtendedAttributes)) {
-      boundaries                &= ~TopicPayload.ExtendedAttributes;
-    }
-
-    // None
-    if (boundaries is 0) {
+    if (payload is TopicPayload.None) {
       return;
+    }
+
+    }
+
     }
 
   }
 
   /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
+  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -190,22 +184,16 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (i.e., not yet Loaded) boundaries
+    | Filter to pending (i.e., not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
+    payload                    = topic.FilterPayload(payload);
 
-    // Children
-    if (topic.IsLoaded(TopicPayload.Children)) {
-      boundaries &= ~TopicPayload.Children;
-    }
-
-    // Extended Attributes
-    if (topic.IsLoaded(TopicPayload.ExtendedAttributes)) {
-      boundaries &= ~TopicPayload.ExtendedAttributes;
-    }
-
-    // None
-    if (boundaries is 0) {
+    if (payload is TopicPayload.None) {
       return Task.CompletedTask;
+    }
+
+    }
+
     }
 
     return Task.CompletedTask;
