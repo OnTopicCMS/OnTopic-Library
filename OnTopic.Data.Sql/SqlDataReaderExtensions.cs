@@ -318,7 +318,7 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void SetIndexedAttributes(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  internal static void SetIndexedAttributes(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes

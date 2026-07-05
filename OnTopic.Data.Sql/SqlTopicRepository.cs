@@ -395,17 +395,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                  = topic.FilterPayload(payload);
+    payload                     = topic.FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Children not yet implemented; guard before opening a connection
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (payload.HasFlag(TopicPayload.Children)) {
-      throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -422,19 +415,28 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
+    var topics                  = new TopicIndex { [topic.Id] = topic };
+
     try {
 
       // Setup
       connection.Open();
-      var topics                = new TopicIndex { [topic.Id] = topic };
       using var reader          = command.ExecuteReader();
 
-      // Skip key-attributes result set; these were populated when the topic was first loaded
+      // Children: Fill first result set; FillChildren() sets each child's Children.LoadState and marks the parent as Loaded
+      if (payload.HasFlag(TopicPayload.Children)) {
+        reader.FillChildren(topic, topics);
+      }
+
+      // Otherwise, skip the first result set since the topic is already resident
+      else {
+        reader.NextResult();
+      }
+
+      // Indexed attributes
       reader.NextResult();
-
-      // Indexed attributes (will be populated when Children boundary is implemented)
       while (reader.Read()) {
-
+        reader.SetIndexedAttributes(topics, markDirty: false);
       }
 
       // Extended attributes
@@ -462,10 +464,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
-    >-------------------------------------------------------------------------------------------------------------------------
-    | Relationships and References are intentionally excluded: Their LoadState is set by SetRelationships()/SetReferences()
-    | based on whether each target is present in the graph (NotLoaded when a target is absent) which blocks DeleteUnmatched on
-    | save and prevents silent data loss. Overwriting that guard here would defeat that.
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Children is excluded: its LoadState is set inside FillChildren() after a successful fill, with each child's own
+    | Children.LoadState set based on its HasChildren bit. Relationships and References are excluded: their LoadState is set by
+    | SetRelationships() / SetReferences() based on whether each target is present in the graph (NotLoaded when absent), which
+    | blocks DeleteUnmatched on save and prevents silent data loss.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
@@ -496,13 +499,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Children not yet implemented; guard before opening a connection
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (payload.HasFlag(TopicPayload.Children)) {
-      throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
     using var connection        = new SqlConnection(_connectionString);
@@ -516,19 +512,28 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
+    var topics                  = new TopicIndex { [topic.Id] = topic };
+
     try {
 
       // Setup
       await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-      var topics                = new TopicIndex { [topic.Id] = topic };
       using var reader          = (SqlDataReader)await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
-      // Skip key-attributes result set; these were populated when the topic was first loaded
+      // Children: Fill first result set; FillChildren() sets each child's Children.LoadState and marks the parent as Loaded
+      if (payload.HasFlag(TopicPayload.Children)) {
+        await reader.FillChildrenAsync(topic, topics, cancellationToken).ConfigureAwait(false);
+      }
+
+      // Otherwise, skip the first result set since the topic is already resident
+      else {
+        await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      }
+
+      // Indexed attributes
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
-
-      // Indexed attributes (will be populated when Children boundary is implemented)
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-
+        reader.SetIndexedAttributes(topics, markDirty: false);
       }
 
       // Extended attributes
@@ -557,9 +562,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
     >-------------------------------------------------------------------------------------------------------------------------
-    | Relationships and References are intentionally excluded: Their LoadState is set by SetRelationships()/SetReferences()
-    | based on whether each target is present in the graph (NotLoaded when a target is absent) which blocks DeleteUnmatched on
-    | save and prevents silent data loss. Overwriting that guard here would defeat that.
+    | Children is excluded: its LoadState is set inside FillChildrenAsync() after a successful fill, with each child's own
+    | Children.LoadState set based on its HasChildren bit. Relationships and References are excluded: their LoadState is set by
+    | SetRelationships() / SetReferences() based on whether each target is present in the graph (NotLoaded when absent), which
+    | blocks DeleteUnmatched on save and prevents silent data loss.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
