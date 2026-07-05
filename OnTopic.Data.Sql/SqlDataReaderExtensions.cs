@@ -193,7 +193,9 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return rootTopic;
+    return seedTopicId >= 0 && topics.TryGetValue(seedTopicId, out var requestedTopic)
+      ? requestedTopic
+      : rootTopic;
 
   }
 
