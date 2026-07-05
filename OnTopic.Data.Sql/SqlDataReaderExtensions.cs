@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
+using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql;
 
@@ -256,6 +257,49 @@ internal static class SqlDataReaderExtensions {
     | Return the topic created
     \-------------------------------------------------------------------------------------------------------------------------*/
     return current;
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: FILL CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reads the children result set (the first result set) from a <c>GetTopics</c> response, adds each child to the <paramref
+  ///   name="topics"/> index via <see cref="AddChildTopic"/>, and marks the <paramref name="parent"/>'s <c>Children</c> as <see
+  ///   cref="LoadState.Loaded"/> after a successful fill.
+  /// </summary>
+  /// <param name="reader">
+  ///   The <see cref="IDataReader"/>, positioned at the first result set of the <c>GetTopics</c> response.
+  /// </param>
+  /// <param name="parent">The topic whose immediate children are being loaded.</param>
+  /// <param name="topics">The <see cref="TopicIndex"/> to populate with the new child topics.</param>
+  internal static void FillChildren(this IDataReader reader, Topic parent, TopicIndex topics) {
+
+    // Loop through each record, delegating to the shared AddChildTopic()
+    while (reader.Read()) {
+      reader.AddChildTopic(parent, topics);
+    }
+
+    // Mark confirmed children payload as Loaded
+    parent.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+
+  }
+
+  /// <inheritdoc cref="FillChildren"/>
+  internal static async Task FillChildrenAsync(
+    this SqlDataReader reader,
+    Topic parent,
+    TopicIndex topics,
+    CancellationToken cancellationToken
+  ) {
+
+    // Loop through each record, delegating to the shared AddChildTopic()
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      reader.AddChildTopic(parent, topics);
+    }
+
+    // Mark confirmed children payload as Loaded
+    parent.SetLoadState(TopicPayload.Children, LoadState.Loaded);
 
   }
 
