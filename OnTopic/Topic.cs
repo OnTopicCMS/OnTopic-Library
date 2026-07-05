@@ -203,6 +203,31 @@ public class Topic: ITrackDirtyKeys {
   }
 
   /*============================================================================================================================
+  | METHOD: FILTER PAYLOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns <paramref name="payload"/> with any already-<see cref="LoadState.Loaded"/> flags cleared, so callers skip
+  ///   redundant round-trips.
+  /// </summary>
+  /// <param name="payload">The requested <see cref="TopicPayload"/> flags to filter.</param>
+  public TopicPayload FilterPayload(TopicPayload payload) {
+
+    // Strip already-loaded payload
+    foreach (var flag in Enum.GetValues<TopicPayload>()) {
+      if (flag is TopicPayload.None or TopicPayload.All) {
+        continue;
+      }
+      if (IsLoaded(flag)) {
+        payload              &= ~flag;
+      }
+    }
+
+    // Return filtered payload
+    return payload;
+
+  }
+
+  /*============================================================================================================================
   | METHODS: ENSURE LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
