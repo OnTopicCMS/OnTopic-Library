@@ -491,6 +491,45 @@ internal static class SqlDataReaderExtensions {
 
   }
 
+
+  /*============================================================================================================================
+  | METHOD: ADD CHILD TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Processes a single row from the children result set of a <c>GetTopics</c> response: Adds the child to the <paramref
+  ///   name="topics"/> index via <see cref="AddTopic"/>, then stamps its <c>Attributes.LoadState</c> and <c>Children.LoadState
+  ///   </c> based on the <c>HasExtendedAttributes</c> and <c>HasChildren</c> database hints. Returns <see langword="null"/>
+  ///   when the row represents the <paramref name="parent"/> itself (which the stored procedure includes alongside its
+  ///   children) so callers can skip it.
+  /// </summary>
+  /// <param name="reader">The <see cref="IDataReader"/>, positioned at a row in the children result set.</param>
+  /// <param name="parent">The topic whose children are being loaded; rows matching this ID are skipped.</param>
+  /// <param name="topics">The <see cref="TopicIndex"/> to populate.</param>
+  private static Topic? AddChildTopic(this IDataReader reader, Topic parent, TopicIndex topics) {
+
+    // Add or update the topic in the index
+    var addedTopic              = reader.AddTopic(topics, markDirty: false);
+
+    // Skip the parent record, which the stored procedure returns alongside its children
+    if (addedTopic.Id == parent.Id) {
+      return null;
+    }
+
+    // Set the extended-attribute load state based on the database hint
+    if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
+      addedTopic.Attributes.LoadState = LoadState.NotLoaded;
+    }
+
+    // Set the children load state based on the database hint
+    addedTopic.Children.LoadState = reader.GetNullableBoolean("HasChildren") is true
+      ? LoadState.NotLoaded
+      : LoadState.Loaded;
+
+    // Return the topic created
+    return addedTopic;
+
+  }
+
   /*============================================================================================================================
   | METHOD: SET VERSION HISTORY
   \---------------------------------------------------------------------------------------------------------------------------*/
