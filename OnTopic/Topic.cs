@@ -167,33 +167,33 @@ public class Topic: ITrackDirtyKeys {
   | METHOD: IS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Returns <see langword="true"/> if every boundary flag in <paramref name="boundaries"/> has already been fetched from
+  ///   Returns <see langword="true"/> if every boundary flag in <paramref name="payload"/> has already been fetched from
   ///   the underlying persistence store; <see langword="false"/> if any one of them are <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   /// <remarks>
   ///   Reads each collection's <see cref="LoadState"/> directly without touching any autoloading getter, making it safe to
   ///   use in traversal and "gating" logic that should not trigger lazy-loading.
   /// </remarks>
-  /// <param name="boundaries">One or more <see cref="TopicPayload"/> flags to test.</param>
-  public bool IsLoaded(TopicPayload boundaries) {
+  /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
+  public bool IsLoaded(TopicPayload payload) {
 
     // Children
-    if (boundaries.HasFlag(TopicPayload.Children) && _children.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.Children) && _children.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // Extended Attributes
-    if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // Relationships
-    if (boundaries.HasFlag(TopicPayload.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // References
-    if (boundaries.HasFlag(TopicPayload.References) && References.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.References) && References.LoadState is not LoadState.Loaded) {
       return false;
     }
 
@@ -206,7 +206,7 @@ public class Topic: ITrackDirtyKeys {
   | METHODS: ENSURE LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Ensures each requested <paramref name="boundaries"/> flag has been retrieved, while fetching and merging whichever of
+  ///   Ensures each requested <paramref name="payload"/> flag has been retrieved, while fetching and merging whichever of
   ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those already are. Returns immediately if the
   ///   resolver is absent or the topic is new.
   /// </summary>

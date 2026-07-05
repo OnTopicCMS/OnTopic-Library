@@ -378,7 +378,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, TopicPayload boundaries) {
+  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -393,18 +393,18 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (not yet Loaded) boundaries
+    | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    boundaries                  = FilterLoadedBoundaries(topic, boundaries);
+    payload                  = topic.FilterPayload(payload);
 
-    if (boundaries is 0) {
+    if (payload is TopicPayload.None) {
       return;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Children not yet implemented; guard before opening a connection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(TopicPayload.Children)) {
+    if (payload.HasFlag(TopicPayload.Children)) {
       throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
     }
 
@@ -417,7 +417,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     };
 
     // Set the stored procedure parameters based on the TopicPayload enum values
-    AddEnsureLoadedParameters(command, topic.Id, boundaries);
+    AddEnsureLoadedParameters(command, topic.Id, payload);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
@@ -457,13 +457,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     }
     catch (SqlException exception) {
-      throw new TopicRepositoryException($"Topic boundaries failed to load: '{exception.Message}'", exception);
+      throw new TopicRepositoryException($"Topic payload failed to load: '{exception.Message}'", exception);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Mark loaded boundaries as confirmed
+    | Mark confirmed payload as Loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    MarkBoundariesLoaded(topic, boundaries);
+    MarkBoundariesLoaded(topic, payload);
 
   }
 
@@ -483,18 +483,18 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (not yet Loaded) boundaries
+    | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    boundaries                  = FilterLoadedBoundaries(topic, boundaries);
+    payload                  = topic.FilterPayload(payload);
 
-    if (boundaries is 0) {
+    if (payload is TopicPayload.None) {
       return;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Children not yet implemented; guard before opening a connection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (boundaries.HasFlag(TopicPayload.Children)) {
+    if (payload.HasFlag(TopicPayload.Children)) {
       throw new NotImplementedException("Per-level child loading will be implemented in Task 5.");
     }
 
@@ -507,7 +507,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     };
 
     // Set the stored procedure parameters based on the TopicPayload enum values
-    AddEnsureLoadedParameters(command, topic.Id, boundaries);
+    AddEnsureLoadedParameters(command, topic.Id, payload);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
@@ -547,13 +547,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     }
     catch (SqlException exception) {
-      throw new TopicRepositoryException($"Topic boundaries failed to load: '{exception.Message}'", exception);
+      throw new TopicRepositoryException($"Topic payload failed to load: '{exception.Message}'", exception);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Mark loaded boundaries as confirmed
+    | Mark confirmed payload as Loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    MarkBoundariesLoaded(topic, boundaries);
+    MarkBoundariesLoaded(topic, payload);
 
   }
 
@@ -878,15 +878,15 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Configures a <see cref="SqlCommand"/> targeting <c>GetTopics</c> for use by the <see cref="ITopicLoadResolver"/>,
-  ///   setting the payload parameters based on the requested <paramref name="boundaries"/>.
+  ///   setting the payload parameters based on the requested <paramref name="payload"/>.
   /// </summary>
   /// <remarks>
   ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. <see
   ///   cref="TopicPayload.History"/> is hardcoded to <c>false</c> here because its fill path is not yet implemented; once
-  ///   it is, this method will map it from the <paramref name="boundaries"/> flag. Indexed attributes are only requested when
+  ///   it is, this method will map it from the <paramref name="payload"/> flag. Indexed attributes are only requested when
   ///   filling the <see cref="TopicPayload.Children"/> boundary.
   /// </remarks>
-  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload boundaries) {
+  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {
 
     // Set the topic we're working with
     command.AddParameter("TopicID",                             topicId);
@@ -894,13 +894,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     // Scope: LoadChildren when filling the Children, otherwise we're only interested in this topic's content
     command.AddParameter("LoadDescendants",                     false);
     command.AddParameter("LoadAscendants",                      false);
-    command.AddParameter("LoadChildren",                        boundaries.HasFlag(TopicPayload.Children));
+    command.AddParameter("LoadChildren",                        payload.HasFlag(TopicPayload.Children));
 
-    // Payload: Include only what the requested boundaries require
-    command.AddParameter("IncludeIndexed",                      boundaries.HasFlag(TopicPayload.Children));
-    command.AddParameter("IncludeExtended",                     boundaries.HasFlag(TopicPayload.ExtendedAttributes));
-    command.AddParameter("IncludeRelationships",                boundaries.HasFlag(TopicPayload.Relationships));
-    command.AddParameter("IncludeReferences",                   boundaries.HasFlag(TopicPayload.References));
+    // Payload: Include only what the requested payload require
+    command.AddParameter("IncludeIndexed",                      payload.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeExtended",                     payload.HasFlag(TopicPayload.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships",                payload.HasFlag(TopicPayload.Relationships));
+    command.AddParameter("IncludeReferences",                   payload.HasFlag(TopicPayload.References));
     command.AddParameter("IncludeHistory",                      false);
 
   }

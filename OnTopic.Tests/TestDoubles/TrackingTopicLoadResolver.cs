@@ -29,7 +29,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   | METHOD: ENSURE LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  void ITopicLoadResolver.EnsureLoaded(Topic topic, TopicPayload boundaries) => WasCalled = true;
+  void ITopicLoadResolver.EnsureLoaded(Topic topic, TopicPayload payload) => WasCalled = true;
 
   /*============================================================================================================================
   | METHOD: ENSURE LOADED (ASYNC)
@@ -37,7 +37,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   /// <inheritdoc />
   Task ITopicLoadResolver.EnsureLoadedAsync(
     Topic topic,
-    TopicPayload boundaries,
+    TopicPayload payload,
     CancellationToken cancellationToken
   ) {
     WasCalled                     = true;

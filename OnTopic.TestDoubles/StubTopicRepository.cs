@@ -216,7 +216,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Mark boundaries as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
+    | Mark payload as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
     | and marking Loaded is always safe. Children is already populated in the stubs and needs no action.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (boundaries.HasFlag(TopicPayload.ExtendedAttributes) && topic.Attributes.LoadState is LoadState.NotLoaded) {
@@ -234,8 +234,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   }
 
   /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload boundaries, CancellationToken cancellationToken) {
-    EnsureLoaded(topic, boundaries);
+  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+    EnsureLoaded(topic, payload);
     return Task.CompletedTask;
   }
 
