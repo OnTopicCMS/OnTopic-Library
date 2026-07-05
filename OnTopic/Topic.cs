@@ -203,6 +203,45 @@ public class Topic: ITrackDirtyKeys {
   }
 
   /*============================================================================================================================
+  | METHOD: SET LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Sets the <see cref="LoadState"/> for each boundary flag in <paramref name="payload"/> to <paramref name="state"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Mirrors <see cref="IsLoaded(TopicPayload)"/>: Sets each collection's <see cref="LoadState"/> directly without touching
+  ///   any autoloading getter. Callers are responsible for passing only payload whose transition is safe; for example, <see
+  ///   cref="TopicPayload.Relationships"/> and <see cref="TopicPayload.References"/> should only be promoted to <see cref=
+  ///   "LoadState.Loaded"/> after confirming all targets are available in the graph, since <see cref="LoadState.Loaded"/>
+  ///   permits <c>DeleteUnmatched</c> on save.
+  /// </remarks>
+  /// <param name="payload">One or more <see cref="TopicPayload"/> flags identifying the payload to update.</param>
+  /// <param name="state">The <see cref="LoadState"/> to assign to each matched boundary's collection.</param>
+  public void SetLoadState(TopicPayload payload, LoadState state) {
+
+    // Children
+    if (payload.HasFlag(TopicPayload.Children)) {
+      _children.LoadState       = state;
+    }
+
+    // Extended Attributes
+    if (payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+      Attributes.LoadState      = state;
+    }
+
+    // Relationships
+    if (payload.HasFlag(TopicPayload.Relationships)) {
+      Relationships.LoadState   = state;
+    }
+
+    // References
+    if (payload.HasFlag(TopicPayload.References)) {
+      References.LoadState      = state;
+    }
+
+  }
+
+  /*============================================================================================================================
   | METHOD: FILTER PAYLOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
