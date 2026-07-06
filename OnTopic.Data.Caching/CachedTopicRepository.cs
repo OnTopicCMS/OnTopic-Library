@@ -163,7 +163,17 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by unique key
+    | Normalize key: Accept partial paths such as "Web:Valid:Child" in addition to the canonical "Root:Web:Valid:Child"
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (
+      !uniqueKey.StartsWith(_cache.Key + ":", StringComparison.OrdinalIgnoreCase) &&
+      !uniqueKey.Equals(_cache.Key, StringComparison.OrdinalIgnoreCase)
+    ) {
+      uniqueKey = $"{_cache.Key}:{uniqueKey.TrimStart(':')}";
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Lookup by unique key; return immediately on a hit
     \-------------------------------------------------------------------------------------------------------------------------*/
     lock (_syncLock) {
       if (_topicKeyIndex.TryGetValue(uniqueKey, out var topic)) {
