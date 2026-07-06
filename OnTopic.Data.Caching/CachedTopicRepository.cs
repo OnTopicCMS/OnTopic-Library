@@ -28,6 +28,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   private readonly              Topic                           _cache;
   private readonly              Dictionary<int, Topic>          _topicIdIndex                   = new();
   private readonly              Dictionary<string, Topic>       _topicKeyIndex                  = new(StringComparer.OrdinalIgnoreCase);
+  private readonly              HashSet<int>                    _absentTopicIdIndex             = new();
+  private readonly              HashSet<string>                 _absentUniqueKeyIndex           = new(StringComparer.OrdinalIgnoreCase);
   private readonly              object                          _syncLock                       = new();
 
   /*============================================================================================================================
@@ -80,6 +82,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   /// <remarks>
   ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
   ///   enabled so the full ancestor chain is fetched and merged into the live graph.
+  ///   Missing IDs are recorded to prevent
+  ///   redundant round-trips for topics that genuinely do not exist.
   /// </remarks>
   public override Topic? Load(
     int topicId,
@@ -105,9 +109,26 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip IDs that are known to be missing to avoid redundant round-trips
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    lock (_syncLock) {
+      if (_absentTopicIdIndex.Contains(topicId)) {
+        return null;
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     var loaded                  = TopicRepository.Load(topicId, referenceTopic: null, isRecursive: false);
+
+    // If it's missing, populate the appropriate index so we don't try loading it again
+    if (loaded is null) {
+      lock (_syncLock) {
+        _absentTopicIdIndex.Add(topicId);
+      }
+      return null;
+    }
 
     // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
     MergeIntoCache(loaded);
@@ -124,6 +145,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   /// <remarks>
   ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
   ///   enabled so the full ancestor chain is fetched and merged into the live graph.
+  ///   Missing IDs are recorded to prevent
+  ///   redundant round-trips for topics that genuinely do not exist.
   /// </remarks>
   public override Topic? Load(
     string uniqueKey,
@@ -149,9 +172,25 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip IDs that are known to be missing to avoid redundant round-trips
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    lock (_syncLock) {
+      if (_absentUniqueKeyIndex.Contains(uniqueKey)) {
+        return null;
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     var loaded = TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false);
+
+    if (loaded is null) {
+      lock (_syncLock) {
+        _absentUniqueKeyIndex.Add(uniqueKey);
+      }
+      return null;
+    }
 
     // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
     MergeIntoCache(loaded);
@@ -248,7 +287,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   /// <inheritdoc />
   /// <remarks>
   ///   Adds newly-created topics to the flat index. When the save is recursive, all resident descendants are indexed as well,
-  ///   since only one <see cref="ITopicRepository.TopicSaved"/> event fires for the root of a recursive save.
+  ///   since only one <see cref="ITopicRepository.TopicSaved"/> event fires for the root of a recursive save. Also clears any
+  ///   entries known to be missing so that a previously missing ID or key that is now created can be found on subsequent
+  ///   lookups.
   /// </remarks>
   protected override void OnTopicSaved(TopicSaveEventArgs args) {
 
