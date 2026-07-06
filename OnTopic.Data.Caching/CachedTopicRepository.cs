@@ -259,6 +259,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       return;
     }
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Delegate to inner resolver
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (TopicRepository is ITopicLoadResolver resolver) {
+      resolver.EnsureLoaded(topic, payload);
     }
 
     }
@@ -282,6 +287,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       return Task.CompletedTask;
     }
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Delegate to inner resolver
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (TopicRepository is ITopicLoadResolver resolver) {
+      resolver.EnsureLoaded(topic, payload);
     }
 
     }
