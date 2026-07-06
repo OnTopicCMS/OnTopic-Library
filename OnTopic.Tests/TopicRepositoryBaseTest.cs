@@ -1269,6 +1269,66 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: IS LOADED: CHILDREN NOT LOADED STATE: TRIGGERS ENSURE LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"/>, then accesses
+  ///   the <see cref="Topic.Children"/> getter. Verifies that the auto-load fires, promoting the boundary to <see cref="
+  ///   LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_ChildrenNotLoadedState_TriggersEnsureLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    _                           = topic.Children;
+
+    Assert.True(topic.IsLoaded(TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS LOADED: CHILDREN LOADED STATE: DOES NOT CALL RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> is already <see cref="LoadState.Loaded"/> and accesses
+  ///   the <see cref="Topic.Children"/> getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the
+  ///   resolver being called redundantly.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_ChildrenLoadedState_DoesNotCallResolver() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    Assert.True(topic!.IsLoaded(TopicPayload.Children));
+    _                           = topic.Children;
+
+    Assert.True(topic.IsLoaded(TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS LOADED: CHILDREN NOT LOADED: MARKS LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> has been manually set to <see cref="LoadState.NotLoaded"
+  ///   /> and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.
+  ///   Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  [Fact]
+  public void EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    topic.EnsureLoaded(TopicPayload.Children);
+
+    Assert.True(topic.IsLoaded(TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
   | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
