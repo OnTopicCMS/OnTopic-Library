@@ -161,7 +161,14 @@ public class Topic: ITrackDirtyKeys {
   /// <value>
   ///   The children of the current <see cref="Topic"/>.
   /// </value>
-  public KeyedTopicCollection Children => _children;
+  public KeyedTopicCollection Children {
+    get {
+      if (_children.LoadState is LoadState.NotLoaded) {
+        _resolver?.EnsureLoaded(this, TopicPayload.Children);
+      }
+      return _children;
+    }
+  }
 
   /*============================================================================================================================
   | METHOD: IS LOADED
