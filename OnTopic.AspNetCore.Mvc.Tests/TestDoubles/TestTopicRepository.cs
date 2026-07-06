@@ -6,6 +6,7 @@
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
@@ -43,6 +44,14 @@ public class TestTopicRepository: DummyTopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   public override Topic? Load() => _cache;
+
+  /// <inheritdoc />
+  public override Topic? Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    bool isRecursive            = true,
+    TopicPayload payload        = TopicPayload.All
+  ) => String.IsNullOrEmpty(uniqueKey)? null : _cache.FindFirst(t => t.GetUniqueKey() == uniqueKey);
 
   /*============================================================================================================================
   | METHOD: CREATE FAKE DATA
