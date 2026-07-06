@@ -266,6 +266,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       resolver.EnsureLoaded(topic, payload);
     }
 
+    // Update flat index and stamp resolver for any newly loaded children
+    if (payload.HasFlag(TopicPayload.Children)) {
+      lock (_syncLock) {
+        foreach (var child in topic.Children) {
+          IndexTopic(child);
+        }
+      }
+      StampResolver(topic);
     }
 
   }
@@ -294,6 +302,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       resolver.EnsureLoaded(topic, payload);
     }
 
+    // Update flat index and stamp resolver for any newly loaded children
+    if (payload.HasFlag(TopicPayload.Children)) {
+      lock (_syncLock) {
+        foreach (var child in topic.Children) {
+          IndexTopic(child);
+        }
+      }
+      StampResolver(topic);
     }
 
     return Task.CompletedTask;
