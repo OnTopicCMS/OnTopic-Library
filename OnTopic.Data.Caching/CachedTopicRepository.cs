@@ -77,6 +77,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
+  /// <remarks>
+  ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
+  ///   enabled so the full ancestor chain is fetched and merged into the live graph.
+  /// </remarks>
   public override Topic? Load(
     int topicId,
     Topic? referenceTopic       = null,
@@ -92,7 +96,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by topic identifier
+    | Lookup by topic identifier; return immediately on a hit
     \-------------------------------------------------------------------------------------------------------------------------*/
     lock (_syncLock) {
       if (_topicIdIndex.TryGetValue(topicId, out var topic)) {
@@ -100,9 +104,27 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       }
     }
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | On miss: Load with ancestors and merge result into the live graph
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var loaded                  = TopicRepository.Load(topicId, referenceTopic: null, isRecursive: false);
+
+    // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
+    MergeIntoCache(loaded);
+
+    // Return the topic from the cache
+    lock (_syncLock) {
+      _topicIdIndex.TryGetValue(topicId, out var result);
+      return result;
+    }
+
   }
 
   /// <inheritdoc />
+  /// <remarks>
+  ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
+  ///   enabled so the full ancestor chain is fetched and merged into the live graph.
+  /// </remarks>
   public override Topic? Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
@@ -124,6 +146,19 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       if (_topicKeyIndex.TryGetValue(uniqueKey, out var topic)) {
         return topic;
       }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | On miss: Load with ancestors and merge result into the live graph
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var loaded = TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false);
+
+    // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
+    MergeIntoCache(loaded);
+
+    lock (_syncLock) {
+      _topicKeyIndex.TryGetValue(uniqueKey, out var result);
+      return result;
     }
 
   }
@@ -338,6 +373,65 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   private void IndexTopic(Topic topic) {
     _topicIdIndex[topic.Id]     = topic;
     _topicKeyIndex[topic.GetUniqueKey()] = topic;
+  }
+
+  /*============================================================================================================================
+  | METHOD: MERGE INTO CACHE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Merges a freshly-loaded ancestor chain into the live graph by rewiring each new topic's <see cref="Topic.Parent"/> to
+  ///   the corresponding cache object, then indexing and resolver-stamping any topics that were not previously resident.
+  /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     Called by the <see cref="Load(Int32, Topic, Boolean, TopicPayload)"/> and <see cref=
+  ///     "Load(String, Topic?, Boolean, TopicPayload)"/> overloads when a requested topic is not present in the flat index and
+  ///     must be fetched from the underlying <see cref="ITopicRepository"/> with <c>@LoadAscendants = true</c>. The load
+  ///     returns a freshly-built graph, including duplicate <see cref="Topic"/> objects for ancestors already in the cache.
+  ///     This method replaces each duplicate ancestor with the resident cache object, keeps only genuinely new nodes, and
+  ///     integrates them into the live graph.
+  ///   </para>
+  ///   <para>
+  ///     The chain is walked from the leaf toward the root. At the first ancestor already present in <c>_topicById</c>
+  ///     (typically <c>Root</c>), the new node above it is discarded and its child is reparented to the cached object, which
+  ///     attaches it to the existing graph. All new nodes below that boundary are indexed and stamped with the resolver so
+  ///     their own <see cref="Topic.Children"/> can lazy-load on demand.
+  ///   </para>
+  /// </remarks>
+  /// <param name="loaded">The leaf topic returned from the underlying load, already part of an ancestor chain.</param>
+  private void MergeIntoCache(Topic loaded) {
+
+    // Build the ancestor chain from the leaf up to the root (leaf first)
+    var chain = new List<Topic>();
+    for (var node = loaded; node is not null; node = node.Parent) {
+      chain.Add(node);
+    }
+
+    // Walk the chain leaf-to-root, rewiring new topics onto the existing cache and indexing them
+    foreach (var node in chain) {
+
+      // Skip topics that are already present in the cache
+      lock (_syncLock) {
+        if (_topicIdIndex.ContainsKey(node.Id)) {
+          continue;
+        }
+      }
+
+      // Rewire to the existing cache parent to prevent duplicate Topic objects in the graph
+      if (node.Parent is not null) {
+        lock (_syncLock) {
+          if (_topicIdIndex.TryGetValue(node.Parent.Id, out var cacheParent) && cacheParent != node.Parent) {
+            node.Parent = cacheParent;
+          }
+        }
+      }
+
+      // Index the new topic and stamp it with the resolver for future lazy fills
+      lock (_syncLock) {
+        IndexTopic(node);
+      }
+      StampResolver(node);
+
     }
 
   }
