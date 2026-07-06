@@ -423,7 +423,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     async Task<IList?> getList(Type targetType) {
 
-      var sourceList = GetSourceCollection(source, associations, parameter, attributePrefix);
+      var sourceList = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
       var targetList = InitializeCollection(targetType);
 
       if (sourceList is null || targetList is null) {
@@ -756,7 +756,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish source collection to store topics to be mapped
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList = GetSourceCollection(source, associations, memberAccessor, attributePrefix);
+    var sourceList = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate that source collection was identified
@@ -788,7 +788,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-  private IList<Topic> GetSourceCollection(
+  private async Task<IList<Topic>> GetSourceCollectionAsync(
     Topic                       source,
     AssociationTypes            associations,
     ItemMetadata                itemMetadata,
@@ -799,6 +799,11 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Establish source collection to store topics to be mapped
     \-------------------------------------------------------------------------------------------------------------------------*/
     var                         configuration                   = itemMetadata.Configuration;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm lazy-loaded payload before probing collections
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await source.EnsureLoadedAsync(AssociationMap.PayloadMappings[configuration.CollectionType]).ConfigureAwait(false);
     var                         listSource                      = (IList<Topic>)[];
     var                         collectionKey                   = configuration.CollectionKey;
     var                         collectionType                  = configuration.CollectionType;
