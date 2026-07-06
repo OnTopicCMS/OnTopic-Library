@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Mapping.Annotations;
+using OnTopic.Repositories;
 
 namespace OnTopic.Mapping.Internal;
 
@@ -34,7 +35,19 @@ static internal class AssociationMap {
       { CollectionType.IncomingRelationship, AssociationTypes.IncomingRelationships }
     };
 
-    Mappings = mappings;
+    // Any probes Relationships first, then Children (via NestedTopics); both must be warmed before probing
+    // IncomingRelationship cannot be warmed for a single topic, and MappedCollection is property-based
+    var payloadMappings         = new Dictionary<CollectionType, TopicPayload> {
+      { CollectionType.Any, TopicPayload.Children | TopicPayload.Relationships },
+      { CollectionType.Children, TopicPayload.Children },
+      { CollectionType.Relationship, TopicPayload.Relationships },
+      { CollectionType.NestedTopics, TopicPayload.Children },
+      { CollectionType.MappedCollection, TopicPayload.None },
+      { CollectionType.IncomingRelationship, TopicPayload.None }
+    };
+
+    Mappings                    = mappings;
+    PayloadMappings             = payloadMappings;
 
   }
 
@@ -42,5 +55,16 @@ static internal class AssociationMap {
   | PROPERTY: MAPPINGS
   \---------------------------------------------------------------------------------------------------------------------------*/
   static internal Dictionary<CollectionType, AssociationTypes> Mappings { get; }
+
+  /*============================================================================================================================
+  | PROPERTY: PAYLOAD MAPPINGS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a mapping of the relationship between <see cref="CollectionType"/> and <see cref="TopicPayload"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Used by <see cref="TopicMappingService"/> to determine which lazy-load payloads to warm before probing collections.
+  /// </remarks>
+  static internal Dictionary<CollectionType, TopicPayload> PayloadMappings { get; }
 
 } //Class
