@@ -64,17 +64,16 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize Topic Repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sqlTopicRepository              = new SqlTopicRepository(connectionString);
-    var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-    _                                                         = new PageTopicViewModel();
+    var sqlTopicRepository      = new SqlTopicRepository(connectionString);
+    var cachedTopicRepository   = new CachedTopicRepository(sqlTopicRepository);
+    _                           = new PageTopicViewModel();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository                                          = cachedTopicRepository;
-    _typeLookupService                                        = new DynamicTopicViewModelLookupService();
-    _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-    _                                                         = _topicRepository.Load();
+    _topicRepository            = cachedTopicRepository;
+    _typeLookupService          = new DynamicTopicViewModelLookupService();
+    _topicMappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service
@@ -100,20 +99,20 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(context,  nameof(context));
+    Contract.Requires(context, nameof(context));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine controller type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+    var type                    = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Periodically update cache
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
-      var currentUpdate = DateTime.UtcNow;
+      var currentUpdate         = DateTime.UtcNow;
       _topicRepository.Refresh(_topicRepository.Load()!, _cacheLastUpdated);
-      _cacheLastUpdated = currentUpdate;
+      _cacheLastUpdated         = currentUpdate;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -142,12 +141,12 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(context,  nameof(context));
+    Contract.Requires(context, nameof(context));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine view component type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ViewComponentDescriptor.TypeInfo.AsType();
+    var type                    = context.ViewComponentDescriptor.TypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate view component
