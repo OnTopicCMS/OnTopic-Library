@@ -26,8 +26,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              Topic                           _cache;
-  private readonly              Dictionary<int, Topic>          _topicById                      = new();
-  private readonly              Dictionary<string, Topic>       _topicByKey                     = new(StringComparer.OrdinalIgnoreCase);
+  private readonly              Dictionary<int, Topic>          _topicIdIndex                   = new();
+  private readonly              Dictionary<string, Topic>       _topicKeyIndex                  = new(StringComparer.OrdinalIgnoreCase);
+  private readonly              object                          _syncLock                       = new();
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -62,8 +63,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     | Populate flat index from loaded graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var topic in _cache.FindAll()) {
-      _topicById[topic.Id]      = topic;
-      _topicByKey[topic.GetUniqueKey()] = topic;
+      IndexTopic(topic);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -94,8 +94,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by topic identifier
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicById.TryGetValue(topicId, out var topic);
-    return topic;
+    lock (_syncLock) {
+      if (_topicIdIndex.TryGetValue(topicId, out var topic)) {
+        return topic;
+      }
+    }
 
   }
 
@@ -117,8 +120,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by unique key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicByKey.TryGetValue(uniqueKey, out var topic);
-    return topic;
+    lock (_syncLock) {
+      if (_topicKeyIndex.TryGetValue(uniqueKey, out var topic)) {
+        return topic;
+      }
+    }
 
   }
 
@@ -217,9 +223,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
 
     // Index newly created topics and, when saved recursively, any new descendants
     if (args.IsNew) {
-      foreach (var topic in args.Topic.FindAll()) {
-        _topicById[topic.Id]    = topic;
-        _topicByKey[topic.GetUniqueKey()] = topic;
+      lock (_syncLock) {
+        foreach (var topic in args.Topic.FindAll()) {
+          IndexTopic(topic);
+          _absentTopicIdIndex.Remove(topic.Id);
+          _absentUniqueKeyIndex.Remove(topic.GetUniqueKey());
+        }
       }
     }
 
@@ -238,9 +247,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     base.OnTopicDeleted(args);
 
     // Remove the deleted subtree from both indices
-    foreach (var topic in args.Topic.FindAll()) {
-      _topicById.Remove(topic.Id);
-      _topicByKey.Remove(topic.GetUniqueKey());
+    lock (_syncLock) {
+      foreach (var topic in args.Topic.FindAll()) {
+        _topicIdIndex.Remove(topic.Id);
+        _topicKeyIndex.Remove(topic.GetUniqueKey());
+      }
     }
 
   }
@@ -303,11 +314,30 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     var newRootUniqueKey        = topic.GetUniqueKey();
 
     // Remove each stale unique-key entry and replace it with the current unique key
-    foreach (var subtopic in topic.FindAll()) {
-      var currentKey            = subtopic.GetUniqueKey();
-      var oldKey                = oldRootUniqueKey + currentKey[newRootUniqueKey.Length..];
-      _topicByKey.Remove(oldKey);
-      _topicByKey[currentKey]   = subtopic;
+    lock (_syncLock) {
+      foreach (var subtopic in topic.FindAll()) {
+        var currentKey          = subtopic.GetUniqueKey();
+        var oldKey              = oldRootUniqueKey + currentKey[newRootUniqueKey.Length..];
+        _topicKeyIndex.Remove(oldKey);
+        _topicKeyIndex[currentKey] = subtopic;
+      }
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: INDEX TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Adds or updates <paramref name="topic"/> in both flat indexes.
+  /// </summary>
+  /// <remarks>
+  ///   Callers are responsible for holding <see cref="_syncLock"/> before invoking this method, except during construction
+  ///   where single-threaded access is guaranteed.
+  /// </remarks>
+  private void IndexTopic(Topic topic) {
+    _topicIdIndex[topic.Id]     = topic;
+    _topicKeyIndex[topic.GetUniqueKey()] = topic;
     }
 
   }
