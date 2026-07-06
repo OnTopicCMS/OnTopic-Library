@@ -74,7 +74,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp resolver on loaded graph
+    | Stamp resolver on seeded graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     StampResolver(_cache);
 
@@ -256,7 +256,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     Contract.Requires(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (not yet Loaded) payload
+    | Filter to pending (i.e. not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
     payload                    = topic.FilterPayload(payload);
 
@@ -421,9 +421,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | METHODS: PRIVATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Removes stale <see cref="_topicByKey"/> entries for <paramref name="topic"/> and its descendants by swapping the
-  ///   <paramref name="oldRootUniqueKey"/> prefix for the current one, then re-indexes the subtree under its current unique
-  ///   keys.
+  ///   Removes stale <c>_topicByKey<c/> entries for <paramref name="topic"/> and its descendants by swapping the <paramref
+  ///   name="oldRootUniqueKey"/> prefix for the current one, then reindexes the subtree under its current unique keys.
   /// </summary>
   private void RekeyTopicSubtree(Topic topic, string oldRootUniqueKey) {
 
