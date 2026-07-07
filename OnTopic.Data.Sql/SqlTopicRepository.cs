@@ -236,13 +236,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       topic                     = referenceTopic.GetRootTopic().FindFirst(t => t.Id == topicId);
     }
 
-    if (topic is not null) {
-      foreach (var relationship in topic.Relationships) {
-        topic.Relationships.Clear(relationship.Key);
-      }
-      topic.References.Clear();
-    }
-
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -266,11 +259,25 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       connection.Open();
       using var reader          = command.ExecuteReader();
+
+      // Clear existing associations before repopulating from the historical version
+      if (topic is not null) {
+        var rawExisting         = (ITopicBackingAccessor)topic;
+        foreach (var relationship in rawExisting.Relationships) {
+          rawExisting.Relationships.Clear(relationship.Key);
+        }
+        rawExisting.Relationships.Deferred.Clear();
+        rawExisting.References.Deferred.Clear();
+        rawExisting.References.Clear();
+      }
+
+      // Load the historical version into the current topic graph
       topic                     = reader.LoadTopicGraph(
         topicId,
         referenceTopic,
         includeExternalReferences: referenceTopic is not null
       );
+
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
