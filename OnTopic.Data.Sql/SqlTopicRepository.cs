@@ -6,8 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
-using OnTopic.Attributes;
-using OnTopic.Collections.Specialized;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -408,6 +406,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       return;
     }
 
+    // Relationships and References themselves not by SqlTopicRepository; exit early if that's all that's pending so we don't
+    // open a database connection unnecessarily
+    if (!payload.HasFlag(TopicPayload.Children) && !payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+      return;
+    }
+
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -421,8 +425,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Use the full live graph as the topic index so already-resident relationship targets are found without extra round-trips.
+    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; stale deferred
+    | entries are cleared before processing to prevent duplicates from accumulating in the Deferred collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topics                  = new TopicIndex { [topic.Id] = topic };
+    var topics                  = topic.GetRootTopic().GetTopicIndex();
+    var rawTopic                = (ITopicBackingAccessor)topic;
 
     try {
 
@@ -452,6 +461,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
       }
 
+      // Clear stale deferred entries on the parent/seed topic before its associations are re-processed alongside children
+      if (payload.HasFlag(TopicPayload.Children)) {
+        rawTopic.Relationships.Deferred.Clear();
+        rawTopic.References.Deferred.Clear();
+      }
+
       // Relationships
       reader.NextResult();
       while (reader.Read()) {
@@ -472,10 +487,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
     >---------------------------------------------------------------------------------------------------------------------------
-    | Children is excluded: its LoadState is set inside FillChildren() after a successful fill, with each child's own
-    | Children.LoadState set based on its HasChildren bit. Relationships and References are excluded: their LoadState is set by
-    | SetRelationships() / SetReferences() based on whether each target is present in the graph (NotLoaded when absent), which
-    | blocks DeleteUnmatched on save and prevents silent data loss.
+    | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
+    | are computed from Deferred.Count and require no explicit assignment here. Only Extended Attributes needs to be set.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
@@ -505,6 +518,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       return;
     }
 
+    // Relationships and References themselves not by SqlTopicRepository; exit early if that's all that's pending so we don't
+    // open a database connection unnecessarily
+    if (!payload.HasFlag(TopicPayload.Children) && !payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+      return;
+    }
+
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -518,8 +537,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Use the full live graph as the topic index so already-resident relationship targets are found without extra round-trips.
+    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; stale deferred
+    | entries are cleared before processing to prevent duplicates from accumulating in the Deferred collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topics                  = new TopicIndex { [topic.Id] = topic };
+    var topics                  = topic.GetRootTopic().GetTopicIndex();
+    var rawTopic                = (ITopicBackingAccessor)topic;
 
     try {
 
@@ -527,7 +551,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
       using var reader          = (SqlDataReader)await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
-      // Children: Fill first result set; FillChildren() sets each child's Children.LoadState and marks the parent as Loaded
+      // Children: Fill first result set; FillChildrenAsync() sets each child's Children.LoadState and marks the parent Loaded
       if (payload.HasFlag(TopicPayload.Children)) {
         await reader.FillChildrenAsync(topic, topics, cancellationToken).ConfigureAwait(false);
       }
@@ -549,6 +573,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
       }
 
+      // Clear stale deferred entries on the parent/seed topic before its associations are re-processed alongside children
+      if (payload.HasFlag(TopicPayload.Children)) {
+        rawTopic.Relationships.Deferred.Clear();
+        rawTopic.References.Deferred.Clear();
+      }
+
       // Relationships
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
@@ -568,11 +598,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
-    >-------------------------------------------------------------------------------------------------------------------------
-    | Children is excluded: its LoadState is set inside FillChildrenAsync() after a successful fill, with each child's own
-    | Children.LoadState set based on its HasChildren bit. Relationships and References are excluded: their LoadState is set by
-    | SetRelationships() / SetReferences() based on whether each target is present in the graph (NotLoaded when absent), which
-    | blocks DeleteUnmatched on save and prevents silent data loss.
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
+    | are computed from Deferred.Count and require no explicit assignment here. Only Extended Attributes needs to be set.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
@@ -881,8 +909,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// <remarks>
   ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. <see
   ///   cref="TopicPayload.History"/> is hardcoded to <c>false</c> here because its fill path is not yet implemented; once
-  ///   it is, this method will map it from the <paramref name="payload"/> flag. Indexed attributes are only requested when
-  ///   filling the <see cref="TopicPayload.Children"/> boundary.
+  ///   it is, this method will map it from the <paramref name="payload"/> flag. Indexed attributes and associations are only
+  ///   requested when filling the <see cref="TopicPayload.Children"/> boundary, as they are otherwise always loaded as part of
+  ///   the initial <see cref="Load(int, Topic, bool, TopicPayload)"/> for existing topics.
   /// </remarks>
   private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {
 
@@ -894,11 +923,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("LoadAscendants",                      false);
     command.AddParameter("LoadChildren",                        payload.HasFlag(TopicPayload.Children));
 
-    // Payload: Include only what the requested payload require
+    // Payload: Include only what the requested payload requires; relationships and references are loaded during the initial
+    // Load() call, so they do not need to be re-fetched
     command.AddParameter("IncludeIndexed",                      payload.HasFlag(TopicPayload.Children));
     command.AddParameter("IncludeExtended",                     payload.HasFlag(TopicPayload.ExtendedAttributes));
-    command.AddParameter("IncludeRelationships",                payload.HasFlag(TopicPayload.Relationships));
-    command.AddParameter("IncludeReferences",                   payload.HasFlag(TopicPayload.References));
+    command.AddParameter("IncludeRelationships",                payload.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeReferences",                   payload.HasFlag(TopicPayload.Children));
     command.AddParameter("IncludeHistory",                      false);
 
   }
