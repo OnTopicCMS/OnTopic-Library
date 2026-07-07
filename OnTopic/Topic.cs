@@ -21,7 +21,7 @@ namespace OnTopic;
 ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
 ///   with the particular node, a list of children, etc.
 /// </summary>
-public class Topic: ITrackDirtyKeys {
+public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -31,6 +31,8 @@ public class Topic: ITrackDirtyKeys {
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
   private readonly              KeyedTopicCollection            _children                       = new();
+  private readonly              TopicRelationshipMultiMap       _relationships;
+  private readonly              TopicReferenceCollection        _references;
   readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
 
   /*============================================================================================================================
@@ -62,8 +64,8 @@ public class Topic: ITrackDirtyKeys {
     \-------------------------------------------------------------------------------------------------------------------------*/
     Attributes                  = new(this);
     IncomingRelationships       = new(this, true);
-    Relationships               = new(this, false);
-    References                  = new(this);
+    _relationships              = new(this, false);
+    _references                 = new(this);
     VersionHistory              = new();
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -194,12 +196,12 @@ public class Topic: ITrackDirtyKeys {
     }
 
     // Relationships
-    if (payload.HasFlag(TopicPayload.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.Relationships) && _relationships.LoadState is not LoadState.Loaded) {
       return false;
     }
 
     // References
-    if (payload.HasFlag(TopicPayload.References) && References.LoadState is not LoadState.Loaded) {
+    if (payload.HasFlag(TopicPayload.References) && _references.LoadState is not LoadState.Loaded) {
       return false;
     }
 
@@ -775,8 +777,8 @@ public class Topic: ITrackDirtyKeys {
     }
     else if (
       Attributes.IsDirty(excludeLastModified) ||
-      Relationships.IsDirty() ||
-      References.IsDirty()
+      _relationships.IsDirty() ||
+      _references.IsDirty()
     ) {
       return true;
     }
@@ -797,8 +799,8 @@ public class Topic: ITrackDirtyKeys {
     }
     else if (
       Attributes.IsDirty(key) ||
-      Relationships.IsDirty(key) ||
-      References.IsDirty(key)
+      _relationships.IsDirty(key) ||
+      _references.IsDirty(key)
     ) {
       return true;
     }
@@ -830,8 +832,8 @@ public class Topic: ITrackDirtyKeys {
     _dirtyKeys.MarkClean();
     if (includeCollections) {
       Attributes.MarkClean(version);
-      Relationships.MarkClean();
-      References.MarkClean();
+      _relationships.MarkClean();
+      _references.MarkClean();
     }
   }
 
@@ -851,8 +853,8 @@ public class Topic: ITrackDirtyKeys {
     _dirtyKeys.MarkClean(key);
     if (includeCollections) {
       Attributes.MarkClean(key);
-      Relationships.MarkClean(key);
-      References.MarkClean(key);
+      _relationships.MarkClean(key);
+      _references.MarkClean(key);
     }
   }
 
@@ -946,7 +948,11 @@ public class Topic: ITrackDirtyKeys {
   ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s relationships.</value>
-  public TopicRelationshipMultiMap Relationships { get; }
+  public TopicRelationshipMultiMap Relationships {
+    get {
+      return _relationships;
+    }
+  }
 
   /*============================================================================================================================
   | PROPERTY: REFERENCES
@@ -959,7 +965,11 @@ public class Topic: ITrackDirtyKeys {
   ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s references.</value>
-  public TopicReferenceCollection References { get; }
+  public TopicReferenceCollection References {
+    get {
+      return _references;
+    }
+  }
 
   /*============================================================================================================================
   | PROPERTY: INCOMING RELATIONSHIPS
