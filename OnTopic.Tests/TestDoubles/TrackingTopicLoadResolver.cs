@@ -23,7 +23,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   ///   Returns <see langword="true"/> if either <see cref="ITopicLoadResolver.EnsureLoaded"/> or <see cref="
   ///   ITopicLoadResolver.EnsureLoadedAsync"/> was invoked.
   /// </summary>
-  public bool                     WasCalled                       { get; private set; }
+  public bool                   WasCalled                       { get; private set; }
 
   /*============================================================================================================================
   | METHOD: ENSURE LOADED
@@ -40,7 +40,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
     TopicPayload payload,
     CancellationToken cancellationToken
   ) {
-    WasCalled                     = true;
+    WasCalled                   = true;
     return Task.CompletedTask;
   }
 
