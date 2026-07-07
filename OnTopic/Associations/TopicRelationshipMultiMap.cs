@@ -211,6 +211,14 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
       else {
         _dirtyKeys.MarkDirty(relationshipKey);
       }
+
+      // Remove any pending deferred entry for this relationship/target pair
+      for (var i = Deferred.Count - 1; i >= 0; i--) {
+        if (Deferred[i].Key == relationshipKey && Deferred[i].TopicId == topic.Id) {
+          Deferred.RemoveAt(i);
+          break;
+        }
+      }
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

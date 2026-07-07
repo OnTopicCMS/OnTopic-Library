@@ -113,6 +113,16 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     base.InsertItem(index, item);
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Remove any pending deferred entry for this reference key
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var i = Deferred.Count - 1; i >= 0; i--) {
+      if (Deferred[i].Key == item.Key) {
+        Deferred.RemoveAt(i);
+        break;
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
     \-------------------------------------------------------------------------------------------------------------------------*/
     item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
@@ -139,6 +149,16 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     | Provide base logic
     \-------------------------------------------------------------------------------------------------------------------------*/
     base.SetItem(index, item);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Remove any pending deferred entry for this reference key
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var i = Deferred.Count - 1; i >= 0; i--) {
+      if (Deferred[i].Key == item.Key) {
+        Deferred.RemoveAt(i);
+        break;
+      }
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
