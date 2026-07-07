@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Diagnostics;
 using System.Net;
-using OnTopic.Associations;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -87,10 +86,12 @@ internal static class SqlDataReaderExtensions {
       // The first topic returned is the root topic; store it for the return value
       rootTopic                 ??= addedTopic;
 
+      var rawTopic              = (ITopicBackingAccessor)addedTopic;
+
       // HasExtendedAttribute is NULL when extended attributes are included
       // HasExtendedAttribute is true when the blob wasn't loaded, but exists
       if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
-        addedTopic.Attributes.LoadState = LoadState.NotLoaded;
+        rawTopic.Attributes.LoadState = LoadState.NotLoaded;
       }
 
       // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics.
@@ -333,11 +334,12 @@ internal static class SqlDataReaderExtensions {
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     var current                 = topics[topicId];
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set attribute value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, false);
+    rawTopic.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, false);
 
   }
 
@@ -388,6 +390,7 @@ internal static class SqlDataReaderExtensions {
     | Identify the current topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     var current                 = topics[topicId];
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle scenario where there isn't an <attribute /> element
@@ -420,9 +423,9 @@ internal static class SqlDataReaderExtensions {
       if (String.IsNullOrEmpty(attributeValue)) continue;
 
       // Skip keys already dirty in memory to avoid clobbering unsaved values during a lazy fill
-      if (preserveDirty && current.Attributes.IsDirty(attributeKey)) continue;
+      if (preserveDirty && rawTopic.Attributes.IsDirty(attributeKey)) continue;
 
-      current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, true);
+      rawTopic.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, true);
 
     } while (xmlReader.Name is  "attribute");
 
@@ -460,6 +463,7 @@ internal static class SqlDataReaderExtensions {
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     var current                 = topics[sourceTopicId];
+    var rawTopic                = (ITopicBackingAccessor)current;
     var related                 = (Topic?)null;
 
     // Fetch the related topic
@@ -469,7 +473,7 @@ internal static class SqlDataReaderExtensions {
 
     // When the target is absent, defer it for resolution on next access
     if (related is null) {
-      current.Relationships.Deferred.Add(new(relationshipKey, targetTopicId));
+      rawTopic.Relationships.Deferred.Add(new(relationshipKey, targetTopicId));
       return;
     }
 
@@ -477,10 +481,10 @@ internal static class SqlDataReaderExtensions {
     | Set relationship on object
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!isDeleted) {
-      current.Relationships.SetValue(relationshipKey, related, markDirty);
+      rawTopic.Relationships.SetValue(relationshipKey, related, markDirty);
     }
-    else if (current.Relationships.Contains(relationshipKey, related)) {
-      current.Relationships.Remove(relationshipKey, related);
+    else if (rawTopic.Relationships.Contains(relationshipKey, related)) {
+      rawTopic.Relationships.Remove(relationshipKey, related);
     }
 
   }
@@ -516,6 +520,7 @@ internal static class SqlDataReaderExtensions {
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     var current                 = topics[sourceTopicId];
+    var rawTopic                = (ITopicBackingAccessor)current;
     var referenced              = (Topic?)null;
 
     // This happens when the reference has been deleted, so SetValue() will remove the reference
@@ -529,14 +534,14 @@ internal static class SqlDataReaderExtensions {
 
     // When the target isn't (yet) available, defer it to be lazy loaded when the references are accessed
     else {
-      current.References.Deferred.Add(new(referenceKey, targetTopicId.Value));
+      rawTopic.References.Deferred.Add(new(referenceKey, targetTopicId.Value));
       return;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set reference on object
     \-------------------------------------------------------------------------------------------------------------------------*/
-    current.References.SetValue(referenceKey, referenced, markDirty);
+    rawTopic.References.SetValue(referenceKey, referenced, markDirty);
 
   }
 
@@ -564,13 +569,15 @@ internal static class SqlDataReaderExtensions {
       return null;
     }
 
+    var rawTopic                = (ITopicBackingAccessor)addedTopic;
+
     // Set the extended-attribute load state based on the database hint
     if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
-      addedTopic.Attributes.LoadState = LoadState.NotLoaded;
+      rawTopic.Attributes.LoadState = LoadState.NotLoaded;
     }
 
     // Set the children load state based on the database hint
-    addedTopic.Children.LoadState = reader.GetNullableBoolean("HasChildren") is true
+    rawTopic.Children.LoadState = reader.GetNullableBoolean("HasChildren") is true
       ? LoadState.NotLoaded
       : LoadState.Loaded;
 

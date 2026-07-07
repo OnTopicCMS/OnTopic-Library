@@ -295,9 +295,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | That's because there isn't a previous value associated with that key to overwrite the current value. In those cases,
     | those attributes must be manually removed.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var orphanedAttributes = topic.Attributes.Where(a => a.LastModified > version).ToList();
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    var orphanedAttributes      = rawTopic.Attributes.Where(a => a.LastModified > version).ToList();
+
     foreach (var attribute in orphanedAttributes) {
-      topic.Attributes.Remove(attribute.Key);
+      rawTopic.Attributes.Remove(attribute.Key);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -582,11 +584,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Define variables
     \-------------------------------------------------------------------------------------------------------------------------*/
+    var rawTopic                = (ITopicBackingAccessor)topic;
     var isTopicDirty            = topic.IsDirty();
-    var areRelationshipsDirty   = topic.Relationships.IsDirty();
-    var areReferencesDirty      = topic.References.IsDirty();
-    var areAttributesDirty      = topic.Attributes.IsDirty(true);
-    var extendedBoundaryLoaded  = topic.Attributes.LoadState is LoadState.Loaded;
+    var areRelationshipsDirty   = rawTopic.Relationships.IsDirty();
+    var areReferencesDirty      = rawTopic.References.IsDirty();
+    var areAttributesDirty      = rawTopic.Attributes.IsDirty(true);
+    var extendedBoundaryLoaded  = rawTopic.Attributes.LoadState is LoadState.Loaded;
     var extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
     var indexedAttributeList    = GetAttributes(
       topic                     : topic,
@@ -904,11 +907,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// <param name="connection">The SQL connection.</param>
   private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
+    var rawTopic                = (ITopicBackingAccessor)topic;
+
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return blank if the topic has no relations.
     \-------------------------------------------------------------------------------------------------------------------------*/
     // return if the topic has no relations
-    if (topic.Relationships.Keys.Count == 0) {
+    if (rawTopic.Relationships.Keys.Count == 0) {
       return;
     }
 
@@ -917,14 +922,14 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       /*------------------------------------------------------------------------------------------------------------------------
       | Iterate through each scope and persist to SQL
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var key in topic.Relationships.Keys) {
+      foreach (var key in rawTopic.Relationships.Keys) {
 
         using var targetIds     = new TopicListDataTable();
         using var command       = new SqlCommand("UpdateRelationships", connection) {
           CommandType           = CommandType.StoredProcedure
         };
 
-        foreach (var targetTopic in topic.Relationships.GetValues(key)) {
+        foreach (var targetTopic in rawTopic.Relationships.GetValues(key)) {
           if (!targetTopic.IsNew) {
             targetIds.AddRow(targetTopic.Id);
           }
@@ -935,7 +940,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         command.AddParameter("RelationshipKey", key);
         command.AddParameter("RelatedTopics", targetIds);
         command.AddParameter("Version", version);
-        command.AddParameter("DeleteUnmatched", topic.Relationships.LoadState is LoadState.Loaded);
+        command.AddParameter("DeleteUnmatched", rawTopic.Relationships.LoadState is LoadState.Loaded);
 
         command.ExecuteNonQuery();
 
@@ -971,6 +976,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// <param name="connection">The SQL connection.</param>
   private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
 
+    var rawTopic                = (ITopicBackingAccessor)topic;
+
     /*--------------------------------------------------------------------------------------------------------------------------
     | Persist relations to database
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -981,7 +988,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         CommandType             = CommandType.StoredProcedure
       };
 
-      foreach (var relatedTopic in topic.References) {
+      foreach (var relatedTopic in rawTopic.References) {
         if (!relatedTopic.Value?.IsNew?? false) {
           references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
         }
@@ -991,7 +998,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
       command.AddParameter("ReferencedTopics", references);
       command.AddParameter("Version", version);
-      command.AddParameter("DeleteUnmatched", topic.References.LoadState is LoadState.Loaded);
+      command.AddParameter("DeleteUnmatched", rawTopic.References.LoadState is LoadState.Loaded);
 
       command.ExecuteNonQuery();
 
