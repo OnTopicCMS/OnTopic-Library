@@ -145,6 +145,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("LoadDescendants", isRecursive);
     command.AddParameter("LoadAscendants", topicId >= 0 && referenceTopic is null);
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships", true);
+    command.AddParameter("IncludeReferences", true);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
