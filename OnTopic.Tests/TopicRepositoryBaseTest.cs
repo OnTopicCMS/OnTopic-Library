@@ -1150,7 +1150,7 @@ public class TopicRepositoryBaseTest {
 
     _topicRepository.Save(topic);
 
-    Assert.NotNull(topic._resolver);
+    Assert.NotNull(topic.Resolver);
 
   }
 

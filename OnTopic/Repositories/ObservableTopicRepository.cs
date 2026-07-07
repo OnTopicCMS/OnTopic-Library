@@ -286,7 +286,7 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   ///     not itself a resolver leaves any existing inner stamp intact, rather than overwriting it.
   ///   </para>
   ///   <para>
-  ///     Recursion is gated on <see cref="Topic.IsLoaded(LoadBoundaries)"/> so that unloaded branches are not force-loaded.
+  ///     Recursion is gated on <see cref="Topic.IsLoaded(TopicPayload)"/> so that unloaded branches are not force-loaded.
   ///   </para>
   ///   <para>
   ///     Call this method once on the root of a loaded or saved graph; it stamps every resident node in one pass.
@@ -301,7 +301,7 @@ public abstract class ObservableTopicRepository : ITopicRepository {
     }
 
     // Stamp the resolver on the topic
-    topic._resolver             = resolver;
+    topic.Resolver              = resolver;
 
     // If the children aren't yet loaded, don't bother with them yet
     if (!topic.IsLoaded(TopicPayload.Children)) {

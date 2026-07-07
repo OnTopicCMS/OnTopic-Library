@@ -32,7 +32,6 @@ public class Topic: ITrackDirtyKeys {
   private                       Topic?                          _parent;
   private readonly              KeyedTopicCollection            _children                       = new();
   readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
-  internal                      ITopicLoadResolver?             _resolver;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -164,7 +163,7 @@ public class Topic: ITrackDirtyKeys {
   public KeyedTopicCollection Children {
     get {
       if (_children.LoadState is LoadState.NotLoaded) {
-        _resolver?.EnsureLoaded(this, TopicPayload.Children);
+        Resolver?.EnsureLoaded(this, TopicPayload.Children);
       }
       return _children;
     }
@@ -295,7 +294,7 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (_resolver is null || IsNew) {
+    if (Resolver is null || IsNew) {
       return;
     }
 
@@ -309,7 +308,7 @@ public class Topic: ITrackDirtyKeys {
     }
 
     // Ensure the appropriate payload are loaded
-    _resolver.EnsureLoaded(this, payload);
+    Resolver.EnsureLoaded(this, payload);
 
   }
 
@@ -323,7 +322,7 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (_resolver is null || IsNew) {
+    if (Resolver is null || IsNew) {
       return Task.CompletedTask;
     }
 
@@ -337,7 +336,7 @@ public class Topic: ITrackDirtyKeys {
     }
 
     // Ensure the appropriate payload are loaded
-    return _resolver.EnsureLoadedAsync(this, payload, cancellationToken);
+    return Resolver.EnsureLoadedAsync(this, payload, cancellationToken);
 
   }
 
@@ -611,6 +610,15 @@ public class Topic: ITrackDirtyKeys {
   #endregion
 
   #region Lazy-Loading Infrastructure
+
+  /*============================================================================================================================
+  | PROPERTY: RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides an internal reference to the <see cref="ITopicLoadResolver"/> used to lazy load collections on request. This is
+  ///   applied via the <see cref="ObservableTopicRepository.StampResolver"/> method.
+  /// </summary>
+  internal ITopicLoadResolver? Resolver { get; set; }
 
   /*============================================================================================================================
   | INTERFACE: TOPIC BACKING ACCESSOR
