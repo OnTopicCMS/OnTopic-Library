@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Associations;
+using OnTopic.Attributes;
 using OnTopic.Collections;
 
 namespace OnTopic.Repositories;
@@ -63,5 +64,17 @@ public interface ITopicBackingAccessor {
   ///   access this member.
   /// </remarks>
   TopicReferenceCollection References { get; }
+
+  /*============================================================================================================================
+  | PROPERTY: ATTRIBUTES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns the raw <see cref="AttributeCollection"/> backing field, bypassing the autoloading getter.
+  /// </summary>
+  /// <remarks>
+  ///   This is to be applied as explicit interface implementations; callers must cast to <see cref="ITopicBackingAccessor"/> to
+  ///   access this member.
+  /// </remarks>
+  AttributeCollection Attributes { get; }
 
 } //Interface

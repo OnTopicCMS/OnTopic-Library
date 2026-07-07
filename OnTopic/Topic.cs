@@ -625,6 +625,8 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <inheritdoc />
   TopicReferenceCollection ITopicBackingAccessor.References => _references;
 
+  /// <inheritdoc />
+  AttributeCollection ITopicBackingAccessor.Attributes => Attributes;
 
   #endregion
 
