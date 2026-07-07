@@ -610,6 +610,24 @@ public class Topic: ITrackDirtyKeys {
 
   #endregion
 
+  #region Lazy-Loading Infrastructure
+
+  /*============================================================================================================================
+  | INTERFACE: TOPIC BACKING ACCESSOR
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  KeyedTopicCollection ITopicBackingAccessor.Children  => _children;
+
+  /// <inheritdoc />
+  TopicRelationshipMultiMap ITopicBackingAccessor.Relationships => _relationships;
+
+  /// <inheritdoc />
+  TopicReferenceCollection ITopicBackingAccessor.References => _references;
+
+
+  #endregion
+
   #region Relationship and Collection Methods
 
   /*============================================================================================================================
