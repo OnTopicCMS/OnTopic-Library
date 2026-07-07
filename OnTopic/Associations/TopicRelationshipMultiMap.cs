@@ -255,38 +255,12 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
   /// </summary>
   /// <remarks>
-  ///   Defaults to <see cref="LoadState.Loaded"/>. The repository conditionally sets this to <see cref="LoadState.NotLoaded"/>
-  ///   when any related topic cannot be resolved to an in-memory instance during load. The persistence store may optionally
-  ///   provide an indicator of the count without returning the full data, thus allowing this to be set to <see cref=
-  ///   "LoadState.Loaded"/> if, in fact, there are no related topics. While in that state, the <see cref="ITopicRepository"/>
+  ///   Returns <see cref="LoadState.NotLoaded"/> when <see cref="Deferred"/> contains values, meaning one or more relationships
+  ///   aren't yet available and must be lazy loaded. Returns <see cref="LoadState.Loaded"/> once <see cref="Deferred"/> is
+  ///   empty, meaning all targets have been loaded. While <see cref="LoadState.NotLoaded"/>, the <see cref="ITopicRepository"/>
   ///   will not delete unmatched relationships on save, preventing unintended data loss.
   /// </remarks>
-  public LoadState LoadState {   get; set; } = LoadState.Loaded;
-
-  /*============================================================================================================================
-  | IS FULLY LOADED?
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Determines whether or not the collection was fully loaded from the persistence store.
-  /// </summary>
-  /// <remarks>
-  ///   <para>
-  ///     When loading an individual <see cref="Topic"/> or branch from the persistence store, it is possible that the
-  ///     relationships may not be fully available. In this scenario, updating relationships while e.g. deleting unmatched
-  ///     relationships can result in unintended data loss. To account for this, the <see cref="IsFullyLoaded"/> property
-  ///     tracks whether a collection was fully loaded from the persistence store; if it wasn't, the <see cref="
-  ///     ITopicRepository"/> should not deleted unmatched relationships.
-  ///   </para>
-  ///   <para>
-  ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see
-  ///     cref="ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> method if any members of the collection cannot be mapped
-  ///     back to a valid <see cref="Topic"/> reference in memory.
-  ///   </para>
-  /// </remarks>
-  public bool IsFullyLoaded {
-    get => LoadState is LoadState.Loaded;
-    set => LoadState = value? LoadState.Loaded : LoadState.NotLoaded;
-  }
+  public LoadState LoadState => Deferred.Count > 0 ? LoadState.NotLoaded : LoadState.Loaded;
 
   /*============================================================================================================================
   | PROPERTY: DEFERRED

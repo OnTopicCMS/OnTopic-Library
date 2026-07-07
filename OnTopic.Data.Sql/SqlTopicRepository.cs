@@ -277,10 +277,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Catch exception
     \-------------------------------------------------------------------------------------------------------------------------*/
     catch (SqlException exception) {
-      if (topic is not null) {
-        topic.Relationships.LoadState = LoadState.NotLoaded;
-        topic.References.LoadState = LoadState.NotLoaded;
-      }
       throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
     }
 

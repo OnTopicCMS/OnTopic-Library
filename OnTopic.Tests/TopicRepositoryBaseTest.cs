@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Associations;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
@@ -1236,7 +1237,7 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = _topicRepository.Load(11111);
 
-    topic!.Relationships.LoadState = LoadState.NotLoaded;
+    topic!.Relationships.Deferred.Add(new("_stub", 11111));
     topic.EnsureLoaded(TopicPayload.Relationships);
 
     Assert.True(topic.IsLoaded(TopicPayload.Relationships));
@@ -1261,7 +1262,7 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = _topicRepository.Load(11111);
 
-    topic!.References.LoadState = LoadState.NotLoaded;
+    topic!.References.Deferred.Add(new("_stub", 11111));
     topic.EnsureLoaded(TopicPayload.References);
 
     Assert.True(topic.IsLoaded(TopicPayload.References));

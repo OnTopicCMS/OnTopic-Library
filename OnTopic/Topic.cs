@@ -235,16 +235,6 @@ public class Topic: ITrackDirtyKeys {
       Attributes.LoadState      = state;
     }
 
-    // Relationships
-    if (payload.HasFlag(TopicPayload.Relationships)) {
-      Relationships.LoadState   = state;
-    }
-
-    // References
-    if (payload.HasFlag(TopicPayload.References)) {
-      References.LoadState      = state;
-    }
-
   }
 
   /*============================================================================================================================
