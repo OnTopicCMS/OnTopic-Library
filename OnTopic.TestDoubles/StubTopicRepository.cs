@@ -207,7 +207,6 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   <see cref="LoadState.Loaded"/> without merging real blob data, allowing tests to exercise the fill path without a live
   ///   database.
   /// </remarks>
-  /// <inheritdoc />
   public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
