@@ -293,7 +293,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to payload that are not yet loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                    = FilterPayload(payload);
+    payload                     = FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -321,7 +321,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to payload that are not yet loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                    = FilterPayload(payload);
+    payload                     = FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return Task.CompletedTask;
@@ -952,6 +952,10 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <value>The current <see cref="Topic"/>'s relationships.</value>
   public TopicRelationshipMultiMap Relationships {
     get {
+      if (_relationships.LoadState is LoadState.NotLoaded && Resolver is not null) {
+        Resolver.EnsureLoaded(this, TopicPayload.Relationships);
+        _relationships.Deferred.Clear();
+      }
       return _relationships;
     }
   }
@@ -969,6 +973,10 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <value>The current <see cref="Topic"/>'s references.</value>
   public TopicReferenceCollection References {
     get {
+      if (_references.LoadState is LoadState.NotLoaded && Resolver is not null) {
+        Resolver.EnsureLoaded(this, TopicPayload.References);
+        _references.Deferred.Clear();
+      }
       return _references;
     }
   }
