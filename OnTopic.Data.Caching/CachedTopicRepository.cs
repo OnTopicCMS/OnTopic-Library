@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Associations;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -265,11 +266,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Delegate to inner resolver
+    | Delegate to the inner resolver; captures missing targets in the Deferred collections
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (TopicRepository is ITopicLoadResolver resolver) {
       resolver.EnsureLoaded(topic, payload);
     }
+
+    // Resolve any deferred relationship/reference targets through the cache layer
+    ResolveDeferredAssociations(topic, payload);
 
     // Update flat index and stamp resolver for any newly loaded children
     if (payload.HasFlag(TopicPayload.Children)) {
@@ -301,11 +305,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Delegate to inner resolver
+    | Delegate to the inner resolver; captures missing targets in the Deferred collections
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (TopicRepository is ITopicLoadResolver resolver) {
       resolver.EnsureLoaded(topic, payload);
     }
+
+    // Resolve any deferred relationship/reference targets through the cache layer
+    ResolveDeferredAssociations(topic, payload);
 
     // Update flat index and stamp resolver for any newly loaded children
     if (payload.HasFlag(TopicPayload.Children)) {
@@ -421,7 +428,46 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | METHODS: PRIVATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Removes stale <c>_topicByKey<c/> entries for <paramref name="topic"/> and its descendants by swapping the <paramref
+  ///   Resolves any relationship and reference targets that were deferred by the underlying <see cref="ITopicRepository"/> by
+  ///   loading each through the cache layer's own <c>Load()</c>, which checks the index before falling through to the
+  ///   underlying persistence store. Targets that cannot be found are treated as stale references to deleted topics and
+  ///   discarded; the getter clears any remaining <see cref="DeferredAssociation"/> entries after this method returns.
+  /// </summary>
+  /// <param name="topic">The topic whose deferred associations should be resolved.</param>
+  /// <param name="payload">
+  ///   The payload flags that were requested; only <see cref="TopicPayload.Relationships"/> and <see cref=
+  ///   "TopicPayload.References"/> are acted upon.
+  /// </param>
+  private void ResolveDeferredAssociations(Topic topic, TopicPayload payload) {
+
+    var rawTopic                = (ITopicBackingAccessor)topic;
+
+    // Resolve deferred relationship targets; unresolvable targets are treated as stale and discarded
+    if (payload.HasFlag(TopicPayload.Relationships) && rawTopic.Relationships.Deferred.Count > 0) {
+      foreach (var deferred in rawTopic.Relationships.Deferred.ToArray()) {
+        var target              = Load(deferred.TopicId);
+        // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
+        if (target is not null) {
+          rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: false);
+        }
+      }
+    }
+
+    // Resolve deferred reference targets; unresolvable targets are treated as stale and discarded
+    if (payload.HasFlag(TopicPayload.References) && rawTopic.References.Deferred.Count > 0) {
+      foreach (var deferred in rawTopic.References.Deferred.ToArray()) {
+        var target              = Load(deferred.TopicId);
+        // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
+        if (target is not null) {
+          rawTopic.References.SetValue(deferred.Key, target, markDirty: false);
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///   Removes stale <c>_topicByKey</c> entries for <paramref name="topic"/> and its descendants by swapping the <paramref
   ///   name="oldRootUniqueKey"/> prefix for the current one, then reindexes the subtree under its current unique keys.
   /// </summary>
   private void RekeyTopicSubtree(Topic topic, string oldRootUniqueKey) {
