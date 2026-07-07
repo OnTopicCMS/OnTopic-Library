@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Diagnostics;
 using System.Net;
+using OnTopic.Associations;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -466,9 +467,9 @@ internal static class SqlDataReaderExtensions {
       related                   = relatedTopic;
     }
 
-    // Bypass if the target object is missing
+    // When the target is absent, defer it for resolution on next access
     if (related is null) {
-      current.Relationships.LoadState = LoadState.NotLoaded;
+      current.Relationships.Deferred.Add(new(relationshipKey, targetTopicId));
       return;
     }
 
@@ -517,14 +518,18 @@ internal static class SqlDataReaderExtensions {
     var current                 = topics[sourceTopicId];
     var referenced              = (Topic?)null;
 
-    // Fetch the related topic
-    if (targetTopicId is null)  {
+    // This happens when the reference has been deleted, so SetValue() will remove the reference
+    if (targetTopicId is null) {
     }
+
+    // Attempt to get a reference to the target via the topic index
     else if (topics.TryGetValue(targetTopicId.Value, out var referencedTopic)) {
       referenced                = referencedTopic;
     }
+
+    // When the target isn't (yet) available, defer it to be lazy loaded when the references are accessed
     else {
-      current.References.LoadState = LoadState.NotLoaded;
+      current.References.Deferred.Add(new(referenceKey, targetTopicId.Value));
       return;
     }
 
