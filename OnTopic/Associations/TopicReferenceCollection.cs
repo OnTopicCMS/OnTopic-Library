@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Collections.ObjectModel;
 using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 
@@ -79,6 +80,21 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     get => LoadState is LoadState.Loaded;
     set => LoadState = value? LoadState.Loaded : LoadState.NotLoaded;
   }
+
+  /*============================================================================================================================
+  | PROPERTY: DEFERRED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Collects reference targets that were absent from the topic graph during an <see cref="ITopicRepository"/> load, pending
+  ///   resolution via lazy-loading.
+  /// </summary>
+  /// <remarks>
+  ///   Written to by the <see cref="ITopicRepository"/> when a reference target cannot be found in the current <see cref=
+  ///   "TopicIndex"/>. The <see cref="Repositories.ITopicLoadResolver.EnsureLoaded(Topic, TopicPayload)"/> resolves each entry
+  ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
+  ///   to the topic graph.
+  /// </remarks>
+  public Collection<DeferredAssociation> Deferred { get; } = new();
 
   /*============================================================================================================================
   | INSERT ITEM
