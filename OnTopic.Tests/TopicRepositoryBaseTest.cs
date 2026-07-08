@@ -144,8 +144,8 @@ public class TopicRepositoryBaseTest {
   | TEST: ROLLBACK: TOPIC: UPDATES LAST MODIFIED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
-  ///   LastModified"/> value is updated.
+  ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref=
+  ///   "Topic.LastModified"/> value is updated.
   /// </summary>
   [Fact]
   public void Rollback_Topic_UpdatesLastModified() {
@@ -246,7 +246,7 @@ public class TopicRepositoryBaseTest {
     _                           = new Topic("Child", "Page", topic);
 
     Assert.Throws<ReferentialIntegrityException>(() =>
-      _topicRepository.Delete(topic, false)
+      _topicRepository.Delete(topic)
     );
 
   }
@@ -283,7 +283,7 @@ public class TopicRepositoryBaseTest {
     var topic                   = new Topic("Topic", "Page", root);
     _                           = new Topic("Child", "List", topic);
 
-    _topicRepository.Delete(topic, false);
+    _topicRepository.Delete(topic);
 
     Assert.Empty(root.Children);
 
@@ -807,8 +807,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
-  ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedRecordCollection{TItem,
-  ///   TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
+  ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref=
+  ///   "TrackedRecordCollection{TItem,TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
   /// </summary>
   [Fact]
   public void Save_UnresolvedReference_Resolves() {
@@ -990,8 +990,8 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> and ensures that the <see cref="
-  ///   ITopicRepository.TopicLoaded"/> event is raised.
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> and ensures that the
+  ///   <see cref="ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]
   public void Load_TopicLoadedEvent_IsRaised() {
@@ -1014,8 +1014,8 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED WITH VERSION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
-  ///   ITopicRepository.TopicLoaded"/> event is raised.
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref=
+  ///   "ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]
   public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
@@ -1042,8 +1042,8 @@ public class TopicRepositoryBaseTest {
   | TEST: DELETE: TOPIC DELETED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-  ///   TopicDeleted"/> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicDeleted"/> event is raised.
   /// </summary>
   [Fact]
   public void Delete_TopicDeletedEvent_IsRaised() {
@@ -1089,8 +1089,8 @@ public class TopicRepositoryBaseTest {
   | TEST: SAVE: TOPIC RENAMED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
-  ///   "/> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed"
+  ///   /> event is raised.
   /// </summary>
   [Fact]
   public void Save_TopicRenamedEvent_IsRaised() {
@@ -1114,8 +1114,8 @@ public class TopicRepositoryBaseTest {
   | TEST: SAVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
-  ///   TopicMoved"/> event is raised.
+  ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicMoved"/> event is raised.
   /// </summary>
   [Fact]
   public void Save_TopicMovedEvent_IsRaised() {
@@ -1274,8 +1274,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"/>, then accesses
-  ///   the <see cref="Topic.Children"/> getter. Verifies that the auto-load fires, promoting the boundary to <see cref="
-  ///   LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  ///   the <see cref="Topic.Children"/> getter. Verifies that the auto-load fires, promoting the boundary to <see cref=
+  ///   "LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
   public void IsLoaded_ChildrenNotLoadedState_TriggersEnsureLoaded() {
@@ -1314,8 +1314,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> has been manually set to <see cref="LoadState.NotLoaded"
-  ///   /> and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.
-  ///   Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  ///   /> and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref=
+  ///   "LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
   public void EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
@@ -1357,8 +1357,8 @@ public class TopicRepositoryBaseTest {
   | TEST: MOVE: SAME LOCATION: EVENT NOT RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref="
-  ///   ITopicRepository.TopicMoved"/> event is not raised.
+  ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicMoved"/> event is not raised.
   /// </summary>
   [Fact]
   public void Move_SameLocation_EventNotRaised() {
