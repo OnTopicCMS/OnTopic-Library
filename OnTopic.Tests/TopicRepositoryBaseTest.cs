@@ -1309,6 +1309,86 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: IS LOADED: RELATIONSHIPS NOT LOADED STATE: TRIGGERS ENSURE LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Relationships"/> as <see cref="LoadState.NotLoaded"/>, then
+  ///   accesses the <see cref="Topic.Relationships"/> getter. Verifies that the autoload fires, promoting the boundary to
+  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_RelationshipsNotLoadedState_TriggersEnsureLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.Relationships.Deferred.Add(new("_stub", 11111));
+    _                           = topic.Relationships;
+
+    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS LOADED: RELATIONSHIPS LOADED STATE: DOES NOT CALL RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Relationships"/> is already <see cref="LoadState.Loaded"/> and
+  ///   accesses the getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the resolver being called
+  ///   redundantly.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_RelationshipsLoadedState_DoesNotCallResolver() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    Assert.True(topic!.IsLoaded(TopicPayload.Relationships));
+    _                           = topic.Relationships;
+
+    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS LOADED: REFERENCES NOT LOADED STATE: TRIGGERS ENSURE LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.References"/> as <see cref="LoadState.NotLoaded"/>, then
+  ///   accesses the <see cref="Topic.References"/> getter. Verifies that the autoload fires, promoting the boundary to
+  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_ReferencesNotLoadedState_TriggersEnsureLoaded() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    topic!.References.Deferred.Add(new("_stub", 11111));
+    _                           = topic.References;
+
+    Assert.True(topic.IsLoaded(TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS LOADED: REFERENCES LOADED STATE: DOES NOT CALL RESOLVER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.References"/> is already <see cref="LoadState.Loaded"/> and accesses
+  ///   the getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the resolver being called
+  ///   redundantly.
+  /// </summary>
+  [Fact]
+  public void IsLoaded_ReferencesLoadedState_DoesNotCallResolver() {
+
+    var topic                   = _topicRepository.Load(11111);
+
+    Assert.True(topic!.IsLoaded(TopicPayload.References));
+    _                           = topic.References;
+
+    Assert.True(topic.IsLoaded(TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
   | TEST: IS LOADED: CHILDREN NOT LOADED: MARKS LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

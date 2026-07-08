@@ -342,6 +342,10 @@ public class SqlTopicRepositoryTest {
   ///   deferred via <c>HasExtendedAttributes = true</c>) with a relationship whose target is resident, and confirms that
   ///   <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.Loaded"/>.
   /// </summary>
+  /// <remarks>
+  ///   Confirms that the relationship result set is still returned and <see cref="LoadState"/> is correctly established even
+  ///   when extended attributes are deferred.
+  /// </remarks>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithRelationship_ReturnsLoaded() {
 
@@ -370,6 +374,10 @@ public class SqlTopicRepositoryTest {
   ///   non-resident, and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref=
   ///   "LoadState.NotLoaded"/>.
   /// </summary>
+  /// <remarks>
+  ///   <c>LoadState.NotLoaded</c> blocks <c>DeleteUnmatched</c> on save; the missing edge is reconnected when the outer
+  ///   resolver calls <c>EnsureLoaded(Relationships)</c> for the topic.
+  /// </remarks>
   [Fact]
   public void LoadTopicGraph_IndexedOnlyWithMissingRelationship_ReturnsNotLoaded() {
 
@@ -432,6 +440,60 @@ public class SqlTopicRepositoryTest {
     using var references        = new TopicReferencesDataTable();
 
     topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
+    references.AddRow(1, "Test", 99);
+
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.False(topic.IsLoaded(TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: SETS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a relationship whose target is not in the live graph,
+  ///   and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> is set to <see cref="LoadState.NotLoaded"/> to
+  ///   block <c>DeleteUnmatched</c> on save until the edge is resolved via <c>EnsureLoaded</c>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithMissingRelationship_SetsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container");
+    relationships.AddRow(1, "Test", 99, false);
+
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
+
+    var topic                   = tableReader.LoadTopicGraph();
+
+    Assert.NotNull(topic);
+    Assert.False(topic.IsLoaded(TopicPayload.Relationships));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: SETS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a reference whose target is not in the live graph, and
+  ///   confirms that <see cref="TopicReferenceCollection.LoadState"/> is set to <see cref="LoadState.NotLoaded"/> to block
+  ///   <c>DeleteUnmatched</c> on save until the reference is resolved via <c>EnsureLoaded</c>.
+  /// </summary>
+  [Fact]
+  public void LoadTopicGraph_WithMissingReference_SetsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var references        = new TopicReferencesDataTable();
+
+    topics.AddRow(1, "Root", "Container");
     references.AddRow(1, "Test", 99);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
