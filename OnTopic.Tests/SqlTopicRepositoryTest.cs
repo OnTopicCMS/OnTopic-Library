@@ -37,7 +37,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
 
     using var tableReader       = new DataTableReader(topics);
 
@@ -88,7 +88,7 @@ public class SqlTopicRepositoryTest {
     using var topics            = new TopicsDataTable();
     using var attributes        = new AttributesDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     attributes.AddRow(1, "Test", "Value");
 
     using var tableReader       = new DataTableReader([topics, attributes]);
@@ -143,7 +143,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var relationships     = new RelationshipsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     topics.AddRow(2, "Web", "Container", 1);
     relationships.AddRow(1, "Test", 2, false);
 
@@ -172,7 +172,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var relationships     = new RelationshipsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     relationships.AddRow(1, "Test", 2, false);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
@@ -200,7 +200,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var references        = new TopicReferencesDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     topics.AddRow(2, "Web", "Container", 1);
     references.AddRow(1, "Test", 2);
 
@@ -231,7 +231,7 @@ public class SqlTopicRepositoryTest {
 
     var referenceTopic          = new Topic("Web", "Container", null, 2);
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     references.AddRow(1, "Test", 2);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
@@ -265,7 +265,7 @@ public class SqlTopicRepositoryTest {
 
     referenceTopic.References.SetValue("Reference", referenceTopic);
 
-    topics.AddRow(1, "Web", "Container", null);
+    topics.AddRow(1, "Web", "Container");
     references.AddRow(1, "Reference", null);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
@@ -291,7 +291,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var references        = new TopicReferencesDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     references.AddRow(1, "Test", 2);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
@@ -349,7 +349,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var relationships     = new RelationshipsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
     topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
     relationships.AddRow(1, "Test", 2, false);
 
@@ -377,7 +377,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var relationships     = new RelationshipsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
     relationships.AddRow(1, "Test", 99, false);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
@@ -403,7 +403,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var references        = new TopicReferencesDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
     topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
     references.AddRow(1, "Test", 2);
 
@@ -431,7 +431,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var references        = new TopicReferencesDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
     references.AddRow(1, "Test", 99);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
@@ -439,7 +439,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.False(topic!.IsLoaded(TopicPayload.References));
+    Assert.False(topic.IsLoaded(TopicPayload.References));
 
   }
 
@@ -457,7 +457,7 @@ public class SqlTopicRepositoryTest {
     using var empty             = new AttributesDataTable();
     using var versions          = new VersionHistoryDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
     versions.AddRow(1, DateTime.MinValue);
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, empty, versions]);
@@ -484,7 +484,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: true);
 
     using var tableReader       = new DataTableReader(topics);
 
@@ -508,7 +508,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: false);
+    topics.AddRow(1, "Root", "Container", hasExtendedAttributes: false);
 
     using var tableReader       = new DataTableReader(topics);
 
@@ -532,7 +532,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null);
+    topics.AddRow(1, "Root", "Container");
 
     using var tableReader       = new DataTableReader(topics);
 
@@ -556,7 +556,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasChildren: false);
+    topics.AddRow(1, "Root", "Container", hasChildren: false);
 
     using var tableReader       = new DataTableReader(topics);
 
@@ -579,7 +579,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasChildren: true);
+    topics.AddRow(1, "Root", "Container", hasChildren: true);
     topics.AddRow(2, "Child", "Page", 1, hasChildren: false);
 
     using var tableReader       = new DataTableReader(topics);
@@ -604,7 +604,7 @@ public class SqlTopicRepositoryTest {
 
     using var topics            = new TopicsDataTable();
 
-    topics.AddRow(1, "Root", "Container", null, hasChildren: true);
+    topics.AddRow(1, "Root", "Container", hasChildren: true);
     topics.AddRow(2, "Child", "Container", 1, hasChildren: true);
     topics.AddRow(3, "Grandchild", "Page", 2, hasChildren: false);
 
