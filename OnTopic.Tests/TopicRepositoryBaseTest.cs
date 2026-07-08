@@ -58,7 +58,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Load_ValidTopicId_ReturnsExpectedTopic() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     Assert.Equal(11111, topic?.Id);
 
@@ -73,7 +73,7 @@ public class TopicRepositoryBaseTest {
   /// </summary>
   [Fact]
   public void Load_InvalidTopicId_ReturnsExpectedTopic() =>
-   Assert.Null(_topicRepository.Load(11113));
+   Assert.Null(_topicRepository.Load(11113).GetAwaiter().GetResult());
 
   /*============================================================================================================================
   | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
@@ -84,7 +84,7 @@ public class TopicRepositoryBaseTest {
   /// </summary>
   [Fact]
   public void Load_NegativeTopicId_ReturnsRootTopic() =>
-    Assert.Equal("Root", _cachedTopicRepository.Load(-2)?.GetUniqueKey());
+    Assert.Equal("Root", _cachedTopicRepository.Load(-2).GetAwaiter().GetResult()?.GetUniqueKey());
 
   /*============================================================================================================================
   | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
@@ -97,7 +97,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Load_WithNarrowPayload_ReturnsTopic() {
 
-    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None);
+    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None).GetAwaiter().GetResult();
 
     Assert.NotNull(topic);
 
@@ -114,7 +114,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Load_WithNarrowPayload_ExtendedAttributesLoaded() {
 
-    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None);
+    var topic                     = _topicRepository.Load(11111, payload: TopicPayload.None).GetAwaiter().GetResult();
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -132,7 +132,7 @@ public class TopicRepositoryBaseTest {
   public void Load_ValidDate_ReturnsTopic() {
 
     var version                 = DateTime.UtcNow.AddDays(-1);
-    var topic                   = _cachedTopicRepository.Load(11111, version);
+    var topic                   = _cachedTopicRepository.Load(11111, version).GetAwaiter().GetResult();
 
     Assert.True(topic?.VersionHistory.Contains(version));
     Assert.Equal(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
@@ -150,7 +150,7 @@ public class TopicRepositoryBaseTest {
   public void Rollback_Topic_UpdatesLastModified() {
 
     var version                 = DateTime.UtcNow.AddDays(-1);
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     if (topic is not null) {
       topic.VersionHistory.Add(version);
@@ -170,8 +170,8 @@ public class TopicRepositoryBaseTest {
   ///   confirms that an exception is thrown.
   /// </summary>
   [Fact]
-  public void Load_FutureDate_ThrowsException() =>
-    Assert.Throws<InvalidOperationException>(() =>
+  public async Task Load_FutureDate_ThrowsException() =>
+    await Assert.ThrowsAsync<InvalidOperationException>(() =>
       _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1))
     );
 
@@ -183,8 +183,8 @@ public class TopicRepositoryBaseTest {
   ///   introduced and ensures that an exception is thrown.
   /// </summary>
   [Fact]
-  public void Load_OldDate_ThrowsException() =>
-    Assert.Throws<InvalidOperationException>(() =>
+  public async Task Load_OldDate_ThrowsException() =>
+    await Assert.ThrowsAsync<InvalidOperationException>(() =>
       _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15))
     );
 
@@ -660,7 +660,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
 
-    var rootTopic               = _topicRepository.Load("Root");
+    var rootTopic               = _topicRepository.Load("Root").GetAwaiter().GetResult();
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var rootContentType         = contentTypes.GetValue("ContentTypes");
     var newContentType          = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
@@ -685,7 +685,7 @@ public class TopicRepositoryBaseTest {
   public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
 
     var topicRepository         = new StubTopicRepository();
-    var configuration           = topicRepository.Load("Root:Configuration");
+    var configuration           = topicRepository.Load("Root:Configuration").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page");
 
     topicRepository.Delete(configuration!, true);
@@ -772,7 +772,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Save_NewTopic_UpdatesVersionHistory() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
 
     _topicRepository.Save(topic);
@@ -791,7 +791,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Save_IsRecursive_SavesChild() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
     var child                   = new Topic("Child", "Page", topic);
 
@@ -812,7 +812,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Save_UnresolvedReference_Resolves() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
     var reference               = new Topic("Reference", "Page", topic);
 
@@ -832,7 +832,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Save_UnresolvedReference_ThrowsException() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
     var reference               = new Topic("Reference", "Page", parent);
 
@@ -999,7 +999,7 @@ public class TopicRepositoryBaseTest {
 
     _cachedTopicRepository.TopicLoaded += eventHandler;
 
-    var topic                   = _topicRepository.Load("Root:Web");
+    var topic                   = _topicRepository.Load("Root:Web").GetAwaiter().GetResult();
 
     _cachedTopicRepository.TopicLoaded -= eventHandler;
 
@@ -1020,12 +1020,12 @@ public class TopicRepositoryBaseTest {
   public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
 
     var hasFired                = false;
-    var topicId                 = _topicRepository.Load("Root:Web")?.Id;
+    var topicId                 = _topicRepository.Load("Root:Web").GetAwaiter().GetResult()?.Id;
     var version                 = DateTime.UtcNow;
 
     _cachedTopicRepository.TopicLoaded += eventHandler;
 
-    var topic                   = _topicRepository.Load(topicId?? -1, version);
+    var topic                   = _topicRepository.Load(topicId?? -1, version).GetAwaiter().GetResult();
 
     _cachedTopicRepository.TopicLoaded -= eventHandler;
 
@@ -1145,7 +1145,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void Save_NewTopic_StampsResolver() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
 
     _topicRepository.Save(topic);
@@ -1187,7 +1187,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void EnsureLoaded_ExtendedAttributesNotLoaded_MarksLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
     topic.EnsureLoaded(TopicPayload.ExtendedAttributes);
@@ -1207,7 +1207,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void EnsureLoaded_MixedBoundaries_SkipsLoadedBoundaries() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
     Assert.True(topic.IsLoaded(TopicPayload.Children));
@@ -1234,7 +1234,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
     topic.EnsureLoaded(TopicPayload.Relationships);
@@ -1259,7 +1259,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.References.Deferred.Add(new("_stub", 11111));
     topic.EnsureLoaded(TopicPayload.References);
@@ -1279,7 +1279,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_ChildrenNotLoadedState_TriggersEnsureLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
     _                           = topic.Children;
@@ -1299,7 +1299,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_ChildrenLoadedState_DoesNotCallResolver() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     Assert.True(topic!.IsLoaded(TopicPayload.Children));
     _                           = topic.Children;
@@ -1319,7 +1319,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_RelationshipsNotLoadedState_TriggersEnsureLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
     _                           = topic.Relationships;
@@ -1339,7 +1339,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_RelationshipsLoadedState_DoesNotCallResolver() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     Assert.True(topic!.IsLoaded(TopicPayload.Relationships));
     _                           = topic.Relationships;
@@ -1359,7 +1359,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_ReferencesNotLoadedState_TriggersEnsureLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.References.Deferred.Add(new("_stub", 11111));
     _                           = topic.References;
@@ -1379,7 +1379,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void IsLoaded_ReferencesLoadedState_DoesNotCallResolver() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     Assert.True(topic!.IsLoaded(TopicPayload.References));
     _                           = topic.References;
@@ -1399,7 +1399,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public void EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
     topic.EnsureLoaded(TopicPayload.Children);
@@ -1449,7 +1449,7 @@ public class TopicRepositoryBaseTest {
   public void EnsureLoaded_WithMissingRelationshipTarget_ResolvesAndConnects() {
 
     // Get the root topic from cache; seed a deferred entry to simulate a pending relationship target
-    var source                  = _cachedTopicRepository.Load(-1)!;
+    var source                  = _cachedTopicRepository.Load(-1).GetAwaiter().GetResult()!;
     source.Relationships.Deferred.Add(new("_stub", 11111));
 
     // Act: EnsureLoaded re-queries, finds the missing target, loads it, and connects the edge
@@ -1471,7 +1471,7 @@ public class TopicRepositoryBaseTest {
   public void EnsureLoaded_Relationships_AlreadyLoaded_SkipsFill() {
 
     // Get the root topic; relationships start as Loaded (Deferred is empty) after initialization
-    var source                  = _cachedTopicRepository.Load(-1)!;
+    var source                  = _cachedTopicRepository.Load(-1).GetAwaiter().GetResult()!;
 
     // Act
     _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);

@@ -61,7 +61,7 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = new CachedTopicRepository(topicRepository);
-    _topic                      = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
+    _topic                      = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult()!;
     _topicMappingService        = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
     /*--------------------------------------------------------------------------------------------------------------------------

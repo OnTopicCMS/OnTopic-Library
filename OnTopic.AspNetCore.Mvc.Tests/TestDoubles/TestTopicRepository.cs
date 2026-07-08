@@ -43,15 +43,15 @@ public class TestTopicRepository: DummyTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load() => _cache;
+  public override Task<Topic?> Load() => Task.FromResult<Topic?>(_cache);
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
     TopicPayload payload        = TopicPayload.All
-  ) => String.IsNullOrEmpty(uniqueKey)? null : _cache.FindFirst(t => t.GetUniqueKey() == uniqueKey);
+  ) => Task.FromResult(String.IsNullOrEmpty(uniqueKey)? null : _cache.FindFirst(t => t.GetUniqueKey() == uniqueKey));
 
   /*============================================================================================================================
   | METHOD: CREATE FAKE DATA

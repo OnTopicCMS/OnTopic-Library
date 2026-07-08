@@ -47,7 +47,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -80,12 +80,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult<Topic?>(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -96,7 +96,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (String.IsNullOrEmpty(uniqueKey)) {
-      return null;
+      return Task.FromResult<Topic?>(null);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -121,12 +121,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult<Topic?>(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -173,7 +173,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic?? throw new TopicNotFoundException(topicId);
+    return Task.FromResult<Topic?>(topic ?? throw new TopicNotFoundException(topicId));
 
   }
 
@@ -207,7 +207,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   <see cref="LoadState.Loaded"/> without merging real blob data, allowing tests to exercise the fill path without a live
   ///   database.
   /// </remarks>
-  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
+  public virtual Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -229,12 +229,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
       rawTopic.References.Deferred.Clear();
     }
 
-  }
-
-  /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
-    EnsureLoaded(topic, payload);
     return Task.CompletedTask;
+
   }
 
   /*============================================================================================================================

@@ -65,7 +65,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     _topicRepository                                          = cachedTopicRepository;
     _typeLookupService                                        = new DynamicTopicViewModelLookupService();
     _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-    _                                                         = _topicRepository.Load();
+    _                                                         = _topicRepository.Load().GetAwaiter().GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service

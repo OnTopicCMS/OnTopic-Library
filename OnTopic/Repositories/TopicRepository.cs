@@ -57,7 +57,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
       var configuration         = (Topic?)null;
 
       try {
-        configuration           = Load("Root:Configuration");
+        configuration           = Load("Root:Configuration").GetAwaiter().GetResult();
       }
       catch (TopicNotFoundException) {
         //Swallow missing configuration, as this is an expected condition when working with a new database
@@ -218,7 +218,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(Topic topic, DateTime version) {
+  public override Task<Topic?> Load(Topic topic, DateTime version) {
     Contract.Requires(topic, nameof(topic));
     Contract.Requires<ArgumentException>(
       !topic.IsNew,

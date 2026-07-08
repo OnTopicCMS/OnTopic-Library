@@ -77,10 +77,10 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load() => Load(-1);
+  public override Task<Topic?> Load() => Load(-1);
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -89,7 +89,7 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
     TopicRepository.Load(topicId, referenceTopic, isRecursive, payload);
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -98,11 +98,11 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
     TopicRepository.Load(uniqueKey, referenceTopic, isRecursive, payload);
 
   /// <inheritdoc />
-  public override Topic? Load(Topic topic, DateTime version)
+  public override Task<Topic?> Load(Topic topic, DateTime version)
     => TopicRepository.Load(topic, version);
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
+  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
     TopicRepository.Load(topicId, version, referenceTopic);
 
   /*============================================================================================================================

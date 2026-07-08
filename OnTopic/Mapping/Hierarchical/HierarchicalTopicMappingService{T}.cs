@@ -72,7 +72,7 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (navigationRootTopic is  null) {
       Contract.Assume<ArgumentNullException>(!String.IsNullOrEmpty(defaultRoot), nameof(defaultRoot));
-      navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic);
+      navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic).GetAwaiter().GetResult();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

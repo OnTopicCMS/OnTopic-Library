@@ -69,9 +69,9 @@ public class ErrorController :  TopicController {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify relevant topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    CurrentTopic                = TopicRepository.Load($"{rootTopic}:{statusCode}")??
-                                TopicRepository.Load($"{rootTopic}:{statusCode/100*100}")??
-                                TopicRepository.Load($"{rootTopic}");
+    CurrentTopic                = await TopicRepository.Load($"{rootTopic}:{statusCode}").ConfigureAwait(false)
+                                ?? await TopicRepository.Load($"{rootTopic}:{statusCode/100*100}").ConfigureAwait(false)
+                                ?? await TopicRepository.Load($"{rootTopic}").ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic view

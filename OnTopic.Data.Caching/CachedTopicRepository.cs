@@ -49,7 +49,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Seed root topic (without descendants)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var rootTopic               = TopicRepository.Load("Root", referenceTopic: null, isRecursive: false);
+    var rootTopic               = TopicRepository.Load("Root", referenceTopic: null, isRecursive: false)
+                                    .GetAwaiter().GetResult();
 
     Contract.Assume(
       rootTopic,
@@ -65,7 +66,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Eager-load Root:Configuration subtree (required for content-type descriptor resolution)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository.Load("Root:Configuration", referenceTopic: _cache, isRecursive: true, payload: TopicPayload.All);
+    TopicRepository.Load("Root:Configuration", referenceTopic: _cache, isRecursive: true, payload: TopicPayload.All)
+      .GetAwaiter().GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate flat index from seeded topics
@@ -91,7 +93,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   ///   Missing IDs are recorded to prevent
   ///   redundant round-trips for topics that genuinely do not exist.
   /// </remarks>
-  public override Topic? Load(
+  public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -126,7 +128,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = TopicRepository.Load(topicId, referenceTopic: null, isRecursive: false);
+    var loaded                  = await TopicRepository.Load(topicId, referenceTopic: null, isRecursive: false)
+                                    .ConfigureAwait(false);
 
     // If it's missing, populate the appropriate index so we don't try loading it again
     if (loaded is null) {
@@ -154,7 +157,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   ///   Missing IDs are recorded to prevent
   ///   redundant round-trips for topics that genuinely do not exist.
   /// </remarks>
-  public override Topic? Load(
+  public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -199,7 +202,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded = TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false);
+    var loaded = await TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false)
+                   .ConfigureAwait(false);
 
     if (loaded is null) {
       lock (_syncLock) {
@@ -219,7 +223,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   }
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -238,7 +242,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return appropriate topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic                   = TopicRepository.Load(topicId, version, referenceTopic?? _cache);
+    var topic                   = await TopicRepository.Load(topicId, version, referenceTopic ?? _cache)
+                                    .ConfigureAwait(false);
     StampResolver(topic);
     return topic;
 
@@ -249,46 +254,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Validate parameters
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(topic);
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (i.e. not yet Loaded) payload
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                    = topic.FilterPayload(payload);
-
-    if (payload is TopicPayload.None) {
-      return;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Delegate to the inner resolver; captures missing targets in the Deferred collections
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (TopicRepository is ITopicLoadResolver resolver) {
-      resolver.EnsureLoaded(topic, payload);
-    }
-
-    // Resolve any deferred relationship/reference targets through the cache layer
-    ResolveDeferredAssociations(topic, payload);
-
-    // Update flat index and stamp resolver for any newly loaded children
-    if (payload.HasFlag(TopicPayload.Children)) {
-      lock (_syncLock) {
-        foreach (var child in topic.Children) {
-          IndexTopic(child);
-        }
-      }
-      StampResolver(topic);
-    }
-
-  }
-
-  /// <inheritdoc />
-  public virtual Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+  public virtual async Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -301,18 +267,18 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     payload                    = topic.FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
-      return Task.CompletedTask;
+      return;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Delegate to the inner resolver; captures missing targets in the Deferred collections
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (TopicRepository is ITopicLoadResolver resolver) {
-      resolver.EnsureLoaded(topic, payload);
+      await resolver.EnsureLoaded(topic, payload, cancellationToken).ConfigureAwait(false);
     }
 
     // Resolve any deferred relationship/reference targets through the cache layer
-    ResolveDeferredAssociations(topic, payload);
+    await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
 
     // Update flat index and stamp resolver for any newly loaded children
     if (payload.HasFlag(TopicPayload.Children)) {
@@ -323,8 +289,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       }
       StampResolver(topic);
     }
-
-    return Task.CompletedTask;
 
   }
 
@@ -438,14 +402,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   ///   The payload flags that were requested; only <see cref="TopicPayload.Relationships"/> and <see cref=
   ///   "TopicPayload.References"/> are acted upon.
   /// </param>
-  private void ResolveDeferredAssociations(Topic topic, TopicPayload payload) {
+  private async Task ResolveDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
 
     var rawTopic                = (ITopicBackingAccessor)topic;
 
     // Resolve deferred relationship targets; unresolvable targets are treated as stale and discarded
     if (payload.HasFlag(TopicPayload.Relationships) && rawTopic.Relationships.Deferred.Count > 0) {
       foreach (var deferred in rawTopic.Relationships.Deferred.ToArray()) {
-        var target              = Load(deferred.TopicId);
+        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
         // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
         if (target is not null) {
           rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: false);
@@ -456,7 +420,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     // Resolve deferred reference targets; unresolvable targets are treated as stale and discarded
     if (payload.HasFlag(TopicPayload.References) && rawTopic.References.Deferred.Count > 0) {
       foreach (var deferred in rawTopic.References.Deferred.ToArray()) {
-        var target              = Load(deferred.TopicId);
+        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
         // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
         if (target is not null) {
           rawTopic.References.SetValue(deferred.Key, target, markDirty: false);

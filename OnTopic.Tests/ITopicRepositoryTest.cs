@@ -65,7 +65,7 @@ public class ITopicRepositoryTest {
   [Fact]
   public void Load_Default_ReturnsTopicTopic() {
 
-    var rootTopic               = _topicRepository.Load();
+    var rootTopic               = _topicRepository.Load().GetAwaiter().GetResult();
 
     Assert.Equal(2, rootTopic?.Children.Count);
     Assert.Equal("Configuration", rootTopic?.Children.First().Key);
@@ -81,7 +81,7 @@ public class ITopicRepositoryTest {
   /// </summary>
   [Fact]
   public void Load_ValidUniqueKey_ReturnsCorrectTopic() =>
-    Assert.Equal("Page", _topicRepository.Load("Root:Configuration:ContentTypes:Page")?.Key);
+    Assert.Equal("Page", _topicRepository.Load("Root:Configuration:ContentTypes:Page").GetAwaiter().GetResult()?.Key);
 
   /*============================================================================================================================
   | TEST: LOAD: INVALID UNIQUE KEY: RETURNS NULL
@@ -91,7 +91,7 @@ public class ITopicRepositoryTest {
   /// </summary>
   [Fact]
   public void Load_InvalidUniqueKey_ReturnsTopic() =>
-    Assert.Null(_topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType"));
+    Assert.Null(_topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType").GetAwaiter().GetResult());
 
   /*============================================================================================================================
   | TEST: LOAD: VALID TOPIC ID: RETURNS CORRECT TOPIC
@@ -102,7 +102,7 @@ public class ITopicRepositoryTest {
   [Fact]
   public void Load_ValidTopicId_ReturnsCorrectTopic() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     Assert.NotNull(topic);
     Assert.Equal("Web_1_1_1_1", topic?.Key);
@@ -117,7 +117,7 @@ public class ITopicRepositoryTest {
   /// </summary>
   [Fact]
   public void Load_InvalidTopicId_ReturnsNull() =>
-    Assert.Null(_topicRepository.Load(9999999));
+    Assert.Null(_topicRepository.Load(9999999).GetAwaiter().GetResult());
 
   /*============================================================================================================================
   | TEST: SAVE

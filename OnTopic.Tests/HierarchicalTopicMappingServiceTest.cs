@@ -57,7 +57,7 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = fixture.CachedTopicRepository;
-    _topic                      =  _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
+    _topic                      =  _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult()!;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service
@@ -141,7 +141,7 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web");
+    var rootTopic               = _topicRepository.Load("Root:Web").GetAwaiter().GetResult();
     var viewModel               = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1);
 
     Assert.NotNull(viewModel);
@@ -160,7 +160,7 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithValidationDelegate_ExcludesTopics() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web");
+    var rootTopic               = _topicRepository.Load("Root:Web").GetAwaiter().GetResult();
     var viewModel               = await _hierarchicalMappingService
       .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith('1'));
 
@@ -180,8 +180,8 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithDisabled_ExcludesDisabled() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web:Web_3")!;
-    var disabledTopic           = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var rootTopic               = _topicRepository.Load("Root:Web:Web_3").GetAwaiter().GetResult()!;
+    var disabledTopic           = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
 
     Contract.Assume(disabledTopic);
 

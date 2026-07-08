@@ -51,7 +51,7 @@ public class TopicRepositoryExtensionsTest: IClassFixture<StubTopicRepository> {
   public void Load_ByRoute_ReturnsTopic() {
 
     var routes                  = new RouteData();
-    var topic                   = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+    var topic                   = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1").GetAwaiter().GetResult();
 
     routes.Values.Add("rootTopic", "Web");
     routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
@@ -74,7 +74,7 @@ public class TopicRepositoryExtensionsTest: IClassFixture<StubTopicRepository> {
   public void Load_ByRoute_ReturnsRootTopic() {
 
     var routes                  = new RouteData();
-    var topic                   = _topicRepository.Load("Root");
+    var topic                   = _topicRepository.Load("Root").GetAwaiter().GetResult();
 
     routes.Values.Add("path", "Root/");
 

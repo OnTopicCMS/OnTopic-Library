@@ -76,7 +76,7 @@ public static class TopicRepositoryExtensions {
       if (topic is not null) break;
       if (String.IsNullOrEmpty(searchPath)) continue;
       try {
-        topic = topicRepository.Load(searchPath);
+        topic = topicRepository.Load(searchPath).GetAwaiter().GetResult();
       }
       catch (InvalidKeyException) {
         //As route data comes from user-submitted requests, it's expected that some may contain invalid keys. From this

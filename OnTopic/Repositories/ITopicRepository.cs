@@ -86,7 +86,7 @@ public interface ITopicRepository {
   ///   Loads the entire root topic graph, including all descendants.
   /// </summary>
   /// <returns>A topic object.</returns>
-  public Topic? Load() => Load(-1);
+  public Task<Topic?> Load() => Load(-1);
 
   /// <summary>
   ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
@@ -103,7 +103,7 @@ public interface ITopicRepository {
   /// </param>
   /// <param name="payload">Specifies which data to include with each topic.</param>
   /// <returns>A topic object.</returns>
-  Topic? Load(
+  Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -127,7 +127,7 @@ public interface ITopicRepository {
   ///   for details.
   /// </param>
   /// <returns>A topic object.</returns>
-  Topic? Load(
+  Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -137,7 +137,7 @@ public interface ITopicRepository {
   /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   [ExcludeFromCodeCoverage]
   [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
-  Topic? Load(string? uniqueKey, bool isRecursive);
+  Task<Topic?> Load(string? uniqueKey, bool isRecursive);
 
   /// <summary>
   ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version
@@ -154,10 +154,10 @@ public interface ITopicRepository {
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
   /// <returns>A topic object.</returns>
-  Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
+  Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null);
 
   /// <inheritdoc cref="Load(Int32, DateTime, Topic)"/>
-  Topic? Load(Topic topic, DateTime version);
+  Task<Topic?> Load(Topic topic, DateTime version);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK

@@ -42,18 +42,17 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
     TopicPayload payload        = TopicPayload.All
   ) {
 
-
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache;
+    var topic = (Topic?)_cache;
 
     if (topicId > 0) {
       topic = _cache.FindFirst(t => t.Id.Equals(topicId));
@@ -69,12 +68,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -85,7 +84,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (String.IsNullOrEmpty(uniqueKey)) {
-      return null;
+      return Task.FromResult<Topic?>(null);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -103,12 +102,12 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
+  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
     throw new NotImplementedException();
 
   /*============================================================================================================================

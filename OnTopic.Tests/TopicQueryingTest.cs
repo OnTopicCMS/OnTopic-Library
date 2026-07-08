@@ -225,7 +225,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void GetContentType_ValidContentType_ReturnsContentType() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
     var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
     Assert.NotNull(contentTypeDescriptor);
@@ -243,7 +243,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void GetContentType_InvalidContentType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111);
+    var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "NonExistent", parentTopic);
     var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
@@ -268,7 +268,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void GetContentType_InvalidType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111);
+    var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Title", parentTopic);
     var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 

@@ -209,10 +209,10 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public virtual Topic? Load()  => Load(-1);
+  public virtual Task<Topic?> Load() => Load(-1);
 
   /// <inheritdoc />
-  public abstract Topic? Load(
+  public abstract Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -220,7 +220,7 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   );
 
   /// <inheritdoc />
-  public abstract Topic? Load(
+  public abstract Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -230,13 +230,13 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
   [ExcludeFromCodeCoverage]
   [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
-  public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
+  public Task<Topic?> Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
 
   /// <inheritdoc />
-  public abstract Topic? Load(Topic topic, DateTime version);
+  public abstract Task<Topic?> Load(Topic topic, DateTime version);
 
   /// <inheritdoc />
-  public abstract Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
+  public abstract Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null);
 
   /*============================================================================================================================
   | METHOD: REFRESH

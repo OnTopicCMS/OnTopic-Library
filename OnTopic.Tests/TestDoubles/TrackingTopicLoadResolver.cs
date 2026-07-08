@@ -20,8 +20,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   | PROPERTY: WAS CALLED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Returns <see langword="true"/> if either <see cref="ITopicLoadResolver.EnsureLoaded"/> or <see cref="
-  ///   ITopicLoadResolver.EnsureLoadedAsync"/> was invoked.
+  ///   Returns <see langword="true"/> if <see cref="ITopicLoadResolver.EnsureLoaded"/> was invoked.
   /// </summary>
   public bool                   WasCalled                       { get; private set; }
 
@@ -29,17 +28,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   | METHOD: ENSURE LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  void ITopicLoadResolver.EnsureLoaded(Topic topic, TopicPayload payload) => WasCalled = true;
-
-  /*============================================================================================================================
-  | METHOD: ENSURE LOADED (ASYNC)
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <inheritdoc />
-  Task ITopicLoadResolver.EnsureLoadedAsync(
-    Topic topic,
-    TopicPayload payload,
-    CancellationToken cancellationToken
-  ) {
+  Task ITopicLoadResolver.EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
     WasCalled                   = true;
     return Task.CompletedTask;
   }

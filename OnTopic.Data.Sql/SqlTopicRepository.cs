@@ -55,7 +55,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic Load(
+  public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -89,8 +89,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
 
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
       topicId                   = command.GetReturnCode();
 
@@ -113,12 +113,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return Load(topicId, referenceTopic, isRecursive, payload);
+    return await Load(topicId, referenceTopic, isRecursive, payload).ConfigureAwait(false);
 
   }
 
   /// <inheritdoc />
-  public override Topic Load(
+  public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
@@ -150,9 +150,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-      topic                     = reader.LoadTopicGraph(topicId, referenceTopic, false);
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
+      topic                     = await reader.LoadTopicGraphAsync(topicId, referenceTopic, false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   }
 
   /// <inheritdoc />
-  public override Topic Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -255,8 +255,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
 
       // Clear existing associations before repopulating from the historical version
       if (topic is not null) {
@@ -270,11 +270,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       }
 
       // Load the historical version into the current topic graph
-      topic                     = reader.LoadTopicGraph(
+      topic                     = await reader.LoadTopicGraphAsync(
         topicId,
         referenceTopic,
         includeExternalReferences: referenceTopic is not null
-      );
+      ).ConfigureAwait(false);
 
     }
 
@@ -366,7 +366,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       connection.Open();
       using var reader          = command.ExecuteReader();
-      reader.LoadTopicGraph(-1, referenceTopic.GetRootTopic(), false);
+      reader.LoadTopicGraphAsync(-1, referenceTopic.GetRootTopic(), false).GetAwaiter().GetResult();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -383,119 +383,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public virtual void EnsureLoaded(Topic topic, TopicPayload payload) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Validate parameters
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(topic);
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip for new topics, as there's no persistent data to fetch
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topic.IsNew) {
-      return;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to pending (not yet Loaded) payload
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = topic.FilterPayload(payload);
-
-    if (payload is TopicPayload.None) {
-      return;
-    }
-
-    // Relationships and References themselves not by SqlTopicRepository; exit early if that's all that's pending so we don't
-    // open a database connection unnecessarily
-    if (!payload.HasFlag(TopicPayload.Children) && !payload.HasFlag(TopicPayload.ExtendedAttributes)) {
-      return;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish database connection
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    using var connection        = new SqlConnection(_connectionString);
-    using var command           = new SqlCommand("GetTopics", connection) {
-      CommandType               = CommandType.StoredProcedure
-    };
-
-    // Set the stored procedure parameters based on the TopicPayload enum values
-    AddEnsureLoadedParameters(command, topic.Id, payload);
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Process database query
-    >---------------------------------------------------------------------------------------------------------------------------
-    | Use the full live graph as the topic index so already-resident relationship targets are found without extra round-trips.
-    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; stale deferred
-    | entries are cleared before processing to prevent duplicates from accumulating in the Deferred collection.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var topics                  = topic.GetRootTopic().GetTopicIndex();
-    var rawTopic                = (ITopicBackingAccessor)topic;
-
-    try {
-
-      // Setup
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-
-      // Children: Fill first result set; FillChildren() sets each child's Children.LoadState and marks the parent as Loaded
-      if (payload.HasFlag(TopicPayload.Children)) {
-        reader.FillChildren(topic, topics);
-      }
-
-      // Otherwise, skip the first result set since the topic is already resident
-      else {
-        reader.NextResult();
-      }
-
-      // Indexed attributes
-      reader.NextResult();
-      while (reader.Read()) {
-        reader.SetIndexedAttributes(topics, markDirty: false);
-      }
-
-      // Extended attributes
-      reader.NextResult();
-      while (reader.Read()) {
-        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
-      }
-
-      // Clear stale deferred entries on the parent/seed topic before its associations are re-processed alongside children
-      if (payload.HasFlag(TopicPayload.Children)) {
-        rawTopic.Relationships.Deferred.Clear();
-        rawTopic.References.Deferred.Clear();
-      }
-
-      // Relationships
-      reader.NextResult();
-      while (reader.Read()) {
-        reader.SetRelationships(topics, markDirty: false);
-      }
-
-      // References
-      reader.NextResult();
-      while (reader.Read()) {
-        reader.SetReferences(topics, markDirty: false);
-      }
-
-    }
-    catch (SqlException exception) {
-      throw new TopicRepositoryException($"Topic payload failed to load: '{exception.Message}'", exception);
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Mark confirmed payload as Loaded
-    >---------------------------------------------------------------------------------------------------------------------------
-    | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
-    | are computed from Deferred.Count and require no explicit assignment here. Only Extended Attributes needs to be set.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
-
-  }
-
-  /// <inheritdoc />
-  public virtual async Task EnsureLoadedAsync(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+  public virtual async Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -642,7 +530,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!extendedBoundaryLoaded) {
       if (extendedAttributeList.Any(a => a.IsDirty)) {
-        EnsureLoaded(topic, TopicPayload.ExtendedAttributes);
+        EnsureLoaded(topic, TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
         extendedBoundaryLoaded  = true;
         extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
       }

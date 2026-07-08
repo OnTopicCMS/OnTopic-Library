@@ -101,7 +101,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure topics are loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var rootTopic = _topicRepository.Load();
+    var rootTopic = _topicRepository.Load().GetAwaiter().GetResult();
 
     Contract.Assume(
       rootTopic,

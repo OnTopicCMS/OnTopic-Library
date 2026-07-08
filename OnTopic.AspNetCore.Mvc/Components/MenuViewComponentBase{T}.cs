@@ -82,7 +82,7 @@ public abstract class MenuViewComponentBase<T> :
     var                         configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
 
     if (!String.IsNullOrEmpty(configuredRoot)) {
-      navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic);
+      navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic).GetAwaiter().GetResult();
     }
     navigationRootTopic ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
 

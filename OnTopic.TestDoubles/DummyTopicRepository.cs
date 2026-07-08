@@ -36,26 +36,26 @@ public class DummyTopicRepository : ObservableTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
     TopicPayload payload        = TopicPayload.All
-  ) => null;
+  ) => Task.FromResult<Topic?>(null);
 
   /// <inheritdoc />
-  public override Topic? Load(
+  public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
     bool isRecursive            = true,
     TopicPayload payload        = TopicPayload.All
-  ) => null;
+  ) => Task.FromResult<Topic?>(null);
 
   /// <inheritdoc />
-  public override Topic? Load(Topic? topic, DateTime version) => throw new NotImplementedException();
+  public override Task<Topic?> Load(Topic? topic, DateTime version) => throw new NotImplementedException();
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
+  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: ROLLBACK

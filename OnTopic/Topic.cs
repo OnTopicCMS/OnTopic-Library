@@ -165,7 +165,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   public KeyedTopicCollection Children {
     get {
       if (_children.LoadState is LoadState.NotLoaded) {
-        Resolver?.EnsureLoaded(this, TopicPayload.Children);
+        EnsureLoaded(TopicPayload.Children).GetAwaiter().GetResult();
       }
       return _children;
     }
@@ -269,47 +269,19 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Ensures each requested <paramref name="payload"/> flag has been retrieved, while fetching and merging whichever of
-  ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those already are. Returns immediately if the
-  ///   resolver is absent or the topic is new.
+  ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those that already are. Returns immediately if
+  ///   the resolver is absent or the topic is new.
   /// </summary>
   /// <remarks>
-  ///   The synchronous form backs the autoloading property getters (e.g., the <see cref="Children"/> getter); the asynchronous
-  ///   form is for callers, such as a mapping or navigation service, that need to prepopulate one or more payload before
-  ///   accessing them, thus avoiding a synchronous block on a "cold" node. A flag call lets those callers request everything a
-  ///   node's mapping needs in a single round trip.
+  ///   Callers such as a mapping or navigation service can await this to prepopulate one or more payloads before accessing
+  ///   them, thus avoiding a synchronous block on a "cold" node. The autoloading property getters (e.g., <see cref="Children"/>)
+  ///   call this synchronously via <c>GetAwaiter().GetResult()</c> as an accepted sync-over-async boundary.
   /// </remarks>
   /// <param name="payload">
   ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
   /// </param>
-  public void EnsureLoaded(TopicPayload payload) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip for obvious reasons
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (Resolver is null || IsNew) {
-      return;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to payload that are not yet loaded
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = FilterPayload(payload);
-
-    if (payload is TopicPayload.None) {
-      return;
-    }
-
-    // Ensure the appropriate payload are loaded
-    Resolver.EnsureLoaded(this, payload);
-
-  }
-
-  /// <inheritdoc cref="EnsureLoaded(TopicPayload)"/>
-  /// <param name="payload">
-  ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
-  /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  public Task EnsureLoadedAsync(TopicPayload payload, CancellationToken cancellationToken = default) {
+  public Task EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken = default) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
@@ -328,7 +300,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     }
 
     // Ensure the appropriate payload are loaded
-    return Resolver.EnsureLoadedAsync(this, payload, cancellationToken);
+    return Resolver.EnsureLoaded(this, payload, cancellationToken);
 
   }
 
@@ -953,7 +925,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   public TopicRelationshipMultiMap Relationships {
     get {
       if (_relationships.LoadState is LoadState.NotLoaded && Resolver is not null) {
-        Resolver.EnsureLoaded(this, TopicPayload.Relationships);
+        EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
         _relationships.Deferred.Clear();
       }
       return _relationships;
@@ -974,7 +946,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   public TopicReferenceCollection References {
     get {
       if (_references.LoadState is LoadState.NotLoaded && Resolver is not null) {
-        Resolver.EnsureLoaded(this, TopicPayload.References);
+        EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
         _references.Deferred.Clear();
       }
       return _references;

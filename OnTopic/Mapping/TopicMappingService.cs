@@ -569,7 +569,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       return null;
     }
     else if (itemMetadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
-      var topicReference = getTopicReference();
+      var topicReference = await getTopicReference().ConfigureAwait(false);
       if (topicReference is not null) {
         value = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
       }
@@ -583,7 +583,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Get Topic Reference
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Topic? getTopicReference()  {
+    async Task<Topic?> getTopicReference()  {
 
       // Check for standard topic reference
       var topicReference        = source.References.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
@@ -599,7 +599,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
         topicReferenceId        = source.Attributes.GetInteger($"{configuration.GetCompositeAttributeKey(attributePrefix)}Id", 0);
       }
       if (topicReferenceId > 0) {
-        topicReference          = _topicRepository.Load(topicReferenceId, source);
+        topicReference          = await _topicRepository.Load(topicReferenceId, source).ConfigureAwait(false);
       }
 
       return topicReference;
@@ -803,7 +803,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Warm lazy-loaded payload before probing collections
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await source.EnsureLoadedAsync(AssociationMap.PayloadMappings[configuration.CollectionType]).ConfigureAwait(false);
+    await source.EnsureLoaded(AssociationMap.PayloadMappings[configuration.CollectionType]).ConfigureAwait(false);
     var                         listSource                      = (IList<Topic>)[];
     var                         collectionKey                   = configuration.CollectionKey;
     var                         collectionType                  = configuration.CollectionType;
@@ -871,7 +871,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
       var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-      var metadataParent = _topicRepository.Load(metadataKey, source);
+      var metadataParent = await _topicRepository.Load(metadataKey, source).ConfigureAwait(false);
       if (metadataParent is not null) {
         listSource = [.. metadataParent.Children];
       }

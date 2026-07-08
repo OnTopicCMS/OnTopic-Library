@@ -57,18 +57,21 @@ internal static class SqlDataReaderExtensions {
   ///   cref="Topic.BaseTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
   ///   thus external references aren't likely to be available.
   /// </param>
-  internal static Topic? LoadTopicGraph(
-    this IDataReader reader,
+  /*============================================================================================================================
+  | METHOD: LOAD TOPIC GRAPH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  internal static async Task<Topic?> LoadTopicGraphAsync(
+    this DbDataReader reader,
     int seedTopicId             = -1,
     Topic? referenceTopic       = null,
     bool? markDirty             = null,
-    bool includeExternalReferences = true
+    bool includeExternalReferences = true,
+    CancellationToken cancellationToken = default
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish topic index
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sqlDataReader           = reader as SqlDataReader;
     var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
     var rootTopic               = (Topic?)null;
     var preExistingIds          = new HashSet<int>(topics.Keys);
@@ -78,7 +81,7 @@ internal static class SqlDataReaderExtensions {
     | Populate topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
 
       // Add the topic to the topic graph
       var addedTopic            = reader.AddTopic(topics, markDirty);
@@ -133,9 +136,9 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetIndexedAttributes() [" + DateTime.Now + "]");
 
     // Move to TopicAttributes dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetIndexedAttributes(topics, markDirty);
     }
 
@@ -145,11 +148,11 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
 
     // Move to extended attributes dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each extended attribute record associated with a specific topic
-    while (reader.Read()) {
-      sqlDataReader?.SetExtendedAttributes(topics, markDirty);
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      (reader as SqlDataReader)?.SetExtendedAttributes(topics, markDirty);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -158,11 +161,11 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetRelationships() [" + DateTime.Now + "]");
 
     // Move to the relationships dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each relationship; multiple records may exist per topic
     if (includeExternalReferences) {
-      while (reader.Read()) {
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
         reader.SetRelationships(topics, markDirty);
       }
     }
@@ -173,10 +176,10 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetReferences() [" + DateTime.Now + "]");
 
     // Move to the version history dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each version; multiple records may exist per topic
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetReferences(topics, markDirty);
     }
 
@@ -186,10 +189,10 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
 
     // Move to the version history dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each version; multiple records may exist per topic
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetVersionHistory(topics);
     }
 
@@ -289,7 +292,7 @@ internal static class SqlDataReaderExtensions {
 
   /// <inheritdoc cref="FillChildren"/>
   internal static async Task FillChildrenAsync(
-    this SqlDataReader reader,
+    this DbDataReader reader,
     Topic parent,
     TopicIndex topics,
     CancellationToken cancellationToken

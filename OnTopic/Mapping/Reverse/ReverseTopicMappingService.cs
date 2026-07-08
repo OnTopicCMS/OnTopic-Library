@@ -294,13 +294,13 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
         SetScalarValue(source,  target, memberAccessor, attributePrefix);
         return;
       case ModelType.Relationship:
-        SetRelationships(source, target, memberAccessor, attributePrefix);
+        await SetRelationships(source, target, memberAccessor, attributePrefix).ConfigureAwait(false);
         return;
       case ModelType.NestedTopic:
         await SetNestedTopicsAsync(source, target, memberAccessor, attributePrefix).ConfigureAwait(false);
         return;
       case ModelType.Reference:
-        SetReference(source, target, memberAccessor, attributePrefix);
+        await SetReference(source, target, memberAccessor, attributePrefix).ConfigureAwait(false);
         return;
     }
 
@@ -374,7 +374,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
   /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-  private void SetRelationships(
+  private async Task SetRelationships(
     object                      source,
     Topic                       target,
     MemberAccessor              memberAccessor,
@@ -402,7 +402,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Set relationships for each
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (IAssociatedTopicBindingModel relationship in sourceList) {
-      var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
+      var targetTopic = await _topicRepository.Load(relationship.UniqueKey, target).ConfigureAwait(false);
       if (targetTopic is null)  {
         throw new MappingModelValidationException(
           $"The relationship '{relationship.UniqueKey}' mapped in the '{memberAccessor.Name}' property could not be " +
@@ -473,7 +473,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
   /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-  private void SetReference(
+  private async Task SetReference(
     object                      source,
     Topic                       target,
     MemberAccessor              memberAccessor,
@@ -503,7 +503,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify target value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topicReference = _topicRepository.Load(modelReference.UniqueKey, target);
+    var topicReference = await _topicRepository.Load(modelReference.UniqueKey, target).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide error handling
