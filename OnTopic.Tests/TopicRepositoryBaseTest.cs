@@ -45,8 +45,8 @@ public class TopicRepositoryBaseTest {
   ///   crawling the object graph.
   /// </remarks>
   public TopicRepositoryBaseTest() {
-    _topicRepository            = new StubTopicRepository();
-    _cachedTopicRepository      = new CachedTopicRepository(_topicRepository);
+    _topicRepository            = new();
+    _cachedTopicRepository      = new(_topicRepository);
   }
 
   /*============================================================================================================================
