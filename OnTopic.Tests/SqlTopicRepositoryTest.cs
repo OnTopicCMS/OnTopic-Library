@@ -90,7 +90,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null);
     attributes.AddRow(1, "Test", "Value");
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, attributes });
+    using var tableReader       = new DataTableReader([topics, attributes]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -120,7 +120,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container");
     attributes.AddRow(1, "Test", null);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, attributes });
+    using var tableReader       = new DataTableReader([topics, attributes]);
 
     tableReader.LoadTopicGraph(referenceTopic: topic);
 
@@ -146,7 +146,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(2, "Web", "Container", 1);
     relationships.AddRow(1, "Test", 2, false);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -174,7 +174,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null);
     relationships.AddRow(1, "Test", 2, false);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -203,7 +203,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(2, "Web", "Container", 1);
     references.AddRow(1, "Test", 2);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -233,7 +233,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null);
     references.AddRow(1, "Test", 2);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     var topic                   = tableReader.LoadTopicGraph(1, referenceTopic, false);
 
@@ -267,7 +267,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Web", "Container", null);
     references.AddRow(1, "Reference", null);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     tableReader.LoadTopicGraph(1, referenceTopic, false);
 
@@ -293,7 +293,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null);
     references.AddRow(1, "Test", 2);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -325,7 +325,7 @@ public class SqlTopicRepositoryTest {
 
     relationships.AddRow(2, "Test", 3, true);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { empty, empty, empty, relationships });
+    using var tableReader       = new DataTableReader([empty, empty, empty, relationships]);
 
     tableReader.LoadTopicGraph(referenceTopic: related);
 
@@ -352,7 +352,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
     relationships.AddRow(1, "Test", 2, false);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -379,7 +379,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
     relationships.AddRow(1, "Test", 99, false);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -406,7 +406,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(2, "Web", "Container", 1, hasExtendedAttributes: false);
     references.AddRow(1, "Test", 2);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -433,7 +433,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null, hasExtendedAttributes: true);
     references.AddRow(1, "Test", 99);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
@@ -459,7 +459,7 @@ public class SqlTopicRepositoryTest {
     topics.AddRow(1, "Root", "Container", null);
     versions.AddRow(1, DateTime.MinValue);
 
-    using var tableReader       = new DataTableReader(new DataTable[] { topics, empty, empty, empty, empty, versions });
+    using var tableReader       = new DataTableReader([topics, empty, empty, empty, empty, versions]);
 
     var topic                   = tableReader.LoadTopicGraph();
 
