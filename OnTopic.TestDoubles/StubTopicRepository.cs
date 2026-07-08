@@ -220,6 +220,15 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload, LoadState.Loaded);
 
+    // Relationships and References are computed from Deferred.Count; clear any test-seeded deferred entries to express Loaded
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    if (payload.HasFlag(TopicPayload.Relationships)) {
+      rawTopic.Relationships.Deferred.Clear();
+    }
+    if (payload.HasFlag(TopicPayload.References)) {
+      rawTopic.References.Deferred.Clear();
+    }
+
   }
 
   /// <inheritdoc />
