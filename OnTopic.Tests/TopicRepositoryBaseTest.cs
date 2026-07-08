@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Associations;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
@@ -374,7 +373,7 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("EmptyAttribute", "");
     topic.Attributes.SetValue("NullAttribute", null);
 
-    var attributes              = _topicRepository.GetAttributesProxy(topic, null);
+    var attributes              = _topicRepository.GetAttributesProxy(topic, null).ToList();
 
     Assert.DoesNotContain(attributes, a => a.Key is "EmptyAttribute");
     Assert.DoesNotContain(attributes, a => a.Key is "NullAttribute");
@@ -437,10 +436,10 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("MetaTitle", "Metatitle", markDirty: false, isExtendedAttribute: null);
     topic.Attributes.SetValue("Arbitrary", "Value", markDirty: false, isExtendedAttribute: true);
 
-    var dirtyExtended           = _topicRepository.GetAttributesProxy(topic, true, true);
-    var dirtyIndexed            = _topicRepository.GetAttributesProxy(topic, false, true);
-    var cleanExtended           = _topicRepository.GetAttributesProxy(topic, true, false);
-    var cleanIndexed            = _topicRepository.GetAttributesProxy(topic, false, false);
+    var dirtyExtended           = _topicRepository.GetAttributesProxy(topic, true, true).ToList();
+    var dirtyIndexed            = _topicRepository.GetAttributesProxy(topic, false, true).ToList();
+    var cleanExtended           = _topicRepository.GetAttributesProxy(topic, true, false).ToList();
+    var cleanIndexed            = _topicRepository.GetAttributesProxy(topic, false, false).ToList();
 
     //Expect Title, even though it isn't IsDirty
     Assert.Single(dirtyExtended);
@@ -537,7 +536,7 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = new Topic("Test", "ContentTypes");
 
-    topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
+    topic.Attributes.SetValue("ArbitraryAttribute", new('x', 256));
 
     var attributes              = _topicRepository.GetAttributesProxy(topic, true);
 
@@ -559,7 +558,7 @@ public class TopicRepositoryBaseTest {
 
     topic.Attributes.SetValue("Title", "Title");
 
-    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic);
+    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic).ToList();
 
     Assert.True(attributes.Any());
     Assert.DoesNotContain(attributes, a => a.Key is "Title");
@@ -586,7 +585,7 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("YetAnotherArbitraryAttribute", "Value");
     topic.Attributes.SetValue("YetAnotherArbitraryAttribute", null);
 
-    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic);
+    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic).ToList();
 
     Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
     Assert.Contains(attributes, a => a.Key is "YetAnotherArbitraryAttribute");
