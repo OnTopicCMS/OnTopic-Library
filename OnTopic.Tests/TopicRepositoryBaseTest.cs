@@ -560,7 +560,7 @@ public class TopicRepositoryBaseTest {
 
     var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic).ToList();
 
-    Assert.True(attributes.Any());
+    Assert.True(attributes.Count != 0);
     Assert.DoesNotContain(attributes, a => a.Key is "Title");
 
   }
@@ -925,7 +925,7 @@ public class TopicRepositoryBaseTest {
 
     _topicRepository.Move(contactContentType, pageContentType);
 
-    Assert.NotEqual(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
+    Assert.NotEqual(contactContentType.AttributeDescriptors.Count, contactAttributeCount);
 
   }
 
