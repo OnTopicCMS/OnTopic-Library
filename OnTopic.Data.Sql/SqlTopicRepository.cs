@@ -328,7 +328,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) {
+  public override async Task Refresh(Topic referenceTopic, DateTime since) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -364,9 +364,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-      reader.LoadTopicGraphAsync(-1, referenceTopic.GetRootTopic(), false).GetAwaiter().GetResult();
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
+      await reader.LoadTopicGraphAsync(-1, referenceTopic.GetRootTopic(), false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override sealed void SaveTopic(
+  protected override sealed async Task SaveTopic(
     [NotNull]Topic topic,
     DateTime version,
     bool persistRelationships
@@ -530,7 +530,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!extendedBoundaryLoaded) {
       if (extendedAttributeList.Any(a => a.IsDirty)) {
-        EnsureLoaded(topic, TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
+        await EnsureLoaded(topic, TopicPayload.ExtendedAttributes).ConfigureAwait(false);
         extendedBoundaryLoaded  = true;
         extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
       }
@@ -619,7 +619,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     using var connection        = new SqlConnection(_connectionString);
     var procedureName           = topic.IsNew? "CreateTopic" : "UpdateTopic";
 
-    connection.Open();
+    await connection.OpenAsync().ConfigureAwait(false);
 
     using var command           = new SqlCommand(procedureName, connection) {
       CommandType               = CommandType.StoredProcedure
@@ -654,7 +654,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
 
       if (topic.IsNew || isTopicDirty || areAttributesDirty) {
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         topic.Id = command.GetReturnCode();
       }
 
@@ -664,11 +664,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       );
 
       if (persistRelationships  && areRelationshipsDirty) {
-        PersistRelationships(topic, version, connection);
+        await PersistRelationships(topic, version, connection).ConfigureAwait(false);
       }
 
       if (persistRelationships  && areReferencesDirty) {
-        PersistReferences(topic, version, connection);
+        await PersistReferences(topic, version, connection).ConfigureAwait(false);
       }
 
     }
@@ -696,7 +696,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: MOVE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override sealed void MoveTopic(Topic topic, Topic target, Topic? sibling) {
+  protected override sealed async Task MoveTopic(Topic topic, Topic target, Topic? sibling) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -727,8 +727,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -747,7 +747,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: DELETE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override sealed void DeleteTopic(Topic topic) {
+  protected override sealed async Task DeleteTopic(Topic topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -771,8 +771,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -830,7 +830,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// <param name="topic">The topic object whose relationships should be persisted.</param>
   /// <param name="version">The version that should be associated with the updated value.</param>
   /// <param name="connection">The SQL connection.</param>
-  private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
+  private static async Task PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
     var rawTopic                = (ITopicBackingAccessor)topic;
 
@@ -867,7 +867,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         command.AddParameter("Version", version);
         command.AddParameter("DeleteUnmatched", rawTopic.Relationships.LoadState is LoadState.Loaded);
 
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
       }
 
@@ -899,7 +899,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// <param name="topic">The topic object whose references should be persisted.</param>
   /// <param name="version">The version that should be associated with the updated value.</param>
   /// <param name="connection">The SQL connection.</param>
-  private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
+  private static async Task PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
 
     var rawTopic                = (ITopicBackingAccessor)topic;
 
@@ -925,7 +925,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       command.AddParameter("Version", version);
       command.AddParameter("DeleteUnmatched", rawTopic.References.LoadState is LoadState.Loaded);
 
-      command.ExecuteNonQuery();
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
     }
 

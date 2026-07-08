@@ -114,28 +114,28 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) =>
+  public override Task Refresh(Topic referenceTopic, DateTime since) =>
     throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) =>
+  protected override Task SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) =>
     throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) =>
+  protected override Task MoveTopic(Topic topic, Topic target, Topic? sibling = null) =>
     throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void DeleteTopic(Topic topic) =>
+  protected override Task DeleteTopic(Topic topic) =>
     throw new NotImplementedException();
 
   /*============================================================================================================================

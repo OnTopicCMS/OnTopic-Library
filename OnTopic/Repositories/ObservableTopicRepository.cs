@@ -242,19 +242,19 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Refresh(Topic referenceTopic, DateTime since);
+  public abstract Task Refresh(Topic referenceTopic, DateTime since);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Rollback(Topic topic, DateTime version);
+  public abstract Task Rollback(Topic topic, DateTime version);
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Save(Topic topic, bool isRecursive = false);
+  public abstract Task Save(Topic topic, bool isRecursive = false);
 
   /// <inheritdoc cref="Save(Topic, Boolean)"/>
   [ExcludeFromCodeCoverage]
@@ -265,13 +265,13 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Move(Topic topic, Topic target, Topic? sibling = null);
+  public abstract Task Move(Topic topic, Topic target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Delete(Topic topic, bool isRecursive = false);
+  public abstract Task Delete(Topic topic, bool isRecursive = false);
 
   /*============================================================================================================================
   | METHOD: STAMP RESOLVER

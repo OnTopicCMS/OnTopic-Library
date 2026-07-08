@@ -147,14 +147,14 @@ public class TopicRepositoryBaseTest {
   ///   "Topic.LastModified"/> value is updated.
   /// </summary>
   [Fact]
-  public void Rollback_Topic_UpdatesLastModified() {
+  public async Task Rollback_Topic_UpdatesLastModified() {
 
     var version                 = DateTime.UtcNow.AddDays(-1);
     var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
 
     if (topic is not null) {
       topic.VersionHistory.Add(version);
-      _topicRepository.Rollback(topic, version);
+      await _topicRepository.Rollback(topic, version);
     }
 
     Assert.True(topic?.VersionHistory.Contains(version));
@@ -195,7 +195,7 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic which other topics, outside the graph, derive from. Expects exception.
   /// </summary>
   [Fact]
-  public void Delete_BaseTopic_ThrowsException() {
+  public async Task Delete_BaseTopic_ThrowsException() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -204,7 +204,7 @@ public class TopicRepositoryBaseTest {
       BaseTopic                 = child
     };
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Delete(topic, true)
     );
 
@@ -217,7 +217,7 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic which another topic within the graph derives from. Expects success.
   /// </summary>
   [Fact]
-  public void Delete_InternallyDerivedTopic_Succeeds() {
+  public async Task Delete_InternallyDerivedTopic_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -226,7 +226,7 @@ public class TopicRepositoryBaseTest {
       BaseTopic                 = child
     };
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(root.Children);
 
@@ -239,12 +239,12 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
   /// </summary>
   [Fact]
-  public void Delete_Descendants_ThrowsException() {
+  public async Task Delete_Descendants_ThrowsException() {
 
     var topic                   = new Topic("Topic", "Page");
     _                           = new Topic("Child", "Page", topic);
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Delete(topic)
     );
 
@@ -257,13 +257,13 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
   /// </summary>
   [Fact]
-  public void Delete_DescendantsWithRecursive_Succeeds() {
+  public async Task Delete_DescendantsWithRecursive_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
     _                           = new Topic("Child", "Page", topic);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(root.Children);
 
@@ -276,13 +276,13 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
   /// </summary>
   [Fact]
-  public void Delete_NestedTopics_Succeeds() {
+  public async Task Delete_NestedTopics_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
     _                           = new Topic("Child", "List", topic);
 
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
     Assert.Empty(root.Children);
 
@@ -296,7 +296,7 @@ public class TopicRepositoryBaseTest {
   ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
   /// </summary>
   [Fact]
-  public void Delete_Relationships_DeleteRelationships() {
+  public async Task Delete_Relationships_DeleteRelationships() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -306,7 +306,7 @@ public class TopicRepositoryBaseTest {
     child.Relationships.SetValue("Related", associated);
     child.References.SetValue("Referenced", associated);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(associated.IncomingRelationships.GetValues("Related"));
     Assert.Empty(associated.IncomingRelationships.GetValues("Referenced"));
@@ -320,7 +320,7 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
   /// </summary>
   [Fact]
-  public void Delete_IncomingRelationships_DeleteAssociations() {
+  public async Task Delete_IncomingRelationships_DeleteAssociations() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -331,7 +331,7 @@ public class TopicRepositoryBaseTest {
     source1.Relationships.SetValue("Associations", child);
     source2.References.SetValue("Associations", child);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(source1.Relationships.GetValues("Associations"));
 
@@ -682,13 +682,13 @@ public class TopicRepositoryBaseTest {
   ///   typically only occur when initializing a new database, and is an unexpected condition.
   /// </summary>
   [Fact]
-  public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
+  public async Task GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
 
     var topicRepository         = new StubTopicRepository();
     var configuration           = topicRepository.Load("Root:Configuration").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page");
 
-    topicRepository.Delete(configuration!, true);
+    await topicRepository.Delete(configuration!, true);
 
     var contentType             = topicRepository.GetContentTypeDescriptorProxy(topic);
 
@@ -721,12 +721,12 @@ public class TopicRepositoryBaseTest {
   ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var topic                   = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor");
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.Contains(topic, contentTypes);
 
@@ -741,7 +741,7 @@ public class TopicRepositoryBaseTest {
   ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
   /// </summary>
   [Fact]
-  public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
+  public async Task Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var contentTypesRoot        = contentTypes.GetValue("ContentTypes");
@@ -756,7 +756,7 @@ public class TopicRepositoryBaseTest {
 
     pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
 
-    _topicRepository.Save(contentTypesRoot, true);
+    await _topicRepository.Save(contentTypesRoot, true);
 
     Assert.NotEqual(initialCount, pageContentType.PermittedContentTypes.Count);
 
@@ -770,12 +770,12 @@ public class TopicRepositoryBaseTest {
   ///   new version.
   /// </summary>
   [Fact]
-  public void Save_NewTopic_UpdatesVersionHistory() {
+  public async Task Save_NewTopic_UpdatesVersionHistory() {
 
     var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.True(topic.VersionHistory.Count > 0);
 
@@ -789,13 +789,13 @@ public class TopicRepositoryBaseTest {
   ///   child <see cref="Topic"/> is correctly updated.
   /// </summary>
   [Fact]
-  public void Save_IsRecursive_SavesChild() {
+  public async Task Save_IsRecursive_SavesChild() {
 
     var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
     var child                   = new Topic("Child", "Page", topic);
 
-    _topicRepository.Save(topic, true);
+    await _topicRepository.Save(topic, true);
 
     Assert.False(child.IsNew);
 
@@ -810,7 +810,7 @@ public class TopicRepositoryBaseTest {
   ///   "TrackedRecordCollection{TItem,TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
   /// </summary>
   [Fact]
-  public void Save_UnresolvedReference_Resolves() {
+  public async Task Save_UnresolvedReference_Resolves() {
 
     var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
@@ -818,7 +818,7 @@ public class TopicRepositoryBaseTest {
 
     topic.References.SetValue("Test", reference);
 
-    _topicRepository.Save(topic, true);
+    await _topicRepository.Save(topic, true);
 
   }
 
@@ -830,7 +830,7 @@ public class TopicRepositoryBaseTest {
   ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
   /// </summary>
   [Fact]
-  public void Save_UnresolvedReference_ThrowsException() {
+  public async Task Save_UnresolvedReference_ThrowsException() {
 
     var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
@@ -838,7 +838,7 @@ public class TopicRepositoryBaseTest {
 
     topic.References.SetValue("Test", reference);
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Save(topic, true)
     );
 
@@ -852,8 +852,8 @@ public class TopicRepositoryBaseTest {
   ///   expected <see cref="ReferentialIntegrityException"/>.
   /// </summary>
   [Fact]
-  public void Save_InvalidContentType_ThrowsException() =>
-    Assert.Throws<ReferentialIntegrityException>(() =>
+  public async Task Save_InvalidContentType_ThrowsException() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Save(new("Test", "InvalidContentType"))
     );
 
@@ -866,14 +866,14 @@ public class TopicRepositoryBaseTest {
   ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var contentType             = contentTypes.Contains("Page")? contentTypes["Page"] : null;
 
     Contract.Assume(contentType);
 
-    _topicRepository.Delete(contentType);
+    await _topicRepository.Delete(contentType);
 
     Assert.DoesNotContain(contentType, contentTypes);
 
@@ -886,7 +886,7 @@ public class TopicRepositoryBaseTest {
   ///   Moves a <see cref="Topic"/> after a sibling in another parent, and ensures it is set correctly.
   /// </summary>
   [Fact]
-  public void Move_AfterSibling_SetCorrectly() {
+  public async Task Move_AfterSibling_SetCorrectly() {
 
     var source                  = new Topic("Source", "Page");
     var topic                   = new Topic("Test", "Page", source);
@@ -894,7 +894,7 @@ public class TopicRepositoryBaseTest {
     var sibling                 = new Topic("Sibling", "Page", target);
     var olderSibling            = new Topic("OlderSibling", "Page", target);
 
-    _topicRepository.Move(topic, target, sibling);
+    await _topicRepository.Move(topic, target, sibling);
 
     Assert.Equal(target, topic.Parent);
     Assert.Equal(0, target.Children.IndexOf(sibling));
@@ -913,7 +913,7 @@ public class TopicRepositoryBaseTest {
   ///   cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var pageContentType         = contentTypes.Contains("Page")? contentTypes["Page"] : null;
@@ -923,7 +923,7 @@ public class TopicRepositoryBaseTest {
     Contract.Assume(contactContentType);
     Contract.Assume(pageContentType);
 
-    _topicRepository.Move(contactContentType, pageContentType);
+    await _topicRepository.Move(contactContentType, pageContentType);
 
     Assert.NotEqual(contactContentType.AttributeDescriptors.Count, contactAttributeCount);
 
@@ -938,7 +938,7 @@ public class TopicRepositoryBaseTest {
   ///   of the child reflects the change.
   /// </summary>
   [Fact]
-  public void Save_AttributeDescriptor_UpdatesContentType() {
+  public async Task Save_AttributeDescriptor_UpdatesContentType() {
 
     var contentType             = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor", null, 1);
     var attributeList           = new Topic("Attributes", "List", contentType, 2);
@@ -952,7 +952,7 @@ public class TopicRepositoryBaseTest {
 
     Contract.Assume(newAttribute);
 
-    _topicRepository.Save(newAttribute);
+    await _topicRepository.Save(newAttribute);
 
     Assert.Equal(attributeCount+1, childContentType.AttributeDescriptors.Count);
 
@@ -967,7 +967,7 @@ public class TopicRepositoryBaseTest {
   ///   cref="ContentTypeDescriptor.AttributeDescriptors"/> of the child reflects the change.
   /// </summary>
   [Fact]
-  public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
+  public async Task Delete_AttributeDescriptor_UpdatesContentTypeCache() {
 
     var contentType             = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
     var attributeList           = new Topic("Attributes", "List", contentType);
@@ -979,7 +979,7 @@ public class TopicRepositoryBaseTest {
 
     var attributeCount          = childContentType.AttributeDescriptors.Count;
 
-    _topicRepository.Delete(newAttribute);
+    await _topicRepository.Delete(newAttribute);
 
     Assert.True(childContentType.AttributeDescriptors.Count < attributeCount);
 
@@ -1143,12 +1143,12 @@ public class TopicRepositoryBaseTest {
   ///   that deferred boundaries can be populated on demand after the save.
   /// </summary>
   [Fact]
-  public void Save_NewTopic_StampsResolver() {
+  public async Task Save_NewTopic_StampsResolver() {
 
     var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Page", parent);
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.NotNull(topic.Resolver);
 
@@ -1163,14 +1163,14 @@ public class TopicRepositoryBaseTest {
   ///   "Topic.IsLoaded(TopicPayload)"/>, so a not-loaded children collection prevents descent.
   /// </summary>
   [Fact]
-  public void Save_NotLoadedChildren_SkipsRecursiveDescent() {
+  public async Task Save_NotLoadedChildren_SkipsRecursiveDescent() {
 
     var parent                  = new Topic("Parent", "Page");
     var child                   = new Topic("Child", "Page", parent);
 
     parent.Children.LoadState   = LoadState.NotLoaded;
 
-    _topicRepository.Save(parent, isRecursive: true);
+    await _topicRepository.Save(parent, isRecursive: true);
 
     Assert.True(child.IsNew);
 

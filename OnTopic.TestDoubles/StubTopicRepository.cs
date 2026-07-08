@@ -181,13 +181,13 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) { }
+  public override Task Refresh(Topic referenceTopic, DateTime since) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
+  protected override Task SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Assign faux identity
@@ -195,6 +195,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     if (topic.IsNew) {
       topic.Id = _identity++;
     }
+
+    return Task.CompletedTask;
 
   }
 
@@ -237,13 +239,13 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) { }
+  protected override Task MoveTopic(Topic topic, Topic target, Topic? sibling = null) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void DeleteTopic(Topic topic) { }
+  protected override Task DeleteTopic(Topic topic) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: GET ATTRIBUTES (PROXY)

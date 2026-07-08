@@ -261,7 +261,7 @@ public class ReverseTopicMappingServiceTest {
     Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
     //Revert state
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
   }
 

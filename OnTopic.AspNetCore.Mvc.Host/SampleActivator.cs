@@ -111,7 +111,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
       var currentUpdate         = DateTime.UtcNow;
-      _topicRepository.Refresh(_topicRepository.Load().GetAwaiter().GetResult()!, _cacheLastUpdated);
+      _topicRepository.Refresh(_topicRepository.Load().GetAwaiter().GetResult()!, _cacheLastUpdated).GetAwaiter().GetResult();
       _cacheLastUpdated         = currentUpdate;
     }
 

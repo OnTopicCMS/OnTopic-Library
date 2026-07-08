@@ -109,20 +109,20 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Refresh(Topic referenceTopic, DateTime since) => TopicRepository.Refresh(referenceTopic, since);
+  public override Task Refresh(Topic referenceTopic, DateTime since) => TopicRepository.Refresh(referenceTopic, since);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Rollback(Topic topic, DateTime version) => TopicRepository.Rollback(topic, version);
+  public override Task Rollback(Topic topic, DateTime version) => TopicRepository.Rollback(topic, version);
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Save(Topic topic, bool isRecursive = false) {
-    TopicRepository.Save(topic, isRecursive);
+  public override async Task Save(Topic topic, bool isRecursive = false) {
+    await TopicRepository.Save(topic, isRecursive).ConfigureAwait(false);
     StampResolver(topic);
   }
 
@@ -130,12 +130,12 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Move(Topic topic, Topic target, Topic? sibling = null) => TopicRepository.Move(topic, target, sibling);
+  public override Task Move(Topic topic, Topic target, Topic? sibling = null) => TopicRepository.Move(topic, target, sibling);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
+  public override Task Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
 
 } //Class

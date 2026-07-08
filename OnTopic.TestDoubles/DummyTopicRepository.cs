@@ -61,30 +61,30 @@ public class DummyTopicRepository : ObservableTopicRepository {
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Rollback(Topic topic, DateTime version) => throw new NotImplementedException();
+  public override Task Rollback(Topic topic, DateTime version) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
+  public override Task Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Save(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+  public override Task Save(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Move(Topic topic, Topic target, Topic? sibling = null) => throw new NotImplementedException();
+  public override Task Move(Topic topic, Topic target, Topic? sibling = null) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+  public override Task Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
 
 } //Class

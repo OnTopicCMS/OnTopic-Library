@@ -232,7 +232,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
+  public override async Task Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -247,12 +247,12 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve topic from database
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Load(topic, version);
+    await Load(topic, version).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Save as new version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Save(topic, false);
+    await Save(topic, false).ConfigureAwait(false);
 
   }
 
@@ -260,7 +260,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
+  public override sealed async Task Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish parameters
@@ -281,14 +281,14 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle first pass
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Save(topic, isRecursive, unresolvedTopics, version);
+    await Save(topic, isRecursive, unresolvedTopics, version).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Attempt to resolve outstanding associations
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var unresolvedTopic in unresolvedTopics.ToList()) {
       unresolvedTopics.Remove(unresolvedTopic);
-      Save(unresolvedTopic, false, unresolvedTopics, version);
+      await Save(unresolvedTopic, false, unresolvedTopics, version).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -332,7 +332,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
   /// <param name="unresolvedTopics">A list of <see cref="Topic"/>s with unresolved topic references.</param>
   /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
-  private void Save([NotNull]Topic topic, bool isRecursive, TopicCollection unresolvedTopics, DateTime version) {
+  private async Task Save([NotNull]Topic topic, bool isRecursive, TopicCollection unresolvedTopics, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -374,7 +374,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
-    SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
+    await SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic)).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark as clean
@@ -399,10 +399,10 @@ public abstract class TopicRepository : ObservableTopicRepository {
     if (topic.Parent is not null && !topic.IsNew && topic.IsDirty("Parent")) {
       var topicIndex = topic.Parent.Children.IndexOf(topic);
       if (topicIndex > 0) {
-        Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
+        await Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]).ConfigureAwait(false);
       }
       else {
-        Move(topic, topic.Parent);
+        await Move(topic, topic.Parent).ConfigureAwait(false);
       }
     }
 
@@ -454,7 +454,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (isRecursive && topic.IsLoaded(TopicPayload.Children)) {
       foreach (var childTopic in topic.Children.ToList()) {
-        Save(childTopic, isRecursive, unresolvedTopics, version);
+        await Save(childTopic, isRecursive, unresolvedTopics, version).ConfigureAwait(false);
       }
     }
 
@@ -485,13 +485,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   call <c>isRecursive</c>; in that case, <see cref="Save(Topic, Boolean)"/> will circle back and attempt to save them
   ///   after the rest of the topic graph has been saved.
   /// </param>
-  protected abstract void SaveTopic([NotNull] Topic topic, DateTime version, bool persistRelationships);
+  protected abstract Task SaveTopic([NotNull] Topic topic, DateTime version, bool persistRelationships);
 
   /*============================================================================================================================
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
+  public override sealed async Task Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -518,7 +518,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topic.IsNew && !target.IsNew && !(sibling?.IsNew?? true)) {
-      MoveTopic(topic, target,  sibling);
+      await MoveTopic(topic, target,  sibling).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -572,13 +572,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   The derived implementation of <see cref="MoveTopic(Topic, Topic, Topic?)"/> is then left to focus exclusively on the
   ///   core logic of persisting the change to the underlying data store.
   /// </remarks>
-  protected abstract void MoveTopic(Topic topic, Topic target, Topic? sibling = null);
+  protected abstract Task MoveTopic(Topic topic, Topic target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Delete([ValidatedNotNull]Topic topic, bool isRecursive = false) {
+  public override sealed async Task Delete([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -614,7 +614,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topic.IsNew) {
-      DeleteTopic(topic);
+      await DeleteTopic(topic).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -700,7 +700,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
   ///   persisting the change to the underlying data store.
   /// </remarks>
-  protected abstract void DeleteTopic(Topic topic);
+  protected abstract Task DeleteTopic(Topic topic);
 
   /*============================================================================================================================
   | METHOD: GET ATTRIBUTES

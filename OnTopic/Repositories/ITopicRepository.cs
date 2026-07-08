@@ -173,7 +173,7 @@ public interface ITopicRepository {
   ///   exception="T:System.ArgumentNullException">
   ///   !VersionHistory.Contains(version)
   /// </requires>
-  void Rollback(Topic topic, DateTime version);
+  Task Rollback(Topic topic, DateTime version);
 
   /*============================================================================================================================
   | METHOD: REFRESH
@@ -187,7 +187,7 @@ public interface ITopicRepository {
   ///   indexed attributes, extended attributes, relationships, and topic references. It is not expected to handle deletes
   ///   or reordering of topics.
   /// </remarks>
-  void Refresh(Topic referenceTopic, DateTime since);
+  Task Refresh(Topic referenceTopic, DateTime since);
 
   /*============================================================================================================================
   | METHOD: SAVE
@@ -203,7 +203,7 @@ public interface ITopicRepository {
   ///   topic is not null
   /// </requires>
   /// <exception cref="ArgumentNullException">topic</exception>
-  void Save(Topic topic, bool isRecursive = false);
+  Task Save(Topic topic, bool isRecursive = false);
 
   /// <inheritdoc cref="Save(Topic, Boolean)"/>
   [ExcludeFromCodeCoverage]
@@ -227,13 +227,12 @@ public interface ITopicRepository {
   ///   An optional <see cref="Topic"/> object representing a sibling adjacent to which the source <see cref="Topic"/> should
   ///   be moved.
   /// </param>
-  /// <returns>Boolean value representing whether the operation completed successfully.</returns>
   /// <requires
   ///   description="The target under which to move the topic must be provided."
   ///   exception="T:System.ArgumentNullException">
   ///   topic is not null
   /// </requires>
-  void Move(Topic topic, Topic  target, Topic? sibling = null);
+  Task Move(Topic topic, Topic  target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
@@ -250,6 +249,6 @@ public interface ITopicRepository {
   ///   topic is not null
   /// </requires>
   /// <exception cref="ArgumentNullException">topic</exception>
-  void Delete(Topic topic, bool isRecursive = false);
+  Task Delete(Topic topic, bool isRecursive = false);
 
 } //Interface

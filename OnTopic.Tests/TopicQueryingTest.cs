@@ -241,7 +241,7 @@ public class TopicQueryingTest  {
   ///   /> returns <c>null</c>.
   /// </summary>
   [Fact]
-  public void GetContentType_InvalidContentType_ReturnsNull() {
+  public async Task GetContentType_InvalidContentType_ReturnsNull() {
 
     var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "NonExistent", parentTopic);
@@ -250,7 +250,7 @@ public class TopicQueryingTest  {
     Assert.Null(contentTypeDescriptor);
 
     //Revert state
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
   }
 
@@ -266,7 +266,7 @@ public class TopicQueryingTest  {
   ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
   /// </remarks>
   [Fact]
-  public void GetContentType_InvalidType_ReturnsNull() {
+  public async Task GetContentType_InvalidType_ReturnsNull() {
 
     var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
     var topic                   = new Topic("Test", "Title", parentTopic);
@@ -275,7 +275,7 @@ public class TopicQueryingTest  {
     Assert.Null(contentTypeDescriptor);
 
     //Revert state
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
   }
 
