@@ -192,7 +192,7 @@ public class TopicRepositoryBaseTest {
   | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
+  ///   Deletes a topic which other topics, outside the graph, derive from. Expects exception.
   /// </summary>
   [Fact]
   public void Delete_BaseTopic_ThrowsException() {
@@ -341,8 +341,8 @@ public class TopicRepositoryBaseTest {
   | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-  ///   cref="AttributeDescriptor.IsExtendedAttribute"/>.
+  ///   Retrieves a list of attributes from a topic, without any filtering by whether the attribute is an <see cref=
+  ///   "AttributeDescriptor.IsExtendedAttribute"/>.
   /// </summary>
   [Fact]
   public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
@@ -361,9 +361,9 @@ public class TopicRepositoryBaseTest {
   | TEST: GET ATTRIBUTES: EMPTY ATTRIBUTES: SKIPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-  ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
-  ///   be skipped.
+  ///   Retrieves a list of attributes from a topic, without any filtering by whether the attribute is an <see cref=
+  ///   "AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should be
+  ///   skipped.
   /// </summary>
   [Fact]
   public void GetAttributes_EmptyAttributes_Skips() {
@@ -507,7 +507,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
-  ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
+  ///   ensures that it is returned as an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
   ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
   /// </summary>
   [Fact]
@@ -528,7 +528,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
-  ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
+  ///   ensures that it is returned as an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
   ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
   /// </summary>
   [Fact]
@@ -1273,7 +1273,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"/>, then accesses
-  ///   the <see cref="Topic.Children"/> getter. Verifies that the auto-load fires, promoting the boundary to <see cref=
+  ///   the <see cref="Topic.Children"/> getter. Verifies that the autoload fires, promoting the boundary to <see cref=
   ///   "LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
@@ -1349,6 +1349,55 @@ public class TopicRepositoryBaseTest {
     Assert.True(hasFired);
 
     void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: WITH MISSING RELATIONSHIP TARGET: RESOLVES AND CONNECTS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>Relationships.LoadState</c> is <c>NotLoaded</c>,
+  ///   confirming that the resolver re-queries for the topic's relationships, loads any missing targets, and connects the
+  ///   edges.
+  /// </summary>
+  /// <remarks>
+  ///   The stub pre-seeds a relationship from the root topic to Root:Web (id 10000). The cache is initialized with only the
+  ///   root topic, so the relationship target is initially absent. <c>EnsureLoaded</c> is expected to load it and connect the
+  ///   edge through the full resolver stack.
+  /// </remarks>
+  [Fact]
+  public void EnsureLoaded_WithMissingRelationshipTarget_ResolvesAndConnects() {
+
+    // Get the root topic from cache; seed a deferred entry to simulate a pending relationship target
+    var source                  = _cachedTopicRepository.Load(-1)!;
+    source.Relationships.Deferred.Add(new("_stub", 11111));
+
+    // Act: EnsureLoaded re-queries, finds the missing target, loads it, and connects the edge
+    _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
+
+    // Relationships are now Loaded and any pre-seeded edges are connected
+    Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: RELATIONSHIPS: ALREADY LOADED: SKIPS FILL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose relationships are already <see cref=
+  ///   "LoadState.Loaded"/> and confirms it returns immediately without re-querying.
+  /// </summary>
+  [Fact]
+  public void EnsureLoaded_Relationships_AlreadyLoaded_SkipsFill() {
+
+    // Get the root topic; relationships start as Loaded (Deferred is empty) after initialization
+    var source                  = _cachedTopicRepository.Load(-1)!;
+
+    // Act
+    _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
+
+    // LoadState is unchanged; no fill was triggered
+    Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
 
   }
 
