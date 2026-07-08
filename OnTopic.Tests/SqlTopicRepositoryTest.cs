@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using OnTopic.Associations;
 using OnTopic.Data.Sql;
 using OnTopic.Data.Sql.Models;
+using OnTopic.Repositories;
 using OnTopic.Tests.Schemas;
 using Xunit;
 using TopicReferencesDataTable = OnTopic.Tests.Schemas.TopicReferencesDataTable;
@@ -153,7 +154,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic?.Id);
     Assert.Equal(2, topic?.Relationships.GetValues("Test").FirstOrDefault()?.Id);
-    Assert.Equal(LoadState.Loaded, topic?.Relationships.LoadState);
+    Assert.True(topic?.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -181,7 +182,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.Relationships);
-    Assert.Equal(LoadState.NotLoaded, topic.Relationships.LoadState);
+    Assert.False(topic.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -240,7 +241,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic?.Id);
     Assert.Equal(2, topic?.References.GetValue("Test")?.Id);
-    Assert.Equal(LoadState.Loaded, topic?.References.LoadState);
+    Assert.True(topic?.IsLoaded(TopicPayload.References));
     Assert.False(topic?.References.IsDirty());
 
   }
@@ -300,7 +301,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.References);
-    Assert.Equal(LoadState.NotLoaded, topic.References.LoadState);
+    Assert.False(topic.IsLoaded(TopicPayload.References));
 
   }
 
@@ -357,7 +358,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.Equal(LoadState.Loaded, topic?.Relationships.LoadState);
+    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -384,7 +385,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.Equal(LoadState.NotLoaded, topic!.Relationships.LoadState);
+    Assert.False(topic!.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -411,7 +412,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.Equal(LoadState.Loaded, topic?.References.LoadState);
+    Assert.True(topic.IsLoaded(TopicPayload.References));
 
   }
 
@@ -438,7 +439,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.Equal(LoadState.NotLoaded, topic!.References.LoadState);
+    Assert.False(topic!.IsLoaded(TopicPayload.References));
 
   }
 
@@ -490,7 +491,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = tableReader.LoadTopicGraph();
 
     Assert.NotNull(topic);
-    Assert.Equal(LoadState.NotLoaded, topic.Attributes.LoadState);
+    Assert.False(topic.IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -561,7 +562,7 @@ public class SqlTopicRepositoryTest {
 
     var topic                   = tableReader.LoadTopicGraph(1);
 
-    Assert.Equal(LoadState.Loaded, topic?.Children.LoadState);
+    Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -585,7 +586,7 @@ public class SqlTopicRepositoryTest {
 
     var topic                   = tableReader.LoadTopicGraph(1);
 
-    Assert.Equal(LoadState.Loaded, topic?.Children.LoadState);
+    Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
   }
 
