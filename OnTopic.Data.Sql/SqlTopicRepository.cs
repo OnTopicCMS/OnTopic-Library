@@ -485,6 +485,16 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Stamp resolver on newly loaded children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Children filled here, as opposed to the initial recursive Load(), are new Topic instances with no Resolver of their own.
+    | Without this, they would be unable to lazy-load their own payload.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (payload.HasFlag(TopicPayload.Children)) {
+      StampResolver(topic);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Mark confirmed payload as Loaded
     >---------------------------------------------------------------------------------------------------------------------------
     | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
