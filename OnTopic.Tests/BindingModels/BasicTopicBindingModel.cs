@@ -22,8 +22,8 @@ public class BasicTopicBindingModel : ITopicBindingModel {
   public BasicTopicBindingModel() { }
 
   public BasicTopicBindingModel(string key, string contentType) {
-    Key = key;
-    ContentType = contentType;
+    Key                         = key;
+    ContentType                 = contentType;
   }
 
   [Required]

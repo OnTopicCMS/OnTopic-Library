@@ -58,7 +58,7 @@ public static class TopicExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.IsLoaded(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
-        var nestedResult = child.FindFirst(predicate);
+        var nestedResult        = child.FindFirst(predicate);
         if (nestedResult is not null) {
           return nestedResult;
         }
@@ -103,7 +103,7 @@ public static class TopicExtensions {
       if (predicate(topic.Parent)) {
         return topic.Parent;
       }
-      topic = topic.Parent;
+      topic                     = topic.Parent;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Search attributes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var results = new TopicCollection();
+    var results                 = new TopicCollection();
 
     if (predicate(topic)) {
       results.Add(topic);
@@ -157,7 +157,7 @@ public static class TopicExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.IsLoaded(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
-        var nestedResults = child.FindAll(predicate);
+        var nestedResults       = child.FindAll(predicate);
         foreach (var matchedTopic in nestedResults) {
           if (!results.Contains(matchedTopic)) {
             results.Add(matchedTopic);
@@ -278,7 +278,7 @@ public static class TopicExtensions {
     | Process keys
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (uniqueKey.StartsWith(currentTopic.Key + ":", StringComparison.OrdinalIgnoreCase)) {
-      uniqueKey = uniqueKey[(currentTopic.Key.Length + 1)..];
+      uniqueKey                 = uniqueKey[(currentTopic.Key.Length + 1)..];
     }
     var keys                    = uniqueKey.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
@@ -286,7 +286,7 @@ public static class TopicExtensions {
     | Navigate to the specific path
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var key in keys) {
-      currentTopic = currentTopic?.Children.GetValue(key);
+      currentTopic              = currentTopic?.Children.GetValue(key);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find content type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var contentTypeDescriptor = rootContentType?.FindFirst(t =>
+    var contentTypeDescriptor   = rootContentType?.FindFirst(t =>
       t.Key.Equals(topic.ContentType, StringComparison.OrdinalIgnoreCase) &&
       t is ContentTypeDescriptor
     ) as ContentTypeDescriptor;

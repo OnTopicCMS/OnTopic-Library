@@ -29,7 +29,7 @@ public sealed class FilterByContentTypeAttribute : Attribute {
   /// <param name="contentType">The content type to filter by.</param>
   public FilterByContentTypeAttribute(string contentType) {
     TopicFactory.ValidateKey(contentType, false);
-    ContentType = contentType;
+    ContentType                 = contentType;
   }
 
   /*============================================================================================================================

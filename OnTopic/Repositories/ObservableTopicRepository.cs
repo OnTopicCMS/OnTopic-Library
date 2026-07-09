@@ -36,32 +36,32 @@ public abstract class ObservableTopicRepository : ITopicRepository {
 
   /// <inheritdoc />
   public event EventHandler<TopicLoadEventArgs>? TopicLoaded {
-    add => _topicLoaded += value;
-    remove => _topicLoaded -= value;
+    add                         => _topicLoaded += value;
+    remove                      => _topicLoaded -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicSaveEventArgs>? TopicSaved {
-    add => _topicSaved += value;
-    remove => _topicSaved -= value;
+    add                         => _topicSaved += value;
+    remove                      => _topicSaved -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicEventArgs>? TopicDeleted {
-    add => _topicDeleted += value;
-    remove => _topicDeleted -=  value;
+    add                         => _topicDeleted += value;
+    remove                      => _topicDeleted -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicMoveEventArgs>? TopicMoved {
-    add => _topicMoved += value;
-    remove => _topicMoved -= value;
+    add                         => _topicMoved += value;
+    remove                      => _topicMoved -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicRenameEventArgs>? TopicRenamed {
-    add => _topicRenamed += value;
-    remove => _topicRenamed -=  value;
+    add                         => _topicRenamed += value;
+    remove                      => _topicRenamed -= value;
   }
 
   #pragma warning disable CS0067 // Events are never used; retained as an obsolete stub which will be removed in the next major version

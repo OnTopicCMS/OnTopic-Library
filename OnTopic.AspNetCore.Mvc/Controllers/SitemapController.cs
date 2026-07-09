@@ -101,7 +101,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure topics are loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var rootTopic = _topicRepository.Load().GetAwaiter().GetResult();
+    var rootTopic               = _topicRepository.Load().GetAwaiter().GetResult();
 
     Contract.Assume(
       rootTopic,
@@ -168,7 +168,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish return collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<XElement> topics = [];
+    List<XElement> topics       = [];
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate topic
@@ -183,13 +183,13 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var domain = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
-    var lastModified = new DateTime(Math.Max(topic.LastModified.Ticks, new DateTime(2000, 1, 1).Ticks));
+    var domain                  = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+    var lastModified            = new DateTime(Math.Max(topic.LastModified.Ticks, new DateTime(2000, 1, 1).Ticks));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish root element
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topicElement = new XElement(_sitemapNamespace + "url",
+    var topicElement            = new XElement(_sitemapNamespace + "url",
       new XElement(_sitemapNamespace + "loc", domain + topic.GetWebPath()),
       new XElement(_sitemapNamespace + "changefreq", "monthly"),
       new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
@@ -229,7 +229,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
             new XText(topic.ContentType?? "Page")
           ),
           from attribute in topic.Attributes
-          let attributeValue =  topic.Attributes.GetValue(attribute.Key)
+          let attributeValue    =  topic.Attributes.GetValue(attribute.Key)
           where !ExcludedAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
           where attributeValue?.Length < 256
           select new XElement(_pagemapNamespace + "Attribute",

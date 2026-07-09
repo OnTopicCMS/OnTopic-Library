@@ -179,7 +179,7 @@ internal sealed class TypeAccessor {
   /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
   /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
   internal bool HasGettableProperty(string propertyName, Type? targetType = null, Type? attributeFlag = null) {
-    var property = GetMember(propertyName);
+    var property                = GetMember(propertyName);
     return (
       property is not null and  { CanRead: true, MemberType: MemberTypes.Property } &&
       property.IsSettable(targetType, true) &&
@@ -206,7 +206,7 @@ internal sealed class TypeAccessor {
   /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
   /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
   internal bool HasGettableMethod(string methodName, Type? targetType = null, Type? attributeFlag = null) {
-    var method = GetMember(methodName);
+    var method                  = GetMember(methodName);
     return (
       method is not null and {  CanRead: true, MemberType: MemberTypes.Method } &&
       method.IsSettable(targetType, true) &&
@@ -234,7 +234,7 @@ internal sealed class TypeAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve member
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var member = GetMember(memberName);
+    var member                  = GetMember(memberName);
 
     if (member is null) {
       return null;
@@ -292,7 +292,7 @@ internal sealed class TypeAccessor {
   /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
   /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
   internal bool HasSettableProperty(string propertyName, Type? targetType = null, Type? attributeFlag = null) {
-    var property = GetMember(propertyName);
+    var property                = GetMember(propertyName);
     return (
       property is not null and  { CanWrite: true, MemberType: MemberTypes.Property } &&
       property.IsSettable(targetType, true) &&
@@ -320,7 +320,7 @@ internal sealed class TypeAccessor {
   /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
   /// <param name="attributeFlag">Optional, the <see cref="Attribute"/> expected on the property.</param>
   internal bool HasSettableMethod(string methodName, Type? targetType = null, Type? attributeFlag = null) {
-    var method = GetMember(methodName);
+    var method                  = GetMember(methodName);
     return (
       method is not null and {  CanWrite: true, MemberType: MemberTypes.Method } &&
       method.IsSettable(targetType, true) &&
@@ -350,7 +350,7 @@ internal sealed class TypeAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var member = GetMember(memberName);
+    var member                  = GetMember(memberName);
 
     Contract.Assume(member, $"The {memberName} property could not be retrieved.");
 

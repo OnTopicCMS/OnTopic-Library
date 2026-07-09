@@ -115,7 +115,7 @@ internal abstract class ItemMetadata {
   /// </remarks>
   internal ItemConfiguration Configuration {
     get {
-      field ??= new(this);
+      field                     ??= new(this);
       return field;
     }
   }
@@ -187,7 +187,7 @@ internal abstract class ItemMetadata {
   /// </summary>
   internal List<Attribute> CustomAttributes {
     get {
-      field ??= [.. _attributeProvider.GetCustomAttributes(true).OfType<Attribute>()];
+      field                     ??= [.. _attributeProvider.GetCustomAttributes(true).OfType<Attribute>()];
       return field;
     }
   }

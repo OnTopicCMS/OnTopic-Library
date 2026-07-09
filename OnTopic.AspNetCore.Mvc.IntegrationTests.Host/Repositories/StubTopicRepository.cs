@@ -34,7 +34,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
   public StubTopicRepository()  : base() {
-    _cache = CreateFakeData();
+    _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }
 
@@ -52,10 +52,10 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = (Topic?)_cache;
+    var topic                   = (Topic?)_cache;
 
     if (topicId > 0) {
-      topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      topic                     = _cache.FindFirst(t => t.Id.Equals(topicId));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicKey
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache.GetByUniqueKey(uniqueKey);
+    var topic                   = _cache.GetByUniqueKey(uniqueKey);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event

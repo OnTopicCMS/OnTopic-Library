@@ -196,7 +196,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var contentType             = sourceTopic.ContentType;
     var contentTypes            = GetContentTypeDescriptors();
-    var contentTypeDescriptor = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
+    var contentTypeDescriptor   = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
     if (contentTypeDescriptor is not null) {
       return contentTypeDescriptor;
@@ -343,13 +343,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var isNew                   = topic.IsNew;
-    var areRelationshipsDirty = topic.Relationships.IsDirty();
+    var areRelationshipsDirty   = topic.Relationships.IsDirty();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate content type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var contentTypeDescriptors= GetContentTypeDescriptors();
-    var contentTypeDescriptor = GetContentTypeDescriptor(topic);
+    var contentTypeDescriptors  = GetContentTypeDescriptors();
+    var contentTypeDescriptor   = GetContentTypeDescriptor(topic);
 
     if (contentTypeDescriptor is null) {
       throw new ReferentialIntegrityException(
@@ -397,7 +397,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Perform reordering and/or move
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.Parent is not null && !topic.IsNew && topic.IsDirty("Parent")) {
-      var topicIndex = topic.Parent.Children.IndexOf(topic);
+      var topicIndex            = topic.Parent.Children.IndexOf(topic);
       if (topicIndex > 0) {
         await Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]).ConfigureAwait(false);
       }
@@ -447,7 +447,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Reset original key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.OriginalKey = null;
+    topic.OriginalKey           = null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
@@ -681,7 +681,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var args = new TopicEventArgs(topic);
+    var args                    = new TopicEventArgs(topic);
     OnTopicDeleted(args);
 
   }
@@ -722,8 +722,8 @@ public abstract class TopicRepository : ObservableTopicRepository {
   protected IEnumerable<AttributeRecord> GetAttributes(
     Topic topic,
     bool? isExtendedAttribute,
-    bool? isDirty = null,
-    bool excludeLastModified =  false
+    bool? isDirty               = null,
+    bool excludeLastModified    =  false
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

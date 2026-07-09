@@ -28,7 +28,7 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   /// </summary>
   /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
   public ReadOnlyKeyedTopicCollection(IList<T>? innerCollection = null) : base(innerCollection ?? []) {
-    _innerCollection = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
+    _innerCollection            = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
   }
 
   /*============================================================================================================================

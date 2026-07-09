@@ -87,7 +87,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel", $"{topic.ContentType}ViewModel");
+    var viewModelType           = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel", $"{topic.ContentType}ViewModel");
 
     if (viewModelType is null)  {
       throw new InvalidTypeException(
@@ -231,7 +231,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize object
     \-------------------------------------------------------------------------------------------------------------------------*/
-    target = Activator.CreateInstance(type, arguments);
+    target                      = Activator.CreateInstance(type, arguments);
 
     Contract.Assume(
       target,
@@ -379,7 +379,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     AssociationTypes associations,
     ParameterMetadata parameter,
     MappedTopicCache cache,
-    string? attributePrefix = null
+    string? attributePrefix     = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var value = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false).ConfigureAwait(false);
+    var value                   = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false).ConfigureAwait(false);
 
     if (value is null && parameter.IsList) {
       return await getList(parameter.Type).ConfigureAwait(false);
@@ -423,8 +423,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     async Task<IList?> getList(Type targetType) {
 
-      var sourceList = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
-      var targetList = InitializeCollection(targetType);
+      var sourceList            = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
+      var targetList            = InitializeCollection(targetType);
 
       if (targetList is null) {
         return null;
@@ -478,7 +478,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Handle [MapToParent] attribute
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (configuration.MapToParent) {
-      var targetProperty = propertyAccessor.GetValue(target);
+      var targetProperty        = propertyAccessor.GetValue(target);
       if (targetProperty is not null) {
         await MapAsync(
           source,
@@ -494,7 +494,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
     else {
-      var value = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
+      var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
       if (value is null && propertyAccessor.IsList) {
         await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix).ConfigureAwait(false);
       }
@@ -543,18 +543,18 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     var value                   = (object?)null;
     if (!mapAssociationsOnly && configuration.DefaultValue is not null) {
-      value = configuration.DefaultValue;
+      value                     = configuration.DefaultValue;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle by type, attribute
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
-      value = compatibleValue;
+      value                     = compatibleValue;
     }
     else if (itemMetadata.IsConvertible) {
       if (!mapAssociationsOnly) {
-        value = GetScalarValue(source, itemMetadata, attributePrefix);
+        value                   = GetScalarValue(source, itemMetadata, attributePrefix);
       }
     }
     else if (itemMetadata.IsList) {
@@ -562,16 +562,16 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     }
     else if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
       if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
-        value = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
       }
     }
     else if (configuration.MapToParent) {
       return null;
     }
     else if (itemMetadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
-      var topicReference = await getTopicReference().ConfigureAwait(false);
+      var topicReference        = await getTopicReference().ConfigureAwait(false);
       if (topicReference is not null) {
-        value = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
       }
     }
 
@@ -643,20 +643,20 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Attempt to retrieve value from topic.{Property}
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (maybeCompatible) {
-      attributeValue = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
+      attributeValue            = typeAccessor.GetMethodValue(source, $"Get{configuration.GetCompositeAttributeKey(attributePrefix)}")?.ToString();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Attempt to retrieve value from topic.{Property}
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (maybeCompatible && attributeValue is null) {
-      attributeValue = typeAccessor.GetPropertyValue(source, configuration.GetCompositeAttributeKey(attributePrefix))?.ToString();
+      attributeValue            = typeAccessor.GetPropertyValue(source, configuration.GetCompositeAttributeKey(attributePrefix))?.ToString();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
     \-------------------------------------------------------------------------------------------------------------------------*/
-    attributeValue ??= source.Attributes.GetValue(
+    attributeValue              ??= source.Attributes.GetValue(
       configuration.GetCompositeAttributeKey(attributePrefix),
       configuration.DefaultValue?.ToString(),
       configuration.InheritValue
@@ -741,9 +741,9 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure target list is created
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var targetList = (IList?)memberAccessor.GetValue(target);
+    var targetList              = (IList?)memberAccessor.GetValue(target);
     if (targetList is null) {
-      targetList = InitializeCollection(memberAccessor.Type);
+      targetList                = InitializeCollection(memberAccessor.Type);
       memberAccessor.SetValue(target, targetList);
     }
 
@@ -756,7 +756,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish source collection to store topics to be mapped
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix).ConfigureAwait(false);
+    var sourceList              = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate that source collection was identified
@@ -811,7 +811,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    listSource = getCollection(
+    listSource                  = getCollection(
       CollectionType.Children,
       s => true,
       () => [.. source.Children]
@@ -820,7 +820,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle (outgoing) relationships
     \-------------------------------------------------------------------------------------------------------------------------*/
-    listSource = getCollection(
+    listSource                  = getCollection(
       CollectionType.Relationship,
       source.Relationships.Contains,
       () => source.Relationships.GetValues(collectionKey)
@@ -829,7 +829,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle nested topics, or children corresponding to the property name
     \-------------------------------------------------------------------------------------------------------------------------*/
-    listSource = getCollection(
+    listSource                  = getCollection(
       CollectionType.NestedTopics,
       source.Children.Contains,
       () => source.Children[collectionKey].Children
@@ -838,7 +838,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle (incoming) relationships
     \-------------------------------------------------------------------------------------------------------------------------*/
-    listSource = getCollection(
+    listSource                  = getCollection(
       CollectionType.IncomingRelationship,
       source.IncomingRelationships.Contains,
       () => source.IncomingRelationships.GetValues(collectionKey)
@@ -852,13 +852,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
     //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
     if (listSource.Count == 0)  {
-      var sourceProperty = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
+      var sourceProperty        = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
       if (
         sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
         sourcePropertyValue.Count > 0 &&
         sourcePropertyValue[0]  is Topic
       ) {
-        listSource = getCollection(
+        listSource              = getCollection(
           CollectionType.MappedCollection,
           s => true,
           () => [.. sourcePropertyValue.Cast<Topic>()]
@@ -870,10 +870,10 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Handle Metadata relationship
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
-      var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-      var metadataParent = await _topicRepository.Load(metadataKey, source).ConfigureAwait(false);
+      var metadataKey           = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
+      var metadataParent        = await _topicRepository.Load(metadataKey, source).ConfigureAwait(false);
       if (metadataParent is not null) {
-        listSource = [.. metadataParent.Children];
+        listSource              = [.. metadataParent.Children];
       }
     }
 
@@ -883,7 +883,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     if (configuration.FlattenChildren) {
       List<Topic> flattenedList = [];
       listSource.ToList().ForEach(t => FlattenTopicGraph(t, flattenedList));
-      listSource = flattenedList;
+      listSource                = flattenedList;
     }
 
     return listSource;
@@ -929,11 +929,11 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine the type of item in the list
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var listType = typeof(ITopicViewModel);
+    var listType                = typeof(ITopicViewModel);
     foreach (var type in targetList.GetType().GetInterfaces()) {
       if (type.IsGenericType && typeof(IList<>) == type.GetGenericTypeDefinition()) {
         //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-        listType = type.GetGenericArguments().Last();
+        listType                = type.GetGenericArguments().Last();
       }
     }
 
@@ -1075,7 +1075,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     var mappingType             = GetValidatedMappingType(configuration.MapAs, targetType)?? GetValidatedMappingType(source, targetType);
 
     if (mappingType is not null) {
-      topicDto = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
+      topicDto                  = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -1137,7 +1137,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Rely on MaybeCompatible to bypass known incompatible types
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (source.GetType() == typeof(Topic) && !itemMetadata.MaybeCompatible) {
-      value = null;
+      value                     = null;
       return false;
     };
 
@@ -1150,14 +1150,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Escape clause if preconditions are not met
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (sourcePropertyAccessor  is null || !targetType.IsAssignableFrom(sourcePropertyAccessor.Type)) {
-      value = null;
+      value                     = null;
       return false;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    value = sourcePropertyAccessor.GetValue(source);
+    value                       = sourcePropertyAccessor.GetValue(source);
 
     return true;
 

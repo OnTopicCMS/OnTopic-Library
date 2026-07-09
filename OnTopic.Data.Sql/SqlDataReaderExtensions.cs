@@ -235,7 +235,7 @@ internal static class SqlDataReaderExtensions {
     | Establish topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topics.TryGetValue(topicId, out var current)) {
-      current = TopicFactory.Create(key, contentType, topicId);
+      current                   = TopicFactory.Create(key, contentType, topicId);
       topics.Add(current.Id, current);
     }
     else {
@@ -248,7 +248,7 @@ internal static class SqlDataReaderExtensions {
     | Assign parent
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var parentTopic)) {
-      current.Parent = parentTopic;
+      current.Parent            = parentTopic;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

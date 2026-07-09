@@ -67,7 +67,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_MissingValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
     Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
@@ -84,7 +84,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_EmptyValue_ReturnsNull() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("EmptyValue", ""));
 
@@ -101,7 +101,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetInteger("Number1", 1);
 
@@ -142,7 +142,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_IncorrectValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -160,7 +160,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_IncorrectKey_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Equal(0, topic.Attributes.GetInteger("InvalidKey"));
     Assert.Equal(5, topic.Attributes.GetInteger("InvalidKey", 5));
@@ -176,7 +176,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetDouble("Number1", 1);
 
@@ -217,7 +217,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_IncorrectValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -235,7 +235,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_IncorrectKey_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Equal(0.0, topic.Attributes.GetDouble("InvalidKey"));
     Assert.Equal(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
@@ -333,7 +333,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetBoolean("IsValue1", true);
     topic.Attributes.SetBoolean("IsValue2", false);
@@ -377,7 +377,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_IncorrectValue_ReturnDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("IsValue", "Invalid");
 
@@ -396,7 +396,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_IncorrectKey_ReturnDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
     Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
@@ -456,7 +456,7 @@ public class AttributeCollectionTest {
   /// </summary>
   [Fact]
   public void SetValue_CorrectValue_IsReturned() {
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
     topic.Attributes.SetValue("Foo", "Bar");
     Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
   }
@@ -470,7 +470,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_ValueChanged_IsDirty() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
     topic.Attributes.SetValue("Foo", "Baz");
@@ -508,7 +508,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Clear_ExistingValues_IsDirty() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -529,7 +529,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_ValueUnchanged_IsNotDirty() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Fah", "Bar", false);
     topic.Attributes.SetValue("Fah", "Bar");
@@ -548,7 +548,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_DirtyValues_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
 
@@ -568,7 +568,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_IsNew_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -590,7 +590,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_DeletedValues_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.Remove("Foo");
@@ -610,7 +610,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_UndeletedValues_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.Remove("Foo");
@@ -633,7 +633,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_NoDirtyValues_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -652,7 +652,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_IsNew_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -670,7 +670,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MissingKey_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.False(topic.Attributes.IsDirty("MissingKey"));
 
@@ -688,7 +688,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_ExcludeLastModified_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
     topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
@@ -743,7 +743,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkClean_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.SetValue("Baz", "Foo");
@@ -769,7 +769,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkClean_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
 
@@ -790,7 +790,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.MarkClean("Foo");
@@ -810,7 +810,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(
       new() {
@@ -836,7 +836,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.MarkClean();
@@ -854,7 +854,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_InvalidValue_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Throws<InvalidKeyException>(() =>
       topic.Attributes.SetValue("View", "# ?")
@@ -872,7 +872,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_DuplicateValue_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("Test", "Original"));
 
@@ -892,7 +892,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_ValidAttributeRecord_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("View", "NewKey", false));
 
@@ -910,7 +910,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_NumericValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     topic.Attributes.SetInteger("NumericAttribute", 1);
 
@@ -928,7 +928,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_BooleanValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     topic.Attributes.SetBoolean("BooleanAttribute", true);
 
@@ -945,7 +945,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_NumericValueWithBusinessLogic_ThrowsException() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     Assert.Throws<ArgumentOutOfRangeException>(() =>
       topic.Attributes.SetInteger("NumericAttribute", -1)
@@ -963,8 +963,8 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_DateTimeValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
-    var dateTime = new DateTime(2021, 1, 5);
+    var topic                   = new CustomTopic("Test", "Page");
+    var dateTime                = new DateTime(2021, 1, 5);
 
     topic.Attributes.SetDateTime("DateTimeAttribute", dateTime);
 
@@ -981,7 +981,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     Assert.Throws<ArgumentOutOfRangeException>(() =>
       topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue)
@@ -1018,7 +1018,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_InvalidAttributeRecord_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Throws<InvalidKeyException>(() =>
       topic.Attributes.Add(new("View", "# ?"))
@@ -1045,9 +1045,9 @@ public class AttributeCollectionTest {
 
     Contract.Assume(originalValue);
 
-    var index = topic.Attributes.IndexOf(originalValue);
+    var index                   = topic.Attributes.IndexOf(originalValue);
 
-    topic.Attributes[index] = new AttributeRecord("View", "NewValue", false);
+    topic.Attributes[index]     = new AttributeRecord("View", "NewValue", false);
     topic.Attributes.TryGetValue("View", out var newAttribute);
 
     topic.Attributes.SetValue("View", "NewerValue", false);
@@ -1069,7 +1069,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_EmptyAttributeRecord_Skips() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Attribute", "");
 
@@ -1088,7 +1088,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_EmptyAttributeRecord_Replaces() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Attribute", "New Value");
     topic.Attributes.SetValue("Attribute", "");
@@ -1106,12 +1106,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_InheritFromParent_ReturnsParentValue() {
 
-    var topics = new Topic[8];
+    var topics                  = new Topic[8];
 
-    for (var i = 0; i <= 7; i++) {
-      var topic = new Topic("Topic" + i, "Container");
-      if (i > 0) topic.Parent = topics[i - 1];
-      topics[i] = topic;
+    for (var i                  = 0; i <= 7; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
+      if (i > 0) topic.Parent   = topics[i - 1];
+      topics[i]                 = topic;
     }
 
     topics[0].Attributes.SetValue("Foo", "Bar");
@@ -1131,12 +1131,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_InheritFromBase_ReturnsInheritedValue() {
 
-    var topics = new Topic[5];
+    var topics                  = new Topic[5];
 
-    for (var i = 0; i <= 4; i++) {
-      var topic = new Topic("Topic" + i, "Container");
+    for (var i                  = 0; i <= 4; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
       if (i > 0) topics[i - 1].BaseTopic = topic;
-      topics[i] = topic;
+      topics[i]                 = topic;
     }
 
     topics[4].Attributes.SetValue("Foo", "Bar");
@@ -1154,12 +1154,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_ExceedsMaxHops_ReturnsDefault() {
 
-    var topics = new Topic[8];
+    var topics                  = new Topic[8];
 
-    for (var i = 0; i <= 7; i++) {
-      var topic = new Topic("Topic" + i, "Container");
+    for (var i                  = 0; i <= 7; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
       if (i > 0) topics[i - 1].BaseTopic = topic;
-      topics[i] = topic;
+      topics[i]                 = topic;
     }
 
     topics[7].Attributes.SetValue("Foo", "Bar");

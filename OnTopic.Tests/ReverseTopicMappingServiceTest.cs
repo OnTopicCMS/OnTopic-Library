@@ -141,7 +141,7 @@ public class ReverseTopicMappingServiceTest {
     target.Title                = "Original Attribute";
     target.DefaultValue         = "Hello";
     target.IsRequired           = true;
-    target.IsExtendedAttribute= false;
+    target.IsExtendedAttribute  = false;
 
     target.Attributes.SetValue("Description", "Original Description");
 
@@ -244,10 +244,10 @@ public class ReverseTopicMappingServiceTest {
 
     topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
-    for (var i = 0; i < 3; i++) {
+    for (var i                  = 0; i < 3; i++) {
       bindingModel.ContentTypes.Add(
         new() {
-          UniqueKey = contentTypes[i].GetUniqueKey()
+          UniqueKey             = contentTypes[i].GetUniqueKey()
         }
       );
     }
@@ -280,7 +280,7 @@ public class ReverseTopicMappingServiceTest {
 
     bindingModel.ContentTypes.Add(
       new() {
-        UniqueKey = "Root:Configuration:InvalidKey"
+        UniqueKey               = "Root:Configuration:InvalidKey"
       }
     );
 
@@ -666,7 +666,7 @@ public class ReverseTopicMappingServiceTest {
       UnmappedAttribute         = "Hello World"
     };
 
-    var target = await _mappingService.MapAsync(bindingModel);
+    var target                  = await _mappingService.MapAsync(bindingModel);
 
     Assert.Null(target?.Attributes.GetValue("UnmappedAttribute", null));
 

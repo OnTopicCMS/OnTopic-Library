@@ -35,7 +35,7 @@ public class TestTopicRepository: DummyTopicRepository {
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
   public TestTopicRepository()  : base() {
-    _cache = CreateFakeData();
+    _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }
 

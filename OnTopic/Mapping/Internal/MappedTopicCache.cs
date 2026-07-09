@@ -35,10 +35,10 @@ internal sealed class MappedTopicCache {
   /// <returns>Returns <c>true</c> if a cached entry could be found, and otherwise <c>false</c>.</returns>
   internal bool TryGetValue(int topicId, Type type, [NotNullWhen(true)] out MappedTopicCacheEntry? cacheEntry) {
     if (_cache.TryGetValue(GetCacheKey(topicId, type), out var existingCacheEntry) && !existingCacheEntry.IsInitializing) {
-      cacheEntry = existingCacheEntry;
+      cacheEntry                = existingCacheEntry;
       return true;
     };
-    cacheEntry = null;
+    cacheEntry                  = null;
     return false;
   }
 
@@ -68,7 +68,7 @@ internal sealed class MappedTopicCache {
     | Get or add entry
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topicId > 0 && !type.Equals(typeof(object))) {
-      cacheEntry = _cache.GetOrAdd(cacheKey, cacheEntry);
+      cacheEntry                = _cache.GetOrAdd(cacheKey, cacheEntry);
       if (cacheEntry.IsInitializing) {
         cacheEntry.IsInitializing = false;
         cacheEntry.MappedTopic  = viewModel;
@@ -92,9 +92,9 @@ internal sealed class MappedTopicCache {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct cache entry
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var cacheKey = GetCacheKey(topicId, type);
-    var cacheEntry = new MappedTopicCacheEntry() {
-      IsInitializing = true
+    var cacheKey                = GetCacheKey(topicId, type);
+    var cacheEntry              = new MappedTopicCacheEntry() {
+      IsInitializing            = true
     };
 
     /*--------------------------------------------------------------------------------------------------------------------------

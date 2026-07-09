@@ -187,7 +187,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
     }
 
@@ -209,9 +209,9 @@ public class TopicRelationshipMultiMapTest {
 
     var counter                 = 0;
     var multiMap                = new TopicMultiMap();
-    var readOnlyRelationships = new ReadOnlyTopicMultiMap(multiMap);
+    var readOnlyRelationships   = new ReadOnlyTopicMultiMap(multiMap);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       multiMap.Add(new("Relationship" + i, new()));
     }
 
@@ -235,7 +235,7 @@ public class TopicRelationshipMultiMapTest {
   public void Indexer_ReturnsKeyValuesPair() {
 
     var multiMap                = new TopicMultiMap();
-    var readOnlyTopicMultiMap = new ReadOnlyTopicMultiMap(multiMap);
+    var readOnlyTopicMultiMap   = new ReadOnlyTopicMultiMap(multiMap);
     var topics                  = new TopicCollection();
     var keyValuesPair           = new KeyValuesPair<string, TopicCollection>("Relationship", topics);
     var topic                   = new Topic("Test", "Test");
@@ -261,7 +261,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
     }
 
@@ -284,7 +284,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "ContentType" + i));
     }
 

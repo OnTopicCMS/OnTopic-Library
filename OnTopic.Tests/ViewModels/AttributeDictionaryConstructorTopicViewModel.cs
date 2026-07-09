@@ -27,7 +27,7 @@ public record AttributeDictionaryConstructorTopicViewModel: PageTopicViewModel {
   /// <param name="attributes">An <see cref="AttributeDictionaryConstructorTopicViewModel"/> of attribute values.</param>
   public AttributeDictionaryConstructorTopicViewModel(AttributeDictionary attributes) : base(attributes) {
     Contract.Requires(attributes, nameof(attributes));
-    MappedProperty = attributes.GetValue(nameof(MappedProperty));
+    MappedProperty              = attributes.GetValue(nameof(MappedProperty));
   }
 
   /// <summary>

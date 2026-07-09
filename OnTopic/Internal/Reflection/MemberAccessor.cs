@@ -198,7 +198,7 @@ internal sealed class MemberAccessor: ItemMetadata {
       //Proceed with conversion
     }
     else if (allowConversion && value is string) {
-      valueObject = AttributeValueConverter.Convert(value as string, Type);
+      valueObject               = AttributeValueConverter.Convert(value as string, Type);
     }
 
     if (valueObject is null &&  !IsNullable) {
@@ -325,7 +325,7 @@ internal sealed class MemberAccessor: ItemMetadata {
         parameters.Length == 0,
         $"The '{memberInfo.Name}()' method must not expect any parameters if the return type is not void."
       );
-      CanRead = true;
+      CanRead                   = true;
       return methodInfo.ReturnType;
     }
 
@@ -338,7 +338,7 @@ internal sealed class MemberAccessor: ItemMetadata {
       $"will be used as the value of the setter."
     );
 
-    CanWrite = true;
+    CanWrite                    = true;
     return parameters[0].ParameterType;
 
   }

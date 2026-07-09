@@ -86,19 +86,19 @@ internal sealed class ItemConfiguration {
     \-------------------------------------------------------------------------------------------------------------------------*/
     GetAttributeValue<CollectionAttribute>(
       a => {
-        CollectionKey = a.Key ?? CollectionKey;
-        CollectionType = a.Type;
+        CollectionKey           = a.Key ?? CollectionKey;
+        CollectionType          = a.Type;
       }
     );
 
     if (CollectionKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
-      CollectionType = CollectionType.Children;
+      CollectionType            = CollectionType.Children;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Attributes: Set attribute filters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var filterByAttributes = CustomAttributes.OfType<FilterByAttributeAttribute>().ToArray();
+    var filterByAttributes      = CustomAttributes.OfType<FilterByAttributeAttribute>().ToArray();
     if (filterByAttributes.Length > 0) {
       foreach (var filter in filterByAttributes) {
         AttributeFilters.Add(filter.Key, filter.Value);
@@ -468,7 +468,7 @@ internal sealed class ItemConfiguration {
   /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
   /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
   private void GetAttributeValue<T>(Action<T> action) where T : Attribute {
-    var attribute = GetAttribute<T>();
+    var attribute               = GetAttribute<T>();
     if (attribute is not null)  {
       action(attribute);
     }

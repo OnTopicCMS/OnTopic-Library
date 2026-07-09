@@ -26,9 +26,9 @@ public class KeyedTopicCollectionTest {
   [Fact]
   public void SetTopic_Indexer_ReturnsTopic() {
 
-    var topics = new KeyedTopicCollection();
+    var topics                  = new KeyedTopicCollection();
 
-    for (var i = 0; i < 10; i++) {
+    for (var i                  = 0; i < 10; i++) {
       topics.Add(new("Topic" +  i, "Page"));
     }
 
@@ -45,13 +45,13 @@ public class KeyedTopicCollectionTest {
   [Fact]
   public void Constructor_IEnumerable_SeedsTopics() {
 
-    List<Topic> topics = [];
+    List<Topic> topics          = [];
 
-    for (var i = 0; i < 10; i++) {
+    for (var i                  = 0; i < 10; i++) {
       topics.Add(new("Topic" +  i, "Page"));
     }
 
-    var topicsCollection = new  KeyedTopicCollection(topics);
+    var topicsCollection        = new  KeyedTopicCollection(topics);
 
     Assert.Equal(10, topicsCollection.Count);
 
@@ -153,13 +153,13 @@ public class KeyedTopicCollectionTest {
   [Fact]
   public void AsReadOnly_ReturnsReadOnlyKeyedTopicCollection() {
 
-    var topics = new KeyedTopicCollection();
+    var topics                  = new KeyedTopicCollection();
 
-    for (var i = 0; i < 10; i++) {
+    for (var i                  = 0; i < 10; i++) {
       topics.Add(new("Topic" +  i, "Page"));
     }
 
-    var readOnlyCollection = topics.AsReadOnly();
+    var readOnlyCollection      = topics.AsReadOnly();
 
     Assert.Equal(10, readOnlyCollection.Count);
     Assert.Equal("Topic0", readOnlyCollection.First().Key);
@@ -175,13 +175,13 @@ public class KeyedTopicCollectionTest {
   [Fact]
   public void AsReadOnly_ReturnsReadOnlyTopicCollection() {
 
-    var topics = new TopicCollection();
+    var topics                  = new TopicCollection();
 
-    for (var i = 0; i < 10; i++) {
+    for (var i                  = 0; i < 10; i++) {
       topics.Add(new("Topic" +  i, "Page"));
     }
 
-    var readOnlyCollection = topics.AsReadOnly();
+    var readOnlyCollection      = topics.AsReadOnly();
 
     Assert.Equal(10, readOnlyCollection.Count);
     Assert.Equal("Topic0", readOnlyCollection.First().Key);

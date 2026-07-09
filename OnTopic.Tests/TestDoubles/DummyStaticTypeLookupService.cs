@@ -26,7 +26,7 @@ public class DummyStaticTypeLookupService: StaticTypeLookupService {
   /// </summary>
   /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
   public DummyStaticTypeLookupService(
-    IEnumerable<Type>? types =  null
+    IEnumerable<Type>? types    =  null
   ): base(types) {
   }
 

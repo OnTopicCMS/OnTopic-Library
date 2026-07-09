@@ -102,6 +102,6 @@ public enum AssociationTypes {
   /// <summary>
   ///   Map all association types.
   /// </summary>
-  All = Parents | Children | Relationships | IncomingRelationships | MappedCollections | References
+  All                           = Parents | Children | Relationships | IncomingRelationships | MappedCollections | References
 
 } //Enum

@@ -44,7 +44,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure cache is populated
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var cacheKey = (topic.Id, (Type?)null, associations);
+    var cacheKey                = (topic.Id, (Type?)null, associations);
     if(_cache.TryGetValue(cacheKey, out var viewModel)) {
       return viewModel;
     }
@@ -52,7 +52,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process result
     \-------------------------------------------------------------------------------------------------------------------------*/
-    viewModel = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
+    viewModel                   = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return (cached) result
@@ -82,7 +82,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure cache is populated
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var cacheKey = (topic.Id, typeof(T), associations);
+    var cacheKey                = (topic.Id, typeof(T), associations);
     if (_cache.TryGetValue(cacheKey, out var viewModel)) {
       return (T)viewModel;
     }
@@ -90,7 +90,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process result
     \-------------------------------------------------------------------------------------------------------------------------*/
-    viewModel = await _topicMappingService.MapAsync<T>(topic, associations).ConfigureAwait(false);
+    viewModel                   = await _topicMappingService.MapAsync<T>(topic, associations).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return (cached) result
@@ -125,7 +125,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure cache is populated
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var cacheKey = (topic.Id, target.GetType(), associations);
+    var cacheKey                = (topic.Id, target.GetType(), associations);
     if (_cache.TryGetValue(cacheKey, out var viewModel)) {
       return viewModel;
     }
@@ -133,7 +133,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process result
     \-------------------------------------------------------------------------------------------------------------------------*/
-    viewModel = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
+    viewModel                   = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return (cached) result
@@ -192,7 +192,7 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
       _cache.TryAdd(cacheKey, viewModel);
     }
     if (cacheKey.Item2 is not null) {
-      cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
+      cacheKey                  = (cacheKey.Item1, null, cacheKey.Item3);
     }
     if (
       cacheKey.Item1 > 0 && (

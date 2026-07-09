@@ -26,7 +26,7 @@ static internal class AssociationMap {
   \---------------------------------------------------------------------------------------------------------------------------*/
   static AssociationMap() {
 
-    var mappings = new Dictionary<CollectionType, AssociationTypes> {
+    var mappings                = new Dictionary<CollectionType, AssociationTypes> {
       { CollectionType.Any, AssociationTypes.None },
       { CollectionType.Children, AssociationTypes.Children },
       { CollectionType.Relationship, AssociationTypes.Relationships },

@@ -166,9 +166,9 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   public void SetValue(
     string key,
     string? value,
-    bool? markDirty = null,
-    DateTime? version = null,
-    bool? isExtendedAttribute = null
+    bool? markDirty             = null,
+    DateTime? version           = null,
+    bool? isExtendedAttribute   = null
   ) {
     base.SetValue(key, value, markDirty, version);
     if (Contains(key)) {
@@ -176,7 +176,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
       var attributeIndex        = IndexOf(attributeValue);
       if (isExtendedAttribute is not null && isExtendedAttribute != attributeValue.IsExtendedAttribute) {
         attributeValue          = attributeValue with {
-          IsExtendedAttribute = isExtendedAttribute
+          IsExtendedAttribute   = isExtendedAttribute
         };
         base[attributeIndex]    = attributeValue;
       }
@@ -210,7 +210,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
           attributes.TryAdd(attribute.Key, attribute.Value);
         }
       }
-      sourceAttributes = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
+      sourceAttributes          = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
     }
     foreach (var attribute in _excludedAttributes) {
       attributes.Remove(attribute);

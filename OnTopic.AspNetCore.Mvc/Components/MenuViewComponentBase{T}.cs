@@ -82,9 +82,9 @@ public abstract class MenuViewComponentBase<T> :
     var                         configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
 
     if (!String.IsNullOrEmpty(configuredRoot)) {
-      navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic).GetAwaiter().GetResult();
+      navigationRootTopic       = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic).GetAwaiter().GetResult();
     }
-    navigationRootTopic ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
+    navigationRootTopic         ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return root
@@ -117,14 +117,14 @@ public abstract class MenuViewComponentBase<T> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve root topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationRootTopic = GetNavigationRoot();
+    var navigationRootTopic     = GetNavigationRoot();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct view model
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationViewModel = new NavigationViewModel<T>() {
-      NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
-      CurrentWebPath = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
+    var navigationViewModel     = new NavigationViewModel<T>() {
+      NavigationRoot            = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
+      CurrentWebPath            = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
     };
 
     /*--------------------------------------------------------------------------------------------------------------------------

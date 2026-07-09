@@ -167,7 +167,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic is null) {
       if (topicId == -1) {
-        topic = TopicFactory.Create("Root", "Container");
+        topic                   = TopicFactory.Create("Root", "Container");
       }
       else {
         throw new TopicNotFoundException(topicId);
@@ -400,7 +400,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                  = topic.FilterPayload(payload);
+    payload                     = topic.FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -570,7 +570,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     >-------------------------------------------------------------------------------------------------------------------------
     | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    using var attributeValues = new AttributeValuesDataTable();
+    using var attributeValues   = new AttributeValuesDataTable();
 
     if (areAttributesDirty) {
 
@@ -655,7 +655,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
       if (topic.IsNew || isTopicDirty || areAttributesDirty) {
         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-        topic.Id = command.GetReturnCode();
+        topic.Id                = command.GetReturnCode();
       }
 
       Contract.Assume(

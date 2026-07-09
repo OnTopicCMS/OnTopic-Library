@@ -75,7 +75,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
 
     if (currentTopic is null) {
       if (!AllowNull) {
-        context.Result = controller.NotFound();
+        context.Result          = controller.NotFound();
       }
       return;
     }
@@ -86,7 +86,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
     //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
     if (currentTopic.IsDisabled) {
-      context.Result = new UnauthorizedResult();
+      context.Result            = new UnauthorizedResult();
       return;
     }
 
@@ -96,7 +96,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     var redirectUrl             = currentTopic.Attributes.GetValue("URL");
 
     if (!String.IsNullOrEmpty(redirectUrl)) {
-      context.Result = controller.RedirectPermanent(redirectUrl);
+      context.Result            = controller.RedirectPermanent(redirectUrl);
       return;
     }
 
@@ -107,7 +107,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     | the request is valid, but forbidden.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (currentTopic is { ContentType: "List"} or { Parent.ContentType: "List" }) {
-      context.Result = new StatusCodeResult(403);
+      context.Result            = new StatusCodeResult(403);
       return;
     }
 
@@ -118,7 +118,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (currentTopic.ContentType is "Container") {
-      context.Result = new StatusCodeResult(403);
+      context.Result            = new StatusCodeResult(403);
       return;
     }
 
@@ -129,8 +129,8 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     | redirected to the first (non-hidden, non-disabled) page in the page group.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (currentTopic.ContentType is "PageGroup") {
-      var target = currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath();
-      context.Result = target is null? new StatusCodeResult(403) : controller.Redirect(target);
+      var target                = currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath();
+      context.Result            = target is null? new StatusCodeResult(403) : controller.Redirect(target);
       return;
     }
 
@@ -142,7 +142,7 @@ public sealed class ValidateTopicAttribute : ActionFilterAttribute {
     | same case as assigned in the topic graph, URLs that vary only by case will be redirected to the expected case.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!currentTopic.GetWebPath().Equals(context.HttpContext.Request.Path, StringComparison.Ordinal)) {
-      context.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
+      context.Result            = controller.RedirectPermanent(currentTopic.GetWebPath());
       return;
     }
 

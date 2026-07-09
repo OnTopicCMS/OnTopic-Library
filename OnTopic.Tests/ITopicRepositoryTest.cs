@@ -52,7 +52,7 @@ public class ITopicRepositoryTest {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository = fixture.CachedTopicRepository;
+    _topicRepository            = fixture.CachedTopicRepository;
 
   }
 

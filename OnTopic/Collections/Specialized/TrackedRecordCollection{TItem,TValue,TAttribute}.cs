@@ -250,17 +250,17 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     Contract.Requires<ArgumentOutOfRangeException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
     Contract.Requires<ArgumentOutOfRangeException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
 
-    TValue? value = null;
+    TValue? value               = null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Look up value from collection
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (Contains(key)) {
-      value = this[key].Value;
+      value                     = this[key].Value;
     }
 
     if (value is "") {
-      value = null;
+      value                     = null;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       maxHops > 0 &&
       BaseCollection is not null
     ) {
-      value = BaseCollection.GetValue(key, null, false, maxHops - 1);
+      value                     = BaseCollection.GetValue(key, null, false, maxHops - 1);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       inheritFromParent &&
       ParentCollection is not null
     ) {
-      value = ParentCollection.GetValue(key, defaultValue, inheritFromParent);
+      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -358,8 +358,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   public virtual void SetValue(
     string key,
     TValue? value,
-    bool? markDirty = null,
-    DateTime? version = null
+    bool? markDirty             = null,
+    DateTime? version           = null
   )
     => SetValue(key, value, markDirty, true, version);
 
@@ -404,7 +404,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     TValue? value,
     bool? markDirty,
     bool enforceBusinessLogic,
-    DateTime? version = null
+    DateTime? version           = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -415,10 +415,10 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve original item
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TItem? originalItem = null;
+    TItem? originalItem         = null;
 
     if (Contains(key)) {
-      originalItem  = this[key];
+      originalItem              = this[key];
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (_topicPropertyDispatcher.IsRegistered(key, out var updatedItem)) {
       if (updatedItem.Value !=  value) {
-        updatedItem = updatedItem with {
+        updatedItem             = updatedItem with {
           Value                 = value
         };
       }
@@ -441,15 +441,15 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     | Because TrackedRecord<T> is immutable, a new instance must be constructed to replace the previous version.
     \-------------------------------------------------------------------------------------------------------------------------*/
     else if (originalItem is not null) {
-      var markAsDirty = originalItem.IsDirty;
+      var markAsDirty           = originalItem.IsDirty;
       if (AssociatedTopic.IsNew) {
-        markAsDirty = true;
+        markAsDirty             = true;
       }
       else if (markDirty.HasValue) {
-        markAsDirty = markDirty.Value;
+        markAsDirty             = markDirty.Value;
       }
       else if (!originalItem.Value?.Equals(value)?? false) {
-        markAsDirty = true;
+        markAsDirty             = true;
       }
       else if (!version.HasValue) {
         return;
@@ -476,7 +476,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     | Create new item
     \-------------------------------------------------------------------------------------------------------------------------*/
     else {
-      updatedItem = new TItem() {
+      updatedItem               = new TItem() {
         Key                     = key,
         Value                   = value,
         IsDirty                 = AssociatedTopic.IsNew || (markDirty ?? true),
@@ -599,8 +599,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
   /// </remarks>
   protected override void RemoveItem(int index) {
-    var trackedRecord = this[index] with {
-      Value = null
+    var trackedRecord           = this[index] with {
+      Value                     = null
     };
     if (_topicPropertyDispatcher.Enforce(trackedRecord.Key, trackedRecord)) {
       if (!AssociatedTopic.IsNew) {
@@ -645,7 +645,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>
   protected bool AllowClean(TItem item) {
     Contract.Requires(item, nameof(item));
-    var topic = item.Value as Topic;
+    var topic                   = item.Value as Topic;
     if (topic is not null && topic.IsNew) {
       return false;
     }

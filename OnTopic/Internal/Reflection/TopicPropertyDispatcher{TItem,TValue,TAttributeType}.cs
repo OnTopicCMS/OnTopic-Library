@@ -100,7 +100,7 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// </summary>
   /// <param name="associatedTopic">The <see cref="Topic"/> whose properties should be called, when appropriate.</param>
   internal TopicPropertyDispatcher(Topic associatedTopic) {
-    _associatedTopic = associatedTopic;
+    _associatedTopic            = associatedTopic;
   }
 
   /*============================================================================================================================
@@ -173,9 +173,9 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// </param>
   /// <param name="initialValue">The <typeparamref name="TItem"/> object which is being inserted.</param>
   internal bool Register(string itemKey, TItem? initialValue) {
-    var type = (Type?)null;
+    var type                    = (Type?)null;
     if (!AttributeValueConverter.IsConvertible(typeof(TValue))) {
-      type = typeof(TValue);
+      type                      = typeof(TValue);
     }
     if (
       !PropertyCache.ContainsKey(itemKey) &&
@@ -251,7 +251,7 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
     #pragma warning restore CA1853 // Unnecessary call to 'Dictionary.ContainsKey(key)'
     else if (Register(itemKey,  initialObject)) {
       try {
-        var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
+        var typeAccessor        = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
         typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
       }
       catch (TargetInvocationException ex) {

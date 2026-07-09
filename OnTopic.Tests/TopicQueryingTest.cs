@@ -51,7 +51,7 @@ public class TopicQueryingTest  {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository = fixture.CachedTopicRepository;
+    _topicRepository            = fixture.CachedTopicRepository;
 
   }
 
@@ -167,7 +167,7 @@ public class TopicQueryingTest  {
     var parentTopic             = new Topic("ParentTopic", "Page", null, 1);
     _                           = new Topic("ChildTopic", "Page", parentTopic, 2);
 
-    var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
+    var foundTopic              = parentTopic.GetByUniqueKey("ParentTopic");
 
     Assert.NotNull(foundTopic);
     Assert.Equal(parentTopic, foundTopic);
@@ -186,10 +186,10 @@ public class TopicQueryingTest  {
     var parentTopic             = new Topic("ParentTopic", "Page", null, 1);
     var childTopic              = new Topic("ChildTopic", "Page", parentTopic, 5);
     var grandChildTopic         = new Topic("GrandChildTopic", "Page", childTopic, 20);
-    var greatGrandChildTopic1 = new Topic("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
-    var greatGrandChildTopic2 = new Topic("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
+    var greatGrandChildTopic1   = new Topic("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
+    var greatGrandChildTopic2   = new Topic("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
 
-    var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+    var foundTopic              = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
     Assert.Equal(greatGrandChildTopic2, foundTopic);
 
@@ -210,7 +210,7 @@ public class TopicQueryingTest  {
     var grandChildTopic         = new Topic("GrandChildTopic", "Page", childTopic, 20);
     var greatGrandChildTopic    = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
-    var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+    var foundTopic              = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
     Assert.Null(foundTopic);
 
@@ -226,7 +226,7 @@ public class TopicQueryingTest  {
   public async Task GetContentType_ValidContentType_ReturnsContentType() {
 
     var topic                   = await _topicRepository.Load(11111);
-    var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
+    var contentTypeDescriptor   = topic?.GetContentTypeDescriptor();
 
     Assert.NotNull(contentTypeDescriptor);
     Assert.Equal("Page", contentTypeDescriptor?.Key);
@@ -245,7 +245,7 @@ public class TopicQueryingTest  {
 
     var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "NonExistent", parentTopic);
-    var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+    var contentTypeDescriptor   = topic.GetContentTypeDescriptor();
 
     Assert.Null(contentTypeDescriptor);
 
@@ -270,7 +270,7 @@ public class TopicQueryingTest  {
 
     var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "Title", parentTopic);
-    var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+    var contentTypeDescriptor   = topic.GetContentTypeDescriptor();
 
     Assert.Null(contentTypeDescriptor);
 
@@ -289,7 +289,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyDirty_DirtyCollection_ReturnTrue() {
 
-    var topics = new TopicCollection {
+    var topics                  = new TopicCollection {
       new Topic("Test", "Page")
     };
 
@@ -307,7 +307,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyDirty_CleanCollection_ReturnFalse() {
 
-    var topics = new TopicCollection {
+    var topics                  = new TopicCollection {
       new Topic("Test", "Page", null, 1)
     };
 
@@ -325,7 +325,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyNew_ContainsNew_ReturnTrue() {
 
-    var topics = new TopicCollection {
+    var topics                  = new TopicCollection {
       new Topic("Test", "Page")
     };
 
@@ -343,7 +343,7 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyNew_ContainsExisting_ReturnFalse() {
 
-    var topics = new TopicCollection {
+    var topics                  = new TopicCollection {
       new Topic("Test", "Page", null, 1)
     };
 

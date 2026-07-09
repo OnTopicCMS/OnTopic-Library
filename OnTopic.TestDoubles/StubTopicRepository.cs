@@ -39,7 +39,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
   public StubTopicRepository()  : base() {
-    _cache = CreateFakeData();
+    _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }
 
@@ -57,10 +57,10 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache;
+    var topic                   = _cache;
 
     if (topicId > 0) {
-      topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      topic                     = _cache.FindFirst(t => t.Id.Equals(topicId));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicKey
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache.GetByUniqueKey(uniqueKey);
+    var topic                   = _cache.GetByUniqueKey(uniqueKey);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Stamp resolver
@@ -140,10 +140,10 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache;
+    var topic                   = _cache;
 
     if (topicId > 0) {
-      topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      topic                     = _cache.FindFirst(t => t.Id.Equals(topicId));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
       if (!topic.VersionHistory.Contains(version)) {
         topic.VersionHistory.Add(version);
       }
-      topic.LastModified = version;
+      topic.LastModified        = version;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     | Assign faux identity
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.IsNew) {
-      topic.Id = _identity++;
+      topic.Id                  = _identity++;
     }
 
     return Task.CompletedTask;
@@ -254,8 +254,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   public IEnumerable<AttributeRecord> GetAttributesProxy(
     Topic topic,
     bool? isExtendedAttribute,
-    bool? isDirty = null,
-    bool excludeLastModified =  false
+    bool? isDirty               = null,
+    bool excludeLastModified    =  false
   ) => base.GetAttributes(topic, isExtendedAttribute, isDirty, excludeLastModified);
 
   /*============================================================================================================================
@@ -301,21 +301,21 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish root
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var currentAttributeId = 800;
-    var rootTopic = new Topic("Root", "Container", null, currentAttributeId++);
+    var currentAttributeId      = 800;
+    var rootTopic               = new Topic("Root", "Container", null, currentAttributeId++);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish configuration
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var configuration = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
-    var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
+    var configuration           = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
 
     addAttribute(contentTypes,  "Key", "TextAttributeDescriptor", false, true);
     addAttribute(contentTypes,  "ContentType", "TextAttributeDescriptor", false, true);
     addAttribute(contentTypes,  "Title", "TextAttributeDescriptor", true, true);
     addAttribute(contentTypes,  "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
-    var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var contentTypeDescriptor   = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
     addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
@@ -325,7 +325,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
     TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
-    var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var attributeDescriptor     = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
     addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
@@ -337,14 +337,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
     TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
-    var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var pageContentType         = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(pageContentType, "MetaTitle");
     addAttribute(pageContentType, "MetaDescription");
     addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
     addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-    var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var contactContentType      = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(contactContentType, "Name", isExtended: false);
     addAttribute(contactContentType, "AlternateEmail", isExtended: false);
@@ -382,14 +382,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
     var categories              = new Topic("Categories", "Lookup", metadata, currentAttributeId++);
     var lookup                  = new Topic("LookupList", "List", categories, currentAttributeId++);
 
-    for (var i=1; i<=5; i++) {
-      _ = new Topic("Category"  + i, "LookupListItem", lookup);
+    for (var i                  =1; i<=5; i++) {
+      _                         = new Topic("Category"  + i, "LookupListItem", lookup);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish content
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var web = TopicFactory.Create("Web", "Page", rootTopic, 10000);
+    var web                     = TopicFactory.Create("Web", "Page", rootTopic, 10000);
 
     CreateFakeData(web, 2, 3);
 
@@ -414,8 +414,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   Creates a collection of fake data recursively based on a parent topic, and set number of levels.
   /// </summary>
   private static void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
-    for (var i = 0; i < count;  i++) {
-      var topic = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
+    for (var i                  = 0; i < count;  i++) {
+      var topic                 = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
       topic.Attributes.SetValue("ParentKey", parent.Key);
       topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
       if (depth > 0) {

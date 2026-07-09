@@ -57,20 +57,20 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var                         sqlTopicRepository              = new StubTopicRepository();
     var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-    _                                                         = new PageTopicViewModel();
+    _                                                           = new PageTopicViewModel();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository                                          = cachedTopicRepository;
-    _typeLookupService                                        = new DynamicTopicViewModelLookupService();
-    _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-    _                                                         = _topicRepository.Load().GetAwaiter().GetResult();
+    _topicRepository                                            = cachedTopicRepository;
+    _typeLookupService                                          = new DynamicTopicViewModelLookupService();
+    _topicMappingService                                        = new TopicMappingService(_topicRepository, _typeLookupService);
+    _                                                           = _topicRepository.Load().GetAwaiter().GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
+    _hierarchicalMappingService                                 = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
       new HierarchicalTopicMappingService<NavigationTopicViewModel>(
         _topicRepository,
         _topicMappingService
@@ -96,7 +96,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine controller type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+    var type                    = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate controller
@@ -133,13 +133,13 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine view component type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ViewComponentDescriptor.TypeInfo.AsType();
+    var type                    = context.ViewComponentDescriptor.TypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate view component
     \-------------------------------------------------------------------------------------------------------------------------*/
     return type.Name switch {
-      _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
+      _                         => throw new InvalidOperationException($"Unknown view component {type.Name}")
     };
 
   }

@@ -62,7 +62,7 @@ internal static class AttributeValueConverter {
   /// <returns>An instance of the <paramref name="value"/> as a <paramref name="type"/>.</returns>
   internal static object? Convert(string? value, Type type) {
 
-    var valueObject = (object?)null;
+    var valueObject             = (object?)null;
 
     //Treat empty as null for non-strings, regardless of whether they’re nullable
     if (!type.Equals(typeof(string)) && String.IsNullOrWhiteSpace(value)) {
@@ -72,34 +72,34 @@ internal static class AttributeValueConverter {
     if (value is null) return null;
 
     if (type.Equals(typeof(string))) {
-      valueObject = value;
+      valueObject               = value;
     }
     else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
       if (value is "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase)) {
-        valueObject = true;
+        valueObject             = true;
       }
       else if (value is "0" ||  value.Equals("false", StringComparison.OrdinalIgnoreCase)) {
-        valueObject = false;
+        valueObject             = false;
       }
     }
     else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
       if (Int32.TryParse(value, out var intValue)) {
-        valueObject = intValue;
+        valueObject             = intValue;
       }
     }
     else if (type.Equals(typeof(double)) || type.Equals(typeof(double?))) {
       if (Double.TryParse(value, out var doubleValue)) {
-        valueObject = doubleValue;
+        valueObject             = doubleValue;
       }
     }
     else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
       if (DateTime.TryParse(value, out var date)) {
-        valueObject = date;
+        valueObject             = date;
       }
     }
     else if (type.Equals(typeof(Uri))) {
       if (Uri.TryCreate(value,  UriKind.RelativeOrAbsolute, out var uri)) {
-        valueObject = uri;
+        valueObject             = uri;
       }
     }
 

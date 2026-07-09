@@ -23,7 +23,7 @@ public sealed class FollowAttribute : Attribute {
   /// </summary>
   /// <param name="relationships">The specific relationships that should be crawled.</param>
   public FollowAttribute(Relationships relationships) {
-    Relationships = relationships;
+    Relationships               = relationships;
   }
 
   /*============================================================================================================================

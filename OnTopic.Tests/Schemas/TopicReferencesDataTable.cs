@@ -82,7 +82,7 @@ public class TopicReferencesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Create new row
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var row = NewRow();
+    var row                     = NewRow();
 
     row["Source_TopicId"]       = sourceTopicId;
     row["ReferenceKey"]         = referenceKey;

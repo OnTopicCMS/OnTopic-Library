@@ -89,7 +89,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove any pending deferred entry for this reference key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i = Deferred.Count - 1; i >= 0; i--) {
+    for (var i                  = Deferred.Count - 1; i >= 0; i--) {
       if (Deferred[i].Key == item.Key) {
         Deferred.RemoveAt(i);
         break;
@@ -127,7 +127,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove any pending deferred entry for this reference key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i = Deferred.Count - 1; i >= 0; i--) {
+    for (var i                  = Deferred.Count - 1; i >= 0; i--) {
       if (Deferred[i].Key == item.Key) {
         Deferred.RemoveAt(i);
         break;

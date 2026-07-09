@@ -30,7 +30,7 @@ public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<
   ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
   /// </summary>
   public TopicViewLocationExpanderTest(WebApplicationFactory<Startup> factory) {
-    _factory = factory;
+    _factory                    = factory;
   }
 
   /*============================================================================================================================
@@ -56,10 +56,10 @@ public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<
   public async Task ExpandViewLocations_Views(string viewName, string viewLocation) {
 
     if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
-      viewLocation = $"~/Areas/Area/Views/{viewLocation}";
+      viewLocation              = $"~/Areas/Area/Views/{viewLocation}";
     }
     else {
-      viewLocation = $"~/Views/{viewLocation}";
+      viewLocation              = $"~/Views/{viewLocation}";
     }
 
     var client                  = _factory.CreateClient();
@@ -94,10 +94,10 @@ public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<
   public async Task ExpandViewLocations_Actions(string viewName, string viewLocation) {
 
     if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
-      viewLocation = $"~/Areas/Area/Views/{viewLocation}";
+      viewLocation              = $"~/Areas/Area/Views/{viewLocation}";
     }
     else {
-      viewLocation = $"~/Views/{viewLocation}";
+      viewLocation              = $"~/Views/{viewLocation}";
     }
 
     var client                  = _factory.CreateClient();

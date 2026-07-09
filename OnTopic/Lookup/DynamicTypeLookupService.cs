@@ -28,7 +28,7 @@ public class DynamicTypeLookupService : StaticTypeLookupService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find target classes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var matchedTypes = AppDomain
+    var matchedTypes            = AppDomain
       .CurrentDomain
       .GetAssemblies()
       .Where(a => !(a.FullName?.StartsWith("Microsoft", StringComparison.Ordinal) ?? false) && !(a.FullName?.StartsWith("System", StringComparison.Ordinal) ?? false))

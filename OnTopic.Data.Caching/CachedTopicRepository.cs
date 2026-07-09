@@ -178,7 +178,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       !uniqueKey.StartsWith(_cache.Key + ":", StringComparison.OrdinalIgnoreCase) &&
       !uniqueKey.Equals(_cache.Key, StringComparison.OrdinalIgnoreCase)
     ) {
-      uniqueKey = $"{_cache.Key}:{uniqueKey.TrimStart(':')}";
+      uniqueKey                 = $"{_cache.Key}:{uniqueKey.TrimStart(':')}";
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded = await TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false)
+    var loaded                  = await TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false)
                    .ConfigureAwait(false);
 
     if (loaded is null) {
@@ -264,7 +264,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (i.e., not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                    = topic.FilterPayload(payload);
+    payload                     = topic.FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -493,8 +493,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   private void MergeIntoCache(Topic loaded) {
 
     // Build the ancestor chain from the leaf up to the root (leaf first)
-    List<Topic> chain = [];
-    for (var node = loaded; node is not null; node = node.Parent) {
+    List<Topic> chain           = [];
+    for (var node               = loaded; node is not null; node = node.Parent) {
       chain.Add(node);
     }
 
@@ -512,7 +512,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       if (node.Parent is not null) {
         lock (_syncLock) {
           if (_topicIdIndex.TryGetValue(node.Parent.Id, out var cacheParent) && cacheParent != node.Parent) {
-            node.Parent = cacheParent;
+            node.Parent         = cacheParent;
           }
         }
       }

@@ -63,8 +63,8 @@ public class AttributeDescriptor : Topic {
   public AttributeDescriptor(
     string key,
     string contentType,
-    Topic? parent = null,
-    int id = -1
+    Topic? parent               = null,
+    int id                      = -1
   ) : base(
     key,
     contentType,

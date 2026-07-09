@@ -65,14 +65,14 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationRootTopic = currentTopic;
+    var navigationRootTopic     = currentTopic;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle default, if necessary
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (navigationRootTopic is  null) {
       Contract.Assume<ArgumentNullException>(!String.IsNullOrEmpty(defaultRoot), nameof(defaultRoot));
-      navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic).GetAwaiter().GetResult();
+      navigationRootTopic       = TopicRepository.Load(defaultRoot, currentTopic).GetAwaiter().GetResult();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     | Find navigation root
     \-------------------------------------------------------------------------------------------------------------------------*/
     while (navigationRootTopic  is not null && DistanceFromRoot(navigationRootTopic) > fromRoot) {
-      navigationRootTopic = navigationRootTopic.Parent;
+      navigationRootTopic       = navigationRootTopic.Parent;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -106,9 +106,9 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
   /// </summary>
   /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
   private static int DistanceFromRoot(Topic sourceTopic) {
-    var distance = 1;
+    var distance                = 1;
     while (sourceTopic.Parent is not null) {
-      sourceTopic = sourceTopic.Parent;
+      sourceTopic               = sourceTopic.Parent;
       distance++;
     }
     return distance;
@@ -120,7 +120,7 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
   /// <inheritdoc />
   public virtual async Task<T?> GetRootViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   ) => await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 
@@ -130,7 +130,7 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
   /// <inheritdoc />
   public async Task<T?> GetViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   ) {
 
@@ -152,12 +152,12 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish default delegate
     \-------------------------------------------------------------------------------------------------------------------------*/
-    validationDelegate ??= (Topic) => true;
+    validationDelegate          ??= (Topic) => true;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map object
     \-------------------------------------------------------------------------------------------------------------------------*/
-    viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, AssociationTypes.None).ConfigureAwait(false);
+    viewModel                   = await _topicMappingService.MapAsync<T>(sourceTopic, AssociationTypes.None).ConfigureAwait(false);
 
     Contract.Assume(
       viewModel,

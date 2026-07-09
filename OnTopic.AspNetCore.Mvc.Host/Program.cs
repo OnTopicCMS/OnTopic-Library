@@ -14,14 +14,14 @@ using OnTopic.Internal.Diagnostics;
 /*==============================================================================================================================
 | CONFIGURE SERVICES
 \-----------------------------------------------------------------------------------------------------------------------------*/
-var builder = WebApplication.CreateBuilder(args);
+var builder                     = WebApplication.CreateBuilder(args);
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Cookie Policy
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.Configure<CookiePolicyOptions>(options => {
   // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-  options.CheckConsentNeeded =  context => true;
+  options.CheckConsentNeeded    =  context => true;
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
@@ -53,7 +53,7 @@ builder.Services.AddSingleton<IViewComponentActivator>(activator);
 /*==============================================================================================================================
 | CONFIGURE APPLICATION
 \-----------------------------------------------------------------------------------------------------------------------------*/
-var app = builder.Build();
+var app                         = builder.Build();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Error Pages

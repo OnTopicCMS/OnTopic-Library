@@ -32,7 +32,7 @@ public sealed class AttributeKeyAttribute : Attribute {
   /// <param name="key">The key value of the attribute associated with the current property.</param>
   public AttributeKeyAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
-    Key = key;
+    Key                         = key;
   }
 
   /*============================================================================================================================

@@ -38,7 +38,7 @@ public class TopicRepositoryExtensionsTest: IClassFixture<StubTopicRepository> {
   ///   crawling the object graph.
   /// </remarks>
   public TopicRepositoryExtensionsTest(StubTopicRepository topicRepository) {
-    _topicRepository = new CachedTopicRepository(topicRepository);
+    _topicRepository            = new CachedTopicRepository(topicRepository);
   }
 
   /*============================================================================================================================

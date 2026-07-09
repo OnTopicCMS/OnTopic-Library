@@ -77,7 +77,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Instantiate target
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = TopicFactory.Create(source.Key, source.ContentType);
+    var topic                   = TopicFactory.Create(source.Key, source.ContentType);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide mapping
@@ -194,7 +194,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Validate model
     \-------------------------------------------------------------------------------------------------------------------------*/
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(source.GetType());
-    var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
+    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
 
     BindingModelValidator.ValidateModel(typeAccessor, contentTypeDescriptor, attributePrefix);
 
@@ -239,8 +239,8 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Establish per-property variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var configuration           = memberAccessor.Configuration;
-    var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
-    var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
+    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
+    var compositeAttributeKey   = configuration.GetCompositeAttributeKey(attributePrefix);
 
     Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
@@ -273,7 +273,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve attribute descriptor
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var attributeType = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
+    var attributeType           = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
 
     if (attributeType is null)  {
       throw new MappingModelValidationException(

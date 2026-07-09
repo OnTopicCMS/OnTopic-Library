@@ -97,7 +97,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public async Task Load_WithNarrowPayload_ReturnsTopic() {
 
-    var topic                     = await _topicRepository.Load(11111, payload: TopicPayload.None);
+    var topic                   = await _topicRepository.Load(11111, payload: TopicPayload.None);
 
     Assert.NotNull(topic);
 
@@ -114,7 +114,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public async Task Load_WithNarrowPayload_ExtendedAttributesLoaded() {
 
-    var topic                     = await _topicRepository.Load(11111, payload: TopicPayload.None);
+    var topic                   = await _topicRepository.Load(11111, payload: TopicPayload.None);
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -918,7 +918,7 @@ public class TopicRepositoryBaseTest {
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var pageContentType         = contentTypes.Contains("Page")? contentTypes["Page"] : null;
     var contactContentType      = contentTypes.Contains("Contact")? contentTypes["Contact"] : null;
-    var contactAttributeCount = contactContentType?.AttributeDescriptors.Count;
+    var contactAttributeCount   = contactContentType?.AttributeDescriptors.Count;
 
     Contract.Assume(contactContentType);
     Contract.Assume(pageContentType);

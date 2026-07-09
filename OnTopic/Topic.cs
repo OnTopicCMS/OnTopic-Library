@@ -118,9 +118,9 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
       if (field > 0 && !field.Equals(value)) {
         throw new InvalidOperationException($"The value of this topic has already been set to {field}; it cannot be changed.");
       }
-      field = value;
+      field                     = value;
     }
-  } = -1;
+  }                             = -1;
 
   /*============================================================================================================================
   | PROPERTY: PARENT
@@ -255,7 +255,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
         continue;
       }
       if (IsLoaded(flag)) {
-        payload              &= ~flag;
+        payload                 &= ~flag;
       }
     }
 
@@ -361,7 +361,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
       else if (_key is not null || IsNew) {
         _dirtyKeys.MarkDirty("Key");
       }
-      _originalKey ??= _key;
+      _originalKey              ??= _key;
       //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
       if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
         Parent._children.ChangeKey(this, value);
@@ -395,7 +395,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     get => _originalKey;
     set {
       TopicFactory.ValidateKey(value, true);
-      _originalKey = value;
+      _originalKey              = value;
     }
   }
 
@@ -660,7 +660,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     | Set parent values
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (_parent != parent) {
-      _parent = parent;
+      _parent                   = parent;
     }
 
   }
@@ -682,13 +682,13 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Crawl up tree to define uniqueKey
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var uniqueKey = "";
-    var topic = (Topic?)this;
+    var uniqueKey               = "";
+    var topic                   = (Topic?)this;
 
     while (topic is not null) {
       if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
-      uniqueKey = topic.Key + uniqueKey;
-      topic = topic.Parent;
+      uniqueKey                 = topic.Key + uniqueKey;
+      topic                     = topic.Parent;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -711,11 +711,11 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// </remarks>
   /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
   public string GetWebPath() {
-    var uniqueKey = GetUniqueKey()
+    var uniqueKey               = GetUniqueKey()
       .Replace("Root:", "/", StringComparison.Ordinal)
       .Replace(":", "/", StringComparison.Ordinal) + "/";
     if (!uniqueKey.StartsWith('/')) {
-      uniqueKey = $"/{uniqueKey}";
+      uniqueKey                 = $"/{uniqueKey}";
     }
     return uniqueKey;
   }

@@ -25,7 +25,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   /// </summary>
   public ReadOnlyTopicMultiMap(TopicMultiMap source) {
     Contract.Requires(source, nameof(source));
-    Source = source;
+    Source                      = source;
   }
 
   /*============================================================================================================================

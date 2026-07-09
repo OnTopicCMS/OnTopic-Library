@@ -98,14 +98,14 @@ public class TopicMappingServiceTest {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topic                   = new Topic("Test", "ContentList", null);
 
-    for (var i = 0; i <= propertyCount; i++) {
+    for (var i                  = 0; i <= propertyCount; i++) {
       topic.Attributes.SetInteger("Property"+i, i);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Run load testing
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i = 0; i < runs; i++) {
+    for (var i                  = 0; i < runs; i++) {
       await _mappingService.MapAsync<LoadTestingViewModel>(topic);
     }
 
@@ -186,7 +186,7 @@ public class TopicMappingServiceTest {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Run load testing
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i = 0; i <= runs;  i++) {
+    for (var i                  = 0; i <= runs;  i++) {
       await _mappingService.MapAsync(topic);
     }
 
@@ -831,7 +831,7 @@ public class TopicMappingServiceTest {
     ambiguousRelation.Relationships.SetValue("RelationshipAlias", topic);
     incomingRelation.Relationships.SetValue("AmbiguousRelationship", topic);
 
-    var target = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic);
 
     Assert.NotNull(target);
     Assert.Single(target.RelationshipAlias);
@@ -977,7 +977,7 @@ public class TopicMappingServiceTest {
     topic.Attributes.SetValue("AncillaryKey", "Ancillary Key");
     topic.Attributes.SetValue("AliasedKey", "Aliased Key");
 
-    var target = await _mappingService.MapAsync<MapToParentTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<MapToParentTopicViewModel>(topic);
 
     Assert.Equal("Test", target?.Primary?.Key);
     Assert.Equal("Aliased Key", target?.Alternate?.Key);
@@ -1003,7 +1003,7 @@ public class TopicMappingServiceTest {
 
     topic.References.SetValue("TopicReference", topicReference);
 
-    var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic);
+    var target                  = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic);
 
     Assert.NotNull(target?.TopicReference);
     Assert.IsType<AscendentTopicViewModel>(target?.TopicReference);
@@ -1028,7 +1028,7 @@ public class TopicMappingServiceTest {
 
     topic.Relationships.SetValue("Relationships", relatedTopic);
 
-    var target = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic);
+    var target                  = (MapAsTopicViewModel?)await _mappingService.MapAsync(topic);
 
     Assert.NotNull(target);
     Assert.Single(target.Relationships);
@@ -1347,7 +1347,7 @@ public class TopicMappingServiceTest {
     var childTopic              = new Topic("Child", "Page", topic);
     var grandChildTopic         = new Topic("GrandChild", "Index", childTopic);
 
-    var target = await _mappingService.MapAsync<IndexTopicViewModel>(grandChildTopic);
+    var target                  = await _mappingService.MapAsync<IndexTopicViewModel>(grandChildTopic);
 
     Assert.Equal("Topic:Child:GrandChild", target?.UniqueKey);
 
@@ -1389,7 +1389,7 @@ public class TopicMappingServiceTest {
 
     topic.Attributes.SetValue("RequiredAttribute", "Required");
 
-    var target = await _mappingService.MapAsync<RequiredTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<RequiredTopicViewModel>(topic);
 
     Assert.Equal("Required", target?.RequiredAttribute);
 
@@ -1515,7 +1515,7 @@ public class TopicMappingServiceTest {
     childTopic4.Attributes.SetValue("SomeOtherAttribute", "ValueA");
 
 
-    var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<FilteredTopicViewModel>(topic);
 
     Assert.Equal(2, target?.Children.Count);
 
@@ -1556,7 +1556,7 @@ public class TopicMappingServiceTest {
     var childTopic3             = new Topic("ChildTopic3", "Page", topic);
     _                           = new Topic("ChildTopic4", "Page", childTopic3);
 
-    var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic);
 
     Assert.Equal(2, target?.Children.Count);
 
@@ -1574,14 +1574,14 @@ public class TopicMappingServiceTest {
 
     var topic                   = new Topic("Test", "FlattenChildren");
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       var childTopic            = new Topic("Child" + i, "Page", topic);
-      for (var j = 0; j < 5; j++) {
-        _ = new Topic("GrandChild" + i + j, "FlattenChildren", childTopic);
+      for (var j                = 0; j < 5; j++) {
+        _                       = new Topic("GrandChild" + i + j, "FlattenChildren", childTopic);
       }
     }
 
-    var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic);
 
     Assert.Equal(25, target?.Children.Count);
 
@@ -1605,7 +1605,7 @@ public class TopicMappingServiceTest {
 
     grandChildTopic.IsDisabled  = true;
 
-    var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic);
+    var target                  = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic);
 
     Assert.NotNull(target);
     Assert.Single(target.Children);
@@ -1622,12 +1622,12 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_CachedTopic_ReturnsCachedModel() {
 
-    var cachedMappingService =  new CachedTopicMappingService(_mappingService);
+    var cachedMappingService    =  new CachedTopicMappingService(_mappingService);
 
-    var topic = new Topic("Test", "Filtered", null, 5);
+    var topic                   = new Topic("Test", "Filtered", null, 5);
 
-    var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic);
-    var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic);
+    var target1                 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic);
+    var target2                 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic);
 
     Assert.Equal(target1, target2);
 
@@ -1643,13 +1643,13 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_CachedTopic_ReturnsUniqueReferencePerType() {
 
-    var cachedMappingService =  new CachedTopicMappingService(_mappingService);
+    var cachedMappingService    =  new CachedTopicMappingService(_mappingService);
 
-    var topic = new Topic("Test", "Filtered", null, 5);
+    var topic                   = new Topic("Test", "Filtered", null, 5);
 
-    var target1 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic);
-    var target2 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic);
-    var target3 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic);
+    var target1                 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic);
+    var target2                 = await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic);
+    var target3                 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic);
 
     Assert.Equal(target1, target2);
     Assert.NotEqual<object?>(target1, target3);

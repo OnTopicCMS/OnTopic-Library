@@ -25,7 +25,7 @@ public class RenameEventArgs :  EventArgs {
   /// </summary>
   /// <param name="topic">The topic object associated with the rename event.</param>
   public RenameEventArgs(Topic  topic) {
-    Topic = topic;
+    Topic                       = topic;
   }
 
   /*============================================================================================================================

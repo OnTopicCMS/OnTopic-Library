@@ -52,7 +52,7 @@ public sealed class MapToParentAttribute : Attribute {
     get => field;
     set {
       TopicFactory.ValidateKey(value, true);
-      field = value;
+      field                     = value;
     }
   }
 

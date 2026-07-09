@@ -28,7 +28,7 @@ public class TopicTest {
   /// </summary>
   [Fact]
   public void Create_ReturnsTopic() {
-    var topic = TopicFactory.Create("Test", "Page");
+    var topic                   = TopicFactory.Create("Test", "Page");
     Assert.NotNull(topic);
     Assert.Equal("Test", topic.Key);
     Assert.Equal("Page", topic.ContentType);
@@ -43,7 +43,7 @@ public class TopicTest {
   /// </summary>
   [Fact]
   public void Create_ContentType_ReturnsDerivedTopic() {
-    var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
+    var topic                   = TopicFactory.Create("Test", "ContentTypeDescriptor");
     Assert.NotNull(topic);
     Assert.IsType<ContentTypeDescriptor>(topic);
   }
@@ -63,7 +63,7 @@ public class TopicTest {
   /// </remarks>
   [Fact]
   public void Create_AttributeDescriptor_ReturnsFallback() {
-    var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
+    var topic                   = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
     Assert.NotNull(topic);
     Assert.IsType<AttributeDescriptor>(topic);
   }
@@ -80,7 +80,7 @@ public class TopicTest {
     var topic                   = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 123);
 
     Assert.Throws<InvalidOperationException>(() =>
-      topic.Id = 124
+      topic.Id                  = 124
     );
 
   }

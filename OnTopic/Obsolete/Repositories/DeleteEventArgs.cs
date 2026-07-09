@@ -24,7 +24,7 @@ public class DeleteEventArgs :  EventArgs {
   /// </summary>
   /// <param name="topic">The topic.</param>
   public DeleteEventArgs(Topic  topic) : base() {
-    Topic = topic;
+    Topic                       = topic;
   }
 
   /*============================================================================================================================

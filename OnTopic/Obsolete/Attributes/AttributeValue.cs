@@ -99,8 +99,8 @@ public class AttributeValue {
     string? value,
     bool isDirty,
     bool enforceBusinessLogic,
-    DateTime? lastModified = null,
-    bool? isExtendedAttribute = null
+    DateTime? lastModified      = null,
+    bool? isExtendedAttribute   = null
   ) : this(
     key,
     value,

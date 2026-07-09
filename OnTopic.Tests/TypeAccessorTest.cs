@@ -666,7 +666,7 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
     var topic                   = new Topic("Test", "ContentType");
 
     int i;
-    for (i = 0; i < totalIterations; i++) {
+    for (i                      = 0; i < totalIterations; i++) {
       typeAccessor.SetPropertyValue(topic, "Key", "Key" + i);
     }
 

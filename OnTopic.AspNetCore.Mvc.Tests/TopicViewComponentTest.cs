@@ -241,16 +241,16 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   public async Task PageLevelNavigation_InvokeWithNullTopic_ReturnsNull()
   {
 
-    var webPath = "/Invalid/Path/";
+    var webPath                 = "/Invalid/Path/";
 
-    var viewComponent = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
+    var viewComponent           = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
     {
-      ViewComponentContext = GetViewComponentContext(webPath)
+      ViewComponentContext      = GetViewComponentContext(webPath)
     };
 
-    var result = await viewComponent.InvokeAsync();
-    var concreteResult = result as ViewViewComponentResult;
-    var model = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
+    var result                  = await viewComponent.InvokeAsync();
+    var concreteResult          = result as ViewViewComponentResult;
+    var model                   = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
     Assert.NotNull(model);
     Assert.Equal(String.Empty,  model?.CurrentWebPath);

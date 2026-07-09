@@ -12,7 +12,7 @@ using OnTopic.Data.Sql.Models;
 using OnTopic.Repositories;
 using OnTopic.Tests.Schemas;
 using Xunit;
-using TopicReferencesDataTable = OnTopic.Tests.Schemas.TopicReferencesDataTable;
+using TopicReferencesDataTable  = OnTopic.Tests.Schemas.TopicReferencesDataTable;
 
 namespace OnTopic.Tests;
 

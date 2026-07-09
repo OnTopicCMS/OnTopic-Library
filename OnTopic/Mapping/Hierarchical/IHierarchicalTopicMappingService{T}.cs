@@ -73,7 +73,7 @@ public interface IHierarchicalTopicMappingService<T> where T : class, IHierarchi
   /// </param>
   Task<T?> GetRootViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   );
 
@@ -93,7 +93,7 @@ public interface IHierarchicalTopicMappingService<T> where T : class, IHierarchi
   /// </param>
   Task<T?> GetViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   );
 

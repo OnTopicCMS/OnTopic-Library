@@ -65,7 +65,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   public void Clear(string relationshipKey) {
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
     if (_storage.Contains(relationshipKey)) {
-      var relationship = _storage.GetValues(relationshipKey);
+      var relationship          = _storage.GetValues(relationshipKey);
       if (relationship.Count >  0) {
         _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
       }
@@ -213,7 +213,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
       }
 
       // Remove any pending deferred entry for this relationship/target pair
-      for (var i = Deferred.Count - 1; i >= 0; i--) {
+      for (var i                = Deferred.Count - 1; i >= 0; i--) {
         if (Deferred[i].Key == relationshipKey && Deferred[i].TopicId == topic.Id) {
           Deferred.RemoveAt(i);
           break;

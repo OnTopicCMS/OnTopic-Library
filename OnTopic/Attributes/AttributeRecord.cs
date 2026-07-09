@@ -72,7 +72,7 @@ public record AttributeRecord:  TrackedRecord<string> {
     string? value,
     bool isDirty                = true,
     DateTime? lastModified      = null,
-    bool? isExtendedAttribute = null
+    bool? isExtendedAttribute   = null
   ): base(key, value, isDirty,  lastModified) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

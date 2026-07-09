@@ -75,8 +75,8 @@ public static class ServiceCollectionExtensions {
   public static IRouteBuilder   MapTopicRoute(
     this IRouteBuilder routes,
     string rootTopic,
-    string controller = "Topic",
-    string action = "Index"
+    string controller           = "Topic",
+    string action               = "Index"
   ) =>
     routes.MapRoute(
       name: $"{rootTopic}Topic",
@@ -95,8 +95,8 @@ public static class ServiceCollectionExtensions {
   public static ControllerActionEndpointConventionBuilder MapTopicRoute(
     this IEndpointRouteBuilder  routes,
     string rootTopic,
-    string controller = "Topic",
-    string action = "Index"
+    string controller           = "Topic",
+    string action               = "Index"
   ) =>
     routes.MapControllerRoute(
       name: $"{rootTopic}Topic",
@@ -120,8 +120,8 @@ public static class ServiceCollectionExtensions {
   public static ControllerActionEndpointConventionBuilder MapTopicAreaRoute(
     this IEndpointRouteBuilder  routes,
     string areaName,
-    string? controller = null,
-    string action = "Index"
+    string? controller          = null,
+    string action               = "Index"
   ) =>
     routes.MapAreaControllerRoute(
       name: $"TopicAreas",

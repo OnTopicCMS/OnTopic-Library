@@ -51,11 +51,11 @@ public class CompositeTypeLookupService: ITypeLookupService {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
   public Type? Lookup(params string[] typeNames) {
-    var type = typeof(object);
+    var type                    = typeof(object);
     if (typeNames is not null)  {
       foreach (var typeName in  typeNames) {
         foreach (var typeLookupService in _typeLookupServices) {
-          type = typeLookupService.Lookup(typeName);
+          type                  = typeLookupService.Lookup(typeName);
           if (type is not null  && type.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) {
             return type;
           }
