@@ -76,7 +76,7 @@ public sealed class TopicResponseCacheAttribute : ActionFilterAttribute {
     _defaultCacheProfile        ??= controller.TopicRepository.Load("Configuration:CacheProfiles:Default").GetAwaiter().GetResult();
 
     // Ensure the above lookup is only performed once per application
-    _defaultCacheProfile        ??= new Topic("ImplicitDefault", "CacheProfile");
+    _defaultCacheProfile        ??= new("ImplicitDefault", "CacheProfile");
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify cache profile

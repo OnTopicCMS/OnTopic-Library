@@ -29,7 +29,7 @@ internal sealed class AttributeValuesDataTable: DataTable {
     | COLUMN: Attribute Key
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(
-      new DataColumn("AttributeKey") {
+      new("AttributeKey") {
         MaxLength               = 128
       }
     );
@@ -38,7 +38,7 @@ internal sealed class AttributeValuesDataTable: DataTable {
     | COLUMN: Attribute Value
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(
-      new DataColumn("AttributeRecord") {
+      new("AttributeRecord") {
         MaxLength               = 255
       }
     );

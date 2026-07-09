@@ -33,7 +33,7 @@ public class ExtendedAttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(int),
       ColumnName                = "TopicId",
       Unique                    = true
@@ -42,7 +42,7 @@ public class ExtendedAttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add AttributesXml column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(XmlDocument),
       ColumnName                = "AttributesXml"
     });
@@ -50,7 +50,7 @@ public class ExtendedAttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Version column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(DateTime),
       ColumnName                = "Version"
     });

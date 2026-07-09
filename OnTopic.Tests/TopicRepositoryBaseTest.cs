@@ -185,7 +185,7 @@ public class TopicRepositoryBaseTest {
   [Fact]
   public async Task Load_OldDate_ThrowsException() =>
     await Assert.ThrowsAsync<InvalidOperationException>(() =>
-      _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15))
+      _cachedTopicRepository.Load(1111, new(2010, 10, 15))
     );
 
   /*============================================================================================================================

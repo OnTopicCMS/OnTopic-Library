@@ -32,7 +32,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(int),
       ColumnName                = "TopicId",
       Unique                    = true
@@ -41,7 +41,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add TopicKey column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(string),
       ColumnName                = "TopicKey"
     });
@@ -49,7 +49,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add ContentType column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(string),
       ColumnName                = "ContentType"
     });
@@ -57,7 +57,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add ParentId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(int),
       ColumnName                = "ParentId",
       AllowDBNull               = true
@@ -66,7 +66,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add HasChildren column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(bool),
       ColumnName                = "HasChildren",
       AllowDBNull               = true
@@ -75,7 +75,7 @@ public class TopicsDataTable:   DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add HasExtendedAttributes column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new DataColumn() {
+    Columns.Add(new() {
       DataType                  = typeof(bool),
       ColumnName                = "HasExtendedAttributes",
       AllowDBNull               = true
