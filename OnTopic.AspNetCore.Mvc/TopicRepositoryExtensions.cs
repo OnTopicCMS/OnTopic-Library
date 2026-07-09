@@ -59,13 +59,13 @@ public static class TopicRepositoryExtensions {
     | case particular routes aren't present. That said, if they are defined, but should be excluded from a fallback, then
     | that path does need to be defined—thus e.g. {area}/{controller}/{path}.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var paths = new List<string?>() {
+    List<string?> paths = [
       cleanPath($"{rootTopic}/{path}"),
       cleanPath($"{area}/{controller}/{action}/{path}"),
       cleanPath($"{area}/{controller}/{path}"),
       cleanPath($"{area}/{action}/{path}"),
       cleanPath($"{area}/{path}")
-    };
+    ];
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Load by path

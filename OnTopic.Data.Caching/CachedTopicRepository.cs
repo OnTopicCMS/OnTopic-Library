@@ -493,7 +493,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   private void MergeIntoCache(Topic loaded) {
 
     // Build the ancestor chain from the leaf up to the root (leaf first)
-    var chain = new List<Topic>();
+    List<Topic> chain = [];
     for (var node = loaded; node is not null; node = node.Parent) {
       chain.Add(node);
     }

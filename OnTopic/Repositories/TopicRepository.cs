@@ -744,7 +744,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Get indexed attributes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var attributes              = new List<AttributeRecord>();
+    List<AttributeRecord> attributes = [];
 
     foreach (var attributeValue in topic.Attributes) {
 

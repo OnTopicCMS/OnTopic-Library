@@ -396,7 +396,7 @@ public class MemberAccessorTest {
   public void IsValid_Constructor_ReturnsFalse() {
 
     var type                    = typeof(MemberAccessorViewModel);
-    var memberInfo              = type.GetConstructor(Array.Empty<Type>())!;
+    var memberInfo              = type.GetConstructor([])!;
 
     Assert.NotNull(memberInfo);
     Assert.False(MemberAccessor.IsValid(memberInfo));

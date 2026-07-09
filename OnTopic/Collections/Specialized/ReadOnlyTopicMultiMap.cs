@@ -101,7 +101,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
     if (Contains(key)) {
       return new(Source[key].Values);
     }
-    return new(new List<Topic>());
+    return new([]);
   }
 
   /// <inheritdoc cref="GetValues(String)"/>

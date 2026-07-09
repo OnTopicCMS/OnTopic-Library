@@ -75,7 +75,7 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     var                         viewEngine                      = viewResult.ViewEngine?? ViewEngine;
     var                         requestContext                  = actionContext.HttpContext.Request;
     var                         view                            = (ViewEngineResult?)null;
-    var                         searchedPaths                   = new List<string>();
+    List<string>                searchedPaths                   = [];
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Cache content type as route variable

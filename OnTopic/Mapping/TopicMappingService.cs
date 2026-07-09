@@ -246,7 +246,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var propertyQueue           = new List<Task>();
+    List<Task> propertyQueue    = [];
     var mappedParameters        = parameters.Select(p => p.Name).Union(attributeArguments.Select(a => a.Key)).ToArray();
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
@@ -347,7 +347,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var taskQueue               = new List<Task>();
+    List<Task> taskQueue        = [];
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(target.GetType());
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
@@ -426,8 +426,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       var sourceList = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
       var targetList = InitializeCollection(targetType);
 
-      if (sourceList is null || targetList is null) {
-        return (IList?)null;
+      if (targetList is null) {
+        return null;
       }
 
       await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache).ConfigureAwait(false);
@@ -881,7 +881,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Handle flattening of children
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (configuration.FlattenChildren) {
-      var flattenedList = new List<Topic>();
+      List<Topic> flattenedList = [];
       listSource.ToList().ForEach(t => FlattenTopicGraph(t, flattenedList));
       listSource = flattenedList;
     }
@@ -940,7 +940,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Queue up mapping tasks
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var taskQueue = new List<Task<object?>>();
+    List<Task<object?>> taskQueue = [];
 
     foreach (var childTopic in  sourceList) {
 

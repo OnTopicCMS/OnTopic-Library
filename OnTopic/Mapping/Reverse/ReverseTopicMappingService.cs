@@ -201,7 +201,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var taskQueue = new List<Task>();
+    List<Task> taskQueue        = [];
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
       taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
     }
@@ -344,7 +344,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Fall back to default, if configured
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (String.IsNullOrEmpty(attributeValue) && configuration.DefaultValue is not null) {
-      attributeValue = configuration.DefaultValue.ToString();
+      attributeValue            = configuration.DefaultValue.ToString();
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -389,9 +389,9 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve source list
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList = (IList?)memberAccessor.GetValue(source);
+    var sourceList              = (IList?)memberAccessor.GetValue(source);
 
-    sourceList ??= new List<IAssociatedTopicBindingModel>();
+    sourceList                  ??= new List<IAssociatedTopicBindingModel>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Clear existing relationships
@@ -402,7 +402,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Set relationships for each
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (IAssociatedTopicBindingModel relationship in sourceList) {
-      var targetTopic = await _topicRepository.Load(relationship.UniqueKey, target).ConfigureAwait(false);
+      var targetTopic           = await _topicRepository.Load(relationship.UniqueKey, target).ConfigureAwait(false);
       if (targetTopic is null)  {
         throw new MappingModelValidationException(
           $"The relationship '{relationship.UniqueKey}' mapped in the '{memberAccessor.Name}' property could not be " +
@@ -442,15 +442,15 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve source list
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList = (IList?)memberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
+    var sourceList              = (IList?)memberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish target collection to store mapped topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var container = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
+    var container               = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
     if (container is null) {
-      container = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
-      container.IsHidden = true;
+      container                 = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
+      container.IsHidden        = true;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -488,7 +488,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve source value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var modelReference = (IAssociatedTopicBindingModel?)memberAccessor.GetValue(source);
+    var modelReference          = (IAssociatedTopicBindingModel?)memberAccessor.GetValue(source);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide error handling
@@ -503,7 +503,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify target value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topicReference = await _topicRepository.Load(modelReference.UniqueKey, target).ConfigureAwait(false);
+    var topicReference          = await _topicRepository.Load(modelReference.UniqueKey, target).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide error handling
@@ -543,7 +543,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Queue up mapping tasks
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var taskQueue = new List<Task<Topic?>>();
+    List<Task<Topic?>> taskQueue = [];
 
     //Map child binding model to target collection on the target
     foreach (ITopicBindingModel childBindingModel in sourceList) {
@@ -559,7 +559,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove orphaned topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    foreach (var childTopic in  targetList.ToArray()) {
+    foreach (var childTopic in targetList.ToArray()) {
       if (sourceList.Cast<ITopicBindingModel>().Any(model => model.Key == childTopic.Key)) {
         continue;
       }
@@ -570,9 +570,9 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Process mapping tasks
     \-------------------------------------------------------------------------------------------------------------------------*/
     while (taskQueue.Count > 0) {
-      var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+      var topicTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
       taskQueue.Remove(topicTask);
-      var topic = await topicTask.ConfigureAwait(false);
+      var topic                 = await topicTask.ConfigureAwait(false);
       if (topic is not null &&  !targetList.Contains(topic.Key)) {
         targetList.Add(topic);
       }

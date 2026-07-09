@@ -74,7 +74,7 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
     var rootTopic               = (Topic?)null;
-    var preExistingIds          = new HashSet<int>(topics.Keys);
+    HashSet<int> preExistingIds = [..topics.Keys];
     var hasChildrenMap          = new Dictionary<int, bool>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ internal static class SqlDataReaderExtensions {
     // ancestors have exactly one child loaded (from the ancestor crawl), but may have more; as such, they will be marked as
     // NotLoaded. Note: An ancestor whose sole database child is part of the ancestor chain is still marked NotLoaded, since we
     // don't have enough information to verify that. This is an unlikely scenario, but will cost one extra round-trip to verify.
-    var ancestorIds             = new HashSet<int>();
+    HashSet<int> ancestorIds    = [];
     if (topics.TryGetValue(seedTopicId, out var seedTopic)) {
       var ancestor              = seedTopic.Parent;
       while (ancestor is not null && hasChildrenMap.ContainsKey(ancestor.Id)) {

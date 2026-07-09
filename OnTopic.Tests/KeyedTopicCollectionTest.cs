@@ -45,7 +45,7 @@ public class KeyedTopicCollectionTest {
   [Fact]
   public void Constructor_IEnumerable_SeedsTopics() {
 
-    var topics = new List<Topic>();
+    List<Topic> topics = [];
 
     for (var i = 0; i < 10; i++) {
       topics.Add(new("Topic" +  i, "Page"));

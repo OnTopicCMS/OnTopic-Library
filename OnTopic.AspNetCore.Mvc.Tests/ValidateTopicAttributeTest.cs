@@ -43,7 +43,7 @@ public class ValidateTopicAttributeTest {
 
     var actionExecutingContext  = new ActionExecutingContext(
       actionContext,
-      new List<IFilterMetadata>(),
+      [],
       new Dictionary<string, object?>(),
       controller
     );
