@@ -141,7 +141,7 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web").GetAwaiter().GetResult();
+    var rootTopic               = await _topicRepository.Load("Root:Web");
     var viewModel               = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1);
 
     Assert.NotNull(viewModel);
@@ -160,7 +160,7 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithValidationDelegate_ExcludesTopics() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web").GetAwaiter().GetResult();
+    var rootTopic               = await _topicRepository.Load("Root:Web");
     var viewModel               = await _hierarchicalMappingService
       .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith('1'));
 
@@ -180,8 +180,8 @@ public class HierarchicalTopicMappingServiceTest: IClassFixture<TopicInfrastruct
   [Fact]
   public async Task GetViewModel_WithDisabled_ExcludesDisabled() {
 
-    var rootTopic               = _topicRepository.Load("Root:Web:Web_3").GetAwaiter().GetResult()!;
-    var disabledTopic           = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult();
+    var rootTopic               = (await _topicRepository.Load("Root:Web:Web_3"))!;
+    var disabledTopic           = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
 
     Contract.Assume(disabledTopic);
 

@@ -33,7 +33,7 @@ public class SqlTopicRepositoryTest {
   ///   a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithTopic_ReturnsTopic() {
+  public async Task LoadTopicGraph_WithTopic_ReturnsTopic() {
 
     using var topics            = new TopicsDataTable();
 
@@ -41,7 +41,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -56,7 +56,7 @@ public class SqlTopicRepositoryTest {
   ///   different parent than the existing <c>referenceTopic</c> and confirms that the topic's parent is updated.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithNewParent_UpdatesParent() {
+  public async Task LoadTopicGraph_WithNewParent_UpdatesParent() {
 
     using var topics            = new TopicsDataTable();
 
@@ -69,7 +69,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    tableReader.LoadTopicGraphAsync(referenceTopic: topic).GetAwaiter().GetResult();
+    await tableReader.LoadTopicGraphAsync(referenceTopic: topic);
 
     Assert.Equal(parent2, child.Parent);
 
@@ -83,7 +83,7 @@ public class SqlTopicRepositoryTest {
   ///   that a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithAttributes_ReturnsAttributes() {
+  public async Task LoadTopicGraph_WithAttributes_ReturnsAttributes() {
 
     using var topics            = new TopicsDataTable();
     using var attributes        = new AttributesDataTable();
@@ -93,7 +93,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, attributes]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -109,7 +109,7 @@ public class SqlTopicRepositoryTest {
   ///   a deleted attribute and confirms that an existing reference topic with that attribute has the value removed.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
+  public async Task LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
 
     using var topics            = new TopicsDataTable();
     using var attributes        = new AttributesDataTable();
@@ -123,7 +123,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, attributes]);
 
-    tableReader.LoadTopicGraphAsync(referenceTopic: topic).GetAwaiter().GetResult();
+    await tableReader.LoadTopicGraphAsync(referenceTopic: topic);
 
     Assert.Null(topic.Attributes.GetValue("Test"));
 
@@ -137,7 +137,7 @@ public class SqlTopicRepositoryTest {
   ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithRelationship_ReturnsRelationship() {
+  public async Task LoadTopicGraph_WithRelationship_ReturnsRelationship() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -149,7 +149,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -166,7 +166,7 @@ public class SqlTopicRepositoryTest {
   ///   missing and confirms that <see cref="TopicRelationshipMultiMap.LoadState"/> returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
+  public async Task LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -177,7 +177,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -194,7 +194,7 @@ public class SqlTopicRepositoryTest {
   ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithReference_ReturnsReference() {
+  public async Task LoadTopicGraph_WithReference_ReturnsReference() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -206,7 +206,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -223,7 +223,7 @@ public class SqlTopicRepositoryTest {
   ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithExternalReference_ReturnsReference() {
+  public async Task LoadTopicGraph_WithExternalReference_ReturnsReference() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -236,7 +236,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync(1, referenceTopic, false).GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync(1, referenceTopic, false);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -255,7 +255,7 @@ public class SqlTopicRepositoryTest {
   ///   "TopicReferencesDataTable"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
+  public async Task LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -270,7 +270,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    tableReader.LoadTopicGraphAsync(1, referenceTopic, false).GetAwaiter().GetResult();
+    await tableReader.LoadTopicGraphAsync(1, referenceTopic, false);
 
     Assert.Null(referenceTopic.References.GetValue("Reference"));
     Assert.Equal(LoadState.Loaded, referenceTopic.References.LoadState);
@@ -285,7 +285,7 @@ public class SqlTopicRepositoryTest {
   ///   missing and confirms that <see cref="TopicReferenceCollection.LoadState"/> returns <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
+  public async Task LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -296,7 +296,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -313,7 +313,7 @@ public class SqlTopicRepositoryTest {
   ///   and confirms that it is deleted from the <c>referenceTopic</c> graph.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
+  public async Task LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
 
     var topic                   = new Topic("Test", "Container", null, 1);
     var child                   = new Topic("Child", "Container", topic, 2);
@@ -328,7 +328,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([empty, empty, empty, relationships]);
 
-    tableReader.LoadTopicGraphAsync(referenceTopic: related).GetAwaiter().GetResult();
+    await tableReader.LoadTopicGraphAsync(referenceTopic: related);
 
     Assert.Empty(topic.Relationships.GetValues("Test"));
 
@@ -347,7 +347,7 @@ public class SqlTopicRepositoryTest {
   ///   when extended attributes are deferred.
   /// </remarks>
   [Fact]
-  public void LoadTopicGraph_IndexedOnlyWithRelationship_ReturnsLoaded() {
+  public async Task LoadTopicGraph_IndexedOnlyWithRelationship_ReturnsLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -359,7 +359,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.True(topic.IsLoaded(TopicPayload.Relationships));
@@ -379,7 +379,7 @@ public class SqlTopicRepositoryTest {
   ///   resolver calls <c>EnsureLoaded(Relationships)</c> for the topic.
   /// </remarks>
   [Fact]
-  public void LoadTopicGraph_IndexedOnlyWithMissingRelationship_ReturnsNotLoaded() {
+  public async Task LoadTopicGraph_IndexedOnlyWithMissingRelationship_ReturnsNotLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -390,7 +390,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.Relationships));
@@ -405,7 +405,7 @@ public class SqlTopicRepositoryTest {
   ///   resident, and confirms that <see cref="TopicReferenceCollection.LoadState"/> returns <see cref="LoadState.Loaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_IndexedOnlyWithReference_ReturnsLoaded() {
+  public async Task LoadTopicGraph_IndexedOnlyWithReference_ReturnsLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -417,7 +417,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.True(topic.IsLoaded(TopicPayload.References));
@@ -433,7 +433,7 @@ public class SqlTopicRepositoryTest {
   ///   "LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_IndexedOnlyWithMissingReference_ReturnsNotLoaded() {
+  public async Task LoadTopicGraph_IndexedOnlyWithMissingReference_ReturnsNotLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -444,7 +444,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.References));
@@ -460,7 +460,7 @@ public class SqlTopicRepositoryTest {
   ///   block <c>DeleteUnmatched</c> on save until the edge is resolved via <c>EnsureLoaded</c>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithMissingRelationship_SetsNotLoaded() {
+  public async Task LoadTopicGraph_WithMissingRelationship_SetsNotLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -471,7 +471,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.Relationships));
@@ -487,7 +487,7 @@ public class SqlTopicRepositoryTest {
   ///   <c>DeleteUnmatched</c> on save until the reference is resolved via <c>EnsureLoaded</c>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithMissingReference_SetsNotLoaded() {
+  public async Task LoadTopicGraph_WithMissingReference_SetsNotLoaded() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -498,7 +498,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.References));
@@ -513,7 +513,7 @@ public class SqlTopicRepositoryTest {
   ///   confirms that a topic with those values is returned.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
+  public async Task LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
 
     using var topics            = new TopicsDataTable();
     using var empty             = new AttributesDataTable();
@@ -524,7 +524,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, empty, versions]);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -542,7 +542,7 @@ public class SqlTopicRepositoryTest {
   ///   <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithExtendedDeferredAndBlob_ReturnsNotLoaded() {
+  public async Task LoadTopicGraph_WithExtendedDeferredAndBlob_ReturnsNotLoaded() {
 
     using var topics            = new TopicsDataTable();
 
@@ -550,7 +550,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.ExtendedAttributes));
@@ -566,7 +566,7 @@ public class SqlTopicRepositoryTest {
   ///   boundary is <see cref="LoadState.Loaded"/>, thus avoiding a wasted round-trip.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithExtendedDeferredAndNoBlob_ReturnsLoaded() {
+  public async Task LoadTopicGraph_WithExtendedDeferredAndNoBlob_ReturnsLoaded() {
 
     using var topics            = new TopicsDataTable();
 
@@ -574,7 +574,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -590,7 +590,7 @@ public class SqlTopicRepositoryTest {
   ///   extended-attribute boundary is <see cref="LoadState.Loaded"/>.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithExtendedIncludedAndBlob_ReturnsLoaded() {
+  public async Task LoadTopicGraph_WithExtendedIncludedAndBlob_ReturnsLoaded() {
 
     using var topics            = new TopicsDataTable();
 
@@ -598,7 +598,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync().GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync();
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -614,7 +614,7 @@ public class SqlTopicRepositoryTest {
   ///   topic is a leaf with nothing to lazy-load).
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithHasChildrenFalse_ReturnsChildrenLoaded() {
+  public async Task LoadTopicGraph_WithHasChildrenFalse_ReturnsChildrenLoaded() {
 
     using var topics            = new TopicsDataTable();
 
@@ -622,7 +622,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync(1).GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync(1);
 
     Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
@@ -637,7 +637,7 @@ public class SqlTopicRepositoryTest {
   ///    "LoadState.Loaded"/> (i.e., the subtree was loaded in full).
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithHasChildrenAndLoadedChildren_ReturnsChildrenLoaded() {
+  public async Task LoadTopicGraph_WithHasChildrenAndLoadedChildren_ReturnsChildrenLoaded() {
 
     using var topics            = new TopicsDataTable();
 
@@ -646,7 +646,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = tableReader.LoadTopicGraphAsync(1).GetAwaiter().GetResult();
+    var topic                   = await tableReader.LoadTopicGraphAsync(1);
 
     Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
@@ -662,7 +662,7 @@ public class SqlTopicRepositoryTest {
   ///   scenario addressed by the <c>seedTopicId</c> parameter; i.e., loading ascendants and descendants.
   /// </summary>
   [Fact]
-  public void LoadTopicGraph_WithHasChildrenOnAncestorAndLoadedSubtree_SetsLoadStateCorrectly() {
+  public async Task LoadTopicGraph_WithHasChildrenOnAncestorAndLoadedSubtree_SetsLoadStateCorrectly() {
 
     using var topics            = new TopicsDataTable();
 
@@ -674,7 +674,7 @@ public class SqlTopicRepositoryTest {
 
     // The seed topic is Child (2); Root (1) is on the ancestor chain and is NotLoaded.
     // The Child (seed) and Grandchild are in the fully loaded subtree and are Loaded.
-    var seedTopic               = tableReader.LoadTopicGraphAsync(2).GetAwaiter().GetResult();
+    var seedTopic               = await tableReader.LoadTopicGraphAsync(2);
     var rootTopic               = seedTopic?.Parent;
 
     Assert.Equal(LoadState.NotLoaded, rootTopic?.Children.LoadState);

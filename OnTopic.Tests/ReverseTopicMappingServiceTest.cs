@@ -334,7 +334,7 @@ public class ReverseTopicMappingServiceTest {
   [Fact]
   public async Task Map_TopicReferences_ReturnsMappedTopic() {
 
-    var topic                   = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetAwaiter().GetResult();
+    var topic                   = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
 
     Contract.Assume(topic);
 
@@ -362,8 +362,8 @@ public class ReverseTopicMappingServiceTest {
   [Fact]
   public async Task Map_NullTopicReference_Delete() {
 
-    var topic                   = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetAwaiter().GetResult();
-    var baseTopic               = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key").GetAwaiter().GetResult();
+    var topic                   = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+    var baseTopic               = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
 
     Contract.Assume(topic);
 

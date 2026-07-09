@@ -849,7 +849,7 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_CustomCollection_ReturnsCollection() {
 
-    var topic                   = (ContentTypeDescriptor?)_topicRepository.Load("Root:Configuration:ContentTypes:Page").GetAwaiter().GetResult();
+    var topic                   = (ContentTypeDescriptor?)await _topicRepository.Load("Root:Configuration:ContentTypes:Page");
     var target                  = await _mappingService.MapAsync<ContentTypeDescriptorTopicViewModel>(topic);
 
     Assert.NotNull(topic);
@@ -995,7 +995,7 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_MapAs_ReturnsTopicReference() {
 
-    var topicReference          = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var topicReference          = await _topicRepository.Load(11111);
 
     Contract.Assume(topicReference);
 
@@ -1020,7 +1020,7 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_MapAs_ReturnsRelationships() {
 
-    var relatedTopic            = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var relatedTopic            = await _topicRepository.Load(11111);
 
     Contract.Assume(relatedTopic);
 
@@ -1046,7 +1046,7 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_TopicReferencesAsAttribute_ReturnsMappedModel() {
 
-    var topicReference          = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var topicReference          = await _topicRepository.Load(11111);
 
     Contract.Assume(topicReference);
 
@@ -1070,7 +1070,7 @@ public class TopicMappingServiceTest {
   [Fact]
   public async Task Map_TopicReferences_ReturnsMappedModel() {
 
-    var topicReference          = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var topicReference          = await _topicRepository.Load(11111);
 
     var topic                   = new Topic("Test", "TopicReference");
 

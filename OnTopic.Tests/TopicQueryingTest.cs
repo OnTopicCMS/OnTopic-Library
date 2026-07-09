@@ -223,9 +223,9 @@ public class TopicQueryingTest  {
   ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="ContentTypeDescriptor"/>.
   /// </summary>
   [Fact]
-  public void GetContentType_ValidContentType_ReturnsContentType() {
+  public async Task GetContentType_ValidContentType_ReturnsContentType() {
 
-    var topic                   = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var topic                   = await _topicRepository.Load(11111);
     var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
     Assert.NotNull(contentTypeDescriptor);
@@ -243,7 +243,7 @@ public class TopicQueryingTest  {
   [Fact]
   public async Task GetContentType_InvalidContentType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "NonExistent", parentTopic);
     var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
@@ -268,7 +268,7 @@ public class TopicQueryingTest  {
   [Fact]
   public async Task GetContentType_InvalidType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111).GetAwaiter().GetResult();
+    var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "Title", parentTopic);
     var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
