@@ -51,11 +51,11 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Subscribe to underlying events
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository.TopicLoaded +=  (object? sender, TopicLoadEventArgs args)                   => OnTopicLoaded(args);
-    TopicRepository.TopicSaved  +=  (object? sender, TopicSaveEventArgs args)                   => OnTopicSaved(args);
-    TopicRepository.TopicDeleted += (object? sender, TopicEventArgs args)                       => OnTopicDeleted(args);
-    TopicRepository.TopicMoved  +=  (object? sender, TopicMoveEventArgs args)                   => OnTopicMoved(args);
-    TopicRepository.TopicRenamed += (object? sender, TopicRenameEventArgs args)                 => OnTopicRenamed(args);
+    TopicRepository.TopicLoaded += (_, args)                   => OnTopicLoaded(args);
+    TopicRepository.TopicSaved  += (_, args)                   => OnTopicSaved(args);
+    TopicRepository.TopicDeleted += (_, args)                   => OnTopicDeleted(args);
+    TopicRepository.TopicMoved  += (_, args)                   => OnTopicMoved(args);
+    TopicRepository.TopicRenamed += (_, args)                   => OnTopicRenamed(args);
 
   }
 
