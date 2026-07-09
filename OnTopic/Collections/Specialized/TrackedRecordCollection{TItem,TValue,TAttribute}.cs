@@ -476,7 +476,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     | Create new item
     \-------------------------------------------------------------------------------------------------------------------------*/
     else {
-      updatedItem               = new TItem() {
+      updatedItem               = new() {
         Key                     = key,
         Value                   = value,
         IsDirty                 = AssociatedTopic.IsNew || (markDirty ?? true),
