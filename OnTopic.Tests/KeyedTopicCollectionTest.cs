@@ -68,8 +68,8 @@ public class KeyedTopicCollectionTest {
   public void InsertItem_DuplicateKey_ThrowsException() =>
     Assert.Throws<ArgumentException>(() =>
       new KeyedTopicCollection  {
-        new Topic("Key", "Page"),
-        new Topic("Key", "Page")
+        new("Key", "Page"),
+        new("Key", "Page")
       }
     );
 

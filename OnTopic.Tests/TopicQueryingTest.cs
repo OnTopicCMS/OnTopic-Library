@@ -290,7 +290,7 @@ public class TopicQueryingTest  {
   public void AnyDirty_DirtyCollection_ReturnTrue() {
 
     var topics                  = new TopicCollection {
-      new Topic("Test", "Page")
+      new("Test", "Page")
     };
 
     Assert.True(topics.AnyDirty());
@@ -308,7 +308,7 @@ public class TopicQueryingTest  {
   public void AnyDirty_CleanCollection_ReturnFalse() {
 
     var topics                  = new TopicCollection {
-      new Topic("Test", "Page", null, 1)
+      new("Test", "Page", null, 1)
     };
 
     Assert.False(topics.AnyDirty());
@@ -326,7 +326,7 @@ public class TopicQueryingTest  {
   public void AnyNew_ContainsNew_ReturnTrue() {
 
     var topics                  = new TopicCollection {
-      new Topic("Test", "Page")
+      new("Test", "Page")
     };
 
     Assert.True(topics.AnyNew());
@@ -344,7 +344,7 @@ public class TopicQueryingTest  {
   public void AnyNew_ContainsExisting_ReturnFalse() {
 
     var topics                  = new TopicCollection {
-      new Topic("Test", "Page", null, 1)
+      new("Test", "Page", null, 1)
     };
 
     Assert.False(topics.AnyNew());
