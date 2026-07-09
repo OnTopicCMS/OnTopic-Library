@@ -25,7 +25,7 @@ internal sealed class DirtyKeyCollection : Collection<string>, ITrackDirtyKeys {
   /// <summary>
   ///   Initializes a new instance of the <see cref="TopicCollection"/>.
   /// </summary>
-  public DirtyKeyCollection() : base() {}
+  public DirtyKeyCollection() {}
 
   /*============================================================================================================================
   | METHOD: IS DIRTY?

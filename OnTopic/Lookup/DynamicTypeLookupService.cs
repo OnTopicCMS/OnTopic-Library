@@ -23,7 +23,7 @@ public class DynamicTypeLookupService : StaticTypeLookupService {
   ///   optionally, a default <see cref="Type"/> object to return if none is specified.
   /// </summary>
   /// <param name="predicate">The search condition to use to identify target classes.</param>
-  public DynamicTypeLookupService(Func<Type, bool> predicate) : base() {
+  public DynamicTypeLookupService(Func<Type, bool> predicate) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find target classes

@@ -35,7 +35,7 @@ public class TopicViewResult :  ViewResult {
     object                      viewModel,
     string?                     contentType                     = null,
     string?                     view                            = null
-  ) : base() {
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

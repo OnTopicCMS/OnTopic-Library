@@ -32,7 +32,7 @@ public class MappingModelValidationException: TopicMappingException {
   /// <summary>
   ///   Initializes a new <see cref="MappingModelValidationException" /> instance.
   /// </summary>
-  public MappingModelValidationException() : base() { }
+  public MappingModelValidationException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="MappingModelValidationException" /> instance with a specific error message.

@@ -21,7 +21,7 @@ public class TopicIndex : Dictionary<int, Topic> {
   ///   Initializes a new instance of the <see cref="TopicCollection"/>.
   /// </summary>
   /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-  public TopicIndex(IEnumerable<Topic>? topics = null) : base() {
+  public TopicIndex(IEnumerable<Topic>? topics = null) {
     if (topics is not null) {
       foreach(var topic in topics) {
         Add(topic.Id, topic);

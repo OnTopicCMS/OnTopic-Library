@@ -31,7 +31,7 @@ public class NamedTopicCollection: KeyedTopicCollection {
   /// </summary>
   /// <param name="name">Provides a name for the collection, used to identify different collections.</param>
   /// <param name="topics">Optionally seeds the collection with an optional list of topic references.</param>
-  public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) : base() {
+  public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) {
     Name                        = name;
     if (topics is not null) {
       CopyTo([.. topics], 0);

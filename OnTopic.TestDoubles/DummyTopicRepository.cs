@@ -24,7 +24,7 @@ public class DummyTopicRepository : ObservableTopicRepository {
   ///   Instantiates a new instance of the <see cref="DummyTopicRepository"/>.
   /// </summary>
   /// <returns>A new instance of the <see cref="DummyTopicRepository"/>.</returns>
-  public DummyTopicRepository() : base() { }
+  public DummyTopicRepository() { }
 
   /*============================================================================================================================
   | METHOD: GET CONTENT TYPE DESCRIPTORS

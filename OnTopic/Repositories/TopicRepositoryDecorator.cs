@@ -36,7 +36,7 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
   /// </param>
   /// <returns>A new instance of the <see cref="TopicRepositoryDecorator"/>.</returns>
-  protected TopicRepositoryDecorator(ITopicRepository topicRepository) : base() {
+  protected TopicRepositoryDecorator(ITopicRepository topicRepository) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate input

@@ -27,7 +27,7 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
   ///   Instantiates a new instance of the <see cref="FakeViewModelLookupService"/>.
   /// </summary>
   /// <returns>A new instance of the <see cref="FakeViewModelLookupService"/>.</returns>
-  public FakeViewModelLookupService() : base() {
+  public FakeViewModelLookupService() {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add test specific view models

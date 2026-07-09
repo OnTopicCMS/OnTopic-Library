@@ -38,7 +38,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   ///   Instantiates a new instance of the StubTopicRepository.
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
-  public StubTopicRepository()  : base() {
+  public StubTopicRepository()  {
     _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }

@@ -37,7 +37,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   /// </summary>
   /// <param name="connectionString">A connection string to a SQL server that contains the Topics database.</param>
   /// <returns>A new instance of the SqlTopicRepository.</returns>
-  public SqlTopicRepository(string connectionString) : base() {
+  public SqlTopicRepository(string connectionString) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
