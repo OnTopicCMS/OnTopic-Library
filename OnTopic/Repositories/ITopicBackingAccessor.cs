@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Associations;
-using OnTopic.Attributes;
 using OnTopic.Collections;
 
 namespace OnTopic.Repositories;

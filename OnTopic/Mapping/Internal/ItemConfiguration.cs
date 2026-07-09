@@ -6,7 +6,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
-using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
 
