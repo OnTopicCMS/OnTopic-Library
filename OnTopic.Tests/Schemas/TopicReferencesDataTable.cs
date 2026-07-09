@@ -32,7 +32,7 @@ public class TopicReferencesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Source_TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(int),
       ColumnName                = "Source_TopicId",
       Unique                    = true
@@ -41,7 +41,7 @@ public class TopicReferencesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add RelationshipKey column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(string),
       ColumnName                = "ReferenceKey"
     });
@@ -49,7 +49,7 @@ public class TopicReferencesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Target_TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(int),
       ColumnName                = "Target_TopicId",
       AllowDBNull               = true
@@ -58,7 +58,7 @@ public class TopicReferencesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add ParentId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(DateTime),
       ColumnName                = "Version"
     });

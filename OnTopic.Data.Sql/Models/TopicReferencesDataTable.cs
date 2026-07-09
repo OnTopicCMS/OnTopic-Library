@@ -27,7 +27,7 @@ internal sealed class TopicReferencesDataTable: DataTable {
     | COLUMN: Reference Key
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(
-      new("ReferenceKey") {
+      new DataColumn("ReferenceKey") {
         MaxLength               = 128
       }
     );
@@ -36,7 +36,7 @@ internal sealed class TopicReferencesDataTable: DataTable {
     | COLUMN: Topic ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(
-      new("TopicID", typeof(int))
+      new DataColumn("TopicID", typeof(int))
     );
 
   }

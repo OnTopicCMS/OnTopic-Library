@@ -32,7 +32,7 @@ public class RelationshipsDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Source_TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(int),
       ColumnName                = "Source_TopicId",
       Unique                    = true
@@ -41,7 +41,7 @@ public class RelationshipsDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add RelationshipKey column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(string),
       ColumnName                = "RelationshipKey"
     });
@@ -49,7 +49,7 @@ public class RelationshipsDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Target_TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(int),
       ColumnName                = "Target_TopicId"
     });
@@ -57,7 +57,7 @@ public class RelationshipsDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add IsDeleted column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(bool),
       ColumnName                = "IsDeleted"
     });
@@ -65,7 +65,7 @@ public class RelationshipsDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add ParentId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(DateTime),
       ColumnName                = "Version"
     });

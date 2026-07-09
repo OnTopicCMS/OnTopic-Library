@@ -32,7 +32,7 @@ public class AttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add TopicId column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(int),
       ColumnName                = "TopicId",
       Unique                    = true
@@ -41,7 +41,7 @@ public class AttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add AttributeKey column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(string),
       ColumnName                = "AttributeKey"
     });
@@ -49,7 +49,7 @@ public class AttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add AttributeValue column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(string),
       ColumnName                = "AttributeValue",
       AllowDBNull               = true
@@ -58,7 +58,7 @@ public class AttributesDataTable: DataTable {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add Version column
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Columns.Add(new() {
+    Columns.Add(new DataColumn() {
       DataType                  = typeof(DateTime),
       ColumnName                = "Version"
     });

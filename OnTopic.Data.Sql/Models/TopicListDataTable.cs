@@ -27,7 +27,7 @@ internal sealed class TopicListDataTable: DataTable {
     | COLUMN: Topic ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     Columns.Add(
-      new("TopicID", typeof(int))
+      new DataColumn("TopicID", typeof(int))
     );
 
   }
