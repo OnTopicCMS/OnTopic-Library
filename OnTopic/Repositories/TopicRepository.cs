@@ -20,11 +20,11 @@ namespace OnTopic.Repositories;
 /// <remarks>
 ///   <para>
 ///     The <see cref="TopicRepository"/> is a highly opinionated base implementation of <see cref="ITopicRepository"/>.
-///     In addition to validating parameters and raising events on <see cref="Save(Topic, Boolean)"/>, <see cref="Delete(
-///     Topic, Boolean)"/>, and <see cref="Move(Topic, Topic, Topic?)"/>, it also provides a number of (protected) methods to
-///     aid implementors in evaluating and parsing <see cref="Topic"/> data, such as <see cref="GetUnmatchedAttributes(Topic)
-///     "/>. It is recommended that all concrete implementations of <see cref="ITopicRepository"/> that are responsible for
-///     persisting data to a data store use this as a base class.
+///     In addition to validating parameters and raising events on <see cref="Save(Topic, Boolean)"/>, <see cref=
+///     "Delete(Topic, Boolean)"/>, and <see cref="Move(Topic, Topic, Topic?)"/>, it also provides a number of (protected)
+///     methods to aid implementors in evaluating and parsing <see cref="Topic"/> data, such as <see cref=
+///     "GetUnmatchedAttributes(Topic)"/>. It is recommended that all concrete implementations of <see cref="ITopicRepository"/>
+///     that are responsible for persisting data to a data store use this as a base class.
 ///   </para>
 ///   <para>
 ///     Implementations of <see cref="ITopicRepository"/> which need to use different business logic, or do not need to
@@ -127,14 +127,15 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// <remarks>
   ///   By default, the <see cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method will load data from the
   ///   concrete implementation of the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be
-  ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
-  ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
-  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
-  ///   Topic, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+  ///   preferable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic
+  ///   database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
+  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref=
+  ///   "ITopicRepository.Save(Topic, Boolean)"/> when the topic graph being saved includes any new <see cref=
+  ///   "ContentTypeDescriptor"/>s.
   /// </remarks>
   /// <param name="rootContentType">
-  ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
-  ///   cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
+  ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see cref=
+  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
   ///   "ContentTypeDescriptor"/>, but also any descendents.
   /// </param>
   /// <returns></returns>
@@ -252,7 +253,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Save as new version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await Save(topic, false).ConfigureAwait(false);
+    await Save(topic).ConfigureAwait(false);
 
   }
 
@@ -473,9 +474,9 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   "ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref=
   ///   "ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref=
   ///   "SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
-  ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
-  ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
-  ///   true</c>.
+  ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref=
+  ///   "Topic.Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to
+  ///   <c>true</c>.
   /// </remarks>
   /// <param name="topic">The source <see cref="Topic"/> to save.</param>
   /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
@@ -903,8 +904,9 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///     The <see cref="AttributeDescriptor.IsExtendedAttribute"/> determines where an attribute <i>should</i> be stored; the
   ///     <see cref="AttributeRecord.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
   ///     values are in conflict, that suggests the coniguration for <see cref="AttributeDescriptor.IsExtendedAttribute"/> has
-  ///     changed since the attribute value was last saved. In that case, it should be treated as <see cref="TrackedRecord{T}.
-  ///     IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is updated.
+  ///     changed since the attribute value was last saved. In that case, it should be treated as <see cref=
+  ///     "TrackedRecord{T}.IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is
+  ///     updated.
   ///   </para>
   ///   <para>
   ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeRecord"/> is arbitrary attribute

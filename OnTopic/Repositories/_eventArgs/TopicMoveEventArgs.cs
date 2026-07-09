@@ -40,7 +40,7 @@ public class TopicMoveEventArgs : TopicEventArgs {
   /// <requires description="The topic cannot be its own parent." exception="T:System.ArgumentException">
   ///   <paramref name="topic"/> != <paramref name="target"/>
   /// </requires>
-  public TopicMoveEventArgs(Topic topic, Topic? source, Topic target, Topic? sibling = null): base(topic, true) {
+  public TopicMoveEventArgs(Topic topic, Topic? source, Topic target, Topic? sibling = null): base(topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Vaidate parameters

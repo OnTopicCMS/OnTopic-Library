@@ -63,7 +63,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     \-------------------------------------------------------------------------------------------------------------------------*/
     Attributes                  = new(this);
     IncomingRelationships       = new(this, true);
-    _relationships              = new(this, false);
+    _relationships              = new(this);
     _references                 = new(this);
     VersionHistory              = new();
 
@@ -724,7 +724,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc/>
-  public bool IsDirty() => IsDirty(false, false);
+  public bool IsDirty() => IsDirty(false);
 
   /// <summary>
   ///   Determines if the topic is dirty, optionally checking <see cref="Relationships"/> and <see cref="Attributes"/>.

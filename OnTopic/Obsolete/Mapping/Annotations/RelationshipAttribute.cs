@@ -23,7 +23,7 @@ public sealed class RelationshipAttribute : Attribute {
   /// </summary>
   /// <param name="key">The key value of the collection associated with the current property.</param>
   public RelationshipAttribute(string key) {
-    TopicFactory.ValidateKey(key, false);
+    TopicFactory.ValidateKey(key);
     Key                         = key;
   }
 
