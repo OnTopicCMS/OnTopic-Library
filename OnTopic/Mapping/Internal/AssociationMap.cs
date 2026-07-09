@@ -16,8 +16,8 @@ namespace OnTopic.Mapping.Internal;
 /// </summary>
 /// <remarks>
 ///   While the <see cref="CollectionType"/> and <see cref="AssociationTypes"/> enumerations are distinct, there are times
-///   when a single <see cref="CollectionType"/> needs to be related to an item in the collection of <see cref="
-///   AssociationTypes"/>. This mapping makes that feasible.
+///   when a single <see cref="CollectionType"/> needs to be related to an item in the collection of <see cref=
+///   "AssociationTypes"/>. This mapping makes that feasible.
 /// </remarks>
 static internal class AssociationMap {
 

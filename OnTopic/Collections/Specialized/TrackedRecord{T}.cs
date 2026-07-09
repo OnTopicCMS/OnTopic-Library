@@ -16,8 +16,8 @@ namespace OnTopic.Collections.Specialized;
 /// <remarks>
 ///   The <see cref="TrackedRecord{T}"/> class is comparable to the <see cref="KeyValuePair"/>, in that it tracks the <see
 ///   cref="Key"/> and <see cref="Value"/> for an item, but it additionally provides metadata related to the record, including
-///   the <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref="
-///   ITopicRepository"/> implementations to make more informed decisions about whether a record needs to be saved or
+///   the <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref=
+///   "ITopicRepository"/> implementations to make more informed decisions about whether a record needs to be saved or
 ///   overwritten during a <see cref="ITopicRepository.Refresh"/> or <see cref="ITopicRepository.Rollback"/>.
 /// </remarks>
 public abstract record TrackedRecord<T> {

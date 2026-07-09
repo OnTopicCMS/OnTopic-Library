@@ -31,10 +31,10 @@ namespace OnTopic.AspNetCore.Mvc.Components;
 ///     <c>abstract</c> and suffixed with <c>Base</c>.
 ///   </para>
 ///   <para>
-///     While the <see cref="MenuViewComponentBase{T}"/> only requires that the <typeparamref name="T"/> implement <see cref="
-///     IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be determined on a per-case
-///     basis, as required by the implementation. Implementaters, however, should consider implementing the <see cref="
-///     INavigationTopicViewModel{T}"/> interface, which provides the standard properties that most views will likely need, as
+///     While the <see cref="MenuViewComponentBase{T}"/> only requires that the <typeparamref name="T"/> implement <see cref=
+///     "IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be determined on a per-case
+///     basis, as required by the implementation. Implementaters, however, should consider implementing the <see cref=
+///     "INavigationTopicViewModel{T}"/> interface, which provides the standard properties that most views will likely need, as
 ///     well as a <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/> method for determining if the navigation item
 ///     is currently selected.
 ///   </para>

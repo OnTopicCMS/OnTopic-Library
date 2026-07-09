@@ -17,9 +17,9 @@ namespace OnTopic.Attributes;
 /// </summary>
 /// <remarks>
 ///   <para>
-///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="
-///     TrackedRecord{T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="
-///     TrackedRecord{T}.LastModified"/> date.
+///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref=
+///     "TrackedRecord{T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref=
+///     "TrackedRecord{T}.LastModified"/> date.
 ///   </para>
 ///   <para>
 ///     Typically, the <see cref="AttributeRecord"/> will be exposed as part of a <see cref="AttributeCollection"/> via the
@@ -27,8 +27,8 @@ namespace OnTopic.Attributes;
 ///   </para>
 ///   <para>
 ///     Be aware that while <see cref="AttributeRecord"/> represents the value of a specific attribute, the metadata for
-///     describing the purpose, constraints, and usage of that particular attribute is described by the <see cref="
-///     AttributeDescriptor"/> class.
+///     describing the purpose, constraints, and usage of that particular attribute is described by the <see cref=
+///     "AttributeDescriptor"/> class.
 ///   </para>
 ///   <para>
 ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
@@ -101,8 +101,8 @@ public record AttributeRecord:  TrackedRecord<string> {
   ///     cref="TrackedRecord{T}.IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed,
   ///     but the location it should be stored has, that could potentially result in the attribute being deleted, as the
   ///     attribute won't show up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to
-  ///     <c>true</c> and <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref="
-  ///     IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
+  ///     <c>true</c> and <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref=
+  ///     "IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
   ///     the underlying data store, and ensure data is stored appropriately.
   ///   </para>
   ///   <para>

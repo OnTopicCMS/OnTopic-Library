@@ -250,9 +250,9 @@ internal sealed class ItemConfiguration {
   /// <remarks>
   ///   <para>
   ///     By default, a collection property on a model class will be mapped to a corresponding collection of the same name.
-  ///     So, for instance, if the property on the model class is called <c>Cousins</c> then the <see cref="
-  ///     ITopicMappingService"/> will search <see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, <see cref="
-  ///     Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/> for an object named <c>Cousins</c>. If
+  ///     So, for instance, if the property on the model class is called <c>Cousins</c> then the <see cref=
+  ///     "ITopicMappingService"/> will search <see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, <see cref=
+  ///     "Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/> for an object named <c>Cousins</c>. If
   ///     the <see cref="CollectionKey"/> is set, however, then that value is used instead, thus allowing the property on the
   ///     model to be aliased to a different collection name on the source <see cref="Topic"/>.
   ///   </para>
@@ -274,8 +274,8 @@ internal sealed class ItemConfiguration {
   ///     By default, a collection property on a model class will attempt to find a match from, in order, <see cref="Topic.
   ///     Relationships"/>, <see cref="Topic.References"/>, <see cref="Topic.IncomingRelationships"/>, and, finally, <see cref
   ///     ="Topic.Children"/>. If the <see cref="CollectionType"/> is set, however, then the <see cref="ITopicMappingService"
-  ///     /> will <i>only</i> map the collection to a collection of that type. This can be valuable when the <see cref="
-  ///     CollectionKey"/> might be ambiguous between multiple collections.
+  ///     /> will <i>only</i> map the collection to a collection of that type. This can be valuable when the <see cref=
+  ///     "CollectionKey"/> might be ambiguous between multiple collections.
   ///   </para>
   ///   <para>
   ///     The <see cref="CollectionType"/> property corresponds to the <see cref="CollectionAttribute.Type"/> property. It

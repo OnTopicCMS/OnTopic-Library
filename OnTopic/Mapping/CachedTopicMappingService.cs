@@ -160,8 +160,8 @@ public class CachedTopicMappingService(ITopicMappingService topicMappingService)
   ///   The internal will potentially add two entries to the cache for every view model.
   ///   <list type="number">
   ///     <item>
-  ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see cref="
-  ///       AssociationTypes"/> mapped.
+  ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see cref=
+  ///       "AssociationTypes"/> mapped.
   ///     </item>
   ///     <item>
   ///       The second will assume a null <see cref="Type"/>, and can be used for scenarios where the <see cref="Type"/> is

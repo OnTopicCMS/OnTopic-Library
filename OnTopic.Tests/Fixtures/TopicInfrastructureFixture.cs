@@ -17,8 +17,8 @@ namespace OnTopic.Tests.Fixtures;
 | CLASS: TOPIC INFRASTRUCTURE FIXTURE
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Introduces a shared context to use for unit tests depending on an <see cref="ITypeLookupService"/>, <see cref="
-///   ITopicRepository"/>, and, optionally, an <see cref="ITopicMappingService"/>.
+///   Introduces a shared context to use for unit tests depending on an <see cref="ITypeLookupService"/>, <see cref=
+///   "ITopicRepository"/>, and, optionally, an <see cref="ITopicMappingService"/>.
 /// </summary>
 /// <remarks>
 ///   This basic fixture uses the <see cref="TopicViewModelLookupService"/>, <see cref="FakeViewModelLookupService"/>, <see

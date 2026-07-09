@@ -37,8 +37,8 @@ public class TopicViewLocationExpanderTest: IClassFixture<WebApplicationFactory<
   | TEST: EXPAND VIEW LOCATIONS: VIEWS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref="
-  ///   TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
+  ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref=
+  ///   "TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
   /// </summary>
   [Theory]
   [InlineData(                  "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]

@@ -28,8 +28,8 @@ namespace OnTopic.Repositories;
 ///   </para>
 ///   <para>
 ///     Implementations of <see cref="ITopicRepository"/> which need to use different business logic, or do not need to
-///     implement business logic (such as unit test doubles) may instead opt to derive directly from the <see cref="
-///     ObservableTopicRepository"/>, which handles the basic event handling, and nothing else. Implementations of decorators
+///     implement business logic (such as unit test doubles) may instead opt to derive directly from the <see cref=
+///     "ObservableTopicRepository"/>, which handles the basic event handling, and nothing else. Implementations of decorators
 ///     should instead derive from the <see cref="TopicRepositoryDecorator"/>.
 ///   </para>
 /// </remarks>
@@ -469,10 +469,10 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   The main <see cref="Save(Topic, Boolean)"/> implementation handles advanced validation of the parameters, updating the
-  ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref="
-  ///   ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref="
-  ///   ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref="
-  ///   SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
+  ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref=
+  ///   "ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref=
+  ///   "ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref=
+  ///   "SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
   ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
   ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
   ///   true</c>.
@@ -695,8 +695,8 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   The main <see cref="Delete(Topic, Boolean)"/> implementation handles advanced validation of the parameters,
-  ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref="
-  ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
+  ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref=
+  ///   "AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
   ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
   ///   persisting the change to the underlying data store.
   /// </remarks>
@@ -799,8 +799,8 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: GET UNMATCHED ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see cref="
-  ///   ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeCollection"/>.
+  ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see cref=
+  ///   "ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeCollection"/>.
   /// </summary>
   /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
   protected IEnumerable<AttributeDescriptor> GetUnmatchedAttributes(Topic topic) {

@@ -58,8 +58,8 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>.
   /// </summary>
   /// <remarks>
-  ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref="
-  ///   TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
+  ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref=
+  ///   "TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
   /// </remarks>
   /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
   public void Clear(string relationshipKey) {

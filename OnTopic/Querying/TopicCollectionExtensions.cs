@@ -25,8 +25,8 @@ public static class TopicCollectionExtensions {
   /// </summary>
   /// <remarks>
   ///   This does not determine if the collection itself is dirty—it only determines if any <see cref="Topic"/> instances in
-  ///   the collection are <see cref="Topic.IsDirty()"/>. This distinction is important. For example, if a clean <see cref="
-  ///   Topic"/> is added to the collection, then the collection will be dirty—but <see cref="AnyDirty(IEnumerable{Topic})"/>
+  ///   the collection are <see cref="Topic.IsDirty()"/>. This distinction is important. For example, if a clean <see cref=
+  ///   "Topic"/> is added to the collection, then the collection will be dirty—but <see cref="AnyDirty(IEnumerable{Topic})"/>
   ///   will be false.
   /// </remarks>
   /// <param name="topics">The collection of <see cref="Topic"/> instances to operate against.</param>

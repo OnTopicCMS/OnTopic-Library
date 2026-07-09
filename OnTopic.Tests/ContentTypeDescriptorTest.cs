@@ -13,8 +13,8 @@ namespace OnTopic.Tests;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides unit tests for the <see cref="ContentTypeDescriptor"/> class and other types associated with it, such as <see
-///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref="
-///   AttributeDescriptorCollection"/>.
+///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref=
+///   "AttributeDescriptorCollection"/>.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public class ContentTypeDescriptorTest {

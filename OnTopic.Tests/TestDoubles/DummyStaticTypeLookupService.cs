@@ -21,8 +21,8 @@ public class DummyStaticTypeLookupService: StaticTypeLookupService {
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a new instance of a <see cref="DummyStaticTypeLookupService"/>. Optionally accepts a list of <see cref="
-  ///   Type"/> instances and a default <see cref="Type"/> value.
+  ///   Establishes a new instance of a <see cref="DummyStaticTypeLookupService"/>. Optionally accepts a list of <see cref=
+  ///   "Type"/> instances and a default <see cref="Type"/> value.
   /// </summary>
   /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
   public DummyStaticTypeLookupService(

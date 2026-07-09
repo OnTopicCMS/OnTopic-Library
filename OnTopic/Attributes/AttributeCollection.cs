@@ -37,8 +37,8 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   ///   Initializes a new instance of the <see cref="AttributeCollection"/> class.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref="
-  ///   Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
+  ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref=
+  ///   "Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
   /// </remarks>
   /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
   internal AttributeCollection(Topic parentTopic) : base(parentTopic) {
@@ -187,9 +187,9 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   | METHOD: AS ATTRIBUTE DICTIONARY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref="
-  ///   AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
+  ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref=
+  ///   "AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
   /// </summary>
   /// <remarks>
   ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on

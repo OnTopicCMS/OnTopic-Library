@@ -37,8 +37,8 @@ public class TopicSaveEventArgs : TopicEventArgs {
   | PROPERTY: IS NEW
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Gets or sets whether the <see cref="TopicEventArgs.Topic"/> was newly created, or if it was an existing <see cref="
-  ///   Topic"/> that has been updated.
+  ///   Gets or sets whether the <see cref="TopicEventArgs.Topic"/> was newly created, or if it was an existing <see cref=
+  ///   "Topic"/> that has been updated.
   /// </summary>
   public bool IsNew { get; set; }
 

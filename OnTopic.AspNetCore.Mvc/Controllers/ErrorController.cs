@@ -20,8 +20,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers;
 ///   The <see cref="StatusCodePagesExtensions.UseStatusCodePages(IApplicationBuilder)"/> will redirect to a URL with the
 ///   HTTP error code in the route. This is fine if there is one error page that, perhaps, injects the error code into the
 ///   content. It's also fine if there is an error page for every HTTP error. In practice, however, many sites handle <i>some
-///   </i> HTTP errors, but not others. Given this, the <see cref="ErrorController"/> provides logic to deliver a <see cref="
-///   TopicController.CurrentTopic"/> associated with the HTTP error, if available, and otherwise to fallback first to the
+///   </i> HTTP errors, but not others. Given this, the <see cref="ErrorController"/> provides logic to deliver a <see cref=
+///   "TopicController.CurrentTopic"/> associated with the HTTP error, if available, and otherwise to fallback first to the
 ///   HTTP category (e.g., 5xx), and otherwise to a generic error.
 /// </remarks>
 public class ErrorController :  TopicController {

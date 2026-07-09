@@ -15,8 +15,8 @@ namespace OnTopic.ViewModels.BindingModels;
 /// </summary>
 /// <remarks>
 ///   While implementors may choose to create a custom <see cref="IAssociatedTopicBindingModel"/> implementation, the out-of-
-///   the-box <see cref="AssociatedTopicBindingModel"/> implementation satisfies all of the requirements of the <see cref="
-///   ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
+///   the-box <see cref="AssociatedTopicBindingModel"/> implementation satisfies all of the requirements of the <see cref=
+///   "ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
 ///   metadata for separate validation or processing.
 /// </remarks>
 [ExcludeFromCodeCoverage]

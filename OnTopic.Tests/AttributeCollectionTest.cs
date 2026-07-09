@@ -542,8 +542,8 @@ public class AttributeCollectionTest {
   | TEST: IS DIRTY: DIRTY VALUES: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref="
-  ///   TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
+  ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref=
+  ///   "TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_DirtyValues_ReturnsTrue() {
@@ -704,8 +704,8 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
-  ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_UpdatesLastModified() {
@@ -737,8 +737,8 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
-  ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_ReturnsFalse() {

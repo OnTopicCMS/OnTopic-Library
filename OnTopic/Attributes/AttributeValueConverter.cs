@@ -13,8 +13,8 @@ namespace OnTopic.Attributes;
 | CLASS: ATTRIBUTE VALUE CONVERTER
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Attribute values are stored as strings, but may be deserialized to other value types using e.g. the <see cref="
-///   TopicMappingService"/> or the <see cref="AttributeCollectionExtensions"/>. This class provides basic methods for
+///   Attribute values are stored as strings, but may be deserialized to other value types using e.g. the <see cref=
+///   "TopicMappingService"/> or the <see cref="AttributeCollectionExtensions"/>. This class provides basic methods for
 ///   converting from the string representation to supported value types.
 /// </summary>
 internal static class AttributeValueConverter {

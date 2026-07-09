@@ -16,8 +16,8 @@ namespace OnTopic.Tests;
 | CLASS: TYPE LOOKUP SERVICE TEST
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, such as the <see cref="
-///   StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
+///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, such as the <see cref=
+///   "StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
 ///   and the underlying <see cref="TypeCollection"/>.
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -104,8 +104,8 @@ public class TypeLookupServiceTest {
   | TEST: DYNAMIC TYPE LOOKUP SERVICE: PREDICATE: RETURNS EXPECTED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
-  ///   StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
+  ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref=
+  ///   "StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
   /// </summary>
   [Fact]
   public void DynamicTypeLookupService_Predicate_ReturnsExpected() {

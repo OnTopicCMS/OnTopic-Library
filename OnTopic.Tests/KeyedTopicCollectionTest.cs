@@ -61,8 +61,8 @@ public class KeyedTopicCollectionTest {
   | TEST: INSERT ITEM: DUPLICATE KEY: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Attempts to add two <see cref="Topic"/> instances with the same <see cref="Topic.Key"/> to a <see cref="
-  ///   KeyedTopicCollection{T}"/> and confirms that a <see cref="ArgumentException"/> is correctly thrown.
+  ///   Attempts to add two <see cref="Topic"/> instances with the same <see cref="Topic.Key"/> to a <see cref=
+  ///   "KeyedTopicCollection{T}"/> and confirms that a <see cref="ArgumentException"/> is correctly thrown.
   /// </summary>
   [Fact]
   public void InsertItem_DuplicateKey_ThrowsException() =>
@@ -94,8 +94,8 @@ public class KeyedTopicCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection{T}"/> with a backing <see cref="KeyedTopicCollection"/> and
-  ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using <see cref="
-  ///   ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/>.
+  ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using <see cref=
+  ///   "ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/>.
   /// </summary>
   [Fact]
   public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsValue() {

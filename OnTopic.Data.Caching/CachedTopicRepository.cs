@@ -37,8 +37,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref="
-  ///   ITopicRepository"/> in order to provide necessary data access.
+  ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref=
+  ///   "ITopicRepository"/> in order to provide necessary data access.
   /// </summary>
   /// <param name="topicRepository">
   ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.

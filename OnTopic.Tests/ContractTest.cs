@@ -88,8 +88,8 @@ public class ContractTest {
   | TEST: REQUIRES: INVALID CONSTRUCTOR: THROW ARGUMENT EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref="
-  ///   NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
+  ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref=
+  ///   "NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
   ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
   /// </summary>
   [Fact]

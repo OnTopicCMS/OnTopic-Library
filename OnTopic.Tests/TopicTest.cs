@@ -57,8 +57,8 @@ public class TopicTest {
   /// </summary>
   /// <remarks>
   ///   This is a special use case to address the fact that we expect concrete types of <see cref="AttributeDescriptor"/> to
-  ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref="
-  ///   AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
+  ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref=
+  ///   "AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
   ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
   /// </remarks>
   [Fact]
@@ -93,8 +93,8 @@ public class TopicTest {
   ///   collection is updated to reflect the new <see cref="Topic.Key"/>.
   /// </summary>
   /// <remarks>
-  ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref="
-  ///   Topic.Key"/> changed. We have code that will handle that, however.
+  ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref=
+  ///   "Topic.Key"/> changed. We have code that will handle that, however.
   /// </remarks>
   [Fact]
   public void Key_ChangeValue_UpdatesParent() {
@@ -135,8 +135,8 @@ public class TopicTest {
   | TEST: PARENT: SET TO DESCENDANT: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref="
-  ///   ArgumentOutOfRangeException"/>.
+  ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref=
+  ///   "ArgumentOutOfRangeException"/>.
   /// </summary>
   [Fact]
   public void Parent_SetToDescendant_ThrowsException() {
@@ -418,8 +418,8 @@ public class TopicTest {
   | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref="
-  ///   Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
+  ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref=
+  ///   "Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ExistingValue_RemainsClean() {

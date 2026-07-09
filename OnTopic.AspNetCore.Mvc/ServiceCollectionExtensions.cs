@@ -217,8 +217,8 @@ public static class ServiceCollectionExtensions {
   ///   Adds the <c>/Error/{errorCode}</c> endpoint route for the <see cref="ErrorController"/>.
   /// </summary>
   /// <remarks>
-  ///   This allows the <see cref="ErrorController"/> to be used in conjunction with e.g., the <see cref="
-  ///   StatusCodePagesExtensions.UseStatusCodePages(IApplicationBuilder)"/>, by providing a route for capturing the <c>
+  ///   This allows the <see cref="ErrorController"/> to be used in conjunction with e.g., the <see cref=
+  ///   "StatusCodePagesExtensions.UseStatusCodePages(IApplicationBuilder)"/>, by providing a route for capturing the <c>
   ///   errorCode</c>.
   /// </remarks>
   /// <param name="routes">The <see cref="IEndpointRouteBuilder"/> this route is being added to.</param>

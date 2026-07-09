@@ -618,8 +618,8 @@ public class ReverseTopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Maps a content type that has a nested topic that implements an invalid collection type—i.e., it implements a <see
-  ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref="
-  ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+  ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref=
+  ///   "IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
   /// </summary>
   [Fact]
   public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
@@ -636,9 +636,9 @@ public class ReverseTopicMappingServiceTest {
   | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see cref="
-  ///   TopicViewModel"/>, even though references are expected to return a type implementing <see cref="
-  ///   IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+  ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see cref=
+  ///   "TopicViewModel"/>, even though references are expected to return a type implementing <see cref=
+  ///   "IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
   /// </summary>
   [Fact]
   public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {

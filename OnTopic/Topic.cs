@@ -43,8 +43,8 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   ///   optionally, <see cref="Parent"/>, <see cref="Id"/>.
   /// </summary>
   /// <remarks>
-  ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Key"/> and <see cref="
-  ///   ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to correctly save new
+  ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Key"/> and <see cref=
+  ///   "ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to correctly save new
   ///   topics to the database. When the <paramref name="id"/> parameter is set, however, the <see cref="TrackedRecord{T}.
   ///   IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as it is assumed these
   ///   are being set to the same values currently used in the persistence store.
@@ -850,16 +850,16 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   ///     local value for the attribute.
   ///   </para>
   ///   <para>
-  ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref="
-  ///     TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
+  ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref=
+  ///     "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
   ///     of five "hops" in order to help avoid an infinite loop.
   ///   </para>
   ///   <para>
   ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
   ///     {String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="Topic"/> hasn't been
   ///     saved, then the reference will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
-  ///     repository upon <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>. That said, when <see cref="
-  ///     Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
+  ///     repository upon <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>. That said, when <see cref=
+  ///     "Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
   ///     and, if it has subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory
   ///     topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the
   ///     underlying data storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is
@@ -995,8 +995,8 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <remarks>
   ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
   ///   called by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers
-  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref="
-  ///   AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
+  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
+  ///   "AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
   ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
   ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
   /// </remarks>

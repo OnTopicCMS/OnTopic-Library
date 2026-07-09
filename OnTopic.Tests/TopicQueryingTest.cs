@@ -262,8 +262,8 @@ public class TopicQueryingTest  {
   ///   /> returns <c>null</c>.
   /// </summary>
   /// <remarks>
-  ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref="
-  ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
+  ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref=
+  ///   "Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
   /// </remarks>
   [Fact]
   public async Task GetContentType_InvalidType_ReturnsNull() {

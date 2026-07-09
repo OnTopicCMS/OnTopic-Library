@@ -17,8 +17,8 @@ namespace OnTopic.Collections.Specialized;
 ///   working with their <see cref="TrackedRecord{T}.IsDirty"/> state.
 /// </summary>
 /// <remarks>
-///   <see cref="TrackedRecord{T}"/> records represent individual instances of values associated with a particular <see cref="
-///   Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
+///   <see cref="TrackedRecord{T}"/> records represent individual instances of values associated with a particular <see cref=
+///   "Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
 ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with
 ///   these records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
 ///   "SetValue(String, TValue?, Boolean?, DateTime?)"/> for creating or "updating" a record. (Records are
@@ -74,12 +74,12 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// </summary>
   /// <remarks>
   ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
-  ///   <see cref="IsDirty()"/>. If a <see cref="TrackedRecord{T}"/> is deleted, then it won't be marked as <see cref="
-  ///   TrackedRecord{T}.IsDirty"/>. If no other <see cref="TrackedRecord{T}"/> instances were modified, then the <see cref="
-  ///   Topic"/> won't get saved, and that <see cref="TrackedRecord{T}.Value"/> won't be deleted. Further more, methods like
+  ///   <see cref="IsDirty()"/>. If a <see cref="TrackedRecord{T}"/> is deleted, then it won't be marked as <see cref=
+  ///   "TrackedRecord{T}.IsDirty"/>. If no other <see cref="TrackedRecord{T}"/> instances were modified, then the <see cref=
+  ///   "Topic"/> won't get saved, and that <see cref="TrackedRecord{T}.Value"/> won't be deleted. Further more, methods like
   ///   the <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of
-  ///   arbitrary values�i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref="
-  ///   Metadata.ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedRecord{T}"/> instances, we ensure both
+  ///   arbitrary values�i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref=
+  ///   "Metadata.ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedRecord{T}"/> instances, we ensure both
   ///   scenarios can be accounted for.
   /// </remarks>
   internal List<string> DeletedItems { get; } = new();
@@ -98,8 +98,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// <remarks>
   ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
   ///   to determine the <see cref="TrackedRecord{T}.IsDirty"/> state of a <see cref="TrackedRecord{T}"/> prior to saving it
-  ///   to the data storage medium. Because <see cref="TrackedRecord{T}.IsDirty"/> is a state of the current <see cref="
-  ///   TrackedRecord{T}"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromBase</c> (which otherwise default
+  ///   to the data storage medium. Because <see cref="TrackedRecord{T}.IsDirty"/> is a state of the current <see cref=
+  ///   "TrackedRecord{T}"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromBase</c> (which otherwise default
   ///   to <c>true</c>).
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
@@ -127,8 +127,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// </summary>
   /// <remarks>
   ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
-  ///   mark the collection, and all <see cref="TrackedRecord{T}"/> instances it contains, as clean. After this, <see cref="
-  ///   IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedRecord{T}"/> instances are added, modified,
+  ///   mark the collection, and all <see cref="TrackedRecord{T}"/> instances it contains, as clean. After this, <see cref=
+  ///   "IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedRecord{T}"/> instances are added, modified,
   ///   or removed.
   /// </remarks>
   /// <param name="version">
@@ -325,8 +325,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   depending on whether that value already exists.
   /// </summary>
   /// <remarks>
-  ///   Working with records can be a bit cumbersome, and especially in determining if a value should be marked as <see cref="
-  ///   TrackedRecord{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(
+  ///   Working with records can be a bit cumbersome, and especially in determining if a value should be marked as <see cref=
+  ///   "TrackedRecord{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(
   ///   String,TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously allowing
   ///   callers to explicitly set whether the <see cref="TrackedRecord{T}"/> instances should be marked as dirty�via the
   ///   <paramref name="markDirty"/> parameter�and, optionally, what the <paramref name="version"/> should be.
@@ -534,8 +534,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// <param name="index">The location that the <see cref="TrackedRecord{T}"/> should be set.</param>
   /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>
   /// <exception cref="ArgumentException">
-  ///   An <see cref="ArgumentException"/> is thrown if an <see cref="TrackedRecord{T}"/> with the same <see cref="
-  ///   TrackedRecord{T}.Key"/> as the <paramref name="item"/> already exists.
+  ///   An <see cref="ArgumentException"/> is thrown if an <see cref="TrackedRecord{T}"/> with the same <see cref=
+  ///   "TrackedRecord{T}.Key"/> as the <paramref name="item"/> already exists.
   /// </exception>
   protected override void InsertItem(int index, TItem item) {
     Contract.Requires(item, nameof(item));
@@ -618,8 +618,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   it is appropriately marked as <see cref="IsDirty()"/>.
   /// </summary>
   /// <remarks>
-  ///   In order to ensure any business logic is enforced, <see cref="ClearItems()"/> loops through every <see cref="
-  ///   TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> and explicitly calls <see
+  ///   In order to ensure any business logic is enforced, <see cref="ClearItems()"/> loops through every <see cref=
+  ///   "TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> and explicitly calls <see
   ///   cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/>. This is slower, but ensures that any state tracking and null
   ///   validation that occurs in the properties is maintained. Fortunately, this is a rare use case; we typically expect
   ///   attributes to be handled individually.
@@ -638,8 +638,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   Determines if a <typeparamref name="TItem"/> is permitted to be marked as not <see cref="TrackedRecord{T}.IsDirty"/>.
   /// </summary>
   /// <remarks>
-  ///   If the <see cref="AssociatedTopic"/> is <see cref="Topic.IsNew"/> or the <typeparamref name="TValue"/> is <see cref="
-  ///   Topic"/> and the <paramref name="item"/> is <see cref="Topic.IsNew"/>, then <see cref="TrackedRecord{T}.IsDirty"/>
+  ///   If the <see cref="AssociatedTopic"/> is <see cref="Topic.IsNew"/> or the <typeparamref name="TValue"/> is <see cref=
+  ///   "Topic"/> and the <paramref name="item"/> is <see cref="Topic.IsNew"/>, then <see cref="TrackedRecord{T}.IsDirty"/>
   ///   should never be set to <c>false</c>.
   /// </remarks>
   /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>

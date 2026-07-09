@@ -24,13 +24,13 @@ namespace OnTopic.Internal.Reflection;
 ///     For setting values, the typical workflow is for a caller to check either <see cref="HasSettableMethod(String, Type?)"
 ///     /> or <see cref="HasSettableProperty(String, Type?)"/>, followed by <see cref="SetMethodValue(Object, String, Object?,
 ///     Boolean)"/> or <see cref="SetMethodValue(Object, String, Object?, Boolean)"/> to retrieve the value. In these
-///     scenarios, the <see cref="TypeAccessor"/> will attempt to deserialize the <c>value</c> parameter from <see cref="
-///     String"/> to the type expected by the corresponding property or method. Typically, this will be a <see cref="Int32"/>,
+///     scenarios, the <see cref="TypeAccessor"/> will attempt to deserialize the <c>value</c> parameter from <see cref=
+///     "String"/> to the type expected by the corresponding property or method. Typically, this will be a <see cref="Int32"/>,
 ///     <see cref="Double"/>, <see cref="Boolean"/>, or <see cref="DateTime"/>.
 ///   </para>
 ///   <para>
-///     Alternatively, setters can call <see cref="SetMethodValue(Object, String, Object?, Boolean)"/> or <see cref="
-///     SetPropertyValue(Object, String, Object?, Boolean)"/>, in which case the final <c>value</c> parameter will be set the
+///     Alternatively, setters can call <see cref="SetMethodValue(Object, String, Object?, Boolean)"/> or <see cref=
+///     "SetPropertyValue(Object, String, Object?, Boolean)"/>, in which case the final <c>value</c> parameter will be set the
 ///     target property, or passed as the parameter of the method without any attempt to convert it. Obviously, this requires
 ///     that the target type be assignable from the <c>value</c> object.
 ///   </para>
@@ -365,8 +365,8 @@ internal sealed class TypeAccessor {
   | METHOD: SET PROPERTY VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>, <see cref="
-  ///   Int32"/>, or <see cref="Boolean"/>, or is otherwise compatible with the <paramref name="value"/> type.
+  ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>, <see cref=
+  ///   "Int32"/>, or <see cref="Boolean"/>, or is otherwise compatible with the <paramref name="value"/> type.
   /// </summary>
   /// <param name="target">The object on which the property is defined.</param>
   /// <param name="propertyName">The name of the property to set, derived from <see cref="ItemMetadata.Name"/>.</param>

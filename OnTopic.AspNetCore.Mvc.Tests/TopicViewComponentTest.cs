@@ -159,8 +159,8 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
-  ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
+  ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref=
+  ///   "NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
   /// </summary>
   [Fact]
   public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {

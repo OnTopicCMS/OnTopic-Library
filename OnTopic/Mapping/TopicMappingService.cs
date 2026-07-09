@@ -617,8 +617,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <remarks>
   ///   The <see cref="GetScalarValue(Topic, ItemMetadata, String)"/> method will attempt to retrieve the value from the
   ///   <paramref name="source"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method,
-  ///   <c>{Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>).
+  ///   <c>{Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>).
   /// </remarks>
   /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>

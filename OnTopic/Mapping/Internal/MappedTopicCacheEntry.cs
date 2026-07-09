@@ -16,8 +16,8 @@ namespace OnTopic.Mapping.Internal;
 /// <remarks>
 ///   In addition to the actual <see cref="MappedTopic"/>, this also includes a <see cref="Associations"/> property for
 ///   tracking what associations were mapped to the <see cref="MappedTopic"/>. This allows the <see cref="TopicMappingService"
-///   /> to be update the cached object with any missing associations, which can be identified using the <see cref="
-///   GetMissingAssociations(AssociationTypes)"/> method. In turn, the cache can then be updated to reflect those new
+///   /> to be update the cached object with any missing associations, which can be identified using the <see cref=
+///   "GetMissingAssociations(AssociationTypes)"/> method. In turn, the cache can then be updated to reflect those new
 ///   associations by using <see cref="AddMissingAssociations(AssociationTypes)"/>. This ensures that even if a topic has
 ///   already been mapped, its scope can be expanded without duplicating effort.
 /// </remarks>
@@ -67,8 +67,8 @@ internal sealed class MappedTopicCacheEntry {
   | METHOD: ADD MISSING ASSOCIATIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a target <paramref name="associations"/>, adds any missing <see cref="AssociationTypes"/> to the <see cref="
-  ///   Associations"/> property.
+  ///   Given a target <paramref name="associations"/>, adds any missing <see cref="AssociationTypes"/> to the <see cref=
+  ///   "Associations"/> property.
   /// </summary>
   internal void AddMissingAssociations(AssociationTypes associations) => Associations = associations | Associations;
 

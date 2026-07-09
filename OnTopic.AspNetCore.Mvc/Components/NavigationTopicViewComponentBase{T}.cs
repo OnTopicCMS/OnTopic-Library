@@ -67,8 +67,8 @@ public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where 
   ///   be mapped.
   /// </summary>
   /// <returns>
-  ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="
-  ///   NavigationTopicViewComponentBase{T}"/>.
+  ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref=
+  ///   "NavigationTopicViewComponentBase{T}"/>.
   /// </returns>
   protected IHierarchicalTopicMappingService<T> HierarchicalTopicMappingService { get; }
 

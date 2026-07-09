@@ -82,8 +82,8 @@ internal abstract class ItemMetadata {
   ///   <see cref="Type"/> property is provided with an initter, which will automatically set <see cref="IsNullable"/>, <see
   ///   cref="IsList"/>, and <see cref="IsConvertible"/> when it is set. If this is not done properly, dependency classes will
   ///   not work properly, and will likely fail. Since there are only two expected derived classes—<see cref="MemberAccessor"
-  ///   /> and <see cref="ParameterMetadata"/>—this shouldn't be a problem. To help avoid this scenario, a <see cref="
-  ///   ArgumentNullException"/> is thrown with instructions in the unexpected case that <see cref="Type"/> is not set.
+  ///   /> and <see cref="ParameterMetadata"/>—this shouldn't be a problem. To help avoid this scenario, a <see cref=
+  ///   "ArgumentNullException"/> is thrown with instructions in the unexpected case that <see cref="Type"/> is not set.
   /// </remarks>
   public Type Type {
     get {
@@ -136,8 +136,8 @@ internal abstract class ItemMetadata {
   | IS LIST?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Determine if the member is a <see cref="IList"/>, <see cref="IList{T}"/>, <see cref="IEnumerable{T}"/>, or <see cref="
-  ///   ICollection{T}"/>.
+  ///   Determine if the member is a <see cref="IList"/>, <see cref="IList{T}"/>, <see cref="IEnumerable{T}"/>, or <see cref=
+  ///   "ICollection{T}"/>.
   /// </summary>
   internal bool IsList { get;   init; }
 

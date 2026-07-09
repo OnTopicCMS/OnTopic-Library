@@ -74,8 +74,8 @@ public class TopicMappingServiceTest {
   ///   <para>
   ///     The <see cref="TopicMappingService"/> includes functionality to map properties to attributes via a constructor that
   ///     accepts a <see cref="AttributeDictionary"/>. This introduces some overhead which is not cost effective if there are
-  ///     not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref="
-  ///     AttributeDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
+  ///     not any attributes that map to properties. For larger numbers of mapped attributes, however, the <see cref=
+  ///     "AttributeDictionary"/> can reduce the mapping time considerably, while also giving more control over the model
   ///     construction to the model developer. This test is intended to help identify and optimize that threshold based on
   ///     improvements to the underlying <see cref="AttributeDictionary"/>, <see cref="TopicMappingService.MapAsync(Topic?,
   ///     AssociationTypes)"/>, and <see cref="AttributeCollection.AsAttributeDictionary(bool)"/> convenience method.
@@ -588,8 +588,8 @@ public class TopicMappingServiceTest {
   | TEST: MAPPED TOPIC CACHE: TRY GET VALUE: RETURNS ENTRY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref="
-  ///   MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
+  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref=
+  ///   "MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
   /// </summary>
   [Fact]
   public void MappedTopicCache_TryGetValue_ReturnsEntry() {
@@ -1566,8 +1566,8 @@ public class TopicMappingServiceTest {
   | TEST: MAP: FLATTEN ATTRIBUTE: RETURNS FLAT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
-  ///   FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
+  ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref=
+  ///   "FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
   /// </summary>
   [Fact]
   public async Task Map_FlattenAttribute_ReturnsFlatCollection() {
@@ -1591,8 +1591,8 @@ public class TopicMappingServiceTest {
   | TEST: MAP: FLATTEN ATTRIBUTE: EXCLUDE TOPICS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
-  ///   FlattenChildrenTopicViewModel.Children"/> property excludes any <see cref="Topic.IsDisabled"/> or nested topics.
+  ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref=
+  ///   "FlattenChildrenTopicViewModel.Children"/> property excludes any <see cref="Topic.IsDisabled"/> or nested topics.
   /// </summary>
   [Fact]
   public async Task Map_FlattenAttribute_ExcludeTopics() {

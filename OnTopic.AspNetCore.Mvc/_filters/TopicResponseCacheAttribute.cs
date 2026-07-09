@@ -25,8 +25,8 @@ namespace OnTopic.AspNetCore.Mvc;
 ///     The <c>Page</c> content type has a topic reference to a <c>CacheProfile</c> content type, which contains settings for
 ///     configuring HTTP response headers. The <see cref="TopicResponseCacheAttribute"/> evaluates the current <see cref="Topic"/> to
 ///     determine which, if any, <c>CacheProfile</c> it is associated with, and applies the settings to the HTTP response
-///     headers. If a <c>CacheProfile</c> is not configured, it will default to the <c>CacheProfile</c> with the <see cref="
-///     Topic.Key"/> of <c>Default</c>.
+///     headers. If a <c>CacheProfile</c> is not configured, it will default to the <c>CacheProfile</c> with the <see cref=
+///     "Topic.Key"/> of <c>Default</c>.
 ///   </para>
 ///   <para>
 ///     This filter is enabled automatically when <see cref="ServiceCollectionExtensions.AddTopicSupport(IMvcBuilder)"/> is

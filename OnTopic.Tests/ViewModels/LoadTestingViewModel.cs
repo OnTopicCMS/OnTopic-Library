@@ -11,8 +11,8 @@ namespace OnTopic.Tests.ViewModels;
 | VIEW MODEL: LOAD TESTING
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Provides a simple view model with a series of properties that can be used for load testing the <see cref="
-///   TopicMappingService"/>.
+///   Provides a simple view model with a series of properties that can be used for load testing the <see cref=
+///   "TopicMappingService"/>.
 /// </summary>
 /// <remarks>
 ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.

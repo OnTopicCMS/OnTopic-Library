@@ -11,8 +11,8 @@ namespace OnTopic.Tests.BindingModels;
 | BINDING MODEL: RELATIONSHIP TYPE TOPIC (INVALID)
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Provides a custom binding model with an invalid <see cref="CollectionType"/>—i.e., it refers to <see cref="
-///   CollectionType.NestedTopics"/>, even though the property is associated with a <see cref="CollectionType.Relationship"/>.
+///   Provides a custom binding model with an invalid <see cref="CollectionType"/>—i.e., it refers to <see cref=
+///   "CollectionType.NestedTopics"/>, even though the property is associated with a <see cref="CollectionType.Relationship"/>.
 ///   An <see cref="InvalidOperationException"/> should be thrown when it is mapped.
 /// </summary>
 /// <remarks>
