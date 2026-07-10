@@ -925,7 +925,6 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     get {
       if (_relationships.LoadState is LoadState.NotLoaded && Resolver is not null) {
         EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
-        _relationships.Deferred.Clear();
       }
       return _relationships;
     }
@@ -946,7 +945,6 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     get {
       if (_references.LoadState is LoadState.NotLoaded && Resolver is not null) {
         EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
-        _references.Deferred.Clear();
       }
       return _references;
     }
