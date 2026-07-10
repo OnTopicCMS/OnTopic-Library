@@ -272,12 +272,23 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Delegate to the inner resolver; captures missing targets in the Deferred collections
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Relationships and References are withheld from the inner delegation: This cache is the outermost resolver, so it alone
+    | is responsible for resolving deferred association targets, via its own Load()—which checks the flat index before
+    | falling through to the inner repository. If the inner repository (e.g., SqlTopicRepository) were also asked to resolve
+    | them, it would do so via its own, non-cache-aware Load(), producing a duplicate Topic instance for any target that's
+    | already present in this cache.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (TopicRepository is ITopicLoadResolver resolver) {
-      await resolver.EnsureLoaded(topic, payload, cancellationToken).ConfigureAwait(false);
+      var innerPayload          = payload & ~(TopicPayload.Relationships | TopicPayload.References);
+      if (innerPayload is not TopicPayload.None) {
+        await resolver.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+      }
     }
 
-    // Resolve any deferred relationship/reference targets through the cache layer
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve any relationship and reference targets via the cache layer
+    \-------------------------------------------------------------------------------------------------------------------------*/
     await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
 
     // Update flat index and stamp resolver for any newly loaded children

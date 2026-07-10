@@ -406,8 +406,17 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       return;
     }
 
-    // Relationships and References themselves not by SqlTopicRepository; exit early if that's all that's pending so we don't
-    // open a database connection unnecessarily
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve any relationship and reference targets first
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    // Resolve any deferred relationship/reference targets by loading each individually; these were left unresolved by the
+    // initial Load() because their targets weren't part of that call's ascendant/descendant scope, and couldn't be found in the
+    // referenceTopic, if provided.
+    if (payload.HasFlag(TopicPayload.Relationships) || payload.HasFlag(TopicPayload.References)) {
+      await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
+    }
+
+    // Exit early if nothing else is pending so we don't open a database connection unnecessarily
     if (!payload.HasFlag(TopicPayload.Children) && !payload.HasFlag(TopicPayload.ExtendedAttributes)) {
       return;
     }
@@ -467,13 +476,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         rawTopic.References.Deferred.Clear();
       }
 
-      // Relationships
+      // Relationships (will be empty, unless loading children)
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
         reader.SetRelationships(topics, markDirty: false);
       }
 
-      // References
+      // References (will be empty, unless loading children)
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
         reader.SetReferences(topics, markDirty: false);
