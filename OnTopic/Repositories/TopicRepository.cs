@@ -33,7 +33,7 @@ namespace OnTopic.Repositories;
 ///     should instead derive from the <see cref="TopicRepositoryDecorator"/>.
 ///   </para>
 /// </remarks>
-public abstract class TopicRepository : ObservableTopicRepository {
+public abstract class TopicRepository : LazyLoadingTopicRepository {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES

@@ -23,7 +23,7 @@ namespace OnTopic.Repositories;
 ///   can leave everything else as is.
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
+public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
 
   /*============================================================================================================================
   | CONSTRUCTOR
