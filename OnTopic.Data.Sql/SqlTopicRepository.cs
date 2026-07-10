@@ -494,13 +494,17 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp resolver on newly loaded children
+    | Raise event for each newly loaded child, and stamp resolver
     >---------------------------------------------------------------------------------------------------------------------------
-    | Children filled here, as opposed to the initial recursive Load(), are new Topic instances with no Resolver of their own.
-    | Without this, they would be unable to lazy-load their own payload.
+    | Children filled here, as opposed to the initial recursive Load(), are new Topic instances introduced to the graph for the
+    | first time—conceptually the same as being loaded via Load(), just via a different entry point. This also stamps each one
+    | with a Resolver, without which they would be unable to lazy-load their own payload.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.Children)) {
       StampResolver(topic);
+      foreach (var child in topic.Children) {
+        OnTopicLoaded(new(child, isRecursive: false));
+      }
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
