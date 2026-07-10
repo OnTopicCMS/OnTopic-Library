@@ -26,6 +26,54 @@ namespace OnTopic.Repositories;
 public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
 
   /*============================================================================================================================
+  | METHOD: RESOLVE DEFERRED ASSOCIATIONS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Resolves any relationship and reference targets that were deferred by the underlying data source by loading each
+  ///   through this repository's own <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, so
+  ///   implementations that cache or index resident topics can short-circuit the round-trip. Targets that cannot be found are
+  ///   treated as stale references to deleted topics and discarded; the getter clears any remaining <see cref=
+  ///   "DeferredAssociation"/> entries after this method returns.
+  /// </summary>
+  /// <param name="topic">The topic whose deferred associations should be resolved.</param>
+  /// <param name="payload">
+  ///   The payload flags that were requested; only <see cref="TopicPayload.Relationships"/> and <see cref=
+  ///   "TopicPayload.References"/> are acted upon.
+  /// </param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
+  protected async Task ResolveDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+
+    // Validate input
+    Contract.Requires(topic, nameof(topic));
+
+    // Cast topic to safely access backing fields
+    var rawTopic                = (ITopicBackingAccessor)topic;
+
+    // Resolve deferred relationship targets; unresolvable targets are treated as stale and discarded
+    if (payload.HasFlag(TopicPayload.Relationships) && rawTopic.Relationships.Deferred.Count > 0) {
+      foreach (var deferred in rawTopic.Relationships.Deferred.ToArray()) {
+        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
+        // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
+        if (target is not null) {
+          rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: false);
+        }
+      }
+    }
+
+    // Resolve deferred reference targets; unresolvable targets are treated as stale and discarded
+    if (payload.HasFlag(TopicPayload.References) && rawTopic.References.Deferred.Count > 0) {
+      foreach (var deferred in rawTopic.References.Deferred.ToArray()) {
+        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
+        // SetValue removes the matching Deferred entry; stale entries are cleared by the Topic getter
+        if (target is not null) {
+          rawTopic.References.SetValue(deferred.Key, target, markDirty: false);
+        }
+      }
+    }
+
+  }
+
+  /*============================================================================================================================
   | METHOD: STAMP RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
