@@ -76,4 +76,16 @@ public interface ITopicBackingAccessor {
   /// </remarks>
   AttributeCollection Attributes { get; }
 
+  /*============================================================================================================================
+  | PROPERTY: VERSION HISTORY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns the raw <see cref="VersionHistoryCollection"/> backing field, bypassing the autoloading getter.
+  /// </summary>
+  /// <remarks>
+  ///   This is to be applied as explicit interface implementations; callers must cast to <see cref="ITopicBackingAccessor"/> to
+  ///   access this member.
+  /// </remarks>
+  VersionHistoryCollection VersionHistory { get; }
+
 } //Interface

@@ -599,6 +599,9 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <inheritdoc />
   AttributeCollection ITopicBackingAccessor.Attributes => Attributes;
 
+  /// <inheritdoc />
+  VersionHistoryCollection ITopicBackingAccessor.VersionHistory => _versionHistory;
+
   #endregion
 
   #region Relationship and Collection Methods
