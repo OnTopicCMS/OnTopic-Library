@@ -498,7 +498,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Raise event for each newly loaded child
     >---------------------------------------------------------------------------------------------------------------------------
     | Children filled here, as opposed to the initial recursive Load(), are new Topic instances introduced to the graph for the
-    | first time—conceptually the same as being loaded via Load(), just via a different entry point.
+    | first time and are conceptually the same as being loaded via Load(), just via a different entry point.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
@@ -818,11 +818,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   ///   setting the payload parameters based on the requested <paramref name="payload"/>.
   /// </summary>
   /// <remarks>
-  ///   Scope is always <c>None</c> (i.e., a single node) for resolver fills, as the caller is already in the graph. <see
-  ///   cref="TopicPayload.History"/> is hardcoded to <c>false</c> here because its fill path is not yet implemented; once
-  ///   it is, this method will map it from the <paramref name="payload"/> flag. Indexed attributes and associations are only
-  ///   requested when filling the <see cref="TopicPayload.Children"/> boundary, as they are otherwise always loaded as part of
-  ///   the initial <see cref="Load(int, Topic, bool, TopicPayload)"/> for existing topics.
+  ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> boundary,
+  ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, bool, TopicPayload)"/> for
+  ///   existing topics.
   /// </remarks>
   private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {
 

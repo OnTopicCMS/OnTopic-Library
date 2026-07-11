@@ -1227,9 +1227,10 @@ public class TopicRepositoryBaseTest {
   ///   /> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
-  ///   On-demand fetching of non-resident relationship targets is deferred to <c>lazy-loading-plan.md</c> Task 6. A stub fill
-  ///   simply marks the boundary <see cref="LoadState.Loaded"/>; the SQL resolver leaves it <see cref="LoadState.NotLoaded"/>
-  ///   whenever any target is not resident in the single-node topic index it currently uses.
+  ///   On-demand fetching of non-resident relationship targets happens via <c>ResolveDeferredAssociations()</c> on <see
+  ///   cref="LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
+  ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
+  ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
   /// </remarks>
   [Fact]
   public async Task EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
@@ -1252,9 +1253,10 @@ public class TopicRepositoryBaseTest {
   ///   via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
-  ///   On-demand fetching of non-resident reference targets is deferred to <c>lazy-loading-plan.md</c> Task 6. A stub fill
-  ///   simply marks the boundary <see cref="LoadState.Loaded"/>; the SQL resolver leaves it <see cref="LoadState.NotLoaded"/>
-  ///   whenever any target is not resident in the single-node topic index it currently uses.
+  ///   On-demand fetching of non-resident reference targets happens via <c>ResolveDeferredAssociations()</c> on <see cref=
+  ///   "LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
+  ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
+  ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
   /// </remarks>
   [Fact]
   public async Task EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {

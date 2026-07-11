@@ -24,10 +24,16 @@ public interface ITopicRepository {
   ///   "ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> operation, or one of its overloads.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="TopicLoaded"/> event should only be raised when a new <see cref="Topic"/> is loaded from the underlying
-  ///   persistence store. It should not be loaded, for example, if a value is loaded from the cache, or a <c>topicId</c> is
-  ///   queried from the database. Given this, this event will need to be raised in actual implementations, since it is
-  ///   specific to the business logic of each <see cref="ITopicRepository"/>.
+  ///  <para>
+  ///     The <see cref="TopicLoaded"/> event should only be raised when a new <see cref="Topic"/> is loaded from the underlying
+  ///     persistence store—not, for example, when a value is returned from a cache, or a <c>topicId</c> is merely queried from
+  ///     the database.
+  ///   </para>
+  ///   <para>
+  ///     Raising this reliably is more than a courtesy. As a concrete example, the lazy-loading resolver stamping is driven by
+  ///     this event, so an <see cref="ITopicRepository"/> that fails to raise it will leave loaded topics unable to lazy load
+  ///     their own deferred payload.
+  ///   </para>
   /// </remarks>
   event EventHandler<TopicLoadEventArgs> TopicLoaded;
 
