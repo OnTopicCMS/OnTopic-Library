@@ -48,6 +48,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   protected override void OnTopicLoaded(TopicLoadEventArgs args) {
     Contract.Requires(args, nameof(args));
     StampResolver(args.Topic);
+    StampAscendants(args.Topic.Parent);
     base.OnTopicLoaded(args);
   }
 
@@ -158,6 +159,46 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
     // Stamp any children (this is recursive, obviously!)
     foreach (var child in topic.Children) {
       StampResolver(child);
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: STAMP ASCENDANTS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Walks a <paramref name="topic"/>'s <see cref="Topic.Parent"/> chain, stamping each with this repository as the <see
+  ///   cref="ITopicLoadResolver"/>, so an ascendant that was never individually loaded can still lazy-load its own deferred
+  ///   payload.
+  /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     Stops as soon as it reaches an ascendant already stamped by this exact resolver instance, on the assumption that its
+  ///     own ascendants were already walked and stamped at that time. Comparing by instance, rather than merely checking for a
+  ///     non-null <see cref="Topic.Resolver"/>, matters when this method runs as part of a decorated stack: An outer
+  ///     decorator's pass must not stop early just because an inner repository already stamped the chain with itself.
+  ///   </para>
+  ///   <para>
+  ///     In practice, this only short-circuits repeat calls against the same, undecorated resolver instance (e.g., a bare
+  ///     <see cref="TopicRepository"/> loading many topics over its lifetime that share ascendant branches). When wrapped by a
+  ///     <see cref="TopicRepositoryDecorator"/>, the inner and outer passes stamp with different instances on every call, so
+  ///     neither ever finds a match from the other, and thus each pass walks the full chain to the root every time. That's
+  ///     harmless, just not a savings there.
+  ///   </para>
+  /// </remarks>
+  /// <param name="topic">
+  ///   The topic at which to start walking (typically a loaded topic's <see cref="Topic.Parent"/>).
+  /// </param>
+  private void StampAscendants(Topic? topic) {
+
+    // Skip if the current repository is not an ITopicLoadResolver
+    if (this is not ITopicLoadResolver resolver) {
+      return;
+    }
+
+    // Walk and stamp each ascendant, stopping once this resolver has already stamped one
+    for (var ascendant = topic; ascendant is not null && ascendant.Resolver != resolver; ascendant = ascendant.Parent) {
+      ascendant.Resolver        = resolver;
     }
 
   }
