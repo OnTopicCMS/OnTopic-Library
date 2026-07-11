@@ -990,6 +990,9 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <value>The current <see cref="Topic"/>'s version history.</value>
   public VersionHistoryCollection VersionHistory {
     get {
+      if (_versionHistory.LoadState is LoadState.NotLoaded) {
+        EnsureLoaded(TopicPayload.VersionHistory).GetAwaiter().GetResult();
+      }
       return _versionHistory;
     }
   }
