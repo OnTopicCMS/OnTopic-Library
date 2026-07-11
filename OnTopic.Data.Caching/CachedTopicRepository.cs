@@ -48,8 +48,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Seed root topic (without descendants)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var rootTopic               = TopicRepository.Load("Root", referenceTopic: null, isRecursive: false)
-                                    .GetAwaiter().GetResult();
+    var rootTopic               = TopicRepository
+      .Load("Root", referenceTopic: null, isRecursive: false)
+      .GetAwaiter()
+      .GetResult();
 
     Contract.Assume(
       rootTopic,
@@ -65,8 +67,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Eager-load Root:Configuration subtree (required for content-type descriptor resolution)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository.Load("Root:Configuration", referenceTopic: _cache, isRecursive: true, payload: TopicPayload.All)
-      .GetAwaiter().GetResult();
+    TopicRepository
+      .Load("Root:Configuration", referenceTopic: _cache, isRecursive: true, payload: TopicPayload.All)
+      .GetAwaiter()
+      .GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate flat index from seeded topics
