@@ -407,7 +407,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     // Exit early if nothing else is pending so we don't open a database connection unnecessarily
-    if (!payload.HasFlag(TopicPayload.Children) && !payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+    if (
+      !payload.HasFlag(TopicPayload.Children) &&
+      !payload.HasFlag(TopicPayload.ExtendedAttributes) &&
+      !payload.HasFlag(TopicPayload.VersionHistory)
+    ) {
       return;
     }
 
@@ -478,6 +482,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
         reader.SetReferences(topics, markDirty: false);
       }
 
+      // History
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetVersionHistory(topics);
+      }
+
     }
     catch (SqlException exception) {
       throw new TopicRepositoryException($"Topic payload failed to load: '{exception.Message}'", exception);
@@ -499,7 +509,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     | Mark confirmed payload as Loaded
     >---------------------------------------------------------------------------------------------------------------------------
     | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
-    | are computed from Deferred.Count and require no explicit assignment here. Only Extended Attributes needs to be set.
+    | are computed from Deferred.Count and require no explicit assignment here. History is set directly by SetVersionHistory()
+    | as rows are read, since every persisted topic has at least one version. Only Extended Attributes needs to be set here.
     \-------------------------------------------------------------------------------------------------------------------------*/
     topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
@@ -828,7 +839,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("IncludeExtended",                     payload.HasFlag(TopicPayload.ExtendedAttributes));
     command.AddParameter("IncludeRelationships",                payload.HasFlag(TopicPayload.Children));
     command.AddParameter("IncludeReferences",                   payload.HasFlag(TopicPayload.Children));
-    command.AddParameter("IncludeHistory",                      false);
+    command.AddParameter("IncludeHistory",                      payload.HasFlag(TopicPayload.VersionHistory));
 
   }
 

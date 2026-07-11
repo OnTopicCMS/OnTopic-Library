@@ -604,7 +604,7 @@ internal static class SqlDataReaderExtensions {
   /// </remarks>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
   /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-  private static void SetVersionHistory(this IDataReader reader, TopicIndex topics) {
+  internal static void SetVersionHistory(this IDataReader reader, TopicIndex topics) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
