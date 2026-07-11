@@ -51,10 +51,10 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Subscribe to underlying events
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository.TopicLoaded += (_, args)                   => OnTopicLoaded(args);
-    TopicRepository.TopicSaved  += (_, args)                   => OnTopicSaved(args);
+    TopicRepository.TopicLoaded += (_, args)                    => OnTopicLoaded(args);
+    TopicRepository.TopicSaved  += (_, args)                    => OnTopicSaved(args);
     TopicRepository.TopicDeleted += (_, args)                   => OnTopicDeleted(args);
-    TopicRepository.TopicMoved  += (_, args)                   => OnTopicMoved(args);
+    TopicRepository.TopicMoved  += (_, args)                    => OnTopicMoved(args);
     TopicRepository.TopicRenamed += (_, args)                   => OnTopicRenamed(args);
 
   }

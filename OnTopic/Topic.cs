@@ -487,7 +487,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Determines whether or not a topic should be visible based on IsHidden, IsDisabled, and an optional parameter
-  ///   specifying whether or not to show disabled items (which may by triggered if, for example, a user is an administrator).
+  ///   specifying whether or not to show disabled items (which may be triggered if, for example, a user is an administrator).
   /// </summary>
   /// <remarks>
   ///   If an item is not marked as IsVisible, then the item will not be visible independent of whether showDisabled is set.
@@ -589,7 +589,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  KeyedTopicCollection ITopicBackingAccessor.Children  => _children;
+  KeyedTopicCollection ITopicBackingAccessor.Children => _children;
 
   /// <inheritdoc />
   TopicRelationshipMultiMap ITopicBackingAccessor.Relationships => _relationships;
@@ -761,7 +761,6 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
 
   /// <inheritdoc/>
   public bool IsDirty(string key) => IsDirty(key, false);
-
 
   /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
   public bool IsDirty(string key, bool checkCollections) {

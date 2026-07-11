@@ -89,8 +89,7 @@ public interface ITopicRepository {
   public Task<Topic?> Load() => Load(-1);
 
   /// <summary>
-  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
-  ///   />.
+  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"/>.
   /// </summary>
   /// <param name="topicId">The topic identifier.</param>
   /// <param name="referenceTopic">
@@ -111,8 +110,7 @@ public interface ITopicRepository {
   );
 
   /// <summary>
-  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="uniqueKey
-  ///   "/>.
+  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on a specified <paramref name="uniqueKey"/>.
   /// </summary>
   /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
   /// <param name="referenceTopic">
@@ -140,8 +138,8 @@ public interface ITopicRepository {
   Task<Topic?> Load(string? uniqueKey, bool isRecursive);
 
   /// <summary>
-  ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version
-  ///   "/>.
+  ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version"
+  ///   />.
   /// </summary>
   /// <remarks>
   ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
@@ -179,8 +177,8 @@ public interface ITopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Updates the topic graph represented by the <paramref name="referenceTopic"/> by loading any changes <paramref name="
-  ///   since"/> the specified <see cref="DateTime"/>.
+  ///   Updates the topic graph represented by the <paramref name="referenceTopic"/> by loading any changes <paramref name=
+  ///   "since"/> the specified <see cref="DateTime"/>.
   /// </summary>
   /// <remarks>
   ///   The <see cref="Refresh(Topic, DateTime)"/> method is intended to provide basic synchronization of core attributes,
