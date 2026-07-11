@@ -237,6 +237,8 @@ internal static class SqlDataReaderExtensions {
     if (!topics.TryGetValue(topicId, out var current)) {
       current                   = TopicFactory.Create(key, contentType, topicId);
       topics.Add(current.Id, current);
+      // Default to NotLoaded; a corresponding row in the version history dataset, if any, promotes this to Loaded
+      ((ITopicBackingAccessor)current).VersionHistory.LoadState = LoadState.NotLoaded;
     }
     else {
       wasDirty                  = current.IsDirty();
@@ -614,13 +616,18 @@ internal static class SqlDataReaderExtensions {
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     var current                 = topics[topicId];
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set history
+    >-------------------------------------------------------------------------------------------------------------------------
+    | A row being present, regardless of its content, means version history was fetched for this topic; promote the state
+    | to Loaded so subsequent access doesn't trigger a redundant fill.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!current.VersionHistory.Contains(dateTime)) {
-      current.VersionHistory.Add(dateTime);
+    if (!rawTopic.VersionHistory.Contains(dateTime)) {
+      rawTopic.VersionHistory.Add(dateTime);
     }
+    rawTopic.VersionHistory.LoadState = LoadState.Loaded;
 
   }
 
