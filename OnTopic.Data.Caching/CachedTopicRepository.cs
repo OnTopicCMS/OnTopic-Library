@@ -76,11 +76,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
       IndexTopic(topic);
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp resolver on seeded graph
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    StampResolver(_cache);
-
   }
 
   /*============================================================================================================================
@@ -242,10 +237,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return appropriate topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic                   = await TopicRepository.Load(topicId, version, referenceTopic ?? _cache)
-                                    .ConfigureAwait(false);
-    StampResolver(topic);
-    return topic;
+    return await TopicRepository.Load(topicId, version, referenceTopic ?? _cache).ConfigureAwait(false);
 
   }
 
@@ -291,15 +283,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     \-------------------------------------------------------------------------------------------------------------------------*/
     await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
 
-    // Update flat index and stamp resolver for any newly loaded children
     if (payload.HasFlag(TopicPayload.Children)) {
       lock (_syncLock) {
         foreach (var child in topic.Children) {
           IndexTopic(child);
         }
       }
-      StampResolver(topic);
     }
+    // Update flat index for any newly loaded children
 
   }
 
@@ -457,8 +448,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   ///   <para>
   ///     The chain is walked from the leaf toward the root. At the first ancestor already present in <c>_topicById</c>
   ///     (typically <c>Root</c>), the new node above it is discarded and its child is reparented to the cached object, which
-  ///     attaches it to the existing graph. All new nodes below that boundary are indexed and stamped with the resolver so
-  ///     their own <see cref="Topic.Children"/> can lazy-load on demand.
+  ///     attaches it to the existing graph. All new nodes below that boundary are indexed here.
   ///   </para>
   /// </remarks>
   /// <param name="loaded">The leaf topic returned from the underlying load, already part of an ancestor chain.</param>
@@ -489,11 +479,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
         }
       }
 
-      // Index the new topic and stamp it with the resolver for future lazy fills
+      // Index the new topic
       lock (_syncLock) {
         IndexTopic(node);
       }
-      StampResolver(node);
 
     }
 

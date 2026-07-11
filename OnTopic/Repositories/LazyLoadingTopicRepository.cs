@@ -26,6 +26,46 @@ namespace OnTopic.Repositories;
 public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
 
   /*============================================================================================================================
+  | METHOD: ON TOPIC LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc/>
+  /// <remarks>
+  ///   <para>
+  ///     Stamps the <see cref="TopicEventArgs.Topic"/> from the <paramref name="args"/>, and any descendants attached to it,
+  ///     via <see cref="StampResolver(Topic?)"/> and <see cref="StampAscendants(Topic?)"/> before raising the event, so the
+  ///     resolver gets stamped without the resolvers needing to be aware of it.
+  ///   </para>
+  ///   <para>
+  ///     <see cref="ITopicRepository.TopicLoaded"/> fires only for the requested topic, never individually for any descendants
+  ///     pulled in alongside it, so this handles both.
+  ///   </para>
+  ///   <para>
+  ///     Stamping ahead of the base call is load-bearing: <see cref="TopicRepositoryDecorator"/> subscribes to its inner <see
+  ///     cref="ITopicRepository.TopicLoaded"/> in its constructor, so raising the event here synchronously re-enters this
+  ///     method on any outer decorators before this call returns, letting the outer's stamp take precedence over inner ones.
+  ///   </para>
+  /// </remarks>
+  protected override void OnTopicLoaded(TopicLoadEventArgs args) {
+    Contract.Requires(args, nameof(args));
+    StampResolver(args.Topic);
+    base.OnTopicLoaded(args);
+  }
+
+  /*============================================================================================================================
+  | METHOD: ON TOPIC SAVED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc/>
+  /// <remarks>
+  ///   Stamps the <see cref="TopicEventArgs.Topic"/> from the <paramref name="args"/> via <see cref="StampResolver(Topic?)"/>
+  ///   before raising the event for the same reason and via the same method as <see cref="OnTopicLoaded(TopicLoadEventArgs)"/>.
+  /// </remarks>
+  protected override void OnTopicSaved(TopicSaveEventArgs args) {
+    Contract.Requires(args, nameof(args));
+    StampResolver(args.Topic);
+    base.OnTopicSaved(args);
+  }
+
+  /*============================================================================================================================
   | METHOD: RESOLVE DEFERRED ASSOCIATIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -100,7 +140,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///   </para>
   /// </remarks>
   /// <param name="topic">The root of the topic graph to stamp.</param>
-  protected void StampResolver(Topic? topic) {
+  private void StampResolver(Topic? topic) {
 
     // Skip if the TopicRepository is not an ITopicLoadResolver, or if the topic doesn't exist
     if (this is not ITopicLoadResolver resolver || topic is null) {

@@ -185,11 +185,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     base.SetContentTypeDescriptors(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp resolver
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    StampResolver(topic);
-
-    /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     OnTopicLoaded(new(topic, isRecursive));
@@ -306,11 +301,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     foreach (var attribute in orphanedAttributes) {
       rawTopic.Attributes.Remove(attribute.Key);
     }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp resolver
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    StampResolver(topic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
@@ -494,14 +484,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Raise event for each newly loaded child, and stamp resolver
+    | Raise event for each newly loaded child
     >---------------------------------------------------------------------------------------------------------------------------
     | Children filled here, as opposed to the initial recursive Load(), are new Topic instances introduced to the graph for the
-    | first time—conceptually the same as being loaded via Load(), just via a different entry point. This also stamps each one
-    | with a Resolver, without which they would be unable to lazy-load their own payload.
+    | first time—conceptually the same as being loaded via Load(), just via a different entry point.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.Children)) {
-      StampResolver(topic);
       foreach (var child in topic.Children) {
         OnTopicLoaded(new(child, isRecursive: false));
       }

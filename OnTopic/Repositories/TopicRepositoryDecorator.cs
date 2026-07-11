@@ -121,10 +121,7 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override async Task Save(Topic topic, bool isRecursive = false) {
-    await TopicRepository.Save(topic, isRecursive).ConfigureAwait(false);
-    StampResolver(topic);
-  }
+  public override Task Save(Topic topic, bool isRecursive = false) => TopicRepository.Save(topic, isRecursive);
 
   /*============================================================================================================================
   | METHOD: MOVE
