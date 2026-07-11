@@ -203,6 +203,11 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
       return false;
     }
 
+    // History
+    if (payload.HasFlag(TopicPayload.VersionHistory) && _versionHistory.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
     // Unexpected
     return true;
 
@@ -233,6 +238,11 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     // Extended Attributes
     if (payload.HasFlag(TopicPayload.ExtendedAttributes)) {
       Attributes.LoadState      = state;
+    }
+
+    // History
+    if (payload.HasFlag(TopicPayload.VersionHistory)) {
+      _versionHistory.LoadState = state;
     }
 
   }
