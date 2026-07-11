@@ -60,7 +60,7 @@ internal static class SqlDataReaderExtensions {
   /*============================================================================================================================
   | METHOD: LOAD TOPIC GRAPH
   \---------------------------------------------------------------------------------------------------------------------------*/
-  internal static async Task<Topic?> LoadTopicGraphAsync(
+  internal static async Task<Topic?> LoadTopicGraph(
     this DbDataReader reader,
     int seedTopicId             = -1,
     Topic? referenceTopic       = null,

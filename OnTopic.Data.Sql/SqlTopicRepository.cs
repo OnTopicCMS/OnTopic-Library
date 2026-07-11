@@ -153,7 +153,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       await connection.OpenAsync().ConfigureAwait(false);
       using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
-      topic                     = await reader.LoadTopicGraphAsync(topicId, referenceTopic, false).ConfigureAwait(false);
+      topic                     = await reader.LoadTopicGraph(topicId, referenceTopic, false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
       }
 
       // Load the historical version into the current topic graph
-      topic                     = await reader.LoadTopicGraphAsync(
+      topic                     = await reader.LoadTopicGraph(
         topicId,
         referenceTopic,
         includeExternalReferences: referenceTopic is not null
@@ -357,7 +357,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     try {
       await connection.OpenAsync().ConfigureAwait(false);
       using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
-      await reader.LoadTopicGraphAsync(-1, referenceTopic.GetRootTopic(), false).ConfigureAwait(false);
+      await reader.LoadTopicGraph(-1, referenceTopic.GetRootTopic(), false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
