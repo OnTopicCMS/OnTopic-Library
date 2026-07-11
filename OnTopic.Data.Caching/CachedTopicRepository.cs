@@ -122,8 +122,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = await TopicRepository.Load(topicId, referenceTopic: null, isRecursive: false)
-                                    .ConfigureAwait(false);
+    var loaded                  = await TopicRepository
+      .Load(topicId, referenceTopic, isRecursive, payload)
+      .ConfigureAwait(false);
 
     // If it's missing, populate the appropriate index so we don't try loading it again
     if (loaded is null) {
@@ -196,8 +197,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     /*--------------------------------------------------------------------------------------------------------------------------
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = await TopicRepository.Load(uniqueKey, referenceTopic: null, isRecursive: false)
-                   .ConfigureAwait(false);
+    var loaded                  = await TopicRepository
+      .Load(uniqueKey, referenceTopic, isRecursive, payload)
+      .ConfigureAwait(false);
 
     if (loaded is null) {
       lock (_syncLock) {
