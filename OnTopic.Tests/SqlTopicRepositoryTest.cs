@@ -26,6 +26,14 @@ namespace OnTopic.Tests;
 public class SqlTopicRepositoryTest {
 
   /*============================================================================================================================
+  | PROPERTY: CANCELLATION TOKEN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Shorthand for <see cref="TestContext.Current"/>'s <see cref="TestContext.CancellationToken"/>.
+  /// </summary>
+  private static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
+
+  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WITH TOPIC: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -502,6 +510,30 @@ public class SqlTopicRepositoryTest {
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH HISTORY DEFERRED: RETURNS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with no <see cref="VersionHistoryDataTable"/> records, as
+  ///   would happen when <c>@IncludeHistory</c> is <c>0</c>, and confirms the history boundary is <see cref=
+  ///   "LoadState.NotLoaded"/>, since every persisted topic is expected to have at least one version.
+  /// </summary>
+  [Fact]
+  public async Task LoadTopicGraph_WithHistoryDeferred_ReturnsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container");
+
+    using var tableReader = new DataTableReader(topics);
+
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
+
+    Assert.NotNull(topic);
+    Assert.False(topic.IsLoaded(TopicPayload.VersionHistory));
 
   }
 
