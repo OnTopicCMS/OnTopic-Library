@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Associations;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -283,13 +282,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     \-------------------------------------------------------------------------------------------------------------------------*/
     await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
 
-    if (payload.HasFlag(TopicPayload.Children)) {
-      lock (_syncLock) {
-        foreach (var child in topic.Children) {
-          IndexTopic(child);
-        }
-      }
-    }
     // Update flat index for any newly loaded children
 
   }
@@ -300,7 +292,36 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
 
   /// <inheritdoc />
   /// <remarks>
-  ///   Adds newly-created topics to the flat index. When the save is recursive, all resident descendants are indexed as well,
+  ///   Adds the newly loaded topic to the index and clears any entries previously known to be missing, so a topic that was
+  ///   missing on an earlier lookup can be found now. This automatically indexes any descendants loaded alongside the topic,
+  ///   for cases where the <c>isRecursive</c> parameter was specified on <see cref="Load(int, Topic?, bool, TopicPayload)"/>.
+  ///   Ascendants pulled in alongside it are handled separately by <see cref="MergeIntoCache(Topic)"/>, since only one <see
+  ///   cref="ITopicRepository.TopicLoaded"/> event fires per load, for the requested topic, not each ascendant.
+  /// </remarks>
+  protected override void OnTopicLoaded(TopicLoadEventArgs args) {
+
+    // Setup
+    Contract.Requires(args);
+    base.OnTopicLoaded(args);
+
+    // Index the loaded topic and any descendants that came back attached; FindAll() is lazy-safe and naturally returns just
+    // the topic itself when nothing further is present, so this is correct whether or not the load was recursive
+    lock (_syncLock) {
+      foreach (var topic in args.Topic.FindAll()) {
+        if (_topicIdIndex.ContainsKey(topic.Id)) {
+          continue;
+        }
+        IndexTopic(topic);
+        _absentTopicIdIndex.Remove(topic.Id);
+        _absentUniqueKeyIndex.Remove(topic.GetUniqueKey());
+      }
+    }
+
+  }
+
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Adds newly created topics to the flat index. When the save is recursive, all present descendants are indexed as well,
   ///   since only one <see cref="ITopicRepository.TopicSaved"/> event fires for the root of a recursive save. Also clears any
   ///   entries known to be missing so that a previously missing ID or key that is now created can be found on subsequent
   ///   lookups.
