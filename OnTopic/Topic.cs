@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
 using System.Globalization;
 using OnTopic.Associations;
 using OnTopic.Collections;
@@ -32,6 +31,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   private readonly              KeyedTopicCollection            _children                       = new();
   private readonly              TopicRelationshipMultiMap       _relationships;
   private readonly              TopicReferenceCollection        _references;
+  private readonly              VersionHistoryCollection         _versionHistory                 = new();
   readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
 
   /*============================================================================================================================
@@ -65,7 +65,6 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     IncomingRelationships       = new(this, true);
     _relationships              = new(this);
     _references                 = new(this);
-    VersionHistory              = new();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set entity identifier, if present
@@ -566,7 +565,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   ///   !string.IsNullOrWhiteSpace(value.ToString())
   /// </requires>
   public DateTime LastModified  {
-    get => Attributes.GetDateTime("LastModified", VersionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
+    get => Attributes.GetDateTime("LastModified", _versionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
     set => SetAttributeValue("LastModified", value.ToString(CultureInfo.InvariantCulture));
   }
 
@@ -976,7 +975,11 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   ///   its derived providers).
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s version history.</value>
-  public Collection<DateTime>   VersionHistory { get; }
+  public VersionHistoryCollection VersionHistory {
+    get {
+      return _versionHistory;
+    }
+  }
 
   #endregion
 
