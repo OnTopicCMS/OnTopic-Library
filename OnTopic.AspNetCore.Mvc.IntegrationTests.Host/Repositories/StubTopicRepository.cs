@@ -45,8 +45,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -76,8 +76,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

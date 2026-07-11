@@ -49,8 +49,8 @@ public class TestTopicRepository: DummyTopicRepository {
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) => Task.FromResult(String.IsNullOrEmpty(uniqueKey)? null : _cache.FindFirst(t => t.GetUniqueKey() == uniqueKey));
 
   /*============================================================================================================================

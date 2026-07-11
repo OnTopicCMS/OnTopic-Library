@@ -215,16 +215,16 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   public abstract Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   );
 
   /// <inheritdoc />
   public abstract Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   );
 
   /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>

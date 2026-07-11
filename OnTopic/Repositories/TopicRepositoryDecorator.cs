@@ -83,8 +83,8 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
   public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) =>
     TopicRepository.Load(topicId, referenceTopic, isRecursive, payload);
 
@@ -92,8 +92,8 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) =>
     TopicRepository.Load(uniqueKey, referenceTopic, isRecursive, payload);
 

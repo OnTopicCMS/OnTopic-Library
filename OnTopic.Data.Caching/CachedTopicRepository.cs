@@ -94,8 +94,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -159,8 +159,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

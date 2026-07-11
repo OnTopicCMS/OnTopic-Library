@@ -89,7 +89,8 @@ public interface ITopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <summary>
-  ///   Loads the entire root topic graph, including all descendants.
+  ///   Loads the root <see cref="Topic"/>, using the same lazy defaults as <see cref=
+  ///   "Load(Int32, Topic?, Boolean, TopicPayload)"/>.
   /// </summary>
   /// <returns>A topic object.</returns>
   public Task<Topic?> Load() => Load(-1);
@@ -111,8 +112,8 @@ public interface ITopicRepository {
   Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   );
 
   /// <summary>
@@ -134,8 +135,8 @@ public interface ITopicRepository {
   Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = true,
-    TopicPayload payload        = TopicPayload.All
+    bool isRecursive            = false,
+    TopicPayload payload        = TopicPayload.None
   );
 
   /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>

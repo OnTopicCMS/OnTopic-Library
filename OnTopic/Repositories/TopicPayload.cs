@@ -17,6 +17,12 @@ namespace OnTopic.Repositories;
 /// <remarks>
 ///   <see cref="Children"/>, <see cref="ExtendedAttributes"/>, <see cref="Relationships"/>, <see cref="References"/>, and
 ///   <see cref="VersionHistory"/> all have lazy-loading fill paths via <see cref="ITopicLoadResolver"/>.
+///   <para>
+///     The default value for all <see cref="ITopicRepository"/> <c>Load</c> overloads is <see cref="None"/>, so lazy loading
+///     is the default: Each boundary is fetched on demand via its autoloading accessor or an explicit <c>EnsureLoaded</c> call.
+///     Callers that need everything up front may still request <see cref="All"/> explicitly. Indexed attributes are always
+///     returned as part of the base graph and are not a separately lazy-loadable boundary.
+///   </para>
 /// </remarks>
 [Flags]
 public enum TopicPayload {
