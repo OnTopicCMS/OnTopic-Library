@@ -14,6 +14,10 @@ namespace OnTopic.Repositories;
 ///   <c>Load()</c> overloads to control how much data is fetched in the first place, and on <see cref="ITopicLoadResolver"/>'s
 ///   <c>Ensure()</c> method to specify which previously deferred data to fill on demand.
 /// </summary>
+/// <remarks>
+///   <see cref="Children"/>, <see cref="ExtendedAttributes"/>, <see cref="Relationships"/>, <see cref="References"/>, and
+///   <see cref="VersionHistory"/> all have lazy-loading fill paths via <see cref="ITopicLoadResolver"/>.
+/// </remarks>
 [Flags]
 public enum TopicPayload {
 
@@ -60,11 +64,19 @@ public enum TopicPayload {
   References                    = 1 << 3,
 
   /*----------------------------------------------------------------------------------------------------------------------------
+  | VERSION HISTORY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Version history is included.
+  /// </summary>
+  VersionHistory                = 1 << 4,
+
+  /*----------------------------------------------------------------------------------------------------------------------------
   | ALL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   All payload data. This ensures a comprehensive loading of all available data.
   /// </summary>
-  All                           = Children | ExtendedAttributes | Relationships | References,
+  All                           = Children | ExtendedAttributes | Relationships | References | VersionHistory,
 
 } //Enum
