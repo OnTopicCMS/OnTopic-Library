@@ -49,7 +49,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -77,7 +77,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    await tableReader.LoadTopicGraph(referenceTopic: topic);
+    await tableReader.LoadTopicGraph(referenceTopic: topic, cancellationToken: CancellationToken);
 
     Assert.Equal(parent2, child.Parent);
 
@@ -101,7 +101,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, attributes]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -131,7 +131,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, attributes]);
 
-    await tableReader.LoadTopicGraph(referenceTopic: topic);
+    await tableReader.LoadTopicGraph(referenceTopic: topic, cancellationToken: CancellationToken);
 
     Assert.Null(topic.Attributes.GetValue("Test"));
 
@@ -157,7 +157,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -185,7 +185,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -214,7 +214,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -244,7 +244,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph(1, referenceTopic, false);
+    var topic                   = await tableReader.LoadTopicGraph(1, referenceTopic, false, cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -278,7 +278,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    await tableReader.LoadTopicGraph(1, referenceTopic, false);
+    await tableReader.LoadTopicGraph(1, referenceTopic, false, cancellationToken: CancellationToken);
 
     Assert.Null(referenceTopic.References.GetValue("Reference"));
     Assert.Equal(LoadState.Loaded, referenceTopic.References.LoadState);
@@ -304,7 +304,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -336,7 +336,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([empty, empty, empty, relationships]);
 
-    await tableReader.LoadTopicGraph(referenceTopic: related);
+    await tableReader.LoadTopicGraph(referenceTopic: related, cancellationToken: CancellationToken);
 
     Assert.Empty(topic.Relationships.GetValues("Test"));
 
@@ -367,7 +367,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.True(topic.IsLoaded(TopicPayload.Relationships));
@@ -398,7 +398,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.Relationships));
@@ -425,7 +425,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.True(topic.IsLoaded(TopicPayload.References));
@@ -452,7 +452,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.References));
@@ -479,7 +479,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.Relationships));
@@ -506,7 +506,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.References));
@@ -556,7 +556,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader([topics, empty, empty, empty, empty, versions]);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
@@ -582,7 +582,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.False(topic.IsLoaded(TopicPayload.ExtendedAttributes));
@@ -606,7 +606,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -630,7 +630,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph();
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
     Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
@@ -654,7 +654,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph(1);
+    var topic                   = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
 
     Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
@@ -678,7 +678,7 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader       = new DataTableReader(topics);
 
-    var topic                   = await tableReader.LoadTopicGraph(1);
+    var topic                   = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
 
     Assert.True(topic?.IsLoaded(TopicPayload.Children));
 
@@ -706,7 +706,7 @@ public class SqlTopicRepositoryTest {
 
     // The seed topic is Child (2); Root (1) is on the ancestor chain and is NotLoaded.
     // The Child (seed) and Grandchild are in the fully loaded subtree and are Loaded.
-    var seedTopic               = await tableReader.LoadTopicGraph(2);
+    var seedTopic               = await tableReader.LoadTopicGraph(2, cancellationToken: CancellationToken);
     var rootTopic               = seedTopic?.Parent;
 
     Assert.Equal(LoadState.NotLoaded, rootTopic?.Children.LoadState);
