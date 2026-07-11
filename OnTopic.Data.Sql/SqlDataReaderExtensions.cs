@@ -280,20 +280,7 @@ internal static class SqlDataReaderExtensions {
   /// </param>
   /// <param name="parent">The topic whose immediate children are being loaded.</param>
   /// <param name="topics">The <see cref="TopicIndex"/> to populate with the new child topics.</param>
-  internal static void FillChildren(this IDataReader reader, Topic parent, TopicIndex topics) {
-
-    // Loop through each record, delegating to the shared AddChildTopic()
-    while (reader.Read()) {
-      reader.AddChildTopic(parent, topics);
-    }
-
-    // Mark confirmed children payload as Loaded
-    parent.SetLoadState(TopicPayload.Children, LoadState.Loaded);
-
-  }
-
-  /// <inheritdoc cref="FillChildren"/>
-  internal static async Task FillChildrenAsync(
+  internal static async Task FillChildren(
     this DbDataReader reader,
     Topic parent,
     TopicIndex topics,

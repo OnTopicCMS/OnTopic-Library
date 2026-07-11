@@ -445,7 +445,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
 
       // Children: Fill first result set; FillChildrenAsync() sets each child's Children.LoadState and marks the parent Loaded
       if (payload.HasFlag(TopicPayload.Children)) {
-        await reader.FillChildrenAsync(topic, topics, cancellationToken).ConfigureAwait(false);
+        await reader.FillChildren(topic, topics, cancellationToken).ConfigureAwait(false);
       }
 
       // Otherwise, skip the first result set since the topic is already resident
