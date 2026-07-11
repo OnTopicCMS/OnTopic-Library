@@ -145,6 +145,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
     command.AddParameter("IncludeRelationships", true);
     command.AddParameter("IncludeReferences", true);
+    command.AddParameter("IncludeHistory", payload.HasFlag(TopicPayload.VersionHistory));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
