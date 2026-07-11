@@ -1482,6 +1482,38 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD: WITH ASCENDANTS: STAMPS ASCENDANT RESOLVERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="StubTopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> on a standalone instance—i.e., not
+  ///   wrapped by <see cref="CachedTopicRepository"/>, and never itself passed to <c>Load()</c> before—for a deeply nested
+  ///   topic, and confirms that an ascendant is nonetheless stamped with an <see cref="ITopicLoadResolver"/>, so its own
+  ///   deferred payload can still be lazy-loaded.
+  /// </summary>
+  /// <remarks>
+  ///   Uses a fresh <see cref="StubTopicRepository"/> rather than the shared <see cref="_topicRepository"/> field: The latter
+  ///   is wrapped by <see cref="_cachedTopicRepository"/> in the constructor, whose own seeding recursively stamps the entire
+  ///   (eagerly loaded) stub tree via <see cref="Topic.Children"/>, which would mask whether ascendant stamping actually comes
+  ///   from this test's <c>Load()</c> call.
+  /// </remarks>
+  [Fact]
+  public async Task Load_WithAscendants_StampsAscendantResolvers() {
+
+    // Arrange: use a standalone repository, never wrapped by CachedTopicRepository
+    var topicRepository         = new StubTopicRepository();
+
+    // Act: load a deeply nested topic
+    var topic                   = await topicRepository.Load("Root:Web:Web_3:Web_3_1:Web_3_1_0");
+
+    // An ascendant that was never itself the target of a Load() call is still stamped
+    var ascendant                = topic?.Parent?.Parent;
+
+    Assert.NotNull(ascendant);
+    Assert.NotNull(ascendant?.Resolver);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MOVE: SAME LOCATION: EVENT NOT RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
