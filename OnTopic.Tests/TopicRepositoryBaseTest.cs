@@ -1150,7 +1150,7 @@ public class TopicRepositoryBaseTest {
 
     await _topicRepository.Save(topic);
 
-    Assert.NotNull(topic.Loader);
+    Assert.NotNull(((ITopicLazyLoadable)topic).Loader);
 
   }
 
@@ -1160,7 +1160,7 @@ public class TopicRepositoryBaseTest {
   /// <summary>
   ///   Creates a parent topic with a child, marks the parent's <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"
   ///   />, then saves recursively. Verifies that the child is not saved; the recursive-save loop is gated on <see cref=
-  ///   "Topic.IsLoaded(TopicPayload)"/>, so a not-loaded children collection prevents descent.
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload)"/>, so a not-loaded children collection prevents descent.
   /// </summary>
   [Fact]
   public async Task Save_NotLoadedChildren_SkipsRecursiveDescent() {
@@ -1181,8 +1181,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose extended-attribute boundary has been manually set to <see cref="LoadState.NotLoaded"/>
-  ///   and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"
-  ///   /> via the <see cref="StubTopicRepository"/>'s fill.
+  ///   and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary
+  ///   to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
   public async Task EnsureLoaded_ExtendedAttributesNotLoaded_MarksLoaded() {
@@ -1190,9 +1190,9 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    topic.EnsureLoaded(TopicPayload.ExtendedAttributes);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.ExtendedAttributes);
 
-    Assert.True(topic.IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -1200,9 +1200,9 @@ public class TopicRepositoryBaseTest {
   | TEST: ENSURE LOADED: MIXED BOUNDARIES: SKIPS LOADED BOUNDARIES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> with a mixed set of flags, including one already set to <see
-  ///   cref="LoadState.Loaded"/> and one <see cref="LoadState.NotLoaded"/>, and confirms that only the pending boundary is
-  ///   forwarded to the resolver, leaving the already-loaded boundary unchanged.
+  ///   Calls <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> with a mixed set of flags,
+  ///   including one already set to <see cref="LoadState.Loaded"/> and one <see cref="LoadState.NotLoaded"/>, and confirms that
+  ///   only the pending boundary is forwarded to the resolver, leaving the already-loaded boundary unchanged.
   /// </summary>
   [Fact]
   public async Task EnsureLoaded_MixedBoundaries_SkipsLoadedBoundaries() {
@@ -1210,11 +1210,11 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    Assert.True(topic.IsLoaded(TopicPayload.Children));
-    topic.EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
 
-    Assert.True(topic.IsLoaded(TopicPayload.ExtendedAttributes));
-    Assert.True(topic.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1223,8 +1223,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose relationship boundary has been manually set to <see cref="LoadState.NotLoaded"/>
-  ///   and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"
-  ///   /> via the <see cref="StubTopicRepository"/>'s fill.
+  ///   and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary
+  ///   to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
   ///   On-demand fetching of non-resident relationship targets happens via <c>LoadDeferredAssociations()</c> on <see
@@ -1238,9 +1238,9 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
-    topic.EnsureLoaded(TopicPayload.Relationships);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Relationships);
 
-    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -1249,8 +1249,8 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose reference boundary has been manually set to <see cref="LoadState.NotLoaded"/> and
-  ///   confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref="LoadState.Loaded"/>
-  ///   via the <see cref="StubTopicRepository"/>'s fill.
+  ///   confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary to
+  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
   ///   On-demand fetching of non-resident reference targets happens via <c>LoadDeferredAssociations()</c> on <see cref=
@@ -1264,9 +1264,9 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.References.Deferred.Add(new("_stub", 11111));
-    topic.EnsureLoaded(TopicPayload.References);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.References);
 
-    Assert.True(topic.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -1283,10 +1283,10 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = await _topicRepository.Load(11111);
 
-    topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    ((ITopicLazyLoadable)topic!).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
     _                           = topic.Children;
 
-    Assert.True(topic.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1303,10 +1303,10 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = await _topicRepository.Load(11111);
 
-    Assert.True(topic!.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.Children));
     _                           = topic.Children;
 
-    Assert.True(topic.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1326,7 +1326,7 @@ public class TopicRepositoryBaseTest {
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
     _                           = topic.Relationships;
 
-    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -1343,10 +1343,10 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = await _topicRepository.Load(11111);
 
-    Assert.True(topic!.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.Relationships));
     _                           = topic.Relationships;
 
-    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -1366,7 +1366,7 @@ public class TopicRepositoryBaseTest {
     topic!.References.Deferred.Add(new("_stub", 11111));
     _                           = topic.References;
 
-    Assert.True(topic.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -1383,10 +1383,10 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = await _topicRepository.Load(11111);
 
-    Assert.True(topic!.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.References));
     _                           = topic.References;
 
-    Assert.True(topic.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -1395,18 +1395,18 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> has been manually set to <see cref="LoadState.NotLoaded"
-  ///   /> and confirms that <see cref="Topic.EnsureLoaded(TopicPayload)"/> promotes the boundary to <see cref=
-  ///   "LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
+  ///   /> and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the
+  ///   boundary to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   [Fact]
   public async Task EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
 
-    topic!.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
-    topic.EnsureLoaded(TopicPayload.Children);
+    ((ITopicLazyLoadable)topic!).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children);
 
-    Assert.True(topic.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1414,8 +1414,8 @@ public class TopicRepositoryBaseTest {
   | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
-  ///   /> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"/>
+  ///   event is raised.
   /// </summary>
   [Fact]
   public async Task Move_TopicMovedEvent_IsRaised() {
@@ -1438,8 +1438,8 @@ public class TopicRepositoryBaseTest {
   | TEST: ENSURE LOADED: WITH MISSING RELATIONSHIP TARGET: RESOLVES AND CONNECTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>Relationships.LoadState</c> is <c>NotLoaded</c>,
-  ///   confirming that the resolver re-queries for the topic's relationships, loads any missing targets, and connects the
+  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>Relationships.LoadState</c> is <c>NotLoaded
+  ///   </c>, confirming that the resolver re-queries for the topic's relationships, loads any missing targets, and connects the
   ///   edges.
   /// </summary>
   /// <remarks>
@@ -1511,7 +1511,7 @@ public class TopicRepositoryBaseTest {
     var ascendant                = topic?.Parent?.Parent;
 
     Assert.NotNull(ascendant);
-    Assert.NotNull(ascendant?.Loader);
+    Assert.NotNull((ascendant as ITopicLazyLoadable)?.Loader);
 
   }
 

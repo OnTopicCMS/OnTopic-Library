@@ -220,15 +220,15 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   Sets the <see cref="LoadState"/> for each boundary flag in <paramref name="payload"/> to <paramref name="state"/>.
   /// </summary>
   /// <remarks>
-  ///   Mirrors <see cref="IsLoaded(TopicPayload)"/>: Sets each collection's <see cref="LoadState"/> directly without touching
-  ///   any autoloading getter. Callers are responsible for passing only payload whose transition is safe; for example, <see
-  ///   cref="TopicPayload.Relationships"/> and <see cref="TopicPayload.References"/> should only be promoted to <see cref=
-  ///   "LoadState.Loaded"/> after confirming all targets are available in the graph, since <see cref="LoadState.Loaded"/>
-  ///   permits <c>DeleteUnmatched</c> on save.
+  ///   Mirrors <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload)"/>: Sets each collection's <see cref="LoadState"/> directly
+  ///   without touching any autoloading getter. Callers are responsible for passing only payload whose transition is safe; for
+  ///   example, <see cref="TopicPayload.Relationships"/> and <see cref="TopicPayload.References"/> should only be promoted to
+  ///   <see cref="LoadState.Loaded"/> after confirming all targets are available in the graph, since <see cref=
+  ///   "LoadState.Loaded"/> permits <c>DeleteUnmatched</c> on save.
   /// </remarks>
   /// <param name="payload">One or more <see cref="TopicPayload"/> flags identifying the payload to update.</param>
   /// <param name="state">The <see cref="LoadState"/> to assign to each matched boundary's collection.</param>
-  public void SetLoadState(TopicPayload payload, LoadState state) {
+  void ITopicLazyLoadable.SetLoadState(TopicPayload payload, LoadState state) {
 
     // Children
     if (payload.HasFlag(TopicPayload.Children)) {
@@ -255,14 +255,14 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   redundant round-trips.
   /// </summary>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags to filter.</param>
-  public TopicPayload FilterPayload(TopicPayload payload) {
+  TopicPayload ITopicLazyLoadable.FilterPayload(TopicPayload payload) {
 
     // Strip already-loaded payload
     foreach (var flag in Enum.GetValues<TopicPayload>()) {
       if (flag is TopicPayload.None or TopicPayload.All) {
         continue;
       }
-      if (IsLoaded(flag)) {
+      if (((ITopicLazyLoadable)this).IsLoaded(flag)) {
         payload                 &= ~flag;
       }
     }
@@ -278,7 +278,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <summary>
   ///   Ensures each requested <paramref name="payload"/> flag has been retrieved, while fetching and merging whichever of
   ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those that already are. Returns immediately if
-  ///   the loader is absent or the topic is new.
+  ///   the loader is absent.
   /// </summary>
   /// <remarks>
   ///   Callers such as a mapping or navigation service can await this to prepopulate one or more payloads before accessing
@@ -289,26 +289,26 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  public Task EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken = default) {
+  Task ITopicLazyLoadable.EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (Loader is null || IsNew) {
+    if (((ITopicLazyLoadable)this).Loader is not { } loader) {
       return Task.CompletedTask;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to payload that are not yet loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = FilterPayload(payload);
+    payload                     = ((ITopicLazyLoadable)this).FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return Task.CompletedTask;
     }
 
     // Ensure the appropriate payload are loaded
-    return Loader.EnsureLoaded(this, payload, cancellationToken);
+    return loader.EnsureLoaded(this, payload, cancellationToken);
 
   }
 
@@ -586,12 +586,8 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /*============================================================================================================================
   | PROPERTY: LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Provides an internal reference to the <see cref="ITopicLazyLoader"/> used to lazy load collections on request. This
-  ///   is stamped by the <see cref="LazyLoadingTopicRepository.StampLoader"/> with whichever <see cref="ITopicRepository"/>
-  ///   most recently loaded or saved this topic.
-  /// </summary>
-  internal ITopicLazyLoader? Loader { get; set; }
+  /// <inheritdoc cref="ITopicLazyLoadable.Loader"/>
+  ITopicLazyLoader? ITopicLazyLoadable.Loader { get; set; }
 
   /*============================================================================================================================
   | INTERFACE: TOPIC BACKING ACCESSOR
@@ -935,8 +931,8 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>The current <see cref="Topic"/>'s relationships.</value>
   public TopicRelationshipMultiMap Relationships {
     get {
-      if (_relationships.LoadState is LoadState.NotLoaded && Loader is not null) {
-        EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
+      if (_relationships.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
       }
       return _relationships;
     }
@@ -955,8 +951,8 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>The current <see cref="Topic"/>'s references.</value>
   public TopicReferenceCollection References {
     get {
-      if (_references.LoadState is LoadState.NotLoaded && Loader is not null) {
-        EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
+      if (_references.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
       }
       return _references;
     }
@@ -991,7 +987,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   public VersionHistoryCollection VersionHistory {
     get {
       if (_versionHistory.LoadState is LoadState.NotLoaded) {
-        EnsureLoaded(TopicPayload.VersionHistory).GetAwaiter().GetResult();
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.VersionHistory).GetAwaiter().GetResult();
       }
       return _versionHistory;
     }

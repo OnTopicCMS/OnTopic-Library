@@ -448,7 +448,7 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (isRecursive && topic.IsLoaded(TopicPayload.Children)) {
+    if (isRecursive && ((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
       foreach (var childTopic in topic.Children.ToList()) {
         await Save(childTopic, isRecursive, unresolvedTopics, version).ConfigureAwait(false);
       }

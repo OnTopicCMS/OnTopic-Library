@@ -6,7 +6,6 @@
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
-using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -507,7 +506,6 @@ public class TopicTest {
 
   }
 
-
   /*============================================================================================================================
   | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -533,47 +531,31 @@ public class TopicTest {
   | TEST: ENSURE LOADED: NULL RESOLVER: DOES NOT THROW
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> on an in-memory topic with no resolver and confirms it completes
-  ///   without throwing.
+  ///   Calls <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> on an in-memory topic with no
+  ///   loader and confirms it completes without throwing.
   /// </summary>
   [Fact]
   public void EnsureLoaded_NullResolver_DoesNotThrow() {
     var topic                   = new Topic("Topic", "Page");
-    topic.EnsureLoaded(TopicPayload.All);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.All);
   }
 
   /*============================================================================================================================
-  | TEST: ENSURE LOADED: IS NEW: DOES NOT INVOKE RESOLVER
+  | TEST: IS NEW: NEW TOPIC: HAS NULL LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="Topic.EnsureLoaded(TopicPayload)"/> on a new topic (no <see cref="Topic.Id"/>) that has a resolver
-  ///   stamped on it and confirms the resolver is not invoked.
+  ///   Confirms that a newly constructed, unsaved <see cref="Topic"/> carries a null <see cref="ITopicLazyLoadable.Loader"/>.
   /// </summary>
   /// <remarks>
-  ///   A new topic may carry a resolver if it was created as a child of a loaded node; it must not trigger a fill until it has
-  ///   been persisted and has a stable <see cref="Topic.Id"/>.
+  ///   Ensures that <see cref="Repositories.LazyLoadingTopicRepository"/> only stamps <see cref="ITopicLazyLoadable.Loader"/>
+  ///   once a topic has been loaded or saved (and thus has a stable <see cref="Topic.Id"/>), so an in-memory, unsaved topic can
+  ///   never carry one.
   /// </remarks>
   [Fact]
-  public void EnsureLoaded_IsNew_DoesNotInvokeResolver() {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish variables
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic                   = new Topic("Topic", "Page"); // Id = -1 → IsNew = true
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish tracking resolver
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var tracker                 = new TrackingTopicLazyLoader();
-    topic.Loader                = tracker;
-    topic.Children.LoadState    = LoadState.NotLoaded;
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Verify resolver is not called
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.EnsureLoaded(TopicPayload.Children);
-    Assert.False(tracker.WasCalled);
-
+  public void IsNew_NewTopic_HasNullLoader() {
+    var topic                   = new Topic("Topic", "Page"); // ID = -1, IsNew = true
+    Assert.True(topic.IsNew);
+    Assert.Null(((ITopicLazyLoadable)topic).Loader);
   }
 
 } //Class

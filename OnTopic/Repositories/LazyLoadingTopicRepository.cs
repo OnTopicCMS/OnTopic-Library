@@ -131,10 +131,10 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///     not itself a loader leaves any existing inner stamp intact, rather than overwriting it.
   ///   </para>
   ///   <para>
-  ///     Recursion is gated on <see cref="Topic.IsLoaded(TopicPayload)"/> so that unloaded branches are not forced to load.
-  ///     Since <see cref="Topic.Children"/> is an autoloading getter, recursing into it unconditionally would trigger a load
-  ///     for every <see cref="LoadState.NotLoaded"/> branch just to stamp it; the gate keeps this confined to what's already
-  ///     present.
+  ///     Recursion is gated on <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload)"/> so that unloaded branches are not forced
+  ///     to load. Since <see cref="Topic.Children"/> is an autoloading getter, recursing into it unconditionally would trigger
+  ///     a load for every <see cref="LoadState.NotLoaded"/> branch just to stamp it; the gate keeps this confined to what's
+  ///     already present.
   ///   </para>
   ///   <para>
   ///     Call this method once on the root of a recently loaded or saved graph; it stamps every present topic in one pass.
@@ -149,10 +149,10 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
     }
 
     // Stamp the loader on the topic
-    topic.Loader                = loader;
+    ((ITopicLazyLoadable)topic).Loader = loader;
 
     // If the children aren't yet loaded, don't bother with them yet
-    if (!topic.IsLoaded(TopicPayload.Children)) {
+    if (!((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
       return;
     }
 
@@ -175,7 +175,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///   <para>
   ///     Stops as soon as it reaches an ascendant already stamped by this exact loader instance, on the assumption that its
   ///     own ascendants were already walked and stamped at that time. Comparing by instance, rather than merely checking for a
-  ///     non-null <see cref="Topic.Loader"/>, matters when this method runs as part of a decorated stack: An outer
+  ///     non-null <see cref="ITopicLazyLoadable.Loader"/>, matters when this method runs as part of a decorated stack: An outer
   ///     decorator's pass must not stop early just because an inner repository already stamped the chain with itself.
   ///   </para>
   ///   <para>
@@ -197,8 +197,8 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
     }
 
     // Walk and stamp each ascendant, stopping once this loader has already stamped one
-    for (var ascendant = topic; ascendant is not null && ascendant.Loader != loader; ascendant = ascendant.Parent) {
-      ascendant.Loader          = loader;
+    for (var ascendant = topic; ascendant is not null && ((ITopicLazyLoadable)ascendant).Loader != loader; ascendant = ascendant.Parent) {
+      ((ITopicLazyLoadable)ascendant).Loader = loader;
     }
 
   }

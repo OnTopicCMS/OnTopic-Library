@@ -391,7 +391,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = topic.FilterPayload(payload);
+    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -513,7 +513,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     | are computed from Deferred.Count and require no explicit assignment here. History is set directly by SetVersionHistory()
     | as rows are read, since every persisted topic has at least one version. Only Extended Attributes needs to be set here.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
+    ((ITopicLazyLoadable)topic).SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
   }
 

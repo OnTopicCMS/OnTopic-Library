@@ -56,7 +56,7 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topic.IsLoaded(TopicPayload.Children)) {
+    if (((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
         var nestedResult        = child.FindFirst(predicate);
         if (nestedResult is not null) {
@@ -155,7 +155,7 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topic.IsLoaded(TopicPayload.Children)) {
+    if (((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
         var nestedResults       = child.FindAll(predicate);
         foreach (var matchedTopic in nestedResults) {

@@ -162,7 +162,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Equal(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
-    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -190,7 +190,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.Relationships);
-    Assert.False(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -249,7 +249,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Equal(2, topic.References.GetValue("Test")?.Id);
-    Assert.True(topic.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
     Assert.False(topic.References.IsDirty());
 
   }
@@ -309,7 +309,7 @@ public class SqlTopicRepositoryTest {
     Assert.NotNull(topic);
     Assert.Equal(1, topic.Id);
     Assert.Empty(topic.References);
-    Assert.False(topic.IsLoaded(TopicPayload.References));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -370,7 +370,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.True(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -401,7 +401,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -428,7 +428,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.True(topic.IsLoaded(TopicPayload.References));
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -455,7 +455,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.References));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -482,7 +482,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.Relationships));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -509,7 +509,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.References));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
   }
 
@@ -533,7 +533,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.VersionHistory));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.VersionHistory));
 
   }
 
@@ -585,7 +585,7 @@ public class SqlTopicRepositoryTest {
     var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
 
     Assert.NotNull(topic);
-    Assert.False(topic.IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -656,7 +656,7 @@ public class SqlTopicRepositoryTest {
 
     var topic                   = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
 
-    Assert.True(topic?.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic)?.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -680,7 +680,7 @@ public class SqlTopicRepositoryTest {
 
     var topic                   = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
 
-    Assert.True(topic?.IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)topic)?.IsLoaded(TopicPayload.Children));
 
   }
 

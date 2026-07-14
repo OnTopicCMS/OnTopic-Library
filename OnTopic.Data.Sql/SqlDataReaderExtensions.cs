@@ -293,7 +293,7 @@ internal static class SqlDataReaderExtensions {
     }
 
     // Mark confirmed children payload as Loaded
-    parent.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+    ((ITopicLazyLoadable)parent).SetLoadState(TopicPayload.Children, LoadState.Loaded);
 
   }
 

@@ -336,7 +336,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter out any already loaded payloads
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = topic.FilterPayload(payload);
+    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -386,7 +386,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
       // Mark the children as fetched and loaded
       RecordFetch(topic.Id, TopicPayload.Children);
-      topic.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+      ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.Children, LoadState.Loaded);
 
     }
 
@@ -402,7 +402,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
       // Mark the extended attributes as fetched and loaded
       RecordFetch(topic.Id, TopicPayload.ExtendedAttributes);
-      topic.SetLoadState(TopicPayload.ExtendedAttributes, LoadState.Loaded);
+      ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.ExtendedAttributes, LoadState.Loaded);
 
     }
 
@@ -506,10 +506,10 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     }
 
     // Set extended attributes
-    topic.SetLoadState(TopicPayload.ExtendedAttributes, LoadState.NotLoaded);
+    ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.ExtendedAttributes, LoadState.NotLoaded);
 
     // Set children
-    topic.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
 
     // Add relationships to Deferred
     foreach (var (key, targetId) in record.Relationships) {

@@ -261,7 +261,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (i.e., not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = topic.FilterPayload(payload);
+    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;

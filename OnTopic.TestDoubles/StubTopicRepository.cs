@@ -199,7 +199,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
     | Mark payload as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
     | and marking Loaded is always safe. Children is already populated in the stubs and needs no action.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.SetLoadState(payload, LoadState.Loaded);
+    ((ITopicLazyLoadable)topic).SetLoadState(payload, LoadState.Loaded);
 
     // Relationships and References are computed from Deferred.Count; clear any test-seeded deferred entries to express Loaded
     var rawTopic                = (ITopicBackingAccessor)topic;

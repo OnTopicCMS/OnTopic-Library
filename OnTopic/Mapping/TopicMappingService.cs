@@ -803,7 +803,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Warm lazy-loaded payload before probing collections
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await source.EnsureLoaded(AssociationMap.PayloadMappings[configuration.CollectionType]).ConfigureAwait(false);
+    await ((ITopicLazyLoadable)source).EnsureLoaded(AssociationMap.PayloadMappings[configuration.CollectionType]).ConfigureAwait(false);
+
     var                         listSource                      = (IList<Topic>)[];
     var                         collectionKey                   = configuration.CollectionKey;
     var                         collectionType                  = configuration.CollectionType;
