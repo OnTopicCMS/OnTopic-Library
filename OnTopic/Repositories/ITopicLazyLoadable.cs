@@ -32,7 +32,37 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   ///   in traversal and "gating" logic that should not trigger lazy loading.
   /// </remarks>
   /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
-  bool IsLoaded(TopicPayload payload);
+  bool IsLoaded(TopicPayload payload) {
+
+    // Children
+    if (payload.HasFlag(TopicPayload.Children) && Children.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Extended Attributes
+    if (payload.HasFlag(TopicPayload.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Relationships
+    if (payload.HasFlag(TopicPayload.Relationships) && Relationships.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // References
+    if (payload.HasFlag(TopicPayload.References) && References.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // History
+    if (payload.HasFlag(TopicPayload.VersionHistory) && VersionHistory.LoadState is not LoadState.Loaded) {
+      return false;
+    }
+
+    // Unexpected
+    return true;
+
+  }
 
   /*============================================================================================================================
   | METHOD: SET LOAD STATE
@@ -46,7 +76,24 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   /// </remarks>
   /// <param name="payload">One or more <see cref="TopicPayload"/> flags identifying the payload to update.</param>
   /// <param name="state">The <see cref="LoadState"/> to assign to each matched boundary's collection.</param>
-  void SetLoadState(TopicPayload payload, LoadState state);
+  void SetLoadState(TopicPayload payload, LoadState state) {
+
+    // Children
+    if (payload.HasFlag(TopicPayload.Children)) {
+      Children.LoadState        = state;
+    }
+
+    // Extended Attributes
+    if (payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+      Attributes.LoadState      = state;
+    }
+
+    // History
+    if (payload.HasFlag(TopicPayload.VersionHistory)) {
+      VersionHistory.LoadState  = state;
+    }
+
+  }
 
   /*============================================================================================================================
   | METHOD: FILTER PAYLOAD
@@ -56,7 +103,22 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   ///   redundant round trips.
   /// </summary>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags to filter.</param>
-  TopicPayload FilterPayload(TopicPayload payload);
+  TopicPayload FilterPayload(TopicPayload payload) {
+
+    // Strip already-loaded payload
+    foreach (var flag in Enum.GetValues<TopicPayload>()) {
+      if (flag is TopicPayload.None or TopicPayload.All) {
+        continue;
+      }
+      if (IsLoaded(flag)) {
+        payload                 &= ~flag;
+      }
+    }
+
+    // Return filtered payload
+    return payload;
+
+  }
 
   /*============================================================================================================================
   | METHODS: ENSURE LOADED
@@ -75,7 +137,24 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  Task EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken = default);
+  Task EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken = default) {
+
+    // Skip if the topic isn't "stamped" with the loader
+    if (Loader is not { } loader) {
+      return Task.CompletedTask;
+    }
+
+    // Filter to payload that are not yet loaded
+    payload                     = FilterPayload(payload);
+    if (payload is TopicPayload.None) {
+      return Task.CompletedTask;
+    }
+
+    // Ensure the appropriate payload are loaded
+    // (Topic)this is safe since Topic is the sole implementer of ITopicLazyLoadable
+    return loader.EnsureLoaded((Topic)this, payload, cancellationToken);
+
+  }
 
   /*============================================================================================================================
   | PROPERTY: LOADER

@@ -28,11 +28,11 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   private                       string                          _contentType;
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
-  private readonly              KeyedTopicCollection            _children                       = new();
+  private readonly              KeyedTopicCollection            _children                       = [];
   private readonly              TopicRelationshipMultiMap       _relationships;
   private readonly              TopicReferenceCollection        _references;
-  private readonly              VersionHistoryCollection         _versionHistory                 = new();
-  readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
+  private readonly              VersionHistoryCollection        _versionHistory                 = [];
+  readonly                      DirtyKeyCollection              _dirtyKeys                      = [];
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -167,149 +167,6 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
       }
       return _children;
     }
-  }
-
-  /*============================================================================================================================
-  | METHOD: IS LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Returns <see langword="true"/> if every boundary flag in <paramref name="payload"/> has already been fetched from
-  ///   the underlying persistence store; <see langword="false"/> if any one of them are <see cref="LoadState.NotLoaded"/>.
-  /// </summary>
-  /// <remarks>
-  ///   Reads each collection's <see cref="LoadState"/> directly without touching any autoloading getter, making it safe to
-  ///   use in traversal and "gating" logic that should not trigger lazy-loading.
-  /// </remarks>
-  /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
-  bool ITopicLazyLoadable.IsLoaded(TopicPayload payload) {
-
-    // Children
-    if (payload.HasFlag(TopicPayload.Children) && _children.LoadState is not LoadState.Loaded) {
-      return false;
-    }
-
-    // Extended Attributes
-    if (payload.HasFlag(TopicPayload.ExtendedAttributes) && Attributes.LoadState is not LoadState.Loaded) {
-      return false;
-    }
-
-    // Relationships
-    if (payload.HasFlag(TopicPayload.Relationships) && _relationships.LoadState is not LoadState.Loaded) {
-      return false;
-    }
-
-    // References
-    if (payload.HasFlag(TopicPayload.References) && _references.LoadState is not LoadState.Loaded) {
-      return false;
-    }
-
-    // History
-    if (payload.HasFlag(TopicPayload.VersionHistory) && _versionHistory.LoadState is not LoadState.Loaded) {
-      return false;
-    }
-
-    // Unexpected
-    return true;
-
-  }
-
-  /*============================================================================================================================
-  | METHOD: SET LOAD STATE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Sets the <see cref="LoadState"/> for each boundary flag in <paramref name="payload"/> to <paramref name="state"/>.
-  /// </summary>
-  /// <remarks>
-  ///   Mirrors <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload)"/>: Sets each collection's <see cref="LoadState"/> directly
-  ///   without touching any autoloading getter. Callers are responsible for passing only payload whose transition is safe; for
-  ///   example, <see cref="TopicPayload.Relationships"/> and <see cref="TopicPayload.References"/> should only be promoted to
-  ///   <see cref="LoadState.Loaded"/> after confirming all targets are available in the graph, since <see cref=
-  ///   "LoadState.Loaded"/> permits <c>DeleteUnmatched</c> on save.
-  /// </remarks>
-  /// <param name="payload">One or more <see cref="TopicPayload"/> flags identifying the payload to update.</param>
-  /// <param name="state">The <see cref="LoadState"/> to assign to each matched boundary's collection.</param>
-  void ITopicLazyLoadable.SetLoadState(TopicPayload payload, LoadState state) {
-
-    // Children
-    if (payload.HasFlag(TopicPayload.Children)) {
-      _children.LoadState       = state;
-    }
-
-    // Extended Attributes
-    if (payload.HasFlag(TopicPayload.ExtendedAttributes)) {
-      Attributes.LoadState      = state;
-    }
-
-    // History
-    if (payload.HasFlag(TopicPayload.VersionHistory)) {
-      _versionHistory.LoadState = state;
-    }
-
-  }
-
-  /*============================================================================================================================
-  | METHOD: FILTER PAYLOAD
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Returns <paramref name="payload"/> with any already-<see cref="LoadState.Loaded"/> flags cleared, so callers skip
-  ///   redundant round-trips.
-  /// </summary>
-  /// <param name="payload">The requested <see cref="TopicPayload"/> flags to filter.</param>
-  TopicPayload ITopicLazyLoadable.FilterPayload(TopicPayload payload) {
-
-    // Strip already-loaded payload
-    foreach (var flag in Enum.GetValues<TopicPayload>()) {
-      if (flag is TopicPayload.None or TopicPayload.All) {
-        continue;
-      }
-      if (((ITopicLazyLoadable)this).IsLoaded(flag)) {
-        payload                 &= ~flag;
-      }
-    }
-
-    // Return filtered payload
-    return payload;
-
-  }
-
-  /*============================================================================================================================
-  | METHODS: ENSURE LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Ensures each requested <paramref name="payload"/> flag has been retrieved, while fetching and merging whichever of
-  ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those that already are. Returns immediately if
-  ///   the loader is absent.
-  /// </summary>
-  /// <remarks>
-  ///   Callers such as a mapping or navigation service can await this to prepopulate one or more payloads before accessing
-  ///   them, thus avoiding a synchronous block on a "cold" node. The autoloading property getters (e.g., <see cref="Children"/>)
-  ///   call this synchronously via <c>GetAwaiter().GetResult()</c> as an accepted sync-over-async boundary.
-  /// </remarks>
-  /// <param name="payload">
-  ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
-  /// </param>
-  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  Task ITopicLazyLoadable.EnsureLoaded(TopicPayload payload, CancellationToken cancellationToken) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip for obvious reasons
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (((ITopicLazyLoadable)this).Loader is not { } loader) {
-      return Task.CompletedTask;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Filter to payload that are not yet loaded
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = ((ITopicLazyLoadable)this).FilterPayload(payload);
-
-    if (payload is TopicPayload.None) {
-      return Task.CompletedTask;
-    }
-
-    // Ensure the appropriate payload are loaded
-    return loader.EnsureLoaded(this, payload, cancellationToken);
-
   }
 
   /*============================================================================================================================
