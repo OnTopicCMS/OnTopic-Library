@@ -91,11 +91,13 @@ internal static class SqlDataReaderExtensions {
 
       var rawTopic              = (ITopicBackingAccessor)addedTopic;
 
-      // HasExtendedAttribute is NULL when extended attributes are included
-      // HasExtendedAttribute is true when the blob wasn't loaded, but exists
-      if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
-        rawTopic.Attributes.LoadState = LoadState.NotLoaded;
-      }
+      // HasExtendedAttribute is NULL when extended attributes are included: Converge to Loaded, even on a pre-existing topic
+      // whose extended boundary was previously NotLoaded, and even if the topic has no extended attributes to read.
+      // HasExtendedAttribute is true when the blob wasn't loaded, but exists: Downgrade to NotLoaded, deferring the fetch.
+      // HasExtendedAttribute is false when the topic has no extended attributes at all: nothing to defer, so Loaded.
+      rawTopic.Attributes.LoadState = reader.GetNullableBoolean("HasExtendedAttributes") is true?
+        LoadState.NotLoaded :
+        LoadState.Loaded;
 
       // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics.
       // Pre-existing topics are excluded; their LoadState is already established, and they may have the lazy resolver wired up.
