@@ -465,7 +465,7 @@ internal static class SqlDataReaderExtensions {
 
     // When the target is absent, defer it for resolution on next access
     if (related is null) {
-      rawTopic.Relationships.Deferred.Add(new(relationshipKey, targetTopicId));
+      rawTopic.Relationships.Deferred.SetValue(relationshipKey, targetTopicId);
       return;
     }
 
@@ -526,7 +526,7 @@ internal static class SqlDataReaderExtensions {
 
     // When the target isn't (yet) available, defer it to be lazy loaded when the references are accessed
     else {
-      rawTopic.References.Deferred.Add(new(referenceKey, targetTopicId.Value));
+      rawTopic.References.Deferred.SetValue(referenceKey, targetTopicId.Value);
       return;
     }
 

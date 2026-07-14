@@ -68,7 +68,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
   ///   to the topic graph.
   /// </remarks>
-  public Collection<DeferredAssociation> Deferred { get; } = new();
+  public DeferredAssociationCollection Deferred { get; } = new(singleValued: true);
 
   /*============================================================================================================================
   | INSERT ITEM
@@ -89,12 +89,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove any pending deferred entry for this reference key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i                  = Deferred.Count - 1; i >= 0; i--) {
-      if (Deferred[i].Key == item.Key) {
-        Deferred.RemoveAt(i);
-        break;
-      }
-    }
+    Deferred.Remove(item.Key);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
@@ -127,12 +122,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove any pending deferred entry for this reference key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    for (var i                  = Deferred.Count - 1; i >= 0; i--) {
-      if (Deferred[i].Key == item.Key) {
-        Deferred.RemoveAt(i);
-        break;
-      }
-    }
+    Deferred.Remove(item.Key);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references

@@ -431,8 +431,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     | Process database query
     >---------------------------------------------------------------------------------------------------------------------------
     | Use the full live graph as the topic index so already-resident relationship targets are found without extra round-trips.
-    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; stale deferred
-    | entries are cleared before processing to prevent duplicates from accumulating in the Deferred collection.
+    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; the
+    | DeferredAssociationCollection.SetValue() deduplicate those values so reprocessing doesn't accumulate duplicate entries in
+    | the Deferred collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topics                  = topic.GetRootTopic().GetTopicIndex();
     var rawTopic                = (ITopicBackingAccessor)topic;
@@ -463,12 +464,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
       while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
         reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
-      }
-
-      // Clear stale deferred entries on the parent/seed topic before its associations are re-processed alongside children
-      if (payload.HasFlag(TopicPayload.Children)) {
-        rawTopic.Relationships.Deferred.Clear();
-        rawTopic.References.Deferred.Clear();
       }
 
       // Relationships (will be empty, unless loading children)

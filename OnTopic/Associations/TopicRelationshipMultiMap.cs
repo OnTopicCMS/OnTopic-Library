@@ -213,12 +213,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
       }
 
       // Remove any pending deferred entry for this relationship/target pair
-      for (var i                = Deferred.Count - 1; i >= 0; i--) {
-        if (Deferred[i].Key == relationshipKey && Deferred[i].TopicId == topic.Id) {
-          Deferred.RemoveAt(i);
-          break;
-        }
-      }
+      Deferred.Remove(relationshipKey, topic.Id);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -275,7 +270,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
   ///   to the topic graph.
   /// </remarks>
-  public Collection<DeferredAssociation> Deferred { get; } = new();
+  public DeferredAssociationCollection Deferred { get; } = new();
 
   /*============================================================================================================================
   | METHOD: IS DIRTY?
