@@ -21,7 +21,7 @@ namespace OnTopic.Data.Sql;
 /// <remarks>
 ///   Concrete implementation of the <see cref="ITopicRepository"/> class.
 /// </remarks>
-public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadResolver {
+public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyLoader {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -370,7 +370,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   }
 
   /*============================================================================================================================
-  | METHODS: TOPIC LOAD RESOLVER
+  | METHODS: TOPIC LAZY LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
@@ -814,7 +814,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLoadR
   | METHOD: ADD ENSURE LOADED PARAMETERS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Configures a <see cref="SqlCommand"/> targeting <c>GetTopics</c> for use by the <see cref="ITopicLoadResolver"/>,
+  ///   Configures a <see cref="SqlCommand"/> targeting <c>GetTopics</c> for use by the <see cref="ITopicLazyLoader"/>,
   ///   setting the payload parameters based on the requested <paramref name="payload"/>.
   /// </summary>
   /// <remarks>

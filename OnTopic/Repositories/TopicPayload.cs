@@ -11,12 +11,12 @@ namespace OnTopic.Repositories;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Specifies which data ensure is loaded on a <see cref="Topic"/>. Used as a parameter on <see cref="ITopicRepository"/>'s
-///   <c>Load()</c> overloads to control how much data is fetched in the first place, and on <see cref="ITopicLoadResolver"/>'s
+///   <c>Load()</c> overloads to control how much data is fetched in the first place, and on <see cref="ITopicLazyLoader"/>'s
 ///   <c>Ensure()</c> method to specify which previously deferred data to fill on demand.
 /// </summary>
 /// <remarks>
 ///   <see cref="Children"/>, <see cref="ExtendedAttributes"/>, <see cref="Relationships"/>, <see cref="References"/>, and
-///   <see cref="VersionHistory"/> all have lazy-loading fill paths via <see cref="ITopicLoadResolver"/>.
+///   <see cref="VersionHistory"/> all have lazy-loading fill paths via <see cref="ITopicLazyLoader"/>.
 ///   <para>
 ///     The default value for all <see cref="ITopicRepository"/> <c>Load</c> overloads is <see cref="None"/>, so lazy loading
 ///     is the default: Each boundary is fetched on demand via its autoloading accessor or an explicit <c>EnsureLoaded</c> call.

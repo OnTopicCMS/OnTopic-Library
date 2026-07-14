@@ -18,7 +18,7 @@ namespace OnTopic.Repositories;
 ///   <para>
 ///     <see cref="Topic"/> exposes <see cref="Topic.Children"/>, <see cref="Topic.Relationships"/>, and <see cref=
 ///     "Topic.References"/> as autoloading getters: Accessing them can trigger a synchronous <see cref=
-///     "ITopicLoadResolver.EnsureLoaded(Topic, TopicPayload)"/> call. Repository and resolver infrastructure that reads or
+///     "ITopicLazyLoader.EnsureLoaded(Topic, TopicPayload)"/> call. Repository and resolver infrastructure that reads or
 ///     writes these collections as part of a load or resolve operation must bypass those getters to avoid infinite loops.
 ///   </para>
 ///   <para>

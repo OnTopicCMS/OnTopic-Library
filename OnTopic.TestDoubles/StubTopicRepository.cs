@@ -23,7 +23,7 @@ namespace OnTopic.TestDoubles;
 ///   dependency on a live database or persistent data.
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoadResolver {
+public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazyLoader {
 
   /*============================================================================================================================
   | VARIABLES
@@ -180,7 +180,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLoad
   }
 
   /*============================================================================================================================
-  | METHODS: TOPIC LOAD RESOLVER
+  | METHODS: TOPIC LAZY LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   /// <remarks>

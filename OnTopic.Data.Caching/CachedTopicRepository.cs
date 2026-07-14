@@ -20,7 +20,7 @@ namespace OnTopic.Data.Caching;
 ///   for an actual data access class.
 /// </remarks>
 
-public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolver {
+public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader {
 
   /*============================================================================================================================
   | VARIABLES
@@ -247,7 +247,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
   }
 
   /*============================================================================================================================
-  | METHODS: TOPIC LOAD RESOLVER
+  | METHODS: TOPIC LAZY LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
@@ -276,7 +276,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLoadResolve
     | them, it would do so via its own, non-cache-aware Load(), producing a duplicate Topic instance for any target that's
     | already present in this cache.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (TopicRepository is ITopicLoadResolver resolver) {
+    if (TopicRepository is ITopicLazyLoader resolver) {
       var innerPayload          = payload & ~(TopicPayload.Relationships | TopicPayload.References);
       if (innerPayload is not TopicPayload.None) {
         await resolver.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);

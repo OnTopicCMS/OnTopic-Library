@@ -1139,7 +1139,7 @@ public class TopicRepositoryBaseTest {
   | TEST: SAVE: NEW TOPIC: STAMPS RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Saves a new <see cref="Topic"/> and confirms that the repository stamps a <see cref="ITopicLoadResolver"/> onto it so
+  ///   Saves a new <see cref="Topic"/> and confirms that the repository stamps a <see cref="ITopicLazyLoader"/> onto it so
   ///   that deferred boundaries can be populated on demand after the save.
   /// </summary>
   [Fact]
@@ -1489,7 +1489,7 @@ public class TopicRepositoryBaseTest {
   /// <summary>
   ///   Calls <see cref="StubTopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> on a standalone instance—i.e., not
   ///   wrapped by <see cref="CachedTopicRepository"/>, and never itself passed to <c>Load()</c> before—for a deeply nested
-  ///   topic, and confirms that an ascendant is nonetheless stamped with an <see cref="ITopicLoadResolver"/>, so its own
+  ///   topic, and confirms that an ascendant is nonetheless stamped with an <see cref="ITopicLazyLoader"/>, so its own
   ///   deferred payload can still be lazy-loaded.
   /// </summary>
   /// <remarks>

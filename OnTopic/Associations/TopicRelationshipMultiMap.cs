@@ -271,7 +271,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// </summary>
   /// <remarks>
   ///   Written to by the <see cref="ITopicRepository"/> when a relationship target cannot be found in the current <see cref=
-  ///   "TopicIndex"/>. The <see cref="Repositories.ITopicLoadResolver.EnsureLoaded(Topic, TopicPayload)"/> resolves each entry
+  ///   "TopicIndex"/>. The <see cref="Repositories.ITopicLazyLoader.EnsureLoaded(Topic, TopicPayload)"/> resolves each entry
   ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
   ///   to the topic graph.
   /// </remarks>

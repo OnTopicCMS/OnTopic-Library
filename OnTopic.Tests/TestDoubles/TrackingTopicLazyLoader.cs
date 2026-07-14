@@ -8,19 +8,19 @@ using OnTopic.Repositories;
 namespace OnTopic.Tests.TestDoubles;
 
 /*==============================================================================================================================
-| CLASS: TRACKING TOPIC LOAD RESOLVER
+| CLASS: TRACKING TOPIC LAZY LOADER
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   A minimal <see cref="ITopicLoadResolver"/> spy that records whether it was invoked, without performing any actual loading.
+///   A minimal <see cref="ITopicLazyLoader"/> spy that records whether it was invoked, without performing any actual loading.
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
+internal sealed class TrackingTopicLazyLoader : ITopicLazyLoader {
 
   /*============================================================================================================================
   | PROPERTY: WAS CALLED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Returns <see langword="true"/> if <see cref="ITopicLoadResolver.EnsureLoaded"/> was invoked.
+  ///   Returns <see langword="true"/> if <see cref="ITopicLazyLoader.EnsureLoaded"/> was invoked.
   /// </summary>
   public bool                   WasCalled                       { get; private set; }
 
@@ -28,7 +28,7 @@ internal sealed class TrackingTopicLoadResolver : ITopicLoadResolver {
   | METHOD: ENSURE LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  Task ITopicLoadResolver.EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+  Task ITopicLazyLoader.EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
     WasCalled                   = true;
     return Task.CompletedTask;
   }

@@ -18,7 +18,7 @@ namespace OnTopic.Repositories;
 ///   This sits between <see cref="ObservableTopicRepository"/>, which offers only event handling, and the two families of
 ///   concrete <see cref="ITopicRepository"/> base classes: <see cref="TopicRepository"/>, for implementations that persist
 ///   directly to a data store, and <see cref="TopicRepositoryDecorator"/>, for implementations that wrap another <see cref=
-///   "ITopicRepository"/>. Both need to stamp topics with an <see cref="ITopicLoadResolver"/> and resolve deferred
+///   "ITopicRepository"/>. Both need to stamp topics with an <see cref="ITopicLazyLoader"/> and resolve deferred
 ///   associations, but neither should be coupled to the other's specific concerns (e.g., <see cref="TopicRepository"/>'s
 ///   sealed <c>Save()</c>, <c>Move()</c>, and <c>Delete()</c> template methods, which <see cref="TopicRepositoryDecorator"/>
 ///   must remain free to override for delegation).
@@ -123,11 +123,11 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Stamps the supplied <paramref name="topic"/> and its entire loaded graph with this repository as the <see cref=
-  ///   "ITopicLoadResolver"/>, enabling each topic to populate deferred portions of itself on demand.
+  ///   "ITopicLazyLoader"/>, enabling each topic to populate deferred portions of itself on demand.
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Only stamps when the current repository implements <see cref="ITopicLoadResolver"/>. A passthrough decorator that is
+  ///     Only stamps when the current repository implements <see cref="ITopicLazyLoader"/>. A passthrough decorator that is
   ///     not itself a resolver leaves any existing inner stamp intact, rather than overwriting it.
   ///   </para>
   ///   <para>
@@ -143,8 +143,8 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// <param name="topic">The root of the topic graph to stamp.</param>
   private void StampResolver(Topic? topic) {
 
-    // Skip if the TopicRepository is not an ITopicLoadResolver, or if the topic doesn't exist
-    if (this is not ITopicLoadResolver resolver || topic is null) {
+    // Skip if the TopicRepository is not an ITopicLazyLoader, or if the topic doesn't exist
+    if (this is not ITopicLazyLoader resolver || topic is null) {
       return;
     }
 
@@ -168,7 +168,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Walks a <paramref name="topic"/>'s <see cref="Topic.Parent"/> chain, stamping each with this repository as the <see
-  ///   cref="ITopicLoadResolver"/>, so an ascendant that was never individually loaded can still lazy-load its own deferred
+  ///   cref="ITopicLazyLoader"/>, so an ascendant that was never individually loaded can still lazy-load its own deferred
   ///   payload.
   /// </summary>
   /// <remarks>
@@ -191,8 +191,8 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// </param>
   private void StampAscendants(Topic? topic) {
 
-    // Skip if the current repository is not an ITopicLoadResolver
-    if (this is not ITopicLoadResolver resolver) {
+    // Skip if the current repository is not an ITopicLazyLoader
+    if (this is not ITopicLazyLoader resolver) {
       return;
     }
 

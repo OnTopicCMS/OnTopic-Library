@@ -587,11 +587,11 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   | PROPERTY: RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides an internal reference to the <see cref="ITopicLoadResolver"/> used to lazy load collections on request. This
+  ///   Provides an internal reference to the <see cref="ITopicLazyLoader"/> used to lazy load collections on request. This
   ///   is stamped by the <see cref="LazyLoadingTopicRepository.StampResolver"/> with whichever <see cref="ITopicRepository"/>
   ///   most recently loaded or saved this topic.
   /// </summary>
-  internal ITopicLoadResolver? Resolver { get; set; }
+  internal ITopicLazyLoader? Resolver { get; set; }
 
   /*============================================================================================================================
   | INTERFACE: TOPIC BACKING ACCESSOR

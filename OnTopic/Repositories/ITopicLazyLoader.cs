@@ -7,14 +7,14 @@
 namespace OnTopic.Repositories;
 
 /*==============================================================================================================================
-| INTERFACE: TOPIC LOAD RESOLVER
+| INTERFACE: TOPIC LAZY LOADER
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides a narrow seam through which a <see cref="Topic"/> can populate one or more deferred payload on demand, without
 ///   taking a dependency on the full <see cref="ITopicRepository"/>. Instances are stamped onto topics by the repository as
 ///   they are loaded or saved; topics created in memory carry no resolver.
 /// </summary>
-public interface ITopicLoadResolver {
+public interface ITopicLazyLoader {
 
   /*============================================================================================================================
   | METHOD: ENSURE LOADED

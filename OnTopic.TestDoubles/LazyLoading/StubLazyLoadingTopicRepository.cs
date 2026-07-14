@@ -14,7 +14,7 @@ namespace OnTopic.TestDoubles.LazyLoading;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides a lazy-loading implementation of an <see cref="ITopicRepository"/>, serving partially loaded topics with the
-///   ability to be dynamically filled by e.g., <see cref="ITopicLoadResolver.EnsureLoaded"/>.
+///   ability to be dynamically filled by e.g., <see cref="ITopicLazyLoader.EnsureLoaded"/>.
 /// </summary>
 /// <remarks>
 ///   <para>
@@ -44,7 +44,7 @@ namespace OnTopic.TestDoubles.LazyLoading;
 ///   </para>
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository, ITopicLoadResolver {
+public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository, ITopicLazyLoader {
 
   /*============================================================================================================================
   | VARIABLES
@@ -267,7 +267,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   protected override Task DeleteTopic(Topic topic) => Task.CompletedTask;
 
   /*============================================================================================================================
-  | METHODS: TOPIC LOAD RESOLVER
+  | METHODS: TOPIC LAZY LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   /// <remarks>
