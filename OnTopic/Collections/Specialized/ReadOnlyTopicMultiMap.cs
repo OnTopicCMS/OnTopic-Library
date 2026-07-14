@@ -41,7 +41,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   "ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
   /// </returns>
   [NotNull, DisallowNull]
-  protected TopicMultiMap? Source { get; init; }
+  private protected TopicMultiMap? Source { get; init; }
 
   /*============================================================================================================================
   | PROPERTY: KEYS
