@@ -32,8 +32,8 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// <remarks>
   ///   <para>
   ///     Stamps the <see cref="TopicEventArgs.Topic"/> from the <paramref name="args"/>, and any descendants attached to it,
-  ///     via <see cref="StampResolver(Topic?)"/> and <see cref="StampAscendants(Topic?)"/> before raising the event, so the
-  ///     resolver gets stamped without the resolvers needing to be aware of it.
+  ///     via <see cref="StampLoader(Topic?)"/> and <see cref="StampAscendants(Topic?)"/> before raising the event, so the
+  ///     loader gets stamped without the loaders needing to be aware of it.
   ///   </para>
   ///   <para>
   ///     <see cref="ITopicRepository.TopicLoaded"/> fires only for the requested topic, never individually for any descendants
@@ -47,7 +47,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// </remarks>
   protected override void OnTopicLoaded(TopicLoadEventArgs args) {
     Contract.Requires(args, nameof(args));
-    StampResolver(args.Topic);
+    StampLoader(args.Topic);
     StampAscendants(args.Topic.Parent);
     base.OnTopicLoaded(args);
   }
@@ -57,17 +57,17 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
   /// <remarks>
-  ///   Stamps the <see cref="TopicEventArgs.Topic"/> from the <paramref name="args"/> via <see cref="StampResolver(Topic?)"/>
+  ///   Stamps the <see cref="TopicEventArgs.Topic"/> from the <paramref name="args"/> via <see cref="StampLoader(Topic?)"/>
   ///   before raising the event for the same reason and via the same method as <see cref="OnTopicLoaded(TopicLoadEventArgs)"/>.
   /// </remarks>
   protected override void OnTopicSaved(TopicSaveEventArgs args) {
     Contract.Requires(args, nameof(args));
-    StampResolver(args.Topic);
+    StampLoader(args.Topic);
     base.OnTopicSaved(args);
   }
 
   /*============================================================================================================================
-  | METHOD: RESOLVE DEFERRED ASSOCIATIONS
+  | METHOD: LOAD DEFERRED ASSOCIATIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Resolves any relationship and reference targets that were deferred when loading each through this repository's own
@@ -84,7 +84,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///   "TopicPayload.References"/> are acted upon.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  protected async Task ResolveDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
+  protected async Task LoadDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
 
     // Validate input
     Contract.Requires(topic, nameof(topic));
@@ -119,7 +119,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   }
 
   /*============================================================================================================================
-  | METHOD: STAMP RESOLVER
+  | METHOD: STAMP LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Stamps the supplied <paramref name="topic"/> and its entire loaded graph with this repository as the <see cref=
@@ -128,7 +128,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// <remarks>
   ///   <para>
   ///     Only stamps when the current repository implements <see cref="ITopicLazyLoader"/>. A passthrough decorator that is
-  ///     not itself a resolver leaves any existing inner stamp intact, rather than overwriting it.
+  ///     not itself a loader leaves any existing inner stamp intact, rather than overwriting it.
   ///   </para>
   ///   <para>
   ///     Recursion is gated on <see cref="Topic.IsLoaded(TopicPayload)"/> so that unloaded branches are not forced to load.
@@ -141,15 +141,15 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///   </para>
   /// </remarks>
   /// <param name="topic">The root of the topic graph to stamp.</param>
-  private void StampResolver(Topic? topic) {
+  private void StampLoader(Topic? topic) {
 
     // Skip if the TopicRepository is not an ITopicLazyLoader, or if the topic doesn't exist
-    if (this is not ITopicLazyLoader resolver || topic is null) {
+    if (this is not ITopicLazyLoader loader || topic is null) {
       return;
     }
 
-    // Stamp the resolver on the topic
-    topic.Resolver              = resolver;
+    // Stamp the loader on the topic
+    topic.Loader                = loader;
 
     // If the children aren't yet loaded, don't bother with them yet
     if (!topic.IsLoaded(TopicPayload.Children)) {
@@ -158,7 +158,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
 
     // Stamp any children (this is recursive, obviously!)
     foreach (var child in topic.Children) {
-      StampResolver(child);
+      StampLoader(child);
     }
 
   }
@@ -173,13 +173,13 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Stops as soon as it reaches an ascendant already stamped by this exact resolver instance, on the assumption that its
+  ///     Stops as soon as it reaches an ascendant already stamped by this exact loader instance, on the assumption that its
   ///     own ascendants were already walked and stamped at that time. Comparing by instance, rather than merely checking for a
-  ///     non-null <see cref="Topic.Resolver"/>, matters when this method runs as part of a decorated stack: An outer
+  ///     non-null <see cref="Topic.Loader"/>, matters when this method runs as part of a decorated stack: An outer
   ///     decorator's pass must not stop early just because an inner repository already stamped the chain with itself.
   ///   </para>
   ///   <para>
-  ///     In practice, this only short-circuits repeat calls against the same, undecorated resolver instance (e.g., a bare
+  ///     In practice, this only short-circuits repeat calls against the same, undecorated loader instance (e.g., a bare
   ///     <see cref="TopicRepository"/> loading many topics over its lifetime that share ascendant branches). When wrapped by a
   ///     <see cref="TopicRepositoryDecorator"/>, the inner and outer passes stamp with different instances on every call, so
   ///     neither ever finds a match from the other, and thus each pass walks the full chain to the root every time. That's
@@ -192,13 +192,13 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   private void StampAscendants(Topic? topic) {
 
     // Skip if the current repository is not an ITopicLazyLoader
-    if (this is not ITopicLazyLoader resolver) {
+    if (this is not ITopicLazyLoader loader) {
       return;
     }
 
-    // Walk and stamp each ascendant, stopping once this resolver has already stamped one
-    for (var ascendant = topic; ascendant is not null && ascendant.Resolver != resolver; ascendant = ascendant.Parent) {
-      ascendant.Resolver        = resolver;
+    // Walk and stamp each ascendant, stopping once this loader has already stamped one
+    for (var ascendant = topic; ascendant is not null && ascendant.Loader != loader; ascendant = ascendant.Parent) {
+      ascendant.Loader          = loader;
     }
 
   }

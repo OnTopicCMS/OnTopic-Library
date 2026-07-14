@@ -19,7 +19,7 @@ namespace OnTopic;
 ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
 ///   with the particular node, a list of children, etc.
 /// </summary>
-public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
+public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -163,7 +163,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   public KeyedTopicCollection Children {
     get {
       if (_children.LoadState is LoadState.NotLoaded) {
-        EnsureLoaded(TopicPayload.Children).GetAwaiter().GetResult();
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.Children).GetAwaiter().GetResult();
       }
       return _children;
     }
@@ -181,7 +181,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   ///   use in traversal and "gating" logic that should not trigger lazy-loading.
   /// </remarks>
   /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
-  public bool IsLoaded(TopicPayload payload) {
+  bool ITopicLazyLoadable.IsLoaded(TopicPayload payload) {
 
     // Children
     if (payload.HasFlag(TopicPayload.Children) && _children.LoadState is not LoadState.Loaded) {
@@ -278,7 +278,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <summary>
   ///   Ensures each requested <paramref name="payload"/> flag has been retrieved, while fetching and merging whichever of
   ///   them are not yet <see cref="LoadState.Loaded"/>, and silently skipping those that already are. Returns immediately if
-  ///   the resolver is absent or the topic is new.
+  ///   the loader is absent or the topic is new.
   /// </summary>
   /// <remarks>
   ///   Callers such as a mapping or navigation service can await this to prepopulate one or more payloads before accessing
@@ -294,7 +294,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Skip for obvious reasons
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (Resolver is null || IsNew) {
+    if (Loader is null || IsNew) {
       return Task.CompletedTask;
     }
 
@@ -308,7 +308,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
     }
 
     // Ensure the appropriate payload are loaded
-    return Resolver.EnsureLoaded(this, payload, cancellationToken);
+    return Loader.EnsureLoaded(this, payload, cancellationToken);
 
   }
 
@@ -584,14 +584,14 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   #region Lazy-Loading Infrastructure
 
   /*============================================================================================================================
-  | PROPERTY: RESOLVER
+  | PROPERTY: LOADER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides an internal reference to the <see cref="ITopicLazyLoader"/> used to lazy load collections on request. This
-  ///   is stamped by the <see cref="LazyLoadingTopicRepository.StampResolver"/> with whichever <see cref="ITopicRepository"/>
+  ///   is stamped by the <see cref="LazyLoadingTopicRepository.StampLoader"/> with whichever <see cref="ITopicRepository"/>
   ///   most recently loaded or saved this topic.
   /// </summary>
-  internal ITopicLazyLoader? Resolver { get; set; }
+  internal ITopicLazyLoader? Loader { get; set; }
 
   /*============================================================================================================================
   | INTERFACE: TOPIC BACKING ACCESSOR
@@ -935,7 +935,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <value>The current <see cref="Topic"/>'s relationships.</value>
   public TopicRelationshipMultiMap Relationships {
     get {
-      if (_relationships.LoadState is LoadState.NotLoaded && Resolver is not null) {
+      if (_relationships.LoadState is LoadState.NotLoaded && Loader is not null) {
         EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
       }
       return _relationships;
@@ -955,7 +955,7 @@ public class Topic: ITrackDirtyKeys, ITopicBackingAccessor {
   /// <value>The current <see cref="Topic"/>'s references.</value>
   public TopicReferenceCollection References {
     get {
-      if (_references.LoadState is LoadState.NotLoaded && Resolver is not null) {
+      if (_references.LoadState is LoadState.NotLoaded && Loader is not null) {
         EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
       }
       return _references;

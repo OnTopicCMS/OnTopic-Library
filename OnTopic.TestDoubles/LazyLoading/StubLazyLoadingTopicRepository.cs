@@ -272,7 +272,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   /// <inheritdoc />
   /// <remarks>
   ///   The on-demand fill: Unlike <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>, this recursively resolves deferred
-  ///   relationship and reference targets via the inherited <c>ResolveDeferredAssociations</c>, discarding whatever remains
+  ///   relationship and reference targets via the inherited <c>LoadDeferredAssociations</c>, discarding whatever remains
   ///   unresolved as stale, assuming either <see cref="TopicPayload.Relationships"/> or <see cref="TopicPayload.References"/>.
   /// </remarks>
   public virtual async Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
@@ -305,7 +305,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
   /// <param name="resolveDeferredTargets">
   ///   Whether unresolved relationships and references targets should be recursively loaded, via the inherited <c>
-  ///   ResolveDeferredAssociations</c>. Set by <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>'s on-demand
+  ///   LoadDeferredAssociations</c>. Set by <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>'s on-demand
   ///   fill; left <see langword="false"/> by a plain <c>Load()</c>, which only connects targets already present in the graph,
   ///   via <see cref="ConnectResidentAssociations"/>.
   /// </param>
@@ -409,13 +409,13 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     /*--------------------------------------------------------------------------------------------------------------------------
     | Relationships and references: Resolve deferred targets
     >-------------------------------------------------------------------------------------------------------------------------
-    | Gated on what was actually requested, and delegates to the inherited ResolveDeferredAssociations, so this double
+    | Gated on what was actually requested, and delegates to the inherited LoadDeferredAssociations, so this double
     | utilizes that shared infrastructure. Resident targets were already connected above, regardless of this gate.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (resolveDeferredTargets && associationPayload is not TopicPayload.None) {
 
       // Load any deferred relationships or references
-      await ResolveDeferredAssociations(topic, associationPayload, cancellationToken).ConfigureAwait(false);
+      await LoadDeferredAssociations(topic, associationPayload, cancellationToken).ConfigureAwait(false);
 
       // Mark the associations requested as fetched
       if (associationPayload.HasFlag(TopicPayload.Relationships)) {

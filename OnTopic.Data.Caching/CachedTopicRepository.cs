@@ -276,17 +276,17 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     | them, it would do so via its own, non-cache-aware Load(), producing a duplicate Topic instance for any target that's
     | already present in this cache.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (TopicRepository is ITopicLazyLoader resolver) {
+    if (TopicRepository is ITopicLazyLoader loader) {
       var innerPayload          = payload & ~(TopicPayload.Relationships | TopicPayload.References);
       if (innerPayload is not TopicPayload.None) {
-        await resolver.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+        await loader.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
       }
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Resolve any relationship and reference targets via the cache layer
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
+    await LoadDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
 
     // Update flat index for any newly loaded children
 

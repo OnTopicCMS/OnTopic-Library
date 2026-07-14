@@ -565,7 +565,7 @@ public class TopicTest {
     | Establish tracking resolver
     \-------------------------------------------------------------------------------------------------------------------------*/
     var tracker                 = new TrackingTopicLazyLoader();
-    topic.Resolver              = tracker;
+    topic.Loader                = tracker;
     topic.Children.LoadState    = LoadState.NotLoaded;
 
     /*--------------------------------------------------------------------------------------------------------------------------

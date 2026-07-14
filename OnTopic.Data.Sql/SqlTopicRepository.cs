@@ -404,7 +404,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     // initial Load() because their targets weren't part of that call's ascendant/descendant scope, and couldn't be found in the
     // referenceTopic, if provided.
     if (payload.HasFlag(TopicPayload.Relationships) || payload.HasFlag(TopicPayload.References)) {
-      await ResolveDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
+      await LoadDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
     }
 
     // Exit early if nothing else is pending so we don't open a database connection unnecessarily

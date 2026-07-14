@@ -1150,7 +1150,7 @@ public class TopicRepositoryBaseTest {
 
     await _topicRepository.Save(topic);
 
-    Assert.NotNull(topic.Resolver);
+    Assert.NotNull(topic.Loader);
 
   }
 
@@ -1227,7 +1227,7 @@ public class TopicRepositoryBaseTest {
   ///   /> via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
-  ///   On-demand fetching of non-resident relationship targets happens via <c>ResolveDeferredAssociations()</c> on <see
+  ///   On-demand fetching of non-resident relationship targets happens via <c>LoadDeferredAssociations()</c> on <see
   ///   cref="LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
   ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
   ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
@@ -1253,7 +1253,7 @@ public class TopicRepositoryBaseTest {
   ///   via the <see cref="StubTopicRepository"/>'s fill.
   /// </summary>
   /// <remarks>
-  ///   On-demand fetching of non-resident reference targets happens via <c>ResolveDeferredAssociations()</c> on <see cref=
+  ///   On-demand fetching of non-resident reference targets happens via <c>LoadDeferredAssociations()</c> on <see cref=
   ///   "LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
   ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
   ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
@@ -1511,7 +1511,7 @@ public class TopicRepositoryBaseTest {
     var ascendant                = topic?.Parent?.Parent;
 
     Assert.NotNull(ascendant);
-    Assert.NotNull(ascendant?.Resolver);
+    Assert.NotNull(ascendant?.Loader);
 
   }
 
