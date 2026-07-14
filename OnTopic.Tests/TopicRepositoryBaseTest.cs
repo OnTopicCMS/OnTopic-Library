@@ -1190,7 +1190,7 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.ExtendedAttributes);
+    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.ExtendedAttributes);
 
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
 
@@ -1211,7 +1211,7 @@ public class TopicRepositoryBaseTest {
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
+    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
 
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
@@ -1238,7 +1238,7 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Relationships);
+    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Relationships);
 
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
 
@@ -1264,7 +1264,7 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     topic!.References.Deferred.Add(new("_stub", 11111));
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.References);
+    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.References);
 
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
 
@@ -1404,7 +1404,7 @@ public class TopicRepositoryBaseTest {
     var topic                   = await _topicRepository.Load(11111);
 
     ((ITopicLazyLoadable)topic!).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children);
+    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children);
 
     Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
 
@@ -1455,7 +1455,7 @@ public class TopicRepositoryBaseTest {
     source.Relationships.Deferred.Add(new("_stub", 11111));
 
     // Act: EnsureLoaded re-queries, finds the missing target, loads it, and connects the edge
-    _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
+    await _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
 
     // Relationships are now Loaded and any pre-seeded edges are connected
     Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
@@ -1476,7 +1476,7 @@ public class TopicRepositoryBaseTest {
     var source                  = (await _cachedTopicRepository.Load(-1))!;
 
     // Act
-    _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
+    await _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
 
     // LoadState is unchanged; no fill was triggered
     Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
