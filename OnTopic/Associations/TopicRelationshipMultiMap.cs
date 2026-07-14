@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -41,11 +40,11 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// <remarks>
   ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
   ///   with. This will be used when setting incoming relationships. In addition, a <see cref="TopicRelationshipMultiMap"/>
-  ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is
-  ///   not set, then it will not allow incoming relationships to be set via the internal <see cref=
-  ///   "SetValue(String, Topic, Boolean?, Boolean)"/> overload.
+  ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; when set,
+  ///   <see cref="SetValue(String, Topic, Boolean?)"/> and <see cref="Remove(String, Topic)"/> won't set the reciprocal
+  ///   relationship, since <paramref name="parent"/> in this case represents that reciprocal.
   /// </remarks>
-  public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base(new()) {
+  internal TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base(new()) {
     _parent                     = parent;
     _isIncoming                 = isIncoming;
     _storage                    = base.Source;
@@ -90,21 +89,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the specified <paramref name="
   ///   relationshipKey"/> or the <paramref name="topic"/> cannot be found.
   /// </returns>
-  public bool Remove(string relationshipKey, Topic topic) => Remove(relationshipKey, topic, false);
-
-  /// <summary>
-  ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
-  /// </summary>
-  /// <param name="relationshipKey">The key of the relationship.</param>
-  /// <param name="topic">The topic to be removed.</param>
-  /// <param name="isIncoming">
-  ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
-  /// </param>
-  /// <returns>
-  ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
-  ///   <see cref="Topic"/> cannot be found.
-  /// </returns>
-  internal bool Remove(string relationshipKey, Topic topic, bool isIncoming) {
+  public bool Remove(string relationshipKey, Topic topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate contracts
@@ -115,14 +100,8 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove reciprocal relationship, if appropriate
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isIncoming) {
-      if (_isIncoming) {
-        throw new InvalidOperationException(
-          "You are attempting to remove an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
-          nameof(isIncoming)
-        );
-      }
-      topic.IncomingRelationships.Remove(relationshipKey, _parent, true);
+    if (!_isIncoming) {
+      topic.IncomingRelationships.Remove(relationshipKey, _parent);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -150,12 +129,6 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
   public bool RemoveTopic(string relationshipKey, Topic topic) => Remove(relationshipKey, topic);
 
-  /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
-  [ExcludeFromCodeCoverage]
-  [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
-  public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) =>
-    Remove(relationshipKey, topic, isIncoming);
-
   /*============================================================================================================================
   | METHOD: SET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -171,25 +144,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// <param name="markDirty">
   ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
   /// </param>
-  public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null)
-    => SetValue(relationshipKey, topic, markDirty, false);
-
-  /// <summary>
-  ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified <paramref name="relationshipKey"/>.
-  /// </summary>
-  /// <remarks>
-  ///   If a relationship by a given <paramref name="relationshipKey"/> is not currently established, it will automatically be
-  ///   created.
-  /// </remarks>
-  /// <param name="relationshipKey">The key of the relationship.</param>
-  /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
-  /// <param name="isIncoming">
-  ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
-  /// </param>
-  /// <param name="markDirty">
-  ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
-  /// </param>
-  internal void SetValue(string relationshipKey, Topic topic, bool? markDirty, bool isIncoming) {
+  public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate contracts
@@ -219,14 +174,8 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Create reciprocal relationship, if appropriate
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isIncoming) {
-      if (_isIncoming) {
-        throw new InvalidOperationException(
-          "You are attempting to set an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
-          nameof(isIncoming)
-        );
-      }
-      topic.IncomingRelationships.SetValue(relationshipKey, _parent, markDirty, true);
+    if (!_isIncoming) {
+      topic.IncomingRelationships.SetValue(relationshipKey, _parent, markDirty);
     }
 
   }
@@ -235,12 +184,6 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   [ExcludeFromCodeCoverage]
   [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
   public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null) => SetValue(relationshipKey, topic, isDirty);
-
-  /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
-  [ExcludeFromCodeCoverage]
-  [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
-  public void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) =>
-    SetValue(relationshipKey, topic, isDirty, isIncoming);
 
   /*============================================================================================================================
   | PROPERTY: LOAD STATE

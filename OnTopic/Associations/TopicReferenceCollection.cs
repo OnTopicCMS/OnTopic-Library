@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
 using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 
@@ -94,7 +93,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
     \-------------------------------------------------------------------------------------------------------------------------*/
-    item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+    item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic);
 
   }
 
@@ -127,8 +126,10 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
     \-------------------------------------------------------------------------------------------------------------------------*/
-    existingItem.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic, true);
-    item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+    if (existingItem.Value != item.Value) {
+      existingItem.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic);
+      item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic);
+    }
 
   }
 
@@ -143,7 +144,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     \-------------------------------------------------------------------------------------------------------------------------*/
     var existing                = this[index];
 
-    existing.Value?.IncomingRelationships.Remove(existing.Key, AssociatedTopic, true);
+    existing.Value?.IncomingRelationships.Remove(existing.Key, AssociatedTopic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide base logic
