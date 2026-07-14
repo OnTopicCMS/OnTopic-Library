@@ -280,42 +280,6 @@ public class TopicQueryingTest  {
   }
 
   /*============================================================================================================================
-  | TEST: ANY DIRTY: DIRTY COLLECTION: RETURN TRUE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsDirty(String)"/>,
-  ///   returns <c>true</c>.
-  /// </summary>
-  [Fact]
-  public void AnyDirty_DirtyCollection_ReturnTrue() {
-
-    var topics                  = new TopicCollection {
-      new("Test", "Page")
-    };
-
-    Assert.True(topics.AnyDirty());
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ANY DIRTY: CLEAN COLLECTION: RETURN FALSE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
-  ///   returns <c>false</c>.
-  /// </summary>
-  [Fact]
-  public void AnyDirty_CleanCollection_ReturnFalse() {
-
-    var topics                  = new TopicCollection {
-      new("Test", "Page", null, 1)
-    };
-
-    Assert.False(topics.AnyDirty());
-
-  }
-
-  /*============================================================================================================================
   | TEST: ANY NEW: CONTAINS NEW: RETURN TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

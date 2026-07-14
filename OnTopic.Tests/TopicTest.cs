@@ -382,7 +382,7 @@ public class TopicTest {
   | IS DIRTY: NEW TOPIC: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
+  ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty()"/> returns <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_NewTopic_ReturnsTrue() =>
@@ -392,7 +392,7 @@ public class TopicTest {
   | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
+  ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty()"/> returns <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ExistingTopic_ReturnsFalse() =>
@@ -402,8 +402,8 @@ public class TopicTest {
   | IS DIRTY: CHANGE KEY: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
-  ///   Boolean)"/> returns <c>true</c>.
+  ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty()"/> returns
+  ///   <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ChangeKey_ReturnsTrue() =>
@@ -435,83 +435,11 @@ public class TopicTest {
   }
 
   /*============================================================================================================================
-  | IS DIRTY: CHANGE COLLECTIONS: RETURNS TRUE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns
-  ///   <c>true</c>.
-  /// </summary>
-  [Fact]
-  public void IsDirty_ChangeCollections_ReturnsTrue() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    Assert.True(topic.IsDirty(true));
-    Assert.True(topic.IsDirty("Related", true));
-
-  }
-
-  /*============================================================================================================================
-  | MARK CLEAN: CHANGE COLLECTIONS: RESETS IS DIRTY
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(Boolean, DateTime?)"/> resets the
-  ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
-  /// </summary>
-  [Fact]
-  public void MarkClean_ChangeCollections_ResetIsDirty() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    topic.MarkClean(true);
-
-    Assert.False(topic.IsDirty(true));
-
-  }
-
-  /*============================================================================================================================
-  | MARK CLEAN: INCLUDE COLLECTIONS: RESETS IS DIRTY
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(String, Boolean)"/> resets the value
-  ///   of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
-  /// </summary>
-  [Fact]
-  public void MarkClean_IncludeCollections_ResetsIsDirty() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    topic.MarkClean("Related",  true);
-
-    Assert.False(topic.IsDirty("Related", true));
-    Assert.False(topic.IsDirty(true));
-
-  }
-
-  /*============================================================================================================================
   | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a new <see cref="Topic"/> and confirms that <see cref="Topic.MarkClean()"/> does <i>not</i> reset the value of
-  ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
+  ///   <see cref="Topic.IsDirty()"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
   /// </summary>
   [Fact]
   public void MarkClean_NewTopic_RemainsDirty() {
@@ -519,11 +447,11 @@ public class TopicTest {
     var topic                   = new Topic("Topic", "Page");
 
     topic.Attributes.SetValue("Attribute", "Test");
-    topic.MarkClean("Attribute", true);
-    topic.MarkClean(true);
+    topic.MarkClean("Attribute");
+    topic.MarkClean();
 
     Assert.True(topic.IsDirty());
-    Assert.True(topic.IsDirty("Attribute", true));
+    Assert.True(topic.IsDirty("Attribute"));
 
   }
 

@@ -265,26 +265,6 @@ public class TopicReferenceCollectionTest {
   }
 
   /*============================================================================================================================
-  | TEST: ADD: NEW REFERENCE: TOPIC IS DIRTY
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
-  ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/> is correctly set.
-  /// </summary>
-  [Fact]
-  public void Add_NewReference_TopicIsDirty() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var reference               = new Topic("Reference", "Page", null, 2);
-
-    topic.References.SetValue("Reference", reference);
-
-    Assert.True(topic.IsDirty(true));
-    Assert.False(reference.IsDirty(true));
-
-  }
-
-  /*============================================================================================================================
   | TEST: GET TOPIC: EXISTING REFERENCE: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
