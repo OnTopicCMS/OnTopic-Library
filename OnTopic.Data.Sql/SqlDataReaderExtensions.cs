@@ -74,8 +74,8 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
     var rootTopic               = (Topic?)null;
-    HashSet<int> preExistingIds = [..topics.Keys];
-    var hasChildrenMap          = new Dictionary<int, bool>();
+    var preExistingIds          = new HashSet<int>(topics.Keys);
+    var seedTopic               = (Topic?)null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate topics
@@ -85,51 +85,46 @@ internal static class SqlDataReaderExtensions {
 
       // Add the topic to the topic graph
       var addedTopic            = reader.AddTopic(topics, markDirty);
-
-      // The first topic returned is the root topic; store it for the return value
-      rootTopic                 ??= addedTopic;
-
       var rawTopic              = (ITopicBackingAccessor)addedTopic;
 
-      // HasExtendedAttribute is NULL when extended attributes are included: Converge to Loaded, even on a pre-existing topic
-      // whose extended boundary was previously NotLoaded, and even if the topic has no extended attributes to read.
-      // HasExtendedAttribute is true when the blob wasn't loaded, but exists: Downgrade to NotLoaded, deferring the fetch.
-      // HasExtendedAttribute is false when the topic has no extended attributes at all: nothing to defer, so Loaded.
-      rawTopic.Attributes.LoadState = reader.GetNullableBoolean("HasExtendedAttributes") is true?
-        LoadState.NotLoaded :
-        LoadState.Loaded;
+      // The first topic returned is the root topic
+      rootTopic                 ??= addedTopic;
 
-      // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics.
-      // Pre-existing topics are excluded; their LoadState is already established, and they may have the lazy resolver wired up.
-      if (!preExistingIds.Contains(addedTopic.Id) && reader.GetNullableBoolean("HasChildren") is { } hasChildren) {
-        hasChildrenMap[addedTopic.Id] = hasChildren;
+      // If loading the entire tree, the rootTopic is also the seedTopic
+      if (seedTopicId < 0) {
+        seedTopic               ??= addedTopic;
       }
 
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Stamp Children.LoadState
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    // Identifies the ancestor tree, stopping at the first pre-existing (i.e., not newly loaded) topic. Newly introduced
-    // ancestors have exactly one child loaded (from the ancestor crawl), but may have more; as such, they will be marked as
-    // NotLoaded. Note: An ancestor whose sole database child is part of the ancestor chain is still marked NotLoaded, since we
-    // don't have enough information to verify that. This is an unlikely scenario, but will cost one extra round-trip to verify.
-    HashSet<int> ancestorIds    = [];
-    if (topics.TryGetValue(seedTopicId, out var seedTopic)) {
-      var ancestor              = seedTopic.Parent;
-      while (ancestor is not null && hasChildrenMap.ContainsKey(ancestor.Id)) {
-        ancestorIds.Add(ancestor.Id);
-        ancestor                = ancestor.Parent;
+      // Otherwise, check if the addedTopic is the seedTopic
+      else if (addedTopic.Id == seedTopicId) {
+        seedTopic               = addedTopic;
       }
-    }
 
-    // HasChildren NULL (i.e., absent from the map) means the topic was not newly loaded or the column is not applicable;
-    // either way, skip. Ancestors with children are NotLoaded (partial load); other topics check whether any children were
-    // loaded, implying that @HasChildren or @LoadDescendants was passed, and thus its children are fully loaded.
-    foreach (var (id, hasChildren) in hasChildrenMap) {
-      var topic                 = topics[id];
-      var isNotLoaded           = hasChildren && (ancestorIds.Contains(id) || topic.Children.Count == 0);
-      topic.Children.LoadState  = isNotLoaded? LoadState.NotLoaded : LoadState.Loaded;
+      // The extended attributes are complete if HasExtendedAttributes is not true: NULL means extended attributes were included
+      // in this load, and false means the topic has no extended attributes at all; either way, nothing is deferred
+      var hasExtendedAttributes = reader.GetNullableBoolean("HasExtendedAttributes");
+      rawTopic.Attributes.LoadState = ConvergeLoadState(
+        rawTopic.Attributes.LoadState,
+        preExistingIds.Contains(addedTopic.Id),
+        isComplete: hasExtendedAttributes is not true
+      );
+
+      // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics
+      // This applies to pre-existing topics too, since a differential load must be able to converge children LoadState as well
+      if (reader.GetNullableBoolean("HasChildren") is { } hasChildren) {
+        rawTopic.Children.LoadState = ConvergeLoadState(
+          rawTopic.Children.LoadState,
+          preExistingIds.Contains(addedTopic.Id),
+          isComplete: !hasChildren
+        );
+      }
+
+      // Any rows after the seed are a genuine child, indicating that the parent's full child set was returned. The parent may
+      // be unresolved (e.g., GetTopicUpdates' unordered, possibly-disconnected Refresh() batch), hence the null-conditional.
+      if (seedTopic is not null && addedTopic != seedTopic) {
+        (addedTopic.Parent as ITopicLazyLoadable)?.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+      }
+
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -201,9 +196,7 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return seedTopicId >= 0 && topics.TryGetValue(seedTopicId, out var requestedTopic)
-      ? requestedTopic
-      : rootTopic;
+    return seedTopic;
 
   }
 
