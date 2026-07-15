@@ -150,4 +150,35 @@ public class ITopicLazyLoadableTest {
 
   }
 
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: NULL RESOLVER: DOES NOT THROW
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> on an in-memory topic with no
+  ///   loader and confirms it completes without throwing.
+  /// </summary>
+  [Fact]
+  public void EnsureLoaded_NullResolver_DoesNotThrow() {
+    var topic                   = new Topic("Topic", "Page");
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.All);
+  }
+
+  /*============================================================================================================================
+  | TEST: IS NEW: NEW TOPIC: HAS NULL LOADER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that a newly constructed, unsaved <see cref="Topic"/> carries a null <see cref="ITopicLazyLoadable.Loader"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Ensures that <see cref="Repositories.LazyLoadingTopicRepository"/> only stamps <see cref="ITopicLazyLoadable.Loader"/>
+  ///   once a topic has been loaded or saved (and thus has a stable <see cref="Topic.Id"/>), so an in-memory, unsaved topic can
+  ///   never carry one.
+  /// </remarks>
+  [Fact]
+  public void IsNew_NewTopic_HasNullLoader() {
+    var topic                   = new Topic("Topic", "Page"); // ID = -1, IsNew = true
+    Assert.True(topic.IsNew);
+    Assert.Null(((ITopicLazyLoadable)topic).Loader);
+  }
+
 } //Class
