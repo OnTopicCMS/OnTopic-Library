@@ -555,6 +555,9 @@ internal static class SqlDataReaderExtensions {
   /// <param name="topics">The <see cref="TopicIndex"/> to populate.</param>
   private static Topic? AddChildTopic(this IDataReader reader, Topic parent, TopicIndex topics) {
 
+    // Capture pre-existing status before AddTopic() introduces the topic to the index
+    var wasPreExisting          = topics.ContainsKey(reader.GetTopicId());
+
     // Add or update the topic in the index
     var addedTopic              = reader.AddTopic(topics, markDirty: false);
 
@@ -565,15 +568,23 @@ internal static class SqlDataReaderExtensions {
 
     var rawTopic                = (ITopicBackingAccessor)addedTopic;
 
-    // Set the extended-attribute load state based on the database hint
-    if (reader.GetNullableBoolean("HasExtendedAttributes") is true) {
-      rawTopic.Attributes.LoadState = LoadState.NotLoaded;
-    }
+    // The extended attributes are completely loaded if HasExtendedAttributes is not true: NULL means this fill included
+    // extended attributes, and false means the child has none at all; either way, nothing is deferred. True means extended
+    // attributes exist but weren't requested this fill, deferring to lazy loading.
+    rawTopic.Attributes.LoadState = ConvergeLoadState(
+      rawTopic.Attributes.LoadState,
+      wasPreExisting,
+      isComplete: reader.GetNullableBoolean("HasExtendedAttributes") is not true
+    );
 
-    // Set the children load state based on the database hint
-    rawTopic.Children.LoadState = reader.GetNullableBoolean("HasChildren") is true
-      ? LoadState.NotLoaded
-      : LoadState.Loaded;
+    // The children property is completely loaded if HasChildren is not true. This fill only refreshes the child's own row,
+    // never its children, so a pre-existing child already Loaded from a prior Load() is preserved rather than downgraded; this
+    // fill returned no information about whether that boundary is complete
+    rawTopic.Children.LoadState = ConvergeLoadState(
+      rawTopic.Children.LoadState,
+      wasPreExisting,
+      isComplete: reader.GetNullableBoolean("HasChildren") is not true
+    );
 
     // Return the topic created
     return addedTopic;
