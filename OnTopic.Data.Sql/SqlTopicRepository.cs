@@ -141,6 +141,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
     command.AddParameter("LoadDescendants", isRecursive);
+    command.AddParameter("LoadChildren", payload.HasFlag(TopicPayload.Children) && !isRecursive);
     command.AddParameter("LoadAscendants", topicId >= 0);
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
     command.AddParameter("IncludeRelationships", true);
