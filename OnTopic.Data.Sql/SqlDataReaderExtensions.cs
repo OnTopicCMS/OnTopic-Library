@@ -581,6 +581,24 @@ internal static class SqlDataReaderExtensions {
   }
 
   /*============================================================================================================================
+  | METHOD: CONVERGE LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Determines the converged <see cref="LoadState"/> for a boundary given whether this load fully provided it.
+  /// </summary>
+  /// <remarks>
+  ///   A load never downgrades a boundary it didn't fully provide. If <paramref name="isComplete"/>, the boundary is promoted
+  ///   to <see cref="LoadState.Loaded"/> regardless of prior state. Otherwise, a pre-existing boundary is left untouched,
+  ///   preserving whatever it already knew, while a freshly introduced boundary is set to <see cref="LoadState.NotLoaded"/>,
+  ///   deferring the fetch.
+  /// </remarks>
+  /// <param name="current">The boundary's current <see cref="LoadState"/>.</param>
+  /// <param name="isPreExisting">Whether the topic was already resident in the topic index before this load began.</param>
+  /// <param name="isComplete">Whether this load fully provided the boundary.</param>
+  private static LoadState ConvergeLoadState(LoadState current, bool isPreExisting, bool isComplete) =>
+    isComplete? LoadState.Loaded : isPreExisting? current : LoadState.NotLoaded;
+
+  /*============================================================================================================================
   | METHOD: SET VERSION HISTORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
