@@ -913,6 +913,33 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH ONE LEVEL OF CHILDREN: CONVERGES SEED, LEAVES GRANDCHILDREN NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a result set shaped like a non-recursive <c>
+  ///   @LoadChildren</c> call, with the seed's immediate child present, but that child's own children are not, and confirms the
+  ///   seed converges to <see cref="LoadState.Loaded"/> while the child (which received no rows of its own) remains <see
+  ///   cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  [Fact]
+  public async Task LoadTopicGraph_WithOneLevelOfChildren_ConvergesSeedLeavesGrandchildrenNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", hasChildren: true);
+    topics.AddRow(2, "Child", "Container", 1, hasChildren: true);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var seedTopic               = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
+    var childTopic              = ((ITopicBackingAccessor?)seedTopic)?.Children.FirstOrDefault();
+
+    Assert.Equal(LoadState.Loaded, ((ITopicBackingAccessor?)seedTopic)?.Children.LoadState);
+    Assert.Equal(LoadState.NotLoaded, ((ITopicBackingAccessor?)childTopic)?.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
   | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
