@@ -65,6 +65,52 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   }
 
   /*============================================================================================================================
+  | METHOD: IS LOADED (RECURSIVE)
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns <see langword="true"/> if every property flag in <paramref name="payload"/> has already been fetched from the
+  ///   underlying persistence store and, if <paramref name="isRecursive"/>, the same is true of every descendant.
+  /// </summary>
+  /// <remarks>
+  ///   Recursion is gated on <see cref="ITopicBackingAccessor.Children"/> being fully <see cref="LoadState.Loaded"/> before
+  ///   descending, so an unloaded branch is never mistaken for a loaded, empty one. Like <see cref="IsLoaded(TopicPayload)"/>,
+  ///   this only ever reads <see cref="LoadState"/> values, never an autoloading getter, so it is safe to use for cases that
+  ///   should not trigger a lazy load.
+  /// </remarks>
+  /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
+  /// <param name="isRecursive">
+  ///   Determines whether descendants should also be evaluated against <paramref name="payload"/>.
+  /// </param>
+  bool IsLoaded(TopicPayload payload, bool isRecursive) {
+
+    // Evaluate current topic
+    if (!IsLoaded(payload)) {
+      return false;
+    }
+
+    // Return if non-recursive
+    if (!isRecursive) {
+      return true;
+    }
+
+    // Evaluate children, without triggering a load
+    if (!IsLoaded(TopicPayload.Children)) {
+      return false;
+    }
+
+    // Recurse over children
+    foreach (var child in Children) {
+      if (!((ITopicLazyLoadable)child).IsLoaded(payload, isRecursive: true)) {
+        return false;
+      }
+    }
+
+    // Return result
+    return true;
+
+  }
+
+  /*============================================================================================================================
   | METHOD: SET LOAD STATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
