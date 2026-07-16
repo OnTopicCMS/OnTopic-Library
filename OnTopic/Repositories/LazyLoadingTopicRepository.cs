@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Associations;
+using OnTopic.Querying;
 
 namespace OnTopic.Repositories;
 
@@ -70,13 +71,15 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   | METHOD: LOAD DEFERRED ASSOCIATIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Resolves any relationship and reference targets that were deferred when loading each through this repository's own
-  ///   <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>.
+  ///   Resolves any relationships and references that were deferred when loaded through this repository's <see cref=
+  ///   "ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, preferring whatever is already available in the topic's
+  ///   graph before falling back to a fresh <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> for any
+  ///   that aren't.
   /// </summary>
   /// <remarks>
-  ///   Targets that cannot be found after this are treated as stale references to deleted topics; this completed by clearing
-  ///   the <see cref="DeferredAssociation"/>, resulting in the corresponding association collection to <see cref=
-  ///   "LoadState.Loaded"/>.
+  ///   Targets that cannot be found after this are treated as stale references to deleted topics; this is completed by clearing
+  ///   the <see cref="DeferredAssociation"/>, resulting in the corresponding collection's <see cref="LoadState"/> becoming <see
+  ///   cref="LoadState.Loaded"/>.
   /// </remarks>
   /// <param name="topic">The topic whose deferred associations should be resolved.</param>
   /// <param name="payload">
@@ -84,36 +87,104 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   ///   "TopicPayload.References"/> are acted upon.
   /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
-  protected async Task LoadDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
-
-    // Validate input
+  protected Task LoadDeferredAssociations(Topic topic, TopicPayload payload, CancellationToken cancellationToken) {
     Contract.Requires(topic, nameof(topic));
+    return ResolveAssociations(topic, payload, fallBackToLoad: true);
+  }
+
+  /*============================================================================================================================
+  | METHOD: RESOLVE ASSOCIATIONS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Resolves any relationship and reference targets that are already present in the <paramref name="topic"/>'s graph,
+  ///   without triggering a load for targets that aren't.
+  /// </summary>
+  /// <remarks>
+  ///   The counterpart to <see cref="LoadDeferredAssociations(Topic, TopicPayload, CancellationToken)"/>, exposed so a merge
+  ///   that brings new descendants into a resident graph can cheaply reconnect whatever has become resolvable, without
+  ///   discarding what's still genuinely absent, or triggering a potentially expensive roundtrip to the persistence store.
+  /// </remarks>
+  /// <param name="topic">The topic whose deferred associations should be resolved against the resident graph.</param>
+  /// <param name="payload">
+  ///   The payload flags that were requested; only <see cref="TopicPayload.Relationships"/> and <see cref=
+  ///   "TopicPayload.References"/> are acted upon.
+  /// </param>
+  protected Task ResolveAssociations(Topic topic, TopicPayload payload) {
+    Contract.Requires(topic, nameof(topic));
+    return ResolveAssociations(topic, payload, fallBackToLoad: false);
+  }
+
+  /// <summary>
+  ///   Resolves each deferred relationship and reference entry on <paramref name="topic"/> against its resident graph,
+  ///   optionally falling back to <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> for whatever the
+  ///   graph doesn't have.
+  /// </summary>
+  /// <remarks>
+  ///   The shared core behind both <see cref="LoadDeferredAssociations(Topic, TopicPayload, CancellationToken)"/> (<paramref
+  ///   name="fallBackToLoad"/> <see langword="true"/>: unresolvable targets are treated as stale and discarded) and <see
+  ///   cref="ResolveAssociations(Topic, TopicPayload)"/> (<paramref name="fallBackToLoad"/> <see langword="false"/>: a
+  ///   miss is left deferred for a later fallback); the two differ only in that flag.
+  /// </remarks>
+  /// <param name="topic">The topic whose deferred associations should be resolved.</param>
+  /// <param name="payload">
+  ///   The payload flags that were requested; only <see cref="TopicPayload.Relationships"/> and <see cref=
+  ///   "TopicPayload.References"/> are acted upon.
+  /// </param>
+  /// <param name="fallBackToLoad">
+  ///   Whether an association missing from the graph should be fetched via <see cref=
+  ///   "ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, with whatever remains unresolved afterwards cleared as
+  ///   stale.
+  /// </param>
+  private async Task ResolveAssociations(Topic topic, TopicPayload payload, bool fallBackToLoad) {
+
+    // Narrow to the associations that remain deferred, skipping the graph lookup entirely if neither is
+    payload                     &= TopicPayload.Relationships | TopicPayload.References;
+    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
+
+    if (payload is TopicPayload.None) {
+      return;
+    }
 
     // Cast topic to safely access backing fields
     var rawTopic                = (ITopicBackingAccessor)topic;
 
-    // Resolve deferred relationship targets; unresolvable targets are treated as stale and discarded
+    // Index the resident graph by id
+    var topicIndex              = topic.GetRootTopic().GetTopicIndex();
+
+    // Resolve deferred relationship targets
     if (payload.HasFlag(TopicPayload.Relationships)) {
       foreach (var deferred in rawTopic.Relationships.Deferred.ToArray()) {
-        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
-        // SetValue removes the matching Deferred entry; any left unresolved are cleared below
-        if (target is not null) {
+        // SetValue removes the matching Deferred entry; any left unresolved are optionally cleared below
+        if (await resolveTarget(deferred.TopicId).ConfigureAwait(false) is { } target) {
           rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: false);
         }
       }
-      rawTopic.Relationships.Deferred.Clear();
+      if (fallBackToLoad) {
+        rawTopic.Relationships.Deferred.Clear();
+      }
     }
 
-    // Resolve deferred reference targets; unresolvable targets are treated as stale and discarded
+    // Resolve deferred reference targets
     if (payload.HasFlag(TopicPayload.References)) {
       foreach (var deferred in rawTopic.References.Deferred.ToArray()) {
-        var target              = await Load(deferred.TopicId).ConfigureAwait(false);
-        // SetValue removes the matching Deferred entry; any left unresolved are cleared below
-        if (target is not null) {
+        // SetValue removes the matching Deferred entry; any left unresolved are optionally cleared below
+        if (await resolveTarget(deferred.TopicId).ConfigureAwait(false) is { } target) {
           rawTopic.References.SetValue(deferred.Key, target, markDirty: false);
         }
       }
-      rawTopic.References.Deferred.Clear();
+      if (fallBackToLoad) {
+        rawTopic.References.Deferred.Clear();
+      }
+    }
+
+    return;
+
+    // Resolves a deferred entry against the index, falling back to Load() only when requested and only on a miss
+    async Task<Topic?> resolveTarget(int targetId) {
+      if (topicIndex.TryGetValue(targetId, out var target)) {
+        return target;
+      }
+      return fallBackToLoad ? await Load(targetId).ConfigureAwait(false) : null;
     }
 
   }
