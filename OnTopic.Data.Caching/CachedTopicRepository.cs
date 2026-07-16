@@ -86,10 +86,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   /// <remarks>
-  ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
-  ///   enabled so the full ancestor chain is fetched and merged into the live graph.
-  ///   Missing IDs are recorded to prevent
-  ///   redundant round-trips for topics that genuinely do not exist.
+  ///   Returns a cached topic if it satisfies the requested <paramref name="payload"/> and <paramref name="isRecursive"/>; an
+  ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Boolean)"/> before being returned. On a
+  ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
+  ///   fetched and merged into the live graph. Missing IDs are recorded to prevent redundant round-trips for topics that
+  ///   genuinely do not exist.
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
@@ -102,16 +103,20 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     | Handle request for entire tree
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topicId < 0) {
+      await EnsureLoaded(_cache, payload, isRecursive).ConfigureAwait(false);
       return _cache;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by topic identifier; return immediately on a hit
+    | Lookup by topic identifier; top up and return on a hit
     \-------------------------------------------------------------------------------------------------------------------------*/
+    Topic? topic;
     lock (_syncLock) {
-      if (_topicIdIndex.TryGetValue(topicId, out var topic)) {
-        return topic;
-      }
+      _topicIdIndex.TryGetValue(topicId, out topic);
+    }
+    if (topic is not null) {
+      await EnsureLoaded(topic, payload, isRecursive).ConfigureAwait(false);
+      return topic;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -151,10 +156,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
 
   /// <inheritdoc />
   /// <remarks>
-  ///   Returns the cached topic if present. On a miss, falls through to the underlying repository with <c>@LoadAscendants</c>
-  ///   enabled so the full ancestor chain is fetched and merged into the live graph.
-  ///   Missing IDs are recorded to prevent
-  ///   redundant round-trips for topics that genuinely do not exist.
+  ///   Returns a cached topic if it satisfies the requested <paramref name="payload"/> and <paramref name="isRecursive"/>; an
+  ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Boolean)"/> before being returned. On a
+  ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
+  ///   fetched and merged into the live graph. Missing IDs are recorded to prevent redundant round-trips for topics that
+  ///   genuinely do not exist.
   /// </remarks>
   public override async Task<Topic?> Load(
     string uniqueKey,
@@ -181,12 +187,15 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by unique key; return immediately on a hit
+    | Lookup by unique key; top up and return on a hit
     \-------------------------------------------------------------------------------------------------------------------------*/
+    Topic? resident;
     lock (_syncLock) {
-      if (_topicKeyIndex.TryGetValue(uniqueKey, out var topic)) {
-        return topic;
-      }
+      _topicKeyIndex.TryGetValue(uniqueKey, out resident);
+    }
+    if (resident is not null) {
+      await EnsureLoaded(resident, payload, isRecursive).ConfigureAwait(false);
+      return resident;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -287,8 +296,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     | Resolve any relationship and reference targets via the cache layer
     \-------------------------------------------------------------------------------------------------------------------------*/
     await LoadDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
-
-    // Update flat index for any newly loaded children
 
   }
 
@@ -418,8 +425,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   }
 
   /*============================================================================================================================
-  | METHODS: PRIVATE
+  | METHOD: REKEY TOPIC SUBTREE
   \---------------------------------------------------------------------------------------------------------------------------*/
+
   /// <summary>
   ///   Removes stale <c>_topicByKey</c> entries for <paramref name="topic"/> and its descendants by swapping the <paramref
   ///   name="oldRootUniqueKey"/> prefix for the current one, then reindexes the subtree under its current unique keys.
@@ -454,6 +462,73 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   private void IndexTopic(Topic topic) {
     _topicIdIndex[topic.Id]     = topic;
     _topicKeyIndex[topic.GetUniqueKey()] = topic;
+  }
+
+  /*============================================================================================================================
+  | METHOD: ENSURE LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that <paramref name="topic"/> already satisfies the requested <paramref name="payload"/> and <paramref name=
+  ///   "isRecursive"/> scope and, if not, tops it up in place; the caller's own reference to <paramref name="topic"/> reflects
+  ///   whatever is added.
+  /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     Relationships and references are excluded from the sufficiency gate since <c>Load()</c> never guarantees a fully
+  ///     resolved target graph, so gating on them would prevent convergence and force a reload on every hit.
+  ///   </para>
+  ///   <para>
+  ///     A single-topic shortfall is topped up via <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"
+  ///     />, which converges <c>LoadState</c> in a single batched round-trip. A recursive shortfall, including a whole-tree
+  ///     request, performs one deep <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> against the
+  ///     underlying repository—using <paramref name="topic"/> itself as the reference topic, since it is already resident in,
+  ///     and thus already a valid handle into, the live graph—merges the result into the live graph via <see cref=
+  ///     "MergeIntoCache(Topic)"/>, and then looks up any in-graph associations (<see cref=
+  ///     "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationship or reference targets
+  ///     that just became resident are connected without a further trip.
+  ///   </para>
+  /// </remarks>
+  /// <param name="topic">The already-resident topic to confirm or top up.</param>
+  /// <param name="payload">The <see cref="TopicPayload"/> flags the caller requires to be loaded.</param>
+  /// <param name="isRecursive">Whether the caller requires the full subtree, not merely <paramref name="topic"/> itself.</param>
+  private async Task EnsureLoaded(
+    Topic topic,
+    TopicPayload payload,
+    bool isRecursive
+  ) {
+
+    // Narrow the sufficiency gate to exclude relationships and references, which Load() never guarantees are fully resolved
+    var gate                    = payload & ~(TopicPayload.Relationships | TopicPayload.References);
+
+    // Return immediately if the resident topic already satisfies the requested scope
+    if (((ITopicLazyLoadable)topic).IsLoaded(gate, isRecursive)) {
+      return;
+    }
+
+    // Top up a non-recursive shortfall via the loader, which converges LoadState in a single round-trip
+    if (!isRecursive) {
+      await ((ITopicLazyLoadable)topic).EnsureLoaded(gate).ConfigureAwait(false);
+      return;
+    }
+
+    // Top up a recursive shortfall via one deep load, merged into the live graph
+    var loaded                  = await TopicRepository
+      .Load(topic.Id, topic, isRecursive, payload)
+      .ConfigureAwait(false);
+
+    if (loaded is not null) {
+
+      // Rewire the returned ancestor chain onto the existing cache objects
+      MergeIntoCache(loaded);
+
+      // Opportunistically connect any relationship or reference targets that are now resident in the merged region, regardless
+      // of whether relationships or references were themselves part of the requested payload
+      foreach (var descendant in loaded.FindAll()) {
+        await ResolveAssociations(descendant, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
+      }
+
+    }
+
   }
 
   /*============================================================================================================================
