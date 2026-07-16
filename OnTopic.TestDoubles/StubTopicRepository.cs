@@ -393,7 +393,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   ///   Creates a collection of fake data recursively based on a parent topic, and set number of levels.
   /// </summary>
   private static void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
-    for (var i                  = 0; i < count;  i++) {
+    for (var i                  = 1; i <= count; i++) {
       var topic                 = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
       topic.Attributes.SetValue("ParentKey", parent.Key);
       topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
