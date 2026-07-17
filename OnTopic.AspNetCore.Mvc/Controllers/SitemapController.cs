@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Xml;
 using System.Xml.Linq;
 using OnTopic.Attributes;
 
@@ -19,23 +18,21 @@ namespace OnTopic.AspNetCore.Mvc.Controllers;
 ///   child topics to generate the appropriate markup.
 /// </summary>
 /// <remarks>
-///   <para>
-///     By default, some <see cref="Topic"/>s are <i>excluded</i> based on their content types—which includes not only the
-///     <see cref="Topic"/>, but also all of its descendents. Other <see cref="Topic"/>s are <i>skipped</i>, also based on
-///     their content types; in this case, the <see cref="Topic"/> is excluded, but its descendents are not. What content
-///     types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes
-///     "/> and <see cref="SkippedContentTypes"/> collections.
-///   </para>
+///   By default, some <see cref="Topic"/>s are <i>excluded</i> based on their content types—which includes not only the
+///   <see cref="Topic"/>, but also all of its descendents. Other <see cref="Topic"/>s are <i>skipped</i>, also based on
+///   their content types; in this case, the <see cref="Topic"/> is excluded, but its descendents are not. What content
+///   types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes"
+///   /> and <see cref="SkippedContentTypes"/> collections.
 /// </remarks>
 /// <param name="topicRepository">
-///   The <see cref="ITopicRepository"/> used to retrieve <see cref="Topic"/> instances for the sitemap.
+///   The <see cref="ISitemapTopicRepository"/> used to retrieve the minimal <see cref="Topic"/> graph for the sitemap.
 /// </param>
-public class SitemapController(ITopicRepository topicRepository) : Controller {
+public class SitemapController(ISitemapTopicRepository topicRepository) : Controller {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-  private readonly              ITopicRepository                _topicRepository                = Contract.Requires(topicRepository);
+  private readonly              ISitemapTopicRepository         _topicRepository                = Contract.Requires(topicRepository);
 
   /*============================================================================================================================
   | CONSTANTS
@@ -48,9 +45,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   /// <summary>
   ///   Specifies what content types should not be listed in the sitemap, including any descendents.
   /// </summary>
-  public static Collection<string> ExcludedContentTypes { get; } = new() {
-    "List"
-  };
+  public static Collection<string> ExcludedContentTypes { get; } = ["List"];
 
   /*============================================================================================================================
   | SKIPPED CONTENT TYPES
@@ -58,10 +53,10 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   /// <summary>
   ///   Specifies what content types should not be listed in the sitemap—but whose descendents should still be evaluated.
   /// </summary>
-  public static Collection<string> SkippedContentTypes { get; } = new() {
+  public static Collection<string> SkippedContentTypes { get; } = [
     "PageGroup",
     "Container"
-  };
+  ];
 
   /*============================================================================================================================
   | GET: /SITEMAP
@@ -77,12 +72,6 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     | Ensure topics are loaded
     \-------------------------------------------------------------------------------------------------------------------------*/
     var rootTopic               = _topicRepository.Load().GetAwaiter().GetResult();
-
-    Contract.Assume(
-      rootTopic,
-      $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
-      $"{nameof(SitemapController)} is unable to establish a local copy to work off of."
-    );
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish sitemap
