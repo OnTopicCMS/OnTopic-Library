@@ -51,16 +51,16 @@ public class TopicRepositoryExtensionsTest: IClassFixture<StubTopicRepository> {
   public async Task Load_ByRoute_ReturnsTopic() {
 
     var routes                  = new RouteData();
-    var topic                   = await _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+    var topic                   = await _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_1");
 
     routes.Values.Add("rootTopic", "Web");
-    routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
+    routes.Values.Add("path", "Web_1/Web_1_1/Web_1_1_1");
 
     var currentTopic            = _topicRepository.Load(routes);
 
     Assert.NotNull(currentTopic);
     Assert.Equal(topic, currentTopic);
-    Assert.Equal("Web_0_1_1", currentTopic?.Key);
+    Assert.Equal("Web_1_1_1", currentTopic?.Key);
 
   }
 

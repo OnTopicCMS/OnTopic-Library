@@ -214,7 +214,7 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   [Fact]
   public async Task PageLevelNavigation_Invoke_ReturnsNull() {
 
-    var webPath                 = "/Web/Web_1/Web_1_0/";
+    var webPath                 = "/Web/Web_1/Web_1_1/";
 
     var viewComponent           = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
       ViewComponentContext      = GetViewComponentContext(webPath)
