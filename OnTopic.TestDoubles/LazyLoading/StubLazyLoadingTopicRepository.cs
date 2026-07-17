@@ -112,6 +112,10 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, 3);
     _                           = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, 4);
 
+    // Root's own Children property is lazy, matching ITopicRepository's documented Load() defaults; only the Configuration
+    // subtree required for content type resolution and Save() validation is eagerly scaffolded
+    ((ITopicLazyLoadable)root).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+
     return root;
 
   }
@@ -189,7 +193,13 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     }
 
     // Preload the topic with the requested payload
-    await FillRequestedPayload(topic, payload, resolveDeferredTargets: false, CancellationToken.None).ConfigureAwait(false);
+    await FillRequestedPayload(
+      topic,
+      payload,
+      resolveDeferredTargets    : false,
+      isRecursive,
+      CancellationToken.None
+    ).ConfigureAwait(false);
 
     // Fire the TopicLoaded event, if newly built
     if (isNewlyBuilt) {
@@ -286,7 +296,13 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     }
 
     // Call the centralized private helper to fulfill the request
-    await FillRequestedPayload(topic, payload, resolveDeferredTargets: true, cancellationToken).ConfigureAwait(false);
+    await FillRequestedPayload(
+      topic,
+      payload,
+      resolveDeferredTargets    : true,
+      isRecursive               : false,
+      cancellationToken
+    ).ConfigureAwait(false);
 
   }
 
@@ -297,9 +313,11 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   On a plain <c>Load()</c>, connects resident relationship and reference targets unconditionally, regardless of
   ///   <paramref name="payload"/>. Either way, loads the data requested in <paramref name="payload"/>, after filtering out
   ///   any already <see cref="LoadState.Loaded"/> flags, recording a fetch in the spy for each property filled. Children are
-  ///   fetched from the record store one level at a time; a child already present in <see cref="_served"/> (e.g., attached
-  ///   while building an ancestor chain for a deeper <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> call) is
-  ///   reused rather than rebuilt, to avoid colliding with the existing instance already attached to the graph.
+  ///   fetched from the record store one level at a time, unless <paramref name="isRecursive"/> is set, in which case
+  ///   <see cref="Repositories.TopicPayload.Children"/> rides along so every descendant, not merely the immediate children, are
+  ///   filled. A child already present in <see cref="_served"/> (e.g., attached while building an ancestor chain for a deeper
+  ///   <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> call) is reused rather than rebuilt, to avoid colliding with
+  ///   the existing instance already attached to the graph.
   /// </summary>
   /// <param name="topic">The topic whose requested payload should be filled.</param>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
@@ -309,11 +327,16 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   fill; left <see langword="false"/> by a plain <c>Load()</c>, which only connects targets already present in the graph,
   ///   via <see cref="ConnectResidentAssociations"/>.
   /// </param>
+  /// <param name="isRecursive">
+  ///   Whether a requested <see cref="Repositories.TopicPayload.Children"/> boundary should recurse into the entire subtree,
+  ///   rather than filling only the immediate level.
+  /// </param>
   /// <param name="cancellationToken">An optional token used only when resolving deferred targets.</param>
   private async Task FillRequestedPayload(
     Topic topic,
     TopicPayload payload,
     bool resolveDeferredTargets,
+    bool isRecursive,
     CancellationToken cancellationToken
   ) {
 
@@ -335,7 +358,13 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter out any already loaded payloads
+    >---------------------------------------------------------------------------------------------------------------------------
+    | The unfiltered payload is retained for propagation to children below: A property already Loaded on topic (e.g., Root's
+    | ExtendedAttributes, which defaults to Loaded since Root is never built from a record) doesn't imply descendants are also
+    | already loaded, so children must still be offered the originally requested payload, not the topic's filtered one
     \-------------------------------------------------------------------------------------------------------------------------*/
+    var requestedPayload        = payload;
+
     payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
@@ -346,26 +375,15 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     var associationPayload      = payload & (TopicPayload.Relationships | TopicPayload.References);
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | A topic with pending payload must be backed by a record
-    >---------------------------------------------------------------------------------------------------------------------------
-    | A topic that has no corresponding record means it was attached to the graph without ever being built from the store, which
-    | this stub has no way to fulfill; this represents test setup error, not a legitimate state
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    _store.TryGetValue(topic.Id, out var record);
-    Contract.Assume(
-      record,
-      $"{nameof(StubLazyLoadingTopicRepository)} can only lazily fill topics that are defined in the record store supplied to its " +
-      $"constructor. Topic {topic.Id} was attached to the graph with a pending {payload} payload, but has no corresponding " +
-      $"record to fill it from. This is an invalid configuration."
-    );
-
-    /*--------------------------------------------------------------------------------------------------------------------------
     | Children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Unlike ExtendedAttributes, Children never needs a record of its own to fill: It is resolved purely by scanning the store
+    | for records whose ParentId matches, including Root, whose top-level records are stored with a null ParentId
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.Children)) {
 
       // Loop through each child record and build the topic from the topic store
-      foreach (var childRecord in _store.Values.Where(r => r.ParentId == topic.Id).OrderBy(r => r.Id)) {
+      foreach (var childRecord in _store.Values.Where(r => (r.ParentId?? _root.Id) == topic.Id).OrderBy(r => r.Id)) {
 
         // Build the child record, assuming it hasn't already been served
         if (_served.ContainsKey(childRecord.Id)) {
@@ -375,12 +393,16 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
         // Load the rest of the requested payload for the child, mirroring how a Children fetch also pulls in whatever else was
         // requested (e.g., ExtendedAttributes, VersionHistory) for the whole scope, while relationships and references always
-        // ride along for free; the child's own Children are left deferred
-        var childPayload        = (payload & ~TopicPayload.Children) | TopicPayload.Relationships | TopicPayload.References;
-        await FillRequestedPayload(child, childPayload, resolveDeferredTargets: false, cancellationToken).ConfigureAwait(false);
+        // ride along for free. When isRecursive, Children rides along too, so the fill descends into the entire subtree rather
+        // than stopping at one level. This uses requestedPayload, not the filtered payload, since a property that is already
+        // Loaded on a topic doesn't imply it's also already loaded on the child
+        var childPayload        = (isRecursive? requestedPayload : requestedPayload & ~TopicPayload.Children)
+          | TopicPayload.Relationships
+          | TopicPayload.References;
+        await FillRequestedPayload(child, childPayload, resolveDeferredTargets: false, isRecursive, cancellationToken).ConfigureAwait(false);
 
         // Fire the TopicLoaded event
-        OnTopicLoaded(new(child, isRecursive: false));
+        OnTopicLoaded(new(child, isRecursive));
 
       }
 
@@ -392,8 +414,20 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Extended attributes
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Unlike Children, this requires a backing record; a topic with a pending ExtendedAttributes payload but no corresponding
+    | record means it was attached to the graph without ever being built from the store, which this stub has no way to fulfill,
+    | representing test setup error, not a legitimate state
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.ExtendedAttributes)) {
+
+      _store.TryGetValue(topic.Id, out var record);
+      Contract.Assume(
+        record,
+        $"{nameof(StubLazyLoadingTopicRepository)} can only lazily fill topics that are defined in the record store supplied to " +
+        $"its constructor. Topic {topic.Id} was attached to the graph with a pending {payload} payload, but has no corresponding " +
+        $"record to fill it from. This is an invalid configuration."
+      );
 
       // Load each of the extended attributes from the data store
       foreach (var attribute in record.ExtendedAttributes) {
