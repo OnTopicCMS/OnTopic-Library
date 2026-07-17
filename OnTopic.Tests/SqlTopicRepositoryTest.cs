@@ -919,6 +919,29 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: WITH HAS CHILDREN AND NO RETURNED CHILDREN: SETS NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a shallow, single-row result set where <c>HasChildren
+  ///   </c> is <see langword="true"/> but no child rows are returned, confirming <see cref="Topic.Children"/> is <see cref=
+  ///   "LoadState.NotLoaded"/> (i.e., the seed itself is known to have children, but none were loaded).
+  /// </summary>
+  [Fact]
+  public async Task LoadTopicGraph_WithHasChildrenAndNoReturnedChildren_SetsNotLoaded() {
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(1, "Root", "Container", hasChildren: true);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    var topic                   = await tableReader.LoadTopicGraph(1, cancellationToken: CancellationToken);
+
+    Assert.False(((ITopicLazyLoadable)topic)?.IsLoaded(TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WITH HAS CHILDREN ON ANCESTOR AND LOADED SUBTREE: SETS LOAD STATE CORRECTLY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
