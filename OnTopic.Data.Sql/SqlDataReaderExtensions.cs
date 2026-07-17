@@ -117,12 +117,14 @@ internal static class SqlDataReaderExtensions {
           preExistingIds.Contains(addedTopic.Id),
           isComplete: !hasChildren
         );
-      }
 
-      // Any rows after the seed are a genuine child, indicating that the parent's full child set was returned. The parent may
-      // be unresolved (e.g., GetTopicUpdates' unordered, possibly-disconnected Refresh() batch), hence the null-conditional.
-      if (seedTopic is not null && addedTopic != seedTopic) {
-        (addedTopic.Parent as ITopicLazyLoadable)?.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+        // Any rows after the seed are a genuine child, indicating that the parent's full child set was returned. This is only
+        // meaningful here, where HasChildren is populated (GetTopics' ordered, complete result set); GetTopicUpdates'
+        // Refresh() batch leaves HasChildren NULL for every row, since it is an unordered, possibly disconnected set of changed
+        // topics, not a complete child listing. The parent may also be unresolved, hence the null-conditional.
+        if (seedTopic is not null && addedTopic != seedTopic) {
+          (addedTopic.Parent as ITopicLazyLoadable)?.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+        }
       }
 
     }
