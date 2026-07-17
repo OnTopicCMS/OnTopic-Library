@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers;
-using OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories;
 using OnTopic.Data.Caching;
 using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
+using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
@@ -33,6 +33,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
   private readonly              ITypeLookupService              _typeLookupService;
   private readonly              ITopicMappingService            _topicMappingService;
   private readonly              ITopicRepository                _topicRepository;
+  private readonly              ISitemapTopicRepository         _sitemapTopicRepository;
 
   /*============================================================================================================================
   | HIERARCHICAL TOPIC MAPPING SERVICE
@@ -55,7 +56,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize Topic Repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var                         sqlTopicRepository              = new StubTopicRepository();
+    var                         sqlTopicRepository              = new Repositories.StubTopicRepository();
     var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
     _                                                           = new PageTopicViewModel();
 
@@ -63,6 +64,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository                                            = cachedTopicRepository;
+    _sitemapTopicRepository                                     = new StubSitemapTopicRepository(_topicRepository);
     _typeLookupService                                          = new DynamicTopicViewModelLookupService();
     _topicMappingService                                        = new TopicMappingService(_topicRepository, _typeLookupService);
     _                                                           = _topicRepository.Load().GetAwaiter().GetResult();
@@ -111,7 +113,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
       nameof(ControllerController) =>
         new ControllerController(),
       nameof(SitemapController) =>
-        new SitemapController(_topicRepository),
+        new SitemapController(_sitemapTopicRepository),
       nameof(RedirectController) =>
         new RedirectController(_topicRepository),
       _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
