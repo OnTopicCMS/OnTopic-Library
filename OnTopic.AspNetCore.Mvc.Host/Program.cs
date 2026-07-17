@@ -26,9 +26,17 @@ builder.Services.Configure<CookiePolicyOptions>(options => {
 });
 
 /*------------------------------------------------------------------------------------------------------------------------------
-| Configure: Output Caching
+| Configure: Response Caching
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.AddResponseCaching();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Output Caching
+>-------------------------------------------------------------------------------------------------------------------------------
+| Required for MapTopicSitemap()'s default caching policy to take effect; without this, the sitemap still renders correctly on
+| every request via the dedicated SqlSitemapTopicRepository, but it isn't cached.
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.AddOutputCache();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
@@ -74,6 +82,7 @@ app.UseCookiePolicy();
 app.UseRouting();
 app.UseCors("default");
 app.UseResponseCaching();
+app.UseOutputCache();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
