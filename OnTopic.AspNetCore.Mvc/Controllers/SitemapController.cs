@@ -26,12 +26,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers;
 ///     types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes
 ///     "/> and <see cref="SkippedContentTypes"/> collections.
 ///   </para>
-///   <para>
-///     The <see cref="Extended(Boolean)"/> action enables an extended sitemap with Google's custom <c>PageMap</c> schema for
-///     exposing <see cref="Topic.Attributes"/>, <see cref="Topic.Relationships"/>, and <see cref="Topic.References"/>. By
-///     default, some content attributes, such as <c>Body</c>, <c>IsDisabled</c>, and <c>NoIndex</c>, are hidden. This list
-///     can be modified by updating the static <see cref="ExcludedAttributes"/> collection.
-///   </para>
 /// </remarks>
 /// <param name="topicRepository">
 ///   The <see cref="ITopicRepository"/> used to retrieve <see cref="Topic"/> instances for the sitemap.
@@ -47,7 +41,6 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   | CONSTANTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   private static readonly XNamespace _sitemapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
-  private static readonly XNamespace _pagemapNamespace = "http://www.google.com/schemas/sitemap-pagemap/1.0";
 
   /*============================================================================================================================
   | EXCLUDED CONTENT TYPES
@@ -71,32 +64,14 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   };
 
   /*============================================================================================================================
-  | EXCLUDED ATTRIBUTES
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Specifies what attributes should not be listed in the sitemap.
-  /// </summary>
-  public static Collection<string> ExcludedAttributes { get; } = new() {
-    "Body",
-    "IsDisabled",
-    "ParentID",               //Legacy, but exposed for avoid leacking legacy data
-    "TopicID",                //Legacy, but exposed for avoid leacking legacy data
-    "ContentType",            //Legacy, but exposed for avoid leacking legacy data
-    "IsHidden",
-    "NoIndex",
-    "SortOrder"
-  };
-
-  /*============================================================================================================================
   | GET: /SITEMAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides the Sitemap.org sitemap for the site.
   /// </summary>
   /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
-  /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
   /// <returns>A Sitemap.org sitemap.</returns>
-  public ActionResult Index(bool indent = false, bool includeMetadata = false) {
+  public ActionResult Index(bool indent = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Ensure topics are loaded
@@ -113,7 +88,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     | Establish sitemap
     \-------------------------------------------------------------------------------------------------------------------------*/
     var declaration             = new XDeclaration("1.0", "utf-8", "no");
-    var sitemap                 = GenerateSitemap(rootTopic, includeMetadata);
+    var sitemap                 = GenerateSitemap(rootTopic);
     var settings                = indent? SaveOptions.None : SaveOptions.DisableFormatting;
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -124,34 +99,18 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   }
 
   /*============================================================================================================================
-  | GET: /SITEMAP/EXTENDED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Provides the Sitemap.org sitemap for the site, including extended metadata attributes.
-  /// </summary>
-  /// <remarks>
-  ///   Introducing the metadata makes the sitemap considerably larger. However, it also means that some agents will index the
-  ///   additional information and make it available for querying. For instance, the (now defunct) Google Custom Search Engine
-  ///   (CSE) would previously allow queries to be filtered based on metadata attributes exposed via the sitemap.
-  /// </remarks>
-  /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
-  /// <returns>A Sitemap.org sitemap.</returns>
-  public ActionResult Extended(bool indent = false) => Index(indent, true);
-
-  /*============================================================================================================================
   | METHOD: GENERATE SITEMAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Given a root topic, generates an XML-formatted sitemap.
   /// </summary>
   /// <param name="rootTopic">The topic to add to the sitemap.</param>
-  /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
   /// <returns>A Sitemap.org sitemap.</returns>
-  private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
+  private XDocument GenerateSitemap(Topic rootTopic) =>
     new(
       new XElement(_sitemapNamespace + "urlset",
         from topic in rootTopic.Children
-        select AddTopic(topic,  includeMetadata)
+        select AddTopic(topic)
       )
     );
 
@@ -159,11 +118,10 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
   | METHOD: ADD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a <see cref="Topic"/>, adds it to a given <see cref="XmlNode"/>.
+  ///   Given a <see cref="Topic"/>, returns the sitemap <c>url</c> elements for it and its descendants.
   /// </summary>
   /// <param name="topic">The topic to add to the sitemap.</param>
-  /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
-  private List<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
+  private List<XElement> AddTopic(Topic topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish return collection
@@ -193,12 +151,7 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
       new XElement(_sitemapNamespace + "loc", domain + topic.GetWebPath()),
       new XElement(_sitemapNamespace + "changefreq", "monthly"),
       new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
-      new XElement(_sitemapNamespace + "priority", 1),
-      includeMetadata? new XElement(_pagemapNamespace + "PageMap",
-        getAttributes(),
-        getRelationships(),
-        getReferences()
-      ) : null
+      new XElement(_sitemapNamespace + "priority", 1)
     );
     if (
       !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
@@ -213,60 +166,10 @@ public class SitemapController(ITopicRepository topicRepository) : Controller {
     | Iterate over children
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var childTopic in  topic.Children) {
-      topics.AddRange(AddTopic(childTopic, includeMetadata));
+      topics.AddRange(AddTopic(childTopic));
     }
 
     return topics;
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Get attributes
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    XElement getAttributes() =>
-      new(_pagemapNamespace + "DataObject",
-        new XAttribute("type",  "Attributes"),
-          new XElement(_pagemapNamespace + "Attribute",
-            new XAttribute("name", "ContentType"),
-            new XText(topic.ContentType?? "Page")
-          ),
-          from attribute in topic.Attributes
-          let attributeValue    =  topic.Attributes.GetValue(attribute.Key)
-          where !ExcludedAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
-          where attributeValue?.Length < 256
-          select new XElement(_pagemapNamespace + "Attribute",
-            new XAttribute("name", attribute.Key),
-            new XText(attributeValue ?? "")
-          )
-        );
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Get relationships
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    IEnumerable<XElement> getRelationships() =>
-      from relationship in topic.Relationships
-      select new XElement(_pagemapNamespace + "DataObject",
-        new XAttribute("type",  relationship.Key),
-        from relatedTopic in relationship.Values
-        select new XElement(_pagemapNamespace + "Attribute",
-          new XAttribute("name", "TopicKey"),
-          new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
-        )
-      );
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Get references
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    XElement? getReferences() =>
-      topic.References.Count is 0?
-        null :
-        new XElement(_pagemapNamespace + "DataObject",
-          new XAttribute("type", "References"),
-            from reference in topic.References
-            where reference.Value is not null
-            select new XElement(_pagemapNamespace + "Attribute",
-              new XAttribute("name", reference.Key),
-              new XText(reference.Value!.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
-            )
-          );
 
   }
 
