@@ -36,6 +36,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
   private readonly              ITypeLookupService              _typeLookupService;
   private readonly              ITopicMappingService            _topicMappingService;
   private readonly              ITopicRepository                _topicRepository;
+  private readonly              ISitemapTopicRepository         _sitemapTopicRepository;
   private                       DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
   /*============================================================================================================================
@@ -72,6 +73,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = cachedTopicRepository;
+    _sitemapTopicRepository     = new SqlSitemapTopicRepository(connectionString);
     _typeLookupService          = new DynamicTopicViewModelLookupService();
     _topicMappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
 
@@ -124,7 +126,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
       nameof(ErrorController) =>
         new ErrorController(_topicRepository, _topicMappingService),
       nameof(SitemapController) =>
-        new SitemapController(_topicRepository),
+        new SitemapController(_sitemapTopicRepository),
       nameof(RedirectController) =>
         new RedirectController(_topicRepository),
       _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
