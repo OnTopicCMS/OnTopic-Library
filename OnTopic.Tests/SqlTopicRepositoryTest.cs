@@ -627,6 +627,42 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: DISCONNECTED BATCH: PRESERVES NOT LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <c>GetTopicUpdates</c>-shaped batch naming a existing,
+  ///   <see cref="LoadState.NotLoaded"/> parent's child, and confirms the parent's <see cref="LoadState.NotLoaded"/> is
+  ///   preserved, rather than being misread as a complete child listing.
+  /// </summary>
+  /// <remarks>
+  ///   A <c>Refresh()</c> batch is an arbitrary, unordered set of individually modified topics, not a complete child listing
+  ///   the way a <c>GetTopics</c> result is. Without gating on <c>HasChildren</c> (always <c>NULL</c> in this shape), any row
+  ///   naming a resident parent, other than the batch's arbitrary first row, would be misread as proof the parent's full child
+  ///   set was returned, silently preventing it from lazy loading.
+  /// </remarks>
+  [Fact]
+  public async Task LoadTopicGraph_DisconnectedBatch_PreservesNotLoaded() {
+
+    var root                    = new Topic("Root", "Container", null, 1);
+    var parent                  = new Topic("Parent", "Container", root, 2);
+    var rawParent               = (ITopicBackingAccessor)parent;
+
+    rawParent.Children.LoadState = LoadState.NotLoaded;
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(99, "Orphan", "Page", 999);
+    topics.AddRow(3, "Child", "Page", 2);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    await tableReader.LoadTopicGraph(referenceTopic: parent, cancellationToken: CancellationToken);
+
+    Assert.Equal(LoadState.NotLoaded, rawParent.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WHOLE TREE LOAD: CONVERGES NON-LEAF REGION NODES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
