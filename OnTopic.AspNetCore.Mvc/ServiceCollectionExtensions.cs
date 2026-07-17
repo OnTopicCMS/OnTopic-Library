@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -239,19 +240,44 @@ public static class ServiceCollectionExtensions {
   | EXTENSION: MAP TOPIC SITEMAP (IENDPOINTROUTEBUILDER)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds the <c>Sitemap/{action=Index}</c> endpoint route for the OnTopic sitemap.
+  ///   Adds the <c>Sitemap/{action=Index}</c> endpoint route for the OnTopic sitemap, with a default server-side output
+  ///   caching policy.
   /// </summary>
   /// <remarks>
-  ///   For most implementations, this will be covered by the default route, such as that implemented by the standard <see
-  ///   cref="ControllerEndpointRouteBuilderExtensions.MapDefaultControllerRoute(IEndpointRouteBuilder)"/> method that ships
-  ///   with ASP.NET. This extension method is provided as a convenience method for implementations that aren't using the
-  ///   standard route, for whatever reason, and want a specific route setup for the sitemap.
+  ///   <para>
+  ///     For most implementations, this will be covered by the default route, such as that implemented by the standard <see
+  ///     cref="ControllerEndpointRouteBuilderExtensions.MapDefaultControllerRoute(IEndpointRouteBuilder)"/> method that ships
+  ///     with ASP.NET. This extension method is provided as a convenience method for implementations that aren't using the
+  ///     standard route, for whatever reason, and want a specific route setup for the sitemap.
+  ///   </para>
+  ///   <para>
+  ///     The output caching policy is <i>inert</i> until the host also registers <see cref=
+  ///     "OutputCacheServiceCollectionExtensions.AddOutputCache(IServiceCollection, Action{OutputCacheOptions})"/> and calls
+  ///     <see cref="OutputCacheApplicationBuilderExtensions.UseOutputCache(IApplicationBuilder)"/>. Without that, the sitemap
+  ///     still renders correctly on every request via the dedicated <see cref="ISitemapTopicRepository"/>, but it isn't cached.
+  ///   </para>
+  ///   <para>
+  ///     The policy varies by host and scheme, in addition to the <c>indent</c> query parameter, since <see cref=
+  ///     "SitemapController"/> renders every <c>&lt;loc&gt;</c> from the requesting host and scheme; without this, a deployment
+  ///     serving multiple hosts (e.g., apex and <c>www</c>), or redirecting HTTP to HTTPS, could serve one host's cached URLs
+  ///     to another.
+  ///   </para>
   /// </remarks>
-  public static ControllerActionEndpointConventionBuilder MapTopicSitemap(this IEndpointRouteBuilder routes) =>
+  /// <param name="routes">The <see cref="IEndpointRouteBuilder"/> this route is being added to.</param>
+  /// <param name="cacheDuration">The duration to cache the rendered sitemap for. Defaults to sixty minutes.</param>
+  public static ControllerActionEndpointConventionBuilder MapTopicSitemap(
+    this                        IEndpointRouteBuilder           routes,
+    TimeSpan?                   cacheDuration                   = null
+  ) =>
     routes.MapControllerRoute(
       name: "TopicSitemap",
       pattern: "Sitemap/{action=Index}",
       defaults: new { controller = "Sitemap" }
+    ).CacheOutput(policy => policy
+      .Expire(cacheDuration?? TimeSpan.FromMinutes(60))
+      .SetVaryByHost(true)
+      .SetVaryByQuery("indent")
+      .VaryByValue(context => new("scheme", context.Request.Scheme))
     );
 
   /*============================================================================================================================
