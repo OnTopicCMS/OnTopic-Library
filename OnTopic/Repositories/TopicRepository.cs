@@ -583,8 +583,16 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate descendants
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Reads Children via ITopicLazyLoadable, not the autoloading getter, so a lazy-loaded topic isn't forced to fetch its
+    | children merely to be deleted. Both signals are already definitive: An ITopicRepository only ever stamps Children as
+    | NotLoaded when the topic genuinely has children it hasn't fully fetched, so no count check is needed for that case. When
+    | Loaded, the resident Children collection is complete, so its count is authoritative.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isRecursive && topic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase))) {
+    var rawTopic                = (ITopicLazyLoadable)topic;
+    var hasResidentChildren     = rawTopic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase));
+
+    if (!isRecursive && (hasResidentChildren || !rawTopic.IsLoaded(TopicPayload.Children))) {
       throw new ReferentialIntegrityException(
         $"The topic '{topic.GetUniqueKey()}' cannot be deleted. It has child topics, but '{nameof(isRecursive)}' is set to " +
         $"false. To delete '{topic.GetUniqueKey()}' and all of its descendants, set '{nameof(isRecursive)}' to true."
