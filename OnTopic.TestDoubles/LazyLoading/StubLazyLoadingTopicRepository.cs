@@ -322,10 +322,11 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   /// <param name="topic">The topic whose requested payload should be filled.</param>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
   /// <param name="resolveDeferredTargets">
-  ///   Whether unresolved relationships and references targets should be recursively loaded, via the inherited <c>
-  ///   LoadDeferredAssociations</c>. Set by <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>'s on-demand
-  ///   fill; left <see langword="false"/> by a plain <c>Load()</c>, which only connects targets already present in the graph,
-  ///   via <see cref="ConnectResidentAssociations"/>.
+  ///   Whether unresolved relationships and references targets should be recursively loaded, via the inherited <see cref=
+  ///   "LazyLoadingTopicRepository.LoadDeferredAssociations(Topic, TopicPayload, CancellationToken)"/>. Set by <see cref=
+  ///   "EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>'s on-demand fill; left <see langword="false"/> by a plain <c>
+  ///   Load()</c>, which only connects targets already present in the graph, via the inherited <see cref=
+  ///   "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>.
   /// </param>
   /// <param name="isRecursive">
   ///   Whether a requested <see cref="Repositories.TopicPayload.Children"/> boundary should recurse into the entire subtree,
@@ -350,10 +351,12 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     >-------------------------------------------------------------------------------------------------------------------------
     | Unconditionally connects targets already present in the graph, mirroring how LoadTopicGraph() reads relationship and
     | reference rows alongside every topic row and links whatever's already resident, regardless of the requested payload.
-    | Runs ahead of the payload/store checks below, since it isn't gated by them in production either.
+    | Runs ahead of the payload/store checks below, since it isn't gated by them in production either. Delegates to the
+    | inherited ResolveAssociations, which indexes the resident graph the same way LoadTopicGraph() seeds its working index
+    | (via GetTopicIndex()), so this double relies on the same underlying mechanism as production rather than a parallel one.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!resolveDeferredTargets) {
-      ConnectResidentAssociations(rawTopic);
+      await ResolveAssociations(topic, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -459,34 +462,6 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
         RecordFetch(topic.Id, TopicPayload.References);
       }
 
-    }
-
-  }
-
-  /*============================================================================================================================
-  | METHOD: CONNECT RESIDENT ASSOCIATIONS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Connects each deferred relationship or reference entry whose target is already present in <see cref="_served"/>, without
-  ///   recursively loading anything. Mirrors how a real, SQL-backed repository connects association targets found within the
-  ///   same result set as the requested topic, leaving out-of-scope targets deferred for a later, explicit fill via <see cref=
-  ///   "EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>.
-  /// </summary>
-  /// <param name="rawTopic">The requesting topic's backing accessor.</param>
-  private void ConnectResidentAssociations(ITopicBackingAccessor rawTopic) {
-
-    // Attempts to resolve each deferred relationship
-    foreach (var entry in rawTopic.Relationships.Deferred.ToArray()) {
-      if (_served.TryGetValue(entry.TopicId, out var target)) {
-        rawTopic.Relationships.SetValue(entry.Key, target, markDirty: false);
-      }
-    }
-
-    // Attempts to resolve each deferred reference
-    foreach (var entry in rawTopic.References.Deferred.ToArray()) {
-      if (_served.TryGetValue(entry.TopicId, out var target)) {
-        rawTopic.References.SetValue(entry.Key, target, markDirty: false);
-      }
     }
 
   }
