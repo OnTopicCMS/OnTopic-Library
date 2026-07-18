@@ -19,8 +19,8 @@ namespace OnTopic.Querying;
 /// <remarks>
 ///   These extensions, while powerful, were intended to be used against fully loaded, in-memory topic trees. Their usefulness
 ///   with lazy-loaded trees is limited and, potentially, even expensive, as innocent seeming queries may trigger lazy-loading
-///   of attributes, relationships, references, children, &c. Children are gated in <see cref="FindFirst"/> and <see cref=
-///   "FindAll(Topic)"/>, but the <c>predicate</c> parameter can easily call into any of these.
+///   of attributes, relationships, references, children, etc. Traversal itself never triggers a load, as it reads <see cref=
+///   "ITopicBackingAccessor.Children"/> directly, though the <c>predicate</c> parameter can easily call into any of these.
 /// </remarks>
 public static class TopicExtensions {
 
@@ -31,9 +31,11 @@ public static class TopicExtensions {
   ///   Finds the first instance of a <see cref="Topic"/> in the topic tree that satisfies the delegate.
   /// </summary>
   /// <remarks>
-  ///   When using this with a lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes,
-  ///   relationships, references, and children if they're included in the <paramref name="predicate"/>. It is recommended to
-  ///   avoid use with lazy-loaded trees, or to use extreme caution.
+  ///   Traverses via <see cref="ITopicBackingAccessor.Children"/>, the non-triggering backing field, so this never directly
+  ///   causes a lazy load. The <paramref name="predicate"/> is not similarly guarded, however: When using this with a
+  ///   lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes, relationships, references, and
+  ///   children if they're included in the predicate. It is recommended to avoid use with lazy-loaded trees, or to use extreme
+  ///   caution.
   /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
@@ -56,12 +58,10 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
-      foreach (var child in topic.Children) {
-        var nestedResult        = child.FindFirst(predicate);
-        if (nestedResult is not null) {
-          return nestedResult;
-        }
+    foreach (var child in ((ITopicBackingAccessor)topic).Children) {
+      var nestedResult          = child.FindFirst(predicate);
+      if (nestedResult is not null) {
+        return nestedResult;
       }
     }
 
@@ -128,9 +128,11 @@ public static class TopicExtensions {
   ///   Retrieves a collection of topics based on a supplied function.
   /// </summary>
   /// <remarks>
-  ///   When using this with a lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes,
-  ///   relationships, references, and children if they're included in the <paramref name="predicate"/>. It is recommended to
-  ///   avoid use with lazy-loaded trees, or to use extreme caution.
+  ///   Traverses via <see cref="ITopicBackingAccessor.Children"/>, the non-triggering backing field, so this never directly
+  ///   causes a lazy load. The <paramref name="predicate"/> is not similarly guarded, however: When using this with a
+  ///   lazy-loaded tree, be aware that it may trigger costly on-demand loading of attributes, relationships, references, and
+  ///   children if they're included in the predicate. It is recommended to avoid use with lazy-loaded trees, or to use extreme
+  ///   caution.
   /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
@@ -155,13 +157,11 @@ public static class TopicExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
-      foreach (var child in topic.Children) {
-        var nestedResults       = child.FindAll(predicate);
-        foreach (var matchedTopic in nestedResults) {
-          if (!results.Contains(matchedTopic)) {
-            results.Add(matchedTopic);
-          }
+    foreach (var child in ((ITopicBackingAccessor)topic).Children) {
+      var nestedResults         = child.FindAll(predicate);
+      foreach (var matchedTopic in nestedResults) {
+        if (!results.Contains(matchedTopic)) {
+          results.Add(matchedTopic);
         }
       }
     }
