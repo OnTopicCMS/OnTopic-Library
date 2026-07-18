@@ -119,9 +119,10 @@ public class LazyLoadingTopicRepositoryTest {
 
     var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_1");
     var rawTopic                = (ITopicBackingAccessor)topic!;
+    var lazyTopic               = (ITopicLazyLoadable)topic!;
 
-    Assert.False(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.Relationships));
-    Assert.False(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
+    Assert.False(lazyTopic.IsLoaded(TopicPayload.Relationships));
+    Assert.False(lazyTopic.IsLoaded(TopicPayload.References));
     Assert.NotEmpty(rawTopic.Relationships.Deferred);
     Assert.NotEmpty(rawTopic.References.Deferred);
 
@@ -200,10 +201,11 @@ public class LazyLoadingTopicRepositoryTest {
   public async Task EnsureLoaded_Children_MaterializesBeforeAccess() {
 
     var topic                   = await _loadingTopicRepository.Load("Root:Web");
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    await ((ITopicLazyLoadable)topic!).EnsureLoaded(TopicPayload.Children, cancellationToken: CancellationToken);
+    await rawTopic.EnsureLoaded(TopicPayload.Children, cancellationToken: CancellationToken);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
     Assert.Equal(2, ((ITopicBackingAccessor)topic).Children.Count);
 
   }
@@ -222,10 +224,11 @@ public class LazyLoadingTopicRepositoryTest {
   public async Task EnsureLoaded_ExtendedAttributes_MaterializesRealValue() {
 
     var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_0:Web_0_0");
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    await ((ITopicLazyLoadable)topic!).EnsureLoaded(TopicPayload.ExtendedAttributes, cancellationToken: CancellationToken);
+    await rawTopic.EnsureLoaded(TopicPayload.ExtendedAttributes, cancellationToken: CancellationToken);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.ExtendedAttributes));
     Assert.Equal("Extended body content for Web_0_0.", topic.Attributes.GetValue("Body"));
 
   }

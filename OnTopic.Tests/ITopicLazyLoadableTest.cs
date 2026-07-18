@@ -138,12 +138,13 @@ public class ITopicLazyLoadableTest {
   public void IsLoaded_NotLoadedChildren_NeverTriggersLoad() {
 
     var topic                   = new Topic("Test", "Page", null, 1);
+    var rawTopic                = (ITopicLazyLoadable)topic;
     var loader                  = new TrackingTopicLazyLoader();
 
-    ((ITopicLazyLoadable)topic).Loader = loader;
+    rawTopic.Loader             = loader;
     topic.Children.LoadState    = LoadState.NotLoaded;
 
-    var result                  = ((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.All, isRecursive: true);
+    var result                  = rawTopic.IsLoaded(TopicPayload.All, isRecursive: true);
 
     Assert.False(result);
     Assert.False(loader.WasCalled);

@@ -1188,11 +1188,12 @@ public class TopicRepositoryBaseTest {
   public async Task EnsureLoaded_ExtendedAttributesNotLoaded_MarksLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.ExtendedAttributes);
+    await rawTopic.EnsureLoaded(TopicPayload.ExtendedAttributes);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -1208,13 +1209,14 @@ public class TopicRepositoryBaseTest {
   public async Task EnsureLoaded_MixedBoundaries_SkipsLoadedBoundaries() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
     topic!.Attributes.LoadState = LoadState.NotLoaded;
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
-    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
+    await rawTopic.EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.ExtendedAttributes));
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.ExtendedAttributes));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1236,11 +1238,12 @@ public class TopicRepositoryBaseTest {
   public async Task EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
     topic!.Relationships.Deferred.Add(new("_stub", 11111));
-    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Relationships);
+    await rawTopic.EnsureLoaded(TopicPayload.Relationships);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -1262,11 +1265,12 @@ public class TopicRepositoryBaseTest {
   public async Task EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
     topic!.References.Deferred.Add(new("_stub", 11111));
-    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.References);
+    await rawTopic.EnsureLoaded(TopicPayload.References);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
 
   }
 
@@ -1282,11 +1286,12 @@ public class TopicRepositoryBaseTest {
   public async Task IsLoaded_ChildrenNotLoadedState_TriggersEnsureLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    ((ITopicLazyLoadable)topic!).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    rawTopic.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
     _                           = topic.Children;
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1302,11 +1307,12 @@ public class TopicRepositoryBaseTest {
   public async Task IsLoaded_ChildrenLoadedState_DoesNotCallResolver() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
     _                           = topic.Children;
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1342,11 +1348,12 @@ public class TopicRepositoryBaseTest {
   public async Task IsLoaded_RelationshipsLoadedState_DoesNotCallResolver() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.Relationships));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
     _                           = topic.Relationships;
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
 
   }
 
@@ -1382,11 +1389,12 @@ public class TopicRepositoryBaseTest {
   public async Task IsLoaded_ReferencesLoadedState_DoesNotCallResolver() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    Assert.True(((ITopicLazyLoadable)topic!).IsLoaded(TopicPayload.References));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
     _                           = topic.References;
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
 
   }
 
@@ -1402,11 +1410,12 @@ public class TopicRepositoryBaseTest {
   public async Task EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
 
     var topic                   = await _topicRepository.Load(11111);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
 
-    ((ITopicLazyLoadable)topic!).SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
-    await ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.Children);
+    rawTopic.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
+    await rawTopic.EnsureLoaded(TopicPayload.Children);
 
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
 
   }
 
