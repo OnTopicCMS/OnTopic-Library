@@ -316,15 +316,16 @@ public class TopicQueryingTest  {
   }
 
   /*============================================================================================================================
-  | TEST: FIND FIRST: NOT LOADED CHILD: DOES NOT DESCEND
+  | TEST: FIND FIRST: NOT LOADED CHILD: STILL FINDS RESIDENT DESCENDANT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a three-level topic hierarchy and manually sets the middle topic's <see cref="Topic.Children"/> to <see cref=
-  ///   "LoadState.NotLoaded"/>. Verifies that <see cref="TopicExtensions.FindFirst"/> stops at that node and does not return
-  ///   the grandchild, which would only be reachable by descending into the not-loaded subtree.
+  ///   "LoadState.NotLoaded"/> despite already having a grandchild (e.g., as left behind by an ancestor crawl or a partial
+  ///   fill). Verifies that <see cref="TopicExtensions.FindFirst"/> traverses via the non-triggering backing field and so still
+  ///   finds the grandchild, rather than treating the <see cref="LoadState.NotLoaded"/> stamp as if the branch were empty.
   /// </summary>
   [Fact]
-  public void FindFirst_WithNotLoadedChild_DoesNotDescend() {
+  public void FindFirst_WithNotLoadedChild_StillFindsResidentDescendant() {
 
     var parent                  = new Topic("Parent", "Page", null, 1);
     var child                   = new Topic("Child", "Page", parent, 2);
@@ -334,20 +335,21 @@ public class TopicQueryingTest  {
 
     var result                  = parent.FindFirst(t => t == grandchild);
 
-    Assert.Null(result);
+    Assert.Equal(grandchild, result);
 
   }
 
   /*============================================================================================================================
-  | TEST: FIND ALL: PARTIALLY LOADED GRAPH: EXCLUDES NOT LOADED SUBTREES
+  | TEST: FIND ALL: PARTIALLY LOADED GRAPH: INCLUDES RESIDENT NOT LOADED SUBTREES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a topic graph where one branch has a <see cref="LoadState.NotLoaded"/> children collection. Verifies that <see
-  ///   cref="TopicExtensions.FindAll(Topic)"/> includes the not-loaded node itself (it is resident) but excludes its
-  ///   descendants, which are unreachable without triggering a load.
+  ///   Creates a topic graph where one branch has a <see cref="LoadState.NotLoaded"/> children collection despite already
+  ///   having a grandchild (e.g., as left behind by an ancestor crawl or a partial fill). Verifies that <see cref=
+  ///   "TopicExtensions.FindAll(Topic)"/> traverses via the non-triggering backing field and so still returns the grandchild,
+  ///   rather than treating the <see cref="LoadState.NotLoaded"/> stamp as if the branch were empty.
   /// </summary>
   [Fact]
-  public void FindAll_WithPartiallyLoadedGraph_ExcludesNotLoadedSubtrees() {
+  public void FindAll_WithPartiallyLoadedGraph_IncludesResidentNotLoadedSubtrees() {
 
     var parent                  = new Topic("Parent", "Page", null, 1);
     var childA                  = new Topic("ChildA", "Page", parent, 2);
@@ -363,7 +365,7 @@ public class TopicQueryingTest  {
     Assert.Contains(childA, results);
     Assert.Contains(grandchildA, results);
     Assert.Contains(childB, results);
-    Assert.DoesNotContain(grandchildB, results);
+    Assert.Contains(grandchildB, results);
 
   }
 
