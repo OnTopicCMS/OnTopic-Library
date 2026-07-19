@@ -223,6 +223,10 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
   /// </param>
   /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
+  /// <param name="autoLoad">
+  ///   Indicates whether a deferred-loading subclass may trigger a load when the key is absent locally. Defaults to <c>
+  ///   true</c>.
+  /// </param>
   /// <returns>The <typeparamref name="TValue"/> value for the <typeparamref name="TItem"/>.</returns>
   /// <requires description="The key name must be specified." exception="T:System.ArgumentNullException">
   ///   !String.IsNullOrWhiteSpace(key)
@@ -241,7 +245,13 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   maxHops &lt;= 100
   /// </requires>
   [return: NotNullIfNotNull(nameof(defaultValue))]
-  internal virtual TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent, int maxHops) {
+  internal virtual TValue? GetValue(
+    string key,
+    TValue? defaultValue,
+    bool inheritFromParent,
+    int maxHops,
+    bool autoLoad               = true
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate contracts
@@ -271,7 +281,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       maxHops > 0 &&
       BaseCollection is not null
     ) {
-      value                     = BaseCollection.GetValue(key, null, false, maxHops - 1);
+      value                     = BaseCollection.GetValue(key, null, false, maxHops - 1, autoLoad);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -282,7 +292,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       inheritFromParent &&
       ParentCollection is not null
     ) {
-      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent);
+      // Literal 5 preserves the base-inheritance restart applied by the public overload
+      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent, 5, autoLoad);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

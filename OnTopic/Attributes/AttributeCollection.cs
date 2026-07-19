@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 
 using OnTopic.Collections.Specialized;
+using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.Attributes;
@@ -102,13 +103,17 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   | METHOD: GET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves the value associated with the specified <paramref name="key"/>, autoloading the extended-attribute blob if the
-  ///   key is not yet loaded and the extended-attribute boundary is <see cref="LoadState.NotLoaded"/>.
+  ///   Retrieves the value associated with the specified <paramref name="key"/>, autoloading the extended attribute blob if the
+  ///   key is not yet loaded and the extended attribute property is set to <see cref="LoadState.NotLoaded"/>.
   /// </summary>
   /// <remarks>
   ///   Indexed attributes are always loaded in the local collection; the autoload is skipped for them. A deferred key that has
   ///   never been fetched triggers a single synchronous blob fill through the stamped resolver; all subsequent reads find the
-  ///   boundary <see cref="LoadState.Loaded"/> and return immediately without an additional round-trip.
+  ///   property <see cref="LoadState.Loaded"/> and return immediately without an additional round-trip. Callers that know a key
+  ///   is always indexed and, thus, never resides in the extended attribute blob, may set <paramref name="autoLoad"/> to
+  ///   <c>false</c> to suppress this behavior. This is a correctness trade-off: An <see cref="AttributeDescriptor"/> can force
+  ///   any attribute to be treated as extended, in which case a value stored only in an unloaded blob will be missed and the
+  ///   <paramref name="defaultValue"/> returned instead. It should therefore only be used for attributes known to be indexed.
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
   /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
@@ -116,12 +121,22 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   ///   Determines if the value should be inherited from the parent topic when not found locally.
   /// </param>
   /// <param name="maxHops">The maximum number of ancestor hops when inheriting from parent topics.</param>
+  /// <param name="autoLoad">
+  ///   Determines whether a <see cref="LoadState.NotLoaded"/> extended attribute property may trigger a synchronous load when
+  ///   <paramref name="key"/> is absent locally. Defaults to <c>true</c>.
+  /// </param>
   [return: NotNullIfNotNull(nameof(defaultValue))]
-  internal override string? GetValue(string key, string? defaultValue, bool inheritFromParent, int maxHops) {
-    if (LoadState is LoadState.NotLoaded && !Contains(key)) {
+  internal override string? GetValue(
+    string key,
+    string? defaultValue,
+    bool inheritFromParent,
+    int maxHops,
+    bool autoLoad               = true
+  ) {
+    if (autoLoad && LoadState is LoadState.NotLoaded && !Contains(key)) {
       ((ITopicLazyLoadable)AssociatedTopic).EnsureLoaded(TopicPayload.ExtendedAttributes);
     }
-    return base.GetValue(key, defaultValue, inheritFromParent, maxHops);
+    return base.GetValue(key, defaultValue, inheritFromParent, maxHops, autoLoad);
   }
 
   /*============================================================================================================================
