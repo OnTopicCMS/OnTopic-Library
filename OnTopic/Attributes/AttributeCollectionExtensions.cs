@@ -48,9 +48,10 @@ public static class AttributeCollectionExtensions {
     return AttributeValueConverter.Convert<bool?>(
       attributes.GetValue(
         name,
-        defaultValue ? "1" : "0",
+        defaultValue            ? "1" : "0",
         inheritFromParent,
-        inheritFromBase ? 5 : 0
+        inheritFromBase         ? 5 : 0,
+        autoLoad                : false
       )
     )?? defaultValue;
   }
@@ -87,7 +88,8 @@ public static class AttributeCollectionExtensions {
         name,
         defaultValue.ToString(CultureInfo.InvariantCulture),
         inheritFromParent,
-        inheritFromBase? 5 : 0
+        inheritFromBase         ? 5 : 0,
+        autoLoad                : false
       )
     )?? defaultValue;
   }
@@ -124,7 +126,8 @@ public static class AttributeCollectionExtensions {
         name,
         defaultValue.ToString(CultureInfo.InvariantCulture),
         inheritFromParent,
-        inheritFromBase? 5 : 0
+        inheritFromBase         ? 5 : 0,
+        autoLoad                : false
       )
     )?? defaultValue;
   }
@@ -161,7 +164,8 @@ public static class AttributeCollectionExtensions {
         name,
         defaultValue.ToString(CultureInfo.InvariantCulture),
         inheritFromParent,
-        inheritFromBase ? 5 : 0
+        inheritFromBase         ? 5 : 0,
+        autoLoad                : false
       )
     )?? defaultValue;
   }
@@ -198,7 +202,8 @@ public static class AttributeCollectionExtensions {
         name,
         null,
         inheritFromParent,
-        inheritFromBase ? 5 : 0
+        inheritFromBase         ? 5 : 0,
+        autoLoad                : false
       )
     )?? defaultValue;
   }

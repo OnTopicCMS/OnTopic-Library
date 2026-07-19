@@ -293,7 +293,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   [AttributeSetter]
   public string? View {
     get =>
-      Attributes.GetValue("View", "");
+      Attributes.GetValue("View", "", false, 5, autoLoad: false);
     set {
       TopicFactory.ValidateKey(value, true);
       SetAttributeValue("View", value);
@@ -382,7 +382,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   !string.IsNullOrWhiteSpace(value)
   /// </requires>
   public string Title {
-    get => Attributes.GetValue("Title", Key);
+    get => Attributes.GetValue("Title", Key, false, 5, autoLoad: false);
     set => SetAttributeValue("Title", value);
   }
 
