@@ -5,6 +5,8 @@
 \=============================================================================================================================*/
 using OnTopic.Collections;
 using OnTopic.Metadata;
+using OnTopic.Repositories;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -252,6 +254,50 @@ public class TopicTest {
 
     Assert.Equal("UntitledTopic", untitledTopic.Title);
     Assert.Equal("Titled Topic", titledTopic.Title);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: TITLE: NOT LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="LoadState.NotLoaded"/> <see cref=
+  ///   "Attributes"/> collection. Confirms that <see cref="Topic.Title"/> falls back to <see cref="Topic.Key"/> without
+  ///   triggering a lazy load, since <c>Title</c> is always expected to be indexed.
+  /// </summary>
+  [Fact]
+  public void Title_NotLoaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Page");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    Assert.Equal("Test", topic.Title);
+    Assert.False(loader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: VIEW: NOT LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="LoadState.NotLoaded"/> <see cref=
+  ///   "Attributes"/> collection. Confirms that <see cref="Topic.View"/> falls back to <see cref="String.Empty"/> without
+  ///   triggering a lazy load, since <c>View</c> is always expected to be indexed.
+  /// </summary>
+  [Fact]
+  public void View_NotLoaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Page");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    Assert.Equal("", topic.View);
+    Assert.False(loader.WasCalled);
 
   }
 

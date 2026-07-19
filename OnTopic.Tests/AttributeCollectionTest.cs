@@ -6,7 +6,9 @@
 using System.Collections;
 using System.Globalization;
 using OnTopic.Collections.Specialized;
+using OnTopic.Repositories;
 using OnTopic.Tests.Entities;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -91,6 +93,55 @@ public class AttributeCollectionTest {
     Assert.Null(topic.Attributes.GetValue("EmptyValue"));
 
   }
+
+
+  /*============================================================================================================================
+  | TEST: GET VALUE: NOT LOADED: KEY ABSENT: TRIGGERS LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="AttributeCollection"/> that is
+  ///   <see cref="LoadState.NotLoaded"/>. Confirms that a raw <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> call, which defaults <c>autoLoad</c> to
+  ///   <c>true</c>, still triggers a lazy load for a key that isn't present locally. This guards against over-suppression of
+  ///   the autoload behavior.
+  /// </summary>
+  [Fact]
+  public void GetValue_NotLoaded_KeyAbsent_TriggersLoad() {
+
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    topic.Attributes.GetValue("Missing");
+
+    Assert.True(loader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: GET VALUE: LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> whose <see cref="AttributeCollection"/> is already
+  ///   <see cref="LoadState.Loaded"/>. Confirms that requesting an absent key never triggers a lazy load, preserving existing
+  ///   behavior on fully loaded collections.
+  /// </summary>
+  [Fact]
+  public void GetValue_Loaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+
+    topic.Attributes.GetValue("Missing");
+
+    Assert.False(loader.WasCalled);
+
+  }
+
 
   /*============================================================================================================================
   | TEST: GET INTEGER: CORRECT VALUE: IS RETURNED
@@ -401,6 +452,38 @@ public class AttributeCollectionTest {
     Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
     Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
     Assert.False(topic.Attributes.GetBoolean("InvalidKey", false));
+
+  }
+
+  /*============================================================================================================================
+| TEST: GET BOOLEAN: NOT LOADED: KEY ABSENT: SUPPRESSES AUTO LOAD
+\---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic and a <see cref="Topic.BaseTopic"/>, both stamped with a <see cref="TrackingTopicLazyLoader"/> and both
+  ///   with a <see cref="LoadState.NotLoaded"/> <see cref="AttributeCollection"/>. Confirms that <see cref=
+  ///   "AttributeCollectionExtensions.GetBoolean(AttributeCollection, String, Boolean, Boolean, Boolean)"/>—used only for
+  ///   always-indexed attributes—suppresses the autoload on both the topic and its base topic.
+  /// </summary>
+  [Fact]
+  public void GetBoolean_NotLoaded_KeyAbsent_SuppressesAutoLoad() {
+
+    var baseTopic               = new Topic("Base", "Container");
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+    var baseLoader              = new TrackingTopicLazyLoader();
+
+    topic.BaseTopic             = baseTopic;
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    ((ITopicLazyLoadable)baseTopic).Loader = baseLoader;
+
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+    baseTopic.Attributes.LoadState = LoadState.NotLoaded;
+
+    topic.Attributes.GetBoolean("Missing");
+
+    Assert.False(loader.WasCalled);
+    Assert.False(baseLoader.WasCalled);
 
   }
 
