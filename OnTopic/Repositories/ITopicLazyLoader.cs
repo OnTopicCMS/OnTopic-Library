@@ -24,6 +24,11 @@ public interface ITopicLazyLoader {
   ///   fetching and merging whichever of them are not yet <see cref="LoadState.Loaded"/> and silently skipping those already
   ///   loaded. Invoked by the autoloading property getters, each with its own flag.
   /// </summary>
+  /// <param name="topic">The <see cref="Topic"/> whose payload should be ensured to be loaded.</param>
+  /// <param name="payload">
+  ///   One or more <see cref="TopicPayload"/> flags identifying the payload that should be ensured to be loaded.
+  /// </param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
   Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default);
 
 } //Interface

@@ -57,6 +57,7 @@ internal static class SqlDataReaderExtensions {
   ///   cref="Topic.BaseTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
   ///   thus external references aren't likely to be available.
   /// </param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
   /*============================================================================================================================
   | METHOD: LOAD TOPIC GRAPH
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -277,6 +278,7 @@ internal static class SqlDataReaderExtensions {
   /// </param>
   /// <param name="parent">The topic whose immediate children are being loaded.</param>
   /// <param name="topics">The <see cref="TopicIndex"/> to populate with the new child topics.</param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
   internal static async Task FillChildren(
     this DbDataReader reader,
     Topic parent,
