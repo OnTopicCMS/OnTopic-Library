@@ -89,8 +89,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   Returns a cached topic if it satisfies the requested <paramref name="payload"/> and <paramref name="isRecursive"/>; an
   ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Boolean)"/> before being returned. On a
   ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
-  ///   fetched and merged into the live graph. Missing IDs are recorded to prevent redundant round-trips for topics that
-  ///   genuinely do not exist.
+  ///   fetched and merged into the live graph, using <paramref name="referenceTopic"/> if supplied, or the cache root
+  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. Missing
+  ///   IDs are recorded to prevent redundant round-trips for topics that do not exist.
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
@@ -132,7 +133,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     var loaded                  = await TopicRepository
-      .Load(topicId, referenceTopic, isRecursive, payload)
+      .Load(topicId, referenceTopic?? _cache, isRecursive, payload)
       .ConfigureAwait(false);
 
     // If it's missing, populate the appropriate index so we don't try loading it again
@@ -159,8 +160,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   Returns a cached topic if it satisfies the requested <paramref name="payload"/> and <paramref name="isRecursive"/>; an
   ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Boolean)"/> before being returned. On a
   ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
-  ///   fetched and merged into the live graph. Missing IDs are recorded to prevent redundant round-trips for topics that
-  ///   genuinely do not exist.
+  ///   fetched and merged into the live graph, using <paramref name="referenceTopic"/> if supplied, or the cache root
+  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. Missing
+  ///   IDs are recorded to prevent redundant round-trips for topics that do not exist.
   /// </remarks>
   public override async Task<Topic?> Load(
     string uniqueKey,
@@ -211,7 +213,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     | On miss: Load with ancestors and merge result into the live graph
     \-------------------------------------------------------------------------------------------------------------------------*/
     var loaded                  = await TopicRepository
-      .Load(uniqueKey, referenceTopic, isRecursive, payload)
+      .Load(uniqueKey, referenceTopic?? _cache, isRecursive, payload)
       .ConfigureAwait(false);
 
     if (loaded is null) {
