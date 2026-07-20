@@ -52,11 +52,6 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  /// <param name="includeExternalReferences">
-  ///   Optionally disables populating external references such as <see cref="Topic.Relationships"/> and <see
-  ///   cref="Topic.BaseTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
-  ///   thus external references aren't likely to be available.
-  /// </param>
   /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
   /*============================================================================================================================
   | METHOD: LOAD TOPIC GRAPH
@@ -66,7 +61,6 @@ internal static class SqlDataReaderExtensions {
     int seedTopicId             = -1,
     Topic? referenceTopic       = null,
     bool? markDirty             = null,
-    bool includeExternalReferences = true,
     CancellationToken cancellationToken = default
   ) {
 
@@ -164,10 +158,8 @@ internal static class SqlDataReaderExtensions {
     await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each relationship; multiple records may exist per topic
-    if (includeExternalReferences) {
-      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-        reader.SetRelationships(topics, markDirty);
-      }
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      reader.SetRelationships(topics, markDirty);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

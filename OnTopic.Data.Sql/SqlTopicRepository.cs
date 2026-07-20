@@ -267,11 +267,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       }
 
       // Load the historical version into the current topic graph
-      topic                     = await reader.LoadTopicGraph(
-        topicId,
-        referenceTopic,
-        includeExternalReferences: referenceTopic is not null
-      ).ConfigureAwait(false);
+      topic                     = await reader.LoadTopicGraph(topicId, referenceTopic).ConfigureAwait(false);
 
     }
 
