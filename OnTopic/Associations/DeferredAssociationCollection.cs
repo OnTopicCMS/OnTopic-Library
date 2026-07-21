@@ -51,9 +51,10 @@ public class DeferredAssociationCollection: Collection<DeferredAssociation> {
   /// </summary>
   /// <param name="key">The relationship or reference key under which the association is registered.</param>
   /// <param name="topicId">The <see cref="Topic.Id"/> of the target topic to be resolved.</param>
-  public void SetValue(string key, int topicId) {
+  /// <param name="isDirty">Determines that the deferred entry is a modification yet to be saved.</param>
+  public void SetValue(string key, int topicId, bool isDirty = false) {
     Remove(key, _singleValued? null : topicId);
-    Add(new(key, topicId));
+    Add(new(key, topicId, isDirty));
   }
 
   /*============================================================================================================================
