@@ -230,7 +230,12 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   | METHOD: IS DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public bool IsDirty() => _dirtyKeys.IsDirty();
+  /// <remarks>
+  ///   Also accounts for any dirty <see cref="Deferred"/> entries as introduced by e.g., <see cref=
+  ///  "TopicRepository.Rollback(Topic, DateTime)"/>, so a relationship that hasn't yet been resolved to an in-memory <see cref=
+  ///  "Topic"/> still marks the collection as dirty.
+  /// </remarks>
+  public bool IsDirty() => _dirtyKeys.IsDirty() || Deferred.Any(deferred => deferred.IsDirty);
 
   /// <inheritdoc/>
   public bool IsDirty(string key) => _dirtyKeys.IsDirty(key);

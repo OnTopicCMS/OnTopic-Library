@@ -70,6 +70,17 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   public DeferredAssociationCollection Deferred { get; } = new(singleValued: true);
 
   /*============================================================================================================================
+  | METHOD: IS DIRTY?
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc/>
+  /// <remarks>
+  ///   Extends the base <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> to also account for a dirty
+  ///   <see cref="Deferred"/> entry introduced by e.g., <see cref="Repositories.TopicRepository.Rollback(Topic, DateTime)"/>,
+  ///   so a reference that hasn't yet been resolved to an in-memory <see cref="Topic"/> still marks the collection dirty.
+  /// </remarks>
+  public override bool IsDirty() => base.IsDirty() || Deferred.Any(deferred => deferred.IsDirty);
+
+  /*============================================================================================================================
   | INSERT ITEM
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
