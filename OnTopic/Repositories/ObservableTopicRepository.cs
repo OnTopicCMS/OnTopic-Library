@@ -236,7 +236,7 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   public abstract Task<Topic?> Load(Topic topic, DateTime version);
 
   /// <inheritdoc />
-  public abstract Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null);
+  public abstract Task<Topic?> Load(int topicId, DateTime version);
 
   /*============================================================================================================================
   | METHOD: REFRESH

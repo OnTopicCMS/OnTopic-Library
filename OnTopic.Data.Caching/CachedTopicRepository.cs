@@ -16,8 +16,8 @@ namespace OnTopic.Data.Caching;
 ///   Provides data access to topics stored in memory.
 /// </summary>
 /// <remarks>
-///   Concrete implementation of the <see cref="OnTopic.Repositories.ITopicRepository"/> class, which provides a wrapper
-///   for an actual data access class.
+///   Concrete implementation of the <see cref="ITopicRepository"/> class, which provides a wrapper for an actual data access
+///   class.
 /// </remarks>
 
 public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader {
@@ -230,30 +230,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       _topicKeyIndex.TryGetValue(uniqueKey, out var result);
       return result;
     }
-
-  }
-
-  /// <inheritdoc />
-  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Normalize parameters
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    version                     = NormalizeToUtc(version);
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Validate parameters
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
-    Contract.Requires(
-      version.Date >= new DateTime(2014, 12, 9),
-      "The version is expected to have been created since version support was introduced into the topic library."
-    );
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Return appropriate topic
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    return await TopicRepository.Load(topicId, version, referenceTopic ?? _cache).ConfigureAwait(false);
 
   }
 

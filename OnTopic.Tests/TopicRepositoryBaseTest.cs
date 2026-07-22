@@ -125,7 +125,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: VALID DATE: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a valid date and ensures that topic
   ///   with that date is returned.
   /// </summary>
   [Fact]
@@ -166,7 +166,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: FUTURE DATE: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a future <see cref="DateTime"/> and
   ///   confirms that an exception is thrown.
   /// </summary>
   [Fact]
@@ -179,7 +179,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: OLD DATE: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a date prior to versioning being
   ///   introduced and ensures that an exception is thrown.
   /// </summary>
   [Fact]
@@ -1013,7 +1013,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED WITH VERSION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref=
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime)"/> and ensures that the <see cref=
   ///   "ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]

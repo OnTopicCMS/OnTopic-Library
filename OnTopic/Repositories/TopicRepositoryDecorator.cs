@@ -102,8 +102,8 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
     => TopicRepository.Load(topic, version);
 
   /// <inheritdoc />
-  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
-    TopicRepository.Load(topicId, version, referenceTopic);
+  public override Task<Topic?> Load(int topicId, DateTime version) =>
+    TopicRepository.Load(topicId, version);
 
   /*============================================================================================================================
   | METHOD: REFRESH

@@ -55,7 +55,7 @@ public class DummyTopicRepository : ObservableTopicRepository {
   public override Task<Topic?> Load(Topic? topic, DateTime version) => throw new NotImplementedException();
 
   /// <inheritdoc />
-  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
+  public override Task<Topic?> Load(int topicId, DateTime version) => throw new NotImplementedException();
 
   /*============================================================================================================================
   | METHOD: ROLLBACK

@@ -212,7 +212,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   }
 
   /// <inheritdoc />
-  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override async Task<Topic?> Load(int topicId, DateTime version) {
 
     // Setup
     Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
@@ -222,7 +222,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     );
 
     // Load the topic requested
-    var topic                   = await Load(topicId, referenceTopic).ConfigureAwait(false);
+    var topic                   = await Load(topicId).ConfigureAwait(false);
 
     // Throw an exception if the topic doesn't exist
     if (topic is null) {

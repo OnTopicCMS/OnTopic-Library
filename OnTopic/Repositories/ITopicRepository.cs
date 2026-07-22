@@ -158,20 +158,27 @@ public interface ITopicRepository {
   ///   <para>
   ///     This overload does not accept an argument for recursion; it will only load a single instance of a version.
   ///   </para>
+  ///   <para>
+  ///     This overload also does not accept an argument for a reference topic and, as a result, which enforces the detachment:
+  ///     Without that, an implementation has no resident graph to resolve relationships or references against, and so every
+  ///     association the returned <see cref="Topic"/> carries is, by construction, left in either <see cref=
+  ///     "TopicRelationshipMultiMap.Deferred"/> or <see cref="TopicReferenceCollection.Deferred"/> rather than resolved.
+  ///   </para>
   /// </remarks>
   /// <param name="topicId">The topic identifier.</param>
   /// <param name="version">The version.</param>
-  /// <param name="referenceTopic">
-  ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
-  ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
-  /// </param>
-  Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null);
   /// <returns>A detached topic object.</returns>
+  Task<Topic?> Load(int topicId, DateTime version);
 
   /// <summary>
   ///   A convenience overload of <see cref="Load(Int32, DateTime)"/> for callers that already have a <see cref="Topic"/>
   ///   instance in hand.
   /// </summary>
+  /// <remarks>
+  ///   Returns the same detached preview graph <see cref="Load(Int32, DateTime)"/> does; it does not merge the result into
+  ///   <paramref name="topic"/>, or otherwise mutate it. Callers that need to commit a historical version onto a live <see
+  ///   cref="Topic"/> should use <see cref="Rollback(Topic, DateTime)"/> instead.
+  /// </remarks>
   /// <param name="topic">The current version of the <see cref="Topic"/> whose history is being requested.</param>
   /// <param name="version">The version.</param>
   /// <returns>A detached topic object.</returns>
@@ -184,6 +191,12 @@ public interface ITopicRepository {
   ///   Rolls back the supplied <paramref name="topic"/> to a particular point in its version history by merging the
   ///   historical version into it, and then saving the result as a new version.
   /// </summary>
+  /// <remarks>
+  ///   Unlike <see cref="Load(Int32, DateTime)"/> or <see cref="Load(Topic, DateTime)"/>, this mutates <paramref name="topic"/>
+  ///   in place, immediately followed by <see cref="ITopicRepository.Save(Topic, Boolean)"/>. It is not appropriate for
+  ///   previewing a historical version; use <see cref="Load(Topic, DateTime)"/> for that, as it only load the version, without
+  ///   incporating it into any in-memory topic graph or committing the previous version to the persistence store.
+  /// </remarks>
   /// <param name="topic">The current version of the <see cref="Topic"/> to rollback.</param>
   /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
   /// <requires

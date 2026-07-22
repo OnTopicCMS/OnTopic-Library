@@ -112,7 +112,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   }
 
   /// <inheritdoc />
-  public override Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override Task<Topic?> Load(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

@@ -199,13 +199,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   }
 
   /// <inheritdoc />
-  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
   /// <remarks>
   ///   Always returns a detached <see cref="Topic"/> graph, populated exclusively from the historical dataset; it is never
   ///   merged into a resident graph, and relationship and reference targets are left in <c>Deferred</c> rather than resolved.
   ///   Callers that need a historical version merged into a live <see cref="Topic"/> to e.g., commit a rollback should use <see
   ///   cref="TopicRepository.Rollback"/> instead, which performs that merge before persisting the result.
   /// </remarks>
+  public override async Task<Topic?> Load(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
