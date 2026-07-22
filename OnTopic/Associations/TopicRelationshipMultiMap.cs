@@ -58,17 +58,15 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// </summary>
   /// <remarks>
   ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref=
-  ///   "TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
+  ///   "TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>. Delegates to <see
+  ///   cref="Remove(String, Topic)"/> for each entry so the reciprocal relationship is also removed from each target's <see
+  ///   cref="Topic.IncomingRelationships"/>.
   /// </remarks>
   /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
   public void Clear(string relationshipKey) {
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
-    if (_storage.Contains(relationshipKey)) {
-      var relationship          = _storage.GetValues(relationshipKey);
-      if (relationship.Count >  0) {
-        _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
-      }
-      _storage.Clear(relationshipKey);
+    foreach (var topic in _storage.GetValues(relationshipKey).ToArray()) {
+      Remove(relationshipKey, topic);
     }
   }
 
