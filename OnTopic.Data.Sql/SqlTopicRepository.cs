@@ -814,13 +814,16 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine relationship keys to persist
     >---------------------------------------------------------------------------------------------------------------------------
-    | Includes keys with a dirty deferred entries merged in by Rollback() alongside resolved keys, so a target that hasn't been
-    | resolved to an in-memory Topic is still persisted by its Deferred TopicId, rather than being silently dropped since it
-    | isn't returned by Relationships.GetValues().
+    | Limited to dirty keys, either resolved or deferred. Each key maps to its own UpdateRelationships call, scoped to that
+    | key's own TVP and DeleteUnmatched, so skipping a clean key here simply leaves its existing rows untouched in SQL, while a
+    | also ensuring any deleted keys are correctly accounted for.
     \-------------------------------------------------------------------------------------------------------------------------*/
     var rawTopic                = (ITopicBackingAccessor)topic;
     var dirtyDeferred           = rawTopic.Relationships.Deferred.Where(deferred => deferred.IsDirty).ToList();
-    var relationshipKeys        = rawTopic.Relationships.Keys.Union(dirtyDeferred.Select(deferred => deferred.Key)).ToList();
+    var relationshipKeys        = rawTopic.Relationships.Keys
+      .Where(key => rawTopic.Relationships.IsDirty(key))
+      .Union(dirtyDeferred.Select(deferred => deferred.Key)).ToList();
+    var deferredByKey           = rawTopic.Relationships.Deferred.ToLookup(deferred => deferred.Key);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return blank if the topic has no relations.
