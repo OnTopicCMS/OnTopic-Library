@@ -811,13 +811,22 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   /// <param name="connection">The SQL connection.</param>
   private static async Task PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Determine relationship keys to persist
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Includes keys with a dirty deferred entries merged in by Rollback() alongside resolved keys, so a target that hasn't been
+    | resolved to an in-memory Topic is still persisted by its Deferred TopicId, rather than being silently dropped since it
+    | isn't returned by Relationships.GetValues().
+    \-------------------------------------------------------------------------------------------------------------------------*/
     var rawTopic                = (ITopicBackingAccessor)topic;
+    var dirtyDeferred           = rawTopic.Relationships.Deferred.Where(deferred => deferred.IsDirty).ToList();
+    var relationshipKeys        = rawTopic.Relationships.Keys.Union(dirtyDeferred.Select(deferred => deferred.Key)).ToList();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return blank if the topic has no relations.
     \-------------------------------------------------------------------------------------------------------------------------*/
     // return if the topic has no relations
-    if (rawTopic.Relationships.Keys.Count == 0) {
+    if (relationshipKeys.Count == 0) {
       return;
     }
 
@@ -826,17 +835,24 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       /*------------------------------------------------------------------------------------------------------------------------
       | Iterate through each scope and persist to SQL
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var key in rawTopic.Relationships.Keys) {
+      foreach (var key in relationshipKeys) {
 
+        // Setup stored procedure
         using var targetIds     = new TopicListDataTable();
         using var command       = new SqlCommand("UpdateRelationships", connection) {
           CommandType           = CommandType.StoredProcedure
         };
 
+        // Include resolved relationships
         foreach (var targetTopic in rawTopic.Relationships.GetValues(key)) {
           if (!targetTopic.IsNew) {
             targetIds.AddRow(targetTopic.Id);
           }
+        }
+
+        // Include deferred relationships
+        foreach (var deferred in dirtyDeferred.Where(deferred => deferred.Key == key)) {
+          targetIds.AddRow(deferred.TopicId);
         }
 
         // Add Parameters
@@ -846,6 +862,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
         command.AddParameter("Version", version);
         command.AddParameter("DeleteUnmatched", rawTopic.Relationships.LoadState is LoadState.Loaded);
 
+        // Execute command
         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
       }
@@ -861,11 +878,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
         exception
       );
     }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Return
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    return;
 
   }
 
@@ -887,15 +899,22 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
 
+      // Setup stored procedure
       using var references      = new TopicReferencesDataTable();
       using var command         = new SqlCommand("UpdateReferences", connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
+      // Include resolved references
       foreach (var relatedTopic in rawTopic.References) {
         if (!relatedTopic.Value?.IsNew?? false) {
           references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
         }
+      }
+
+      // Include deferred references
+      foreach (var deferred in rawTopic.References.Deferred.Where(deferred => deferred.IsDirty)) {
+        references.AddRow(deferred.Key, deferred.TopicId);
       }
 
       // Add Parameters
@@ -904,6 +923,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       command.AddParameter("Version", version);
       command.AddParameter("DeleteUnmatched", rawTopic.References.LoadState is LoadState.Loaded);
 
+      // Execute the command
       await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
     }
@@ -917,11 +937,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
         exception
       );
     }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Return
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    return;
 
   }
 
