@@ -20,6 +20,14 @@ namespace OnTopic.Attributes;
 ///   <see cref="AttributeRecord"/> objects represent individual instances of attributes associated with particular topics.
 ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
 ///   the <see cref="AttributeCollection"/> class.
+///   <para>
+///     When <see cref="LoadState"/> is <see cref="LoadState.NotLoaded"/>, iterating the collection (e.g., via <c>foreach</c>,
+///     LINQ operators, or <see cref="AsAttributeDictionary(Boolean)"/>) returns only the indexed attributes already present and
+///     does not fetch the deferred extended attribute blob. Only a keyed lookup autoloads on a miss. Callers that require a
+///     complete set of attributes must first await <see cref="ITopicLazyLoadable.EnsureLoaded"/> with <see cref=
+///     "TopicPayload.ExtendedAttributes"/>. Otherwise, a decision that depends on seeing every attribute may act on a partial
+///     view without any error being raised.
+///   </para>
 /// </remarks>
 public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
 
@@ -208,8 +216,9 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   /// </summary>
   /// <remarks>
   ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on
-  ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref="Topic.
-  ///   LastModified"/>.
+  ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref=
+  ///   "Topic.LastModified"/>. Like any enumeration over the collection, this reads only the resident attributes; see the <see
+  ///   cref="AttributeCollection"/> remarks for the completeness contract on a <see cref="LoadState.NotLoaded"/> topic.
   /// </remarks>
   /// <param name="inheritFromBase">
   ///   Determines if attributes from the <see cref="Topic.BaseTopic"/> should be included. Defaults to <c>false</c>.
