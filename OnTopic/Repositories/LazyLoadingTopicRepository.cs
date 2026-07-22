@@ -121,9 +121,13 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   The shared core behind both <see cref="LoadDeferredAssociations(Topic, TopicPayload, CancellationToken)"/> (<paramref
-  ///   name="fallBackToLoad"/> <see langword="true"/>: unresolvable targets are treated as stale and discarded) and <see
-  ///   cref="ResolveAssociations(Topic, TopicPayload)"/> (<paramref name="fallBackToLoad"/> <see langword="false"/>: a
-  ///   miss is left deferred for a later fallback); the two differ only in that flag.
+  ///   name="fallBackToLoad"/> <see langword="true"/>: unresolvable targets are treated as stale and discarded) and <see cref=
+  ///   "ResolveAssociations(Topic, TopicPayload)"/> (<paramref name="fallBackToLoad"/> <see langword="false"/>: a
+  ///   miss is left deferred for a later fallback); the two differ only in that flag. Each resolved association is marked dirty
+  ///   according to its own <see cref="DeferredAssociation.IsDirty"/>, rather than a flag supplied by the caller, so
+  ///   associations that represent an unpersisted change (see e.g., <see cref="DeferredAssociationCollection.ReplaceAll"/>) are
+  ///   correctly persisted by <see cref="ITopicRepository.Save(Topic, bool)"/>, while those recorded during an ordinary load
+  ///   are not.
   /// </remarks>
   /// <param name="topic">The topic whose deferred associations should be resolved.</param>
   /// <param name="payload">
@@ -156,7 +160,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
       foreach (var deferred in rawTopic.Relationships.Deferred.ToArray()) {
         // SetValue removes the matching Deferred entry; any left unresolved are optionally cleared below
         if (await resolveTarget(deferred.TopicId).ConfigureAwait(false) is { } target) {
-          rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: false);
+          rawTopic.Relationships.SetValue(deferred.Key, target, markDirty: deferred.IsDirty);
         }
       }
       if (fallBackToLoad) {
@@ -169,7 +173,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
       foreach (var deferred in rawTopic.References.Deferred.ToArray()) {
         // SetValue removes the matching Deferred entry; any left unresolved are optionally cleared below
         if (await resolveTarget(deferred.TopicId).ConfigureAwait(false) is { } target) {
-          rawTopic.References.SetValue(deferred.Key, target, markDirty: false);
+          rawTopic.References.SetValue(deferred.Key, target, markDirty: deferred.IsDirty);
         }
       }
       if (fallBackToLoad) {
