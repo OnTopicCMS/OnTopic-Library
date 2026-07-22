@@ -54,6 +54,19 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   | METHOD: CLEAR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
+  ///   Removes every <see cref="Topic"/> object across all relationship keys.
+  /// </summary>
+  /// <remarks>
+  ///   Delegates to <see cref="Clear(String)"/> for each key, which handles both the <c>isDirty</c> as well as the removal of
+  ///   reciprocal relationships in <see cref="Topic.IncomingRelationships"/>.
+  /// </remarks>
+  internal void Clear() {
+    foreach (var key in Keys) {
+      Clear(key);
+    }
+  }
+
+  /// <summary>
   ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>.
   /// </summary>
   /// <remarks>
