@@ -851,7 +851,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
         }
 
         // Include deferred relationships
-        foreach (var deferred in dirtyDeferred.Where(deferred => deferred.Key == key)) {
+        foreach (var deferred in deferredByKey[key]) {
           targetIds.AddRow(deferred.TopicId);
         }
 
@@ -860,7 +860,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
         command.AddParameter("RelationshipKey", key);
         command.AddParameter("RelatedTopics", targetIds);
         command.AddParameter("Version", version);
-        command.AddParameter("DeleteUnmatched", rawTopic.Relationships.LoadState is LoadState.Loaded);
+        command.AddParameter("DeleteUnmatched", true);
 
         // Execute command
         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -913,7 +913,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       }
 
       // Include deferred references
-      foreach (var deferred in rawTopic.References.Deferred.Where(deferred => deferred.IsDirty)) {
+      foreach (var deferred in rawTopic.References.Deferred) {
         references.AddRow(deferred.Key, deferred.TopicId);
       }
 
@@ -921,7 +921,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
       command.AddParameter("ReferencedTopics", references);
       command.AddParameter("Version", version);
-      command.AddParameter("DeleteUnmatched", rawTopic.References.LoadState is LoadState.Loaded);
+      command.AddParameter("DeleteUnmatched", true);
 
       // Execute the command
       await command.ExecuteNonQueryAsync().ConfigureAwait(false);
