@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Associations;
 using OnTopic.Metadata;
 
 namespace OnTopic.Repositories;
@@ -145,12 +146,18 @@ public interface ITopicRepository {
   Task<Topic?> Load(string? uniqueKey, bool isRecursive);
 
   /// <summary>
-  ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version"
-  ///   />.
+  ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version"/>
+  ///   as a detached topic, disconnected from any <see cref="Topic"/> graph, with no <see cref="Topic.Parent"/>, no <see cref=
+  ///   "Topic.Children"/>, and no resolved relationships or references.
   /// </summary>
   /// <remarks>
-  ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
-  ///   it will only load versions for which the unique identifier is known.
+  ///   <para>
+  ///     This overload is suitable for previewing a historical version; merging one into a live <see cref="Topic"/> and
+  ///     persisting the result is the responsibility of <see cref="Rollback(Topic, DateTime)"/>.
+  ///   </para>
+  ///   <para>
+  ///     This overload does not accept an argument for recursion; it will only load a single instance of a version.
+  ///   </para>
   /// </remarks>
   /// <param name="topicId">The topic identifier.</param>
   /// <param name="version">The version.</param>
@@ -158,18 +165,24 @@ public interface ITopicRepository {
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
-  /// <returns>A topic object.</returns>
   Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null);
+  /// <returns>A detached topic object.</returns>
 
-  /// <inheritdoc cref="Load(Int32, DateTime, Topic)"/>
+  /// <summary>
+  ///   A convenience overload of <see cref="Load(Int32, DateTime)"/> for callers that already have a <see cref="Topic"/>
+  ///   instance in hand.
+  /// </summary>
+  /// <param name="topic">The current version of the <see cref="Topic"/> whose history is being requested.</param>
+  /// <param name="version">The version.</param>
+  /// <returns>A detached topic object.</returns>
   Task<Topic?> Load(Topic topic, DateTime version);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Rolls back the supplied <paramref name="topic"/> to a particular point in its version history by reloading legacy
-  ///   attributes and then saving the new version.
+  ///   Rolls back the supplied <paramref name="topic"/> to a particular point in its version history by merging the
+  ///   historical version into it, and then saving the result as a new version.
   /// </summary>
   /// <param name="topic">The current version of the <see cref="Topic"/> to rollback.</param>
   /// <param name="version">The selected Date/Time for the version to which to roll back.</param>

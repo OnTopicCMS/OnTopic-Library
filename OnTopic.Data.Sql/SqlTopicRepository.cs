@@ -200,6 +200,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
 
   /// <inheritdoc />
   public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  /// <remarks>
+  ///   Always returns a detached <see cref="Topic"/> graph, populated exclusively from the historical dataset; it is never
+  ///   merged into a resident graph, and relationship and reference targets are left in <c>Deferred</c> rather than resolved.
+  ///   Callers that need a historical version merged into a live <see cref="Topic"/> to e.g., commit a rollback should use <see
+  ///   cref="TopicRepository.Rollback"/> instead, which performs that merge before persisting the result.
+  /// </remarks>
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -216,24 +222,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     );
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Clear associations
-    >-------------------------------------------------------------------------------------------------------------------------
-    | Because we don't (currently) track version as part of the .NET data model for relationships or topic references, there's
-    | no easy way to determine if an association should be deleted when doing a rollback. As such, existing associations
-    | should be deleted, assuming a `referenceTopic` is passed, and it contains the `topicId`.
+    | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topic                   = (Topic?)null;
 
-    if (referenceTopic?.Id == topicId) {
-      topic                     = referenceTopic;
-    }
-    else if (referenceTopic is  not null) {
-      topic                     = referenceTopic.GetRootTopic().FindFirst(t => t.Id == topicId);
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish database connection
-    \-------------------------------------------------------------------------------------------------------------------------*/
     using var connection        = new SqlConnection(_connectionString);
     using var command           = new SqlCommand("GetTopicVersion", connection) {
       CommandType               = CommandType.StoredProcedure,
@@ -255,19 +247,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
       await connection.OpenAsync().ConfigureAwait(false);
       using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
 
-      // Clear existing associations before repopulating from the historical version
-      if (topic is not null) {
-        var rawExisting         = (ITopicBackingAccessor)topic;
-        foreach (var relationship in rawExisting.Relationships) {
-          rawExisting.Relationships.Clear(relationship.Key);
-        }
-        rawExisting.Relationships.Deferred.Clear();
-        rawExisting.References.Deferred.Clear();
-        rawExisting.References.Clear();
-      }
-
-      // Load the historical version into the current topic graph
-      topic                     = await reader.LoadTopicGraph(topicId, referenceTopic).ConfigureAwait(false);
+      // Load the historical version as a detached topic
+      topic                     = await reader.LoadTopicGraph(topicId).ConfigureAwait(false);
 
     }
 
@@ -283,21 +264,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic is null) {
       throw new TopicNotFoundException(topicId);
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Delete orphaned attributes
-    >-------------------------------------------------------------------------------------------------------------------------
-    | If a referenceTopic is passed, and it contains the `topicId`, then that instance will be updated with the previous
-    | version. In that case, however, any attributes which were first introduced after that version won't be overwritten.
-    | That's because there isn't a previous value associated with that key to overwrite the current value. In those cases,
-    | those attributes must be manually removed.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var rawTopic                = (ITopicBackingAccessor)topic;
-    var orphanedAttributes      = rawTopic.Attributes.Where(a => a.LastModified > version).ToList();
-
-    foreach (var attribute in orphanedAttributes) {
-      rawTopic.Attributes.Remove(attribute.Key);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

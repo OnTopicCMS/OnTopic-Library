@@ -233,6 +233,12 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
+  /// <remarks>
+  ///   Merges the detached topic returned by <see cref="Load(Topic, DateTime)"/> into <paramref name="topic"/> using <see cref=
+  ///   "MergeVersion(Topic, Topic)"/>, then resolves whatever relationships and references are already loaded in <paramref
+  ///   name="topic"/>'s graph via <see cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>, leaving
+  ///   the rest deferred for lazy loading, before committing the result via <see cref="Save(Topic, Boolean)"/>.
+  /// </remarks>
   public override async Task Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -246,9 +252,27 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
     );
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Retrieve topic from database
+    | Retrieve historical version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await Load(topic, version).ConfigureAwait(false);
+    var historicalTopic         = await Load(topic, version).ConfigureAwait(false)?? throw new TopicNotFoundException(topic.Id);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge historical version into the live topic
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Some ITopicRepository implementations (e.g., test doubles backed by a single resident graph) may return the same instance
+    | from Load(Topic, DateTime); in that case, there's nothing to merge.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (!ReferenceEquals(historicalTopic, topic)) {
+      MergeVersion(topic, historicalTopic);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve associations against the resident graph
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Every entry MergeVersion() placed into Deferred is marked IsDirty via ReplaceAll(), so resolving them here also marks the
+    | corresponding Relationships and References dirty, ensuring Save() detects and persists them.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ResolveAssociations(topic, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Save as new version
@@ -952,6 +976,62 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
     else if (topic is ContentTypeDescriptor descriptor) {
       descriptor.ResetAttributeDescriptors();
     }
+  }
+
+
+  /*============================================================================================================================
+  | METHOD: MERGE VERSION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Merges the attributes, relationships, and references of a detached <paramref name="historicalTopic"/>, as returned by
+  ///   <see cref="Load(Topic, DateTime)"/>, onto the live <paramref name="topic"/> it corresponds to.
+  /// </summary>
+  /// <remarks>
+  ///   Relationships and references are replaced wholesale: Each collection's <c>Clear()</c> empties the resolved half
+  ///   (including reciprocal associations on previously related topics, e.g., <see cref="Topic.IncomingRelationships"/>), then
+  ///   <paramref name="historicalTopic"/>'s <c>Deferred</c> entries are written onto <paramref name="topic"/>'s <c>Deferred</c>
+  ///   collections, marked dirty, ready for <see cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>
+  ///   to reconnect against whatever is already present in <paramref name="topic"/>'s graph. Only <c>Deferred</c> needs to be
+  ///   read, not any resolved associations on <paramref name="historicalTopic"/>, because <see cref="Load(Topic, DateTime)"/>
+  ///   is contractually incapable of resolving associations: With no <c>referenceTopic</c> parameter, it has no graph to
+  ///   resolve them against, so every association it returns is, by construction, <c>Deferred</c>.
+  /// </remarks>
+  /// <param name="topic">The live <see cref="Topic"/> to merge the historical version into.</param>
+  /// <param name="historicalTopic">The detached historical version, as returned by <see cref="Load(Topic, DateTime)"/>.</param>
+  private static void MergeVersion(Topic topic, Topic historicalTopic) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Setup
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    var rawHistoricalTopic      = (ITopicBackingAccessor)historicalTopic;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge attributes
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    foreach (var attribute in rawHistoricalTopic.Attributes) {
+      rawTopic.Attributes.SetValue(attribute.Key, attribute.Value, isExtendedAttribute: attribute.IsExtendedAttribute);
+    }
+
+    // Remove attributes that were introduced after the requested version
+    foreach (var attribute in rawTopic.Attributes.ToArray()) {
+      if (!rawHistoricalTopic.Attributes.Contains(attribute.Key)) {
+        rawTopic.Attributes.Remove(attribute.Key);
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge relationships
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    rawTopic.Relationships.Clear();
+    rawTopic.Relationships.Deferred.ReplaceAll(rawHistoricalTopic.Relationships.Deferred);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge references
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    rawTopic.References.Clear();
+    rawTopic.References.Deferred.ReplaceAll(rawHistoricalTopic.References.Deferred);
+
   }
 
 } //Class
