@@ -84,4 +84,29 @@ public class DeferredAssociationCollection: Collection<DeferredAssociation> {
     return removed;
   }
 
+  /*============================================================================================================================
+  | METHOD: REPLACE ALL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Replaces every entry in the collection with the supplied <paramref name="source"/>, marking each as <see cref=
+  ///   "DeferredAssociation.IsDirty"/> regardless of the source entry's own value.
+  /// </summary>
+  /// <remarks>
+  ///   Intended for merging a detached topic's deferred associations onto a live topic's own <see cref=
+  ///   "TopicRelationshipMultiMap.Deferred"/> or <see cref="TopicReferenceCollection.Deferred"/> wholesale, without requiring
+  ///   the caller to individually clear and then <see cref="SetValue(String, Int32, Boolean)"/> for each entry. Every entry is
+  ///   marked dirty because, by definition, a caller merging a new source into a resident collection is introducing a change
+  ///   that isn't yet reflected in the persistence store, even though <paramref name="source"/>'s own entries are themselves
+  ///   presumed clean in their original context (e.g., a detached historical version, freshly loaded from the persistence store
+  ///   as-is). Because associations are saved wholesale, there's no attempt to differentiate between preexisting and genuine
+  ///   changes as would be required for e.g., Indexed Attributes, which are only persisted if they are individually dirty.
+  /// </remarks>
+  /// <param name="source">The <see cref="DeferredAssociation"/> entries to populate the collection with.</param>
+  internal void ReplaceAll(IEnumerable<DeferredAssociation> source) {
+    Clear();
+    foreach (var entry in source) {
+      SetValue(entry.Key, entry.TopicId, isDirty: true);
+    }
+  }
+
 } //Class
