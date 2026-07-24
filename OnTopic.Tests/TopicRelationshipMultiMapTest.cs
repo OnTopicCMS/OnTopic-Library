@@ -452,6 +452,27 @@ public class TopicRelationshipMultiMapTest {
   }
 
   /*============================================================================================================================
+  | TEST: CLEAR: EXISTING TOPICS: REMOVES INCOMING RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Sets a relationship and then clears it by key, and confirms that it is removed from the incoming relationships property
+  ///   of the previously related <see cref="Topic"/>.
+  /// </summary>
+  [Fact]
+  public void Clear_ExistingTopics_RemovesIncomingRelationship() {
+
+    var topic                   = new Topic("Test", "Page");
+    var relationships           = new TopicRelationshipMultiMap(topic);
+    var related                 = new Topic("Topic", "Page");
+
+    relationships.SetValue("Related", related);
+    relationships.Clear("Related");
+
+    Assert.Null(related.IncomingRelationships.GetValues("Related").FirstOrDefault());
+
+  }
+
+  /*============================================================================================================================
   | TEST: CLEAR: NO TOPICS: IS NOT DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
