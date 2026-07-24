@@ -5,10 +5,12 @@
 \=============================================================================================================================*/
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
+using OnTopic.Data.Sql;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -159,6 +161,63 @@ public class TopicRepositoryBaseTest {
 
     Assert.True(topic?.VersionHistory.Contains(version));
     Assert.Equal(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ROLLBACK: DIVERGENT RELATIONSHIPS: MERGES RECIPROCALLY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Rolls back a topic whose current <c>Related</c> relationship differs from the historical version being restored: The
+  ///   live topic is currently related to one topic that the historical version doesn't include, and the historical version
+  ///   includes a different topic that the live topic isn't currently related to. Confirms that, after <see cref=
+  ///   "TopicRepository.Rollback(Topic, DateTime)"/>, the live topic's relationship matches the historical version exactly,
+  ///   and that the reciprocal <see cref="Topic.IncomingRelationships"/> on both the previously and newly related topics are
+  ///   updated to match.
+  /// </summary>
+  /// <remarks>
+  ///   Unlike <see cref="Rollback_Topic_UpdatesLastModified"/>, which used <see cref="StubTopicRepository"/>, whose <c>
+  ///   Load(Int32, DateTime)</c> returns the very same live instance being rolled back, short-circuiting <see cref=
+  ///   "TopicRepository.Rollback(Topic, DateTime)"/>'s merge entirely, this uss a <see cref="FakeSqlTopicRepository"/>, which
+  ///   serves a genuinely detached historical graph via the real, production <see cref="SqlDataReaderExtensions.LoadTopicGraph"
+  ///   />, with relationship data that can diverge from the current, live state. That divergence is what actually tests the
+  ///   merge.
+  /// </remarks>
+  [Fact]
+  public async Task Rollback_DivergentRelationships_MergesReciprocally() {
+
+    // Establish a minimal content type graph, required by Save()'s content type validation
+    var root                    = new Topic("Root", "Container", null, 1);
+    var configuration           = new Topic("Configuration", "Container", root, 2);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, 3);
+    _                           = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, 4);
+
+    // Establish topics: A is being rolled back; D is A's current (soon to be stale) relationship; E is A's historical
+    // relationship, currently unrelated
+    var topicA                  = new Topic("A", "Page", root, 100);
+    var topicD                  = new Topic("D", "Page", root, 101);
+    var topicE                  = new Topic("E", "Page", root, 102);
+    var version                 = DateTime.UtcNow.AddDays(-30);
+
+    topicA.Relationships.SetValue("Related", topicD);
+    topicA.Relationships.MarkClean();
+    topicA.VersionHistory.Add(version);
+
+    // Establish repository with divergent historical data: A is historically related to E, not D
+    var repository               = new FakeSqlTopicRepository().AddTopic(100, "A", "Page", null);
+
+    repository.AddHistoricalRelationship(100, "Related", 102);
+
+    // Rollback
+    await repository.Rollback(topicA, version);
+
+    // A's relationship now matches the historical version
+    Assert.Contains(topicE, topicA.Relationships.GetValues("Related"));
+    Assert.DoesNotContain(topicD, topicA.Relationships.GetValues("Related"));
+
+    // Reciprocal relationships were updated on both sides
+    Assert.DoesNotContain(topicA, topicD.IncomingRelationships.GetValues("Related"));
+    Assert.Contains(topicA, topicE.IncomingRelationships.GetValues("Related"));
 
   }
 
