@@ -122,32 +122,12 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
       current                   = _rows[id].ParentId;
     }
 
-    // Define source data tables
-    using var topics            = new TopicsDataTable();
-    using var attributes        = new AttributesDataTable();
-    using var extendedAttributes = new AttributesDataTable();
-    using var relationships     = new RelationshipsDataTable();
-
-    // Build the descendant data
-    foreach (var id in chain) {
-      var (key, contentType, parentId) = _rows[id];
-      var hasChildren           = _rows.Values.Any(row => row.ParentId == id);
-      topics.AddRow(id, key, contentType, parentId, hasChildren: hasChildren);
-    }
-
-    // Build the relationship data
-    foreach (var (sourceId, key, targetId) in _relationships.Where(r => chain.Contains(r.SourceId))) {
-      relationships.AddRow(sourceId, key, targetId, isDeleted: false);
-    }
-
-    // Establish data table reader, which simulates the return from the GetTopics stored procedure
-    using var tableReader       = new DataTableReader([topics, attributes, extendedAttributes, relationships]);
-
-    // Delegate to the standard LoadTopicGraph from the SQL provider
-    var topic                   = await tableReader.LoadTopicGraph(
+    // Delegate to the shared graph builder, seeded with the ascendant chain and current relationships
+    var topic                   = await LoadTopicGraph(
       topicId,
       referenceTopic,
-      cancellationToken         : CancellationToken.None
+      populateTopics,
+      relationshipRows          : _relationships.Where(r => chain.Contains(r.SourceId))
     ).ConfigureAwait(false);
 
     // Raise the TopicLoaded event
@@ -155,6 +135,60 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
 
     // Finally, return the seed topic
     return topic;
+
+    // Populates the ascendant chain's rows into the source data table
+    void populateTopics(TopicsDataTable topics) {
+      foreach (var id in chain) {
+        var (key, contentType, parentId) = _rows[id];
+        var hasChildren         = _rows.Values.Any(row => row.ParentId == id);
+        topics.AddRow(id, key, contentType, parentId, hasChildren: hasChildren);
+      }
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: LOAD TOPIC GRAPH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Builds a fresh set of <see cref="TopicsDataTable"/> and <see cref="RelationshipsDataTable"/> rows, then feeds them
+  ///   through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>, exactly as <see cref="SqlTopicRepository"/> does
+  ///   from a live reader.
+  /// </summary>
+  /// <param name="topicId">The <see cref="Topic.Id"/> to seed the load with.</param>
+  /// <param name="referenceTopic">The reference topic graph to reconcile new rows against, if any.</param>
+  /// <param name="populateTopics">Adds whatever topic row(s) the caller's scenario requires to the source data table.</param>
+  /// <param name="relationshipRows">The relationship rows to feed alongside the topic row(s).</param>
+  private static async Task<Topic?> LoadTopicGraph(
+    int topicId,
+    Topic? referenceTopic,
+    Action<TopicsDataTable> populateTopics,
+    IEnumerable<(int SourceId, string Key, int TargetId)> relationshipRows
+  ) {
+
+    // Define source data tables
+    using var topics            = new TopicsDataTable();
+    using var attributes        = new AttributesDataTable();
+    using var extendedAttributes = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    // Build the topic data
+    populateTopics(topics);
+
+    // Build the relationship data
+    foreach (var (sourceId, key, targetId) in relationshipRows) {
+      relationships.AddRow(sourceId, key, targetId, isDeleted: false);
+    }
+
+    // Establish data table reader, which simulates the return from the GetTopics stored procedure
+    using var tableReader       = new DataTableReader([topics, attributes, extendedAttributes, relationships]);
+
+    // Delegate to the standard LoadTopicGraph from the SQL provider
+    return await tableReader.LoadTopicGraph(
+      topicId,
+      referenceTopic,
+      cancellationToken         : CancellationToken.None
+    ).ConfigureAwait(false);
 
   }
 
