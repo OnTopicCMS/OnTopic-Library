@@ -149,9 +149,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       return null;
     }
 
-    // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
-    MergeIntoCache(loaded);
-
     // Return the topic from the cache
     lock (_syncLock) {
       _topicIdIndex.TryGetValue(topicId, out var result);
@@ -228,9 +225,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       return null;
     }
 
-    // Merge the returned ancestor chain into the cache, rewiring new topics to existing cache objects
-    MergeIntoCache(loaded);
-
+    // Return the topic from the cache
     lock (_syncLock) {
       _topicKeyIndex.TryGetValue(uniqueKey, out var result);
       return result;
@@ -478,9 +473,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///     A single-topic shortfall is topped up via <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"
   ///     />, which converges <c>LoadState</c> in a single batched round-trip. A recursive shortfall, including a whole-tree
   ///     request, performs one deep <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> against the
-  ///     underlying repository—using <paramref name="topic"/> itself as the reference topic, since it is already resident in,
-  ///     and thus already a valid handle into, the live graph—merges the result into the live graph via <see cref=
-  ///     "MergeIntoCache(Topic)"/>, and then looks up any in-graph associations (<see cref=
+  ///     underlying repository, using <paramref name="topic"/> itself as the reference into the topic graph, so the underlying
+  ///     load merges the result directly into it. It then looks up any in-graph associations (<see cref=
   ///     "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationship or reference targets
   ///     that just became resident are connected without a further trip.
   ///   </para>
@@ -515,72 +509,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
 
     if (loaded is not null) {
 
-      // Rewire the returned ancestor chain onto the existing cache objects
-      MergeIntoCache(loaded);
-
       // Opportunistically connect any relationship or reference targets that are now resident in the merged region, regardless
       // of whether relationships or references were themselves part of the requested payload
       foreach (var descendant in loaded.FindAll()) {
         await ResolveAssociations(descendant, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
-      }
-
-    }
-
-  }
-
-  /*============================================================================================================================
-  | METHOD: MERGE INTO CACHE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Merges a freshly-loaded ancestor chain into the live graph by rewiring each new topic's <see cref="Topic.Parent"/> to
-  ///   the corresponding cache object, then indexing and resolver-stamping any topics that were not previously resident.
-  /// </summary>
-  /// <remarks>
-  ///   <para>
-  ///     Called by the <see cref="Load(Int32, Topic, Boolean, TopicPayload)"/> and <see cref=
-  ///     "Load(String, Topic?, Boolean, TopicPayload)"/> overloads when a requested topic is not present in the flat index and
-  ///     must be fetched from the underlying <see cref="ITopicRepository"/> with <c>@LoadAscendants = true</c>. The load
-  ///     returns a freshly-built graph, including duplicate <see cref="Topic"/> objects for ancestors already in the cache.
-  ///     This method replaces each duplicate ancestor with the resident cache object, keeps only genuinely new nodes, and
-  ///     integrates them into the live graph.
-  ///   </para>
-  ///   <para>
-  ///     The chain is walked from the leaf toward the root. At the first ancestor already present in <c>_topicById</c>
-  ///     (typically <c>Root</c>), the new node above it is discarded and its child is reparented to the cached object, which
-  ///     attaches it to the existing graph. All new nodes below that boundary are indexed here.
-  ///   </para>
-  /// </remarks>
-  /// <param name="loaded">The leaf topic returned from the underlying load, already part of an ancestor chain.</param>
-  private void MergeIntoCache(Topic loaded) {
-
-    // Build the ancestor chain from the leaf up to the root (leaf first)
-    List<Topic> chain           = [];
-    for (var node               = loaded; node is not null; node = node.Parent) {
-      chain.Add(node);
-    }
-
-    // Walk the chain leaf-to-root, rewiring new topics onto the existing cache and indexing them
-    foreach (var node in chain) {
-
-      // Skip topics that are already present in the cache
-      lock (_syncLock) {
-        if (_topicIdIndex.ContainsKey(node.Id)) {
-          continue;
-        }
-      }
-
-      // Rewire to the existing cache parent to prevent duplicate Topic objects in the graph
-      if (node.Parent is not null) {
-        lock (_syncLock) {
-          if (_topicIdIndex.TryGetValue(node.Parent.Id, out var cacheParent) && cacheParent != node.Parent) {
-            node.Parent         = cacheParent;
-          }
-        }
-      }
-
-      // Index the new topic
-      lock (_syncLock) {
-        IndexTopic(node);
       }
 
     }

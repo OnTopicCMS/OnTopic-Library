@@ -106,10 +106,9 @@ public class CachedTopicRepositoryTest {
   ///   Simulates the shape produced by <see cref="ITopicRepository.Refresh(Topic, DateTime)"/>, which attaches new topics to an
   ///   existing parent without raising <see cref="ITopicRepository.TopicLoaded"/> (and thus without indexing them), then calls
   ///   <see cref="CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for the leaf and confirms the cache returns
-  ///   the existing instance rather than throwing. Ensures a single-node attachment doesn't crash, with the leaf itself
-  ///   (incorrectly) skipped by <c>MergeIntoCache</c>'s dedupe check before its rewire runs, so no collision occurs, while an
-  ///   <em>intermediate</em>, unindexed ancestor ("Web_0") is not skipped: Its rewire collides with the identically keyed topic
-  ///   already attached at that position, throwing <see cref="InvalidKeyException"/>.
+  ///   the existing attached instances rather than duplicating them. The merge-aware underlying load reuses the loaded topics
+  ///   via the reference graph, and <see cref="CachedTopicRepository.OnTopicLoaded(TopicLoadEventArgs)"/> indexes both the leaf
+  ///   and any previously unindexed intermediate ancestor ("Web_0") by walking up the parent chain.
   /// </summary>
   [Fact]
   public async Task Load_AfterAttachedButUnindexedSubtree_ReturnsAttachedInstance() {
