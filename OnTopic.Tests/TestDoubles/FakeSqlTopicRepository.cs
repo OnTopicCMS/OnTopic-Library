@@ -158,10 +158,45 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
 
   }
 
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Unlike <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>, this builds a single-row <see cref="TopicsDataTable"/>,
+  ///   without the ascendant chain, and populated from <see cref="_historicalRelationships"/> rather than <see cref=
+  ///   "_relationships"/>, then feeds it through <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with no<c>referenceTopic
+  ///   </c>, mirroring production's detached <c>GetTopicVersion</c>: The returned <see cref="Topic"/> has no <see cref=
+  ///   "Topic.Parent"/> and no resolved associations, only <c>Deferred</c> entries.
+  /// </remarks>
+  public override async Task<Topic?> Load(int topicId, DateTime version) {
+
+    // Bypass for rowstore misses
+    if (!_rows.TryGetValue(topicId, out var row)) {
+      return null;
+    }
+
+    var (key, contentType, _)   = row;
+
+    // Delegate to the shared graph builder, seeded with a single disconnected row and no referenceTopic, per the detached
+    // contract, alongside historical rather than current relationships
+    var topic                   = await LoadTopicGraph(
+      topicId,
+      referenceTopic            : null,
+      populateTopics            : topics => topics.AddRow(topicId, key, contentType),
+      relationshipRows          : _historicalRelationships.Where(r => r.SourceId == topicId)
+    ).ConfigureAwait(false);
+
+    // Raise the TopicLoaded event
+    OnTopicLoaded(new(topic!, false, version));
+
+    // Finally, return the detached topic
+    return topic;
+
+  }
+
   /*============================================================================================================================
   | METHOD: LOAD TOPIC GRAPH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
+  ///   Shared core behind <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> and <see cref="Load(Int32, DateTime)"/>:
   ///   Builds a fresh set of <see cref="TopicsDataTable"/> and <see cref="RelationshipsDataTable"/> rows, then feeds them
   ///   through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>, exactly as <see cref="SqlTopicRepository"/> does
   ///   from a live reader.
@@ -202,10 +237,6 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
     ).ConfigureAwait(false);
 
   }
-
-  /// <inheritdoc />
-  public override async Task<Topic?> Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
-    await Load(topicId, referenceTopic).ConfigureAwait(false);
 
   /*============================================================================================================================
   | METHOD: REFRESH
