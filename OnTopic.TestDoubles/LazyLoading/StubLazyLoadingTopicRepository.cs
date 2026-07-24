@@ -316,8 +316,9 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   fetched from the record store one level at a time, unless <paramref name="isRecursive"/> is set, in which case
   ///   <see cref="Repositories.TopicPayload.Children"/> rides along so every descendant, not merely the immediate children, are
   ///   filled. A child already present in <see cref="_served"/> (e.g., attached while building an ancestor chain for a deeper
-  ///   <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> call) is reused rather than rebuilt, to avoid colliding with
-  ///   the existing instance already attached to the graph.
+  ///   <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> call, or eagerly preloaded) is reused rather than rebuilt, to
+  ///   avoid colliding with the existing instance already attached to the graph, but is still offered the requested payload so
+  ///   a resident child converges to the requested scope instead of being silently skipped.
   /// </summary>
   /// <param name="topic">The topic whose requested payload should be filled.</param>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
@@ -370,7 +371,12 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
     payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
-    if (payload is TopicPayload.None) {
+    // An isRecursive request for Children must still descend into an already-Loaded Children collection, since that only means
+    // this topic's immediate children are resident, not that their own descendants have converged to the requested scope;
+    // FilterPayload has no visibility into descendants, so it can't account for this on its own
+    var descendIntoChildren     = isRecursive && requestedPayload.HasFlag(TopicPayload.Children);
+
+    if (payload is TopicPayload.None && !descendIntoChildren) {
       return;
     }
 
@@ -383,35 +389,40 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     | Unlike ExtendedAttributes, Children never needs a record of its own to fill: It is resolved purely by scanning the store
     | for records whose ParentId matches, including Root, whose top-level records are stored with a null ParentId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (payload.HasFlag(TopicPayload.Children)) {
+    if (payload.HasFlag(TopicPayload.Children) || descendIntoChildren) {
 
       // Loop through each child record and build the topic from the topic store
       foreach (var childRecord in _store.Values.Where(r => (r.ParentId?? _root.Id) == topic.Id).OrderBy(r => r.Id)) {
 
-        // Build the child record, assuming it hasn't already been served
-        if (_served.ContainsKey(childRecord.Id)) {
-          continue;
-        }
-        var child               = BuildTopic(childRecord, topic);
+        // Reuse the child if it's already been served (e.g., attached while building an ancestor chain, or eagerly preloaded),
+        // rather than rebuilding it and colliding with the existing instance already attached to the graph
+        var isNewlyBuilt        = !_served.TryGetValue(childRecord.Id, out var child);
+        child                   ??= BuildTopic(childRecord, topic);
 
         // Load the rest of the requested payload for the child, mirroring how a Children fetch also pulls in whatever else was
         // requested (e.g., ExtendedAttributes, VersionHistory) for the whole scope, while relationships and references always
         // ride along for free. When isRecursive, Children rides along too, so the fill descends into the entire subtree rather
         // than stopping at one level. This uses requestedPayload, not the filtered payload, since a property that is already
-        // Loaded on a topic doesn't imply it's also already loaded on the child
+        // Loaded on a topic doesn't imply it's also already loaded on the child. This applies whether the child was just built
+        // or already served, so an existing child (e.g., eagerly preloaded) still converges to the requested scope
         var childPayload        = (isRecursive? requestedPayload : requestedPayload & ~TopicPayload.Children)
           | TopicPayload.Relationships
           | TopicPayload.References;
         await FillRequestedPayload(child, childPayload, resolveDeferredTargets: false, isRecursive, cancellationToken).ConfigureAwait(false);
 
-        // Fire the TopicLoaded event
-        OnTopicLoaded(new(child, isRecursive));
+        // Fire the TopicLoaded event, if newly built; an already served child was already announced when it was first built
+        if (isNewlyBuilt) {
+          OnTopicLoaded(new(child, isRecursive));
+        }
 
       }
 
-      // Mark the children as fetched and loaded
-      RecordFetch(topic.Id, TopicPayload.Children);
-      ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.Children, LoadState.Loaded);
+      // Mark the children as fetched and loaded, if not already done; an already-Loaded Children collection, revisited only to
+      // descend for an isRecursive request, needs no re-fetch or re-stamp of its own
+      if (payload.HasFlag(TopicPayload.Children)) {
+        RecordFetch(topic.Id, TopicPayload.Children);
+        ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.Children, LoadState.Loaded);
+      }
 
     }
 
