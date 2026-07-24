@@ -291,8 +291,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   Adds the newly loaded topic to the index and clears any entries previously known to be missing, so a topic that was
   ///   missing on an earlier lookup can be found now. This automatically indexes any descendants loaded alongside the topic,
   ///   for cases where the <c>isRecursive</c> parameter was specified on <see cref="Load(int, Topic?, bool, TopicPayload)"/>.
-  ///   Ascendants pulled in alongside it are handled separately by <see cref="MergeIntoCache(Topic)"/>, since only one <see
-  ///   cref="ITopicRepository.TopicLoaded"/> event fires per load, for the requested topic, not each ascendant.
+  ///   Ancestors pulled in via <c>@LoadAscendants</c> sit above the topic, so <see cref="TopicExtensions.FindAll(Topic)"/>,
+  ///   which only walks downward, never reaches them; they are indexed by walking up the parent chain instead.
   /// </remarks>
   protected override void OnTopicLoaded(TopicLoadEventArgs args) {
 
@@ -300,9 +300,10 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     Contract.Requires(args);
     base.OnTopicLoaded(args);
 
-    // Index the loaded topic and any descendants that came back attached; FindAll() is lazy-safe and naturally returns just
-    // the topic itself when nothing further is present, so this is correct whether or not the load was recursive
     lock (_syncLock) {
+
+      // Index the loaded topic and any descendants that came back attached; FindAll() is lazy-safe and naturally returns just
+      // the topic itself when nothing further is present, so this is correct whether or not the load was recursive
       foreach (var topic in args.Topic.FindAll()) {
         if (_topicIdIndex.ContainsKey(topic.Id)) {
           continue;
@@ -311,6 +312,19 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
         _absentTopicIdIndex.Remove(topic.Id);
         _absentUniqueKeyIndex.Remove(topic.GetUniqueKey());
       }
+
+      // Index any ancestors pulled in via @LoadAscendants, which sit above the requested topic and so are missed by FindAll().
+      // Walk up from the parent, stopping at the first already indexed ancestor: The cache is always rooted, so everything
+      // above an existing ancestor is itself already loaded and indexed.
+      for (var ancestor = args.Topic.Parent; ancestor is not null; ancestor = ancestor.Parent) {
+        if (_topicIdIndex.ContainsKey(ancestor.Id)) {
+          break;
+        }
+        IndexTopic(ancestor);
+        _absentTopicIdIndex.Remove(ancestor.Id);
+        _absentUniqueKeyIndex.Remove(ancestor.GetUniqueKey());
+      }
+
     }
 
   }
