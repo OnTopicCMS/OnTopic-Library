@@ -38,6 +38,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              Dictionary<int, (string Key, string ContentType, int? ParentId)> _rows = [];
   private readonly              List<(int SourceId, string Key, int TargetId)> _relationships   = [];
+  private readonly              List<(int SourceId, string Key, int TargetId)> _historicalRelationships = [];
   private readonly              Dictionary<string, int>         _keyIndex                       = new(StringComparer.OrdinalIgnoreCase);
   private                       int                             _identity                       = 90000;
 
@@ -62,6 +63,16 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   ///   "Load(Int32, Topic?, Boolean, TopicPayload)"/>.
   /// </summary>
   public void AddRelationship(int sourceId, string key, int targetId) => _relationships.Add((sourceId, key, targetId));
+
+  /*============================================================================================================================
+  | METHOD: ADD HISTORICAL RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Registers a relationship row belonging to a historical version, returned independently of the current relationships
+  ///   added by <see cref="AddRelationship"/>, and instead returned by a call to <see cref="Load(Int32, DateTime)"/>.
+  /// </summary>
+  public void AddHistoricalRelationship(int sourceId, string key, int targetId) =>
+    _historicalRelationships.Add((sourceId, key, targetId));
 
   /*============================================================================================================================
   | METHOD: GET UNIQUE KEY
