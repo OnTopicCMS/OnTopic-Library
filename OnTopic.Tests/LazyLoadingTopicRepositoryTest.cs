@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Associations;
 using OnTopic.Data.Caching;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles.LazyLoading;
@@ -753,6 +754,64 @@ public class LazyLoadingTopicRepositoryTest {
 
     Assert.Same(loaded, reloaded);
     Assert.Equal(fetchesAfterLoad, stub.TotalFetches);
+
+  }
+
+  #endregion
+
+  #region M: Deferred Dirty-State Propagation
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: DIRTY DEFERRED TARGET: RESOLVES AS DIRTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Marks a loaded topic's deferred relationship entry as dirty, as <see cref="TopicRepository.Rollback(Topic, DateTime)"
+  ///   />'s merge does, via <see cref="DeferredAssociationCollection.ReplaceAll"/>, then resolves it via <see cref=
+  ///   "ITopicLazyLoader.EnsureLoaded"/> and confirms the resolved relationship is itself marked dirty, so that a subsequent
+  ///   <see cref="ITopicRepository.Save(Topic, Boolean)"/> would persist it.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_DirtyDeferredTarget_ResolvesAsDirty() {
+
+    // The target must not yet be loaded when "Web_1" loads; otherwise Load()'s own resolution (i.e., FillRequestedPayload's
+    // resolveDeferredTargets) would resolve "Related" immediately, with the default, non-dirty flag, before this test ever gets
+    // a chance to restamp the entry as dirty
+    var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_1");
+    var rawTopic                = (ITopicBackingAccessor)topic!;
+    var targetId                = rawTopic.Relationships.Deferred.Single(d => d.Key == "Related").TopicId;
+
+    rawTopic.Relationships.Deferred.SetValue("Related", targetId, isDirty: true);
+
+    var target                  = await _loadingTopicRepository.Load("Root:Web:Web_0:Web_0_0");
+
+    await _loadingTopicRepository.EnsureLoaded(topic!, TopicPayload.Relationships, cancellationToken: CancellationToken);
+
+    Assert.Contains(target, topic!.Relationships.GetValues("Related"));
+    Assert.True(topic.Relationships.IsDirty());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: CLEAN DEFERRED TARGET: RESOLVES AS NOT DIRTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Resolves a loaded topic's non-dirty deferred relationship entry via <see cref="ITopicLazyLoader.EnsureLoaded"/> and
+  ///   confirms the resolved relationship is not marked dirty, since it merely reflects data already present in the persistence
+  ///   store, thus the counterpart to <see cref="EnsureLoaded_DirtyDeferredTarget_ResolvesAsDirty"/>.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_CleanDeferredTarget_ResolvesAsNotDirty() {
+
+    // As in EnsureLoaded_DirtyDeferredTarget_ResolvesAsDirty, "Web_1" must load before its target, so "Related" stays deferred
+    // until EnsureLoaded resolves it, rather than being eagerly resolved by Load()'s own resolution
+    var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_1");
+
+    var target                  = await _loadingTopicRepository.Load("Root:Web:Web_0:Web_0_0");
+
+    await _loadingTopicRepository.EnsureLoaded(topic!, TopicPayload.Relationships, cancellationToken: CancellationToken);
+
+    Assert.Contains(target, topic!.Relationships.GetValues("Related"));
+    Assert.False(topic.Relationships.IsDirty());
 
   }
 
