@@ -100,6 +100,45 @@ public class CachedTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD: COLD MISS TWO LEVELS BELOW RESIDENT ANCESTOR: INDEXES INTERMEDIATE FOR KEY HIT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Cold-loads a topic ("Web_0_0") two levels below the deepest loaded ancestor ("Web"), pulling the intermediate ("Web_0")
+  ///   into the graph, then requests that intermediate by its unique key and confirms it resolves from the cache's flat key
+  ///   index as a pure hit, with no fall-through to the inner repository. This exercises the ancestor crawl implemented in <see
+  ///   cref="CachedTopicRepository.OnTopicLoaded(TopicLoadEventArgs)"/>, which indexes ascendants that the downward-only <see
+  ///   cref="TopicExtensions.FindAll(Topic)"/> cannot reach.
+  /// </summary>
+  [Fact]
+  public async Task Load_ColdMissTwoLevelsBelowResidentAncestor_IndexesIntermediateForKeyHit() {
+
+    var inner                   = new FakeSqlTopicRepository()
+      .AddTopic(1, "Root", "Container", null)
+      .AddTopic(2, "Web", "Page", 1)
+      .AddTopic(3, "Web_0", "Page", 2)
+      .AddTopic(4, "Web_0_0", "Page", 3);
+
+    var cache                   = new CachedTopicRepository(inner);
+    await cache.Load("Web");
+
+    // Cold-load the grandchild, pulling the not-yet-loaded intermediate "Web_0" in as an ancestor
+    var leaf                    = await cache.Load(4);
+    var intermediate            = leaf!.Parent;
+
+    Assert.Equal("Web_0", intermediate?.Key);
+
+    // Count loads against the inner repository; an index hit for the intermediate makes no such round-trip
+    var innerLoads              = 0;
+    inner.TopicLoaded           += (_, _) => innerLoads++;
+
+    var resolved                = await cache.Load("Root:Web:Web_0");
+
+    Assert.Same(intermediate, resolved);
+    Assert.Equal(0, innerLoads);
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD: AFTER ATTACHED-BUT-UNINDEXED SUBTREE: RETURNS ATTACHED INSTANCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
