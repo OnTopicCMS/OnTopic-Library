@@ -46,10 +46,15 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   public CachedTopicRepository(ITopicRepository topicRepository) : base(topicRepository) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Seed root topic (without descendants)
+    | Seed root topic and its immediate children (without grandchildren)
+    >-------------------------------------------------------------------------------------------------------------------------
+    | The top-level topics under Root typically represent distinct content buckets (e.g., Web, Configuration) that are commonly
+    | referenced individually via e.g., relationships used to delegate navigation, so fully loading this shallow tier up front
+    | avoids the predictable, immediate lazy-load of Root.Children that would otherwise follow. Each child's own Children remain
+    | deferred, preserving the benefits of lazy loading below this boundary.
     \-------------------------------------------------------------------------------------------------------------------------*/
     var rootTopic               = TopicRepository
-      .Load("Root", referenceTopic: null, isRecursive: false)
+      .Load("Root", referenceTopic: null, isRecursive: false, payload: TopicPayload.All)
       .GetAwaiter()
       .GetResult();
 
