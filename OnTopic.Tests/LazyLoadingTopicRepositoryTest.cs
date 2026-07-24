@@ -715,8 +715,9 @@ public class LazyLoadingTopicRepositoryTest {
   | TEST: LOAD: WHOLE TREE TOP UP: MATERIALIZES THEN CLEAN HIT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Seeds the cache with the default, shallow <c>Root</c> (<see cref="TopicPayload.None"/>, non-recursive), then requests
-  ///   the whole tree recursively via the <c>topicId &lt; 0</c> branch, and confirms every descendant is materialized and <see
+  ///   Seeds the cache with the default <c>Root</c> seed established by the <see cref="CachedTopicRepository"/> constructor
+  ///   (<c>Root</c> plus its immediate children, per its eager top-tier load, but not their descendants), then requests the
+  ///   whole tree recursively via the <c>topicId &lt; 0</c> branch, and confirms every descendant is materialized and <see
   ///   cref="LoadState.Loaded"/>, and that a third, identical call is a genuine, converged hit against the same instance with
   ///   no further fetches, thus exercising the <see cref="StubLazyLoadingTopicRepository"/>'s own lazy <c>Root</c> boundary,
   ///   as per <see cref="ITopicRepository.Load()"/>'s documented lazy defaults, alongside <c>EnsureLoaded</c>'s whole-tree
@@ -731,7 +732,7 @@ public class LazyLoadingTopicRepositoryTest {
 
     var seed                    = await cache.Load(-1, null, false, TopicPayload.None);
 
-    Assert.False(((ITopicLazyLoadable)seed!).IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(TopicPayload.Children));
 
     var loaded                  = await cache.Load(-1, seed, true, TopicPayload.All);
 
