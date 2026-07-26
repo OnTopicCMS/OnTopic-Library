@@ -32,13 +32,13 @@ public interface ITopicBackingAccessor {
   | PROPERTY: CHILDREN
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Returns the raw <see cref="KeyedTopicCollection"/> backing field, bypassing the autoloading getter.
+  ///   Returns the raw <see cref="ChildTopicCollection"/> backing field, bypassing the autoloading getter.
   /// </summary>
   /// <remarks>
   ///   This is to be applied as explicit interface implementations; callers must cast to <see cref="ITopicBackingAccessor"/> to
   ///   access this member.
   /// </remarks>
-  KeyedTopicCollection Children { get; }
+  ChildTopicCollection Children { get; }
 
   /*============================================================================================================================
   | PROPERTY: RELATIONSHIPS
