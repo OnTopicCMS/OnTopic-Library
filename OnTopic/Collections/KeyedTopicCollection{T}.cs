@@ -31,22 +31,6 @@ public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T>
   }
 
   /*============================================================================================================================
-  | PROPERTY: LOAD STATE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
-  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
-  /// </summary>
-  /// <remarks>
-  ///   Defaults to <see cref="LoadState.Loaded"/>, reflecting that a newly constructed, in-memory collection has nothing
-  ///   deferred. When a topic is loaded shallowly from the persistence store, the repository conditionally sets this to
-  ///   <see cref="LoadState.NotLoaded"/> to indicate that the immediate children have not yet been fetched. The persistence
-  ///   store may optionally provide an indicator of the count without returning the full data, thus allowing this to be set to
-  ///   <see cref="LoadState.Loaded"/> if, in fact, there are no relevant topics.
-  /// </remarks>
-  public LoadState LoadState { get; set; } = LoadState.Loaded;
-
-  /*============================================================================================================================
   | METHOD: GET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
