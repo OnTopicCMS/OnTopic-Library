@@ -122,7 +122,7 @@ public static class TopicExtensions {
   /// </summary>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <returns>A collection of topics descending from the current topic.</returns>
-  public static ReadOnlyTopicCollection FindAll(this Topic topic) => topic.FindAll(t => true);
+  public static ReadOnlyTopicCollection FindAll(this Topic topic) => topic.FindAll(_ => true);
 
   /// <summary>
   ///   Retrieves a collection of topics based on a supplied function.
@@ -249,7 +249,7 @@ public static class TopicExtensions {
   /// <remarks>
   ///   This will trigger synchronous lazy-loading calls to any topics in the chain whose children aren't yet loaded. That can
   ///   make initial calls to this unexpectedly expensive on a lazy-loaded topic tree, resulting in multiple calls to the
-  ///   underlying persistance store.
+  ///   underlying persistence store.
   /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey()"/> of the <see cref="Topic"/> to return.</param>

@@ -80,7 +80,7 @@ public enum AssociationTypes {
   ///   cref="AttributeKeyAttribute.Key"/>.
   /// </summary>
   /// <remarks>
-  ///   This allows mapping of custom collection, such as <see cref="ContentTypeDescriptor.AttributeDescriptors"/>.
+  ///   This allows mapping of custom collections, such as <see cref="ContentTypeDescriptor.AttributeDescriptors"/>.
   /// </remarks>
   MappedCollections             = 1 << 4,
 
