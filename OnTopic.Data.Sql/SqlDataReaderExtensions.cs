@@ -226,7 +226,7 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topics.TryGetValue(topicId, out var current)) {
       current                   = TopicFactory.Create(key, contentType, topicId);
-      topics.Add(current.Id, current);
+      topics.TryAdd(current.Id, current);
       // Default to NotLoaded; a corresponding row in the version history dataset, if any, promotes this to Loaded
       ((ITopicBackingAccessor)current).VersionHistory.LoadState = LoadState.NotLoaded;
     }
