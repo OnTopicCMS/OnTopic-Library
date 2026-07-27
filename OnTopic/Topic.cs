@@ -122,6 +122,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
         throw new InvalidOperationException($"The value of this topic has already been set to {field}; it cannot be changed.");
       }
       field                     = value;
+      TopicIndexRegistry.OnIdAssigned(this);
     }
   }                             = -1;
 
