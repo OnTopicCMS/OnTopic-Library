@@ -224,11 +224,29 @@ public static class TopicExtensions {
   /// </summary>
   /// <remarks>
   ///   This only loads topics from the in-memory topic graph. Any topics that aren't yet loaded in the in-memory topic graph
-  ///   will not be included.
+  ///   will not be included. This builds a throwaway snapshot on every call; it supports arbitrary subtree scoping (e.g., the
+  ///   <paramref name="topic"/> need not be the graph's root), which the live, incrementally maintained <see cref=
+  ///   "GetLiveTopicIndex(Topic)"/> does not. Prefer that for hot paths that repeatedly reference the same graph's index.
   /// </remarks>
   /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
   /// <returns>A dictionary of topics indexed by <see cref="Topic.Id"/>.</returns>
   public static TopicIndex GetTopicIndex(this Topic topic) => new(topic.FindAll());
+
+  /*============================================================================================================================
+  | METHOD: GET LIVE TOPIC INDEX
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves the live, incrementally maintained index of all topics in <paramref name="topic"/>'s graph, indexed by <see
+  ///   cref="Topic.Id"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Root-scoped regardless of which <paramref name="topic"/> in the graph is passed. The returned instance is shared and
+  ///   live: Entries appear as topics are attached, detached, or assigned an <see cref="Topic.Id"/>, maintained internally by
+  ///   the library as those events occur. Callers must treat it as read-only and must not add to it directly. <see cref=
+  ///   "GetTopicIndex(Topic)"/> remains available where a snapshot of an arbitrary subtree is needed instead.
+  /// </remarks>
+  /// <returns>The live index of topics, indexed by <see cref="Topic.Id"/>, for <paramref name="topic"/>'s graph.</returns>
+  public static TopicIndex GetLiveTopicIndex(this Topic topic) => TopicIndexRegistry.GetOrBuild(topic.GetRootTopic());
 
   /*============================================================================================================================
   | METHOD: GET ROOT TOPIC
