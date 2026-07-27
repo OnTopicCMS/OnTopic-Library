@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -26,7 +27,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   | VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              Topic                           _cache;
-  private readonly              Dictionary<int, Topic>          _topicIdIndex                   = new();
   private readonly              Dictionary<string, Topic>       _topicKeyIndex                  = new(StringComparer.OrdinalIgnoreCase);
   private readonly              HashSet<int>                    _absentTopicIdIndex             = new();
   private readonly              HashSet<string>                 _absentUniqueKeyIndex           = new(StringComparer.OrdinalIgnoreCase);
@@ -78,7 +78,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       .GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Populate flat index from seeded topics
+    | Populate key index from seeded topics
+    >---------------------------------------------------------------------------------------------------------------------------
+    | The live id index needs no seeding here: Any ITopicRepository.Load() call attaches its results directly into the graph
+    | of the referenceTopic it's given, which builds that topic's live index; the Root:Configuration load above did so via
+    | _cache, and every topic attached since keeps it current.
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var topic in _cache.FindAll()) {
       IndexTopic(topic);
@@ -116,10 +120,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by topic identifier; top up and return on a hit
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Topic? topic;
-    lock (_syncLock) {
-      _topicIdIndex.TryGetValue(topicId, out topic);
-    }
+    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var topic);
     if (topic is not null) {
       await EnsureLoaded(topic, payload, isRecursive).ConfigureAwait(false);
       return topic;
@@ -149,11 +150,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       return null;
     }
 
-    // Return the topic from the cache
-    lock (_syncLock) {
-      _topicIdIndex.TryGetValue(topicId, out var result);
-      return result;
-    }
+    // Return the topic from the cache; the TopicIndexRegistry hooks indexed it as it was merged above
+    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var result);
+    return result;
 
   }
 
@@ -288,6 +287,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   for cases where the <c>isRecursive</c> parameter was specified on <see cref="Load(int, Topic?, bool, TopicPayload)"/>.
   ///   Ancestors pulled in via <c>@LoadAscendants</c> sit above the topic, so <see cref="TopicExtensions.FindAll(Topic)"/>,
   ///   which only walks downward, never reaches them; they are indexed by walking up the parent chain instead.
+  ///   <para>
+  ///     The live id index needs no attention here, as it is managed via the <see cref="TopicIndexRegistry"/> before this event
+  ///     even fires. A historical version load (<see cref="TopicLoadEventArgs.Version"/> not <see langword="null"/>) is skipped
+  ///     entirely: Its topic is never attached to the resident graph, so it must not enter the key index either.
+  ///   </para>
   /// </remarks>
   protected override void OnTopicLoaded(TopicLoadEventArgs args) {
 
@@ -295,12 +299,17 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     Contract.Requires(args);
     base.OnTopicLoaded(args);
 
+    // Historical version loads are not part of the resident graph; neither index should reflect them
+    if (args.Version is not null) {
+      return;
+    }
+
     lock (_syncLock) {
 
       // Index the loaded topic and any descendants that came back attached; FindAll() is lazy-safe and naturally returns just
-      // the topic itself when nothing further is present, so this is correct whether or not the load was recursive
+      // the topic itself when nothing further is present, so this is correct whether or not the load was recursive.
       foreach (var topic in args.Topic.FindAll()) {
-        if (_topicIdIndex.ContainsKey(topic.Id)) {
+        if (_topicKeyIndex.ContainsKey(topic.GetUniqueKey())) {
           continue;
         }
         IndexTopic(topic);
@@ -312,7 +321,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       // Walk up from the parent, stopping at the first already indexed ancestor: The cache is always rooted, so everything
       // above an existing ancestor is itself already loaded and indexed.
       for (var ancestor = args.Topic.Parent; ancestor is not null; ancestor = ancestor.Parent) {
-        if (_topicIdIndex.ContainsKey(ancestor.Id)) {
+        if (_topicKeyIndex.ContainsKey(ancestor.GetUniqueKey())) {
           break;
         }
         IndexTopic(ancestor);
@@ -329,7 +338,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   Adds newly created topics to the flat index. When the save is recursive, all present descendants are indexed as well,
   ///   since only one <see cref="ITopicRepository.TopicSaved"/> event fires for the root of a recursive save. Also clears any
   ///   entries known to be missing so that a previously missing ID or key that is now created can be found on subsequent
-  ///   lookups.
+  ///   lookups. The live id index needs no attention here: <see cref="Topic.Id"/>'s setter already indexed each newly created
+  ///   topic, via the registry's hooks, at the moment its persisted identifier was assigned.
   /// </remarks>
   protected override void OnTopicSaved(TopicSaveEventArgs args) {
 
@@ -354,7 +364,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   /// <remarks>
   ///   Removes the deleted topic and all of its descendants from the flat index. Called after the topic has been detached from
   ///   its parent's <see cref="Topic.Children"/> collection but before the topic graph is torn down, so <see cref=
-  ///   "TopicExtensions.FindAll(Topic)"/> on the deleted topic still returns the full subtree.
+  ///   "TopicExtensions.FindAll(Topic)"/> on the deleted topic still returns the full subtree. The live id index needs no
+  ///   attention here: <see cref="ITopicRepository.Delete(Topic, Boolean)"/> detaches the topic from its parent before raising
+  ///   this event, so the registry's detach hook has already pruned the subtree from it.
   /// </remarks>
   protected override void OnTopicDeleted(TopicEventArgs args) {
 
@@ -362,10 +374,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     Contract.Requires(args);
     base.OnTopicDeleted(args);
 
-    // Remove the deleted subtree from both indices
+    // Remove the deleted subtree from the key index
     lock (_syncLock) {
       foreach (var topic in args.Topic.FindAll()) {
-        _topicIdIndex.Remove(topic.Id);
         _topicKeyIndex.Remove(topic.GetUniqueKey());
       }
     }
@@ -445,16 +456,14 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   | METHOD: INDEX TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds or updates <paramref name="topic"/> in both flat indexes.
+  ///   Adds or updates <paramref name="topic"/> in the unique-key index.
   /// </summary>
   /// <remarks>
-  ///   Callers are responsible for holding <see cref="_syncLock"/> before invoking this method, except during construction
-  ///   where single-threaded access is guaranteed.
+  ///   The live id index (<see cref="TopicExtensions.GetLiveTopicIndex(Topic)"/>) is maintained separately by the <see cref=
+  ///   "TopicIndexRegistry"/> hooks, so needs no counterpart here. Callers are responsible for holding <see cref="_syncLock"/>
+  ///   before invoking this method, except during construction where single-threaded access is guaranteed.
   /// </remarks>
-  private void IndexTopic(Topic topic) {
-    _topicIdIndex[topic.Id]     = topic;
-    _topicKeyIndex[topic.GetUniqueKey()] = topic;
-  }
+  private void IndexTopic(Topic topic) => _topicKeyIndex[topic.GetUniqueKey()] = topic;
 
   /*============================================================================================================================
   | METHOD: ENSURE LOADED
