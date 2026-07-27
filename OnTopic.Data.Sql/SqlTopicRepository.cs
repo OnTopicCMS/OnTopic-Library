@@ -398,7 +398,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     | DeferredAssociationCollection.SetValue() deduplicate those values so reprocessing doesn't accumulate duplicate entries in
     | the Deferred collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topics                  = topic.GetRootTopic().GetTopicIndex();
+    var topics                  = topic.GetLiveTopicIndex();
     var rawTopic                = (ITopicBackingAccessor)topic;
 
     try {

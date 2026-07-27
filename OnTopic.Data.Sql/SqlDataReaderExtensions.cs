@@ -66,10 +66,14 @@ internal static class SqlDataReaderExtensions {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish topic index
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Null signals that no root has been established yet: AddTopic() uses that to distinguish between a graph's root and an
+    | orphaned row that couldn't be attached and was thus skipped. A referenceTopic supplies an live index; a cold load
+    | establishes its own root from the first row.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
+    var topics                  = referenceTopic?.GetLiveTopicIndex();
     var rootTopic               = (Topic?)null;
-    var preExistingIds          = new HashSet<int>(topics.Keys);
+    var preExistingIds          = new HashSet<int>(topics?.Keys ?? []);
     var seedTopic               = (Topic?)null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -82,8 +86,11 @@ internal static class SqlDataReaderExtensions {
       var addedTopic            = reader.AddTopic(topics, markDirty);
       var rawTopic              = (ITopicBackingAccessor)addedTopic;
 
-      // The first topic returned is the root topic
-      rootTopic                 ??= addedTopic;
+      // The first topic returned is the root topic; materialize its live index so later rows can resolve against it
+      if (rootTopic is null) {
+        rootTopic               = addedTopic;
+        topics                  ??= addedTopic.GetLiveTopicIndex();
+      }
 
       // If loading the entire tree, the rootTopic is also the seedTopic
       if (seedTopicId < 0) {
@@ -123,6 +130,11 @@ internal static class SqlDataReaderExtensions {
       }
 
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | An empty result set never established a root, leaving topics null; fall back to an empty index for the passes below
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    topics                      ??= new();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Read attributes

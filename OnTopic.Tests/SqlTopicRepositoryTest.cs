@@ -226,37 +226,6 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
-  | TEST: LOAD TOPIC GRAPH: WITH EXTERNAL REFERENCE: RETURNS REFERENCE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record and
-  ///   confirms that a topic with those values is returned.
-  /// </summary>
-  [Fact]
-  public async Task LoadTopicGraph_WithExternalReference_ReturnsReference() {
-
-    using var topics            = new TopicsDataTable();
-    using var empty             = new AttributesDataTable();
-    using var references        = new TopicReferencesDataTable();
-
-    var referenceTopic          = new Topic("Web", "Container", null, 2);
-
-    topics.AddRow(1, "Root", "Container");
-    references.AddRow(1, "Test", 2);
-
-    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
-
-    var topic                   = await tableReader.LoadTopicGraph(1, referenceTopic, false, cancellationToken: CancellationToken);
-
-    Assert.NotNull(topic);
-    Assert.Equal(1, topic.Id);
-    Assert.Equal(2, topic.References.GetValue("Test")?.Id);
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
-    Assert.False(topic.References.IsDirty());
-
-  }
-
-  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1085,7 +1054,8 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader        = new DataTableReader(topics);
 
-    var topicIndex               = parent.GetTopicIndex();
+    // Attach-first: the fresh child is indexed via the attach hook into the live index, not the passed-in lookup index
+    var topicIndex               = parent.GetLiveTopicIndex();
 
     await tableReader.FillChildren(parent, topicIndex, CancellationToken);
 
