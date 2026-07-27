@@ -640,11 +640,11 @@ public class SqlTopicRepositoryTest {
   ///   gains no entry from it.
   /// </summary>
   /// <remarks>
-  ///   This can occur when the GetUpdates stored procedure returns updates to a topic whose parent hasn't yet been loaded in a
-  ///   lazily loaded topic tree. As a result, processing its associations would leave the resident graph holding a dangling
-  ///   reference to a topic that was otherwise discarded with the load. <see cref="SqlDataReaderExtensions.AddTopic"/> skips
-  ///   the orphan s it desn't end up in the live index, and <see cref="SqlDataReaderExtensions.SetRelationships"/> must, in
-  ///   kind, skip its relationship rows instead of resolving them.
+  ///   This can occur when the <c>GetTopicUpdates</c> stored procedure returns updates to a topic whose parent hasn't yet been
+  ///   loaded in a lazily loaded topic tree. As a result, processing its associations would leave the resident graph holding a
+  ///   dangling reference to a topic that was otherwise discarded with the load. <c>AddTopic()</c> skips the orphan, so it
+  ///   doesn't end up in the live index, and <see cref="SqlDataReaderExtensions.SetRelationships"/> must, in kind, skip its
+  ///   relationship rows instead of resolving them.
   /// </remarks>
   [Fact]
   public async Task LoadTopicGraph_OrphanedSource_DoesNotRegisterIncomingRelationship() {
@@ -667,6 +667,40 @@ public class SqlTopicRepositoryTest {
     var target                  = topic.GetLiveTopicIndex()[2];
 
     Assert.Empty(target.IncomingRelationships.GetValues("Test"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: REFRESH ORDERING: ATTACHES NEW PARENT AND CHILD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <c>GetTopicUpdates</c>-shaped batch introducing a new
+  ///   parent followed by its new child, which is the ordering <c>ORDER BY RangeLeft</c> guarantees, and confirms both attach,
+  ///   with the child under the new parent, and both appear in the graph's live index.
+  /// </summary>
+  /// <remarks>
+  ///   Pins the ordering contract that attach-first loading depends on: A new row's parent must already be loaded, or itself
+  ///   just attached, for the row to attach rather than being skipped as an orphan.
+  /// </remarks>
+  [Fact]
+  public async Task LoadTopicGraph_RefreshOrdering_AttachesNewParentAndChild() {
+
+    var root                    = new Topic("Root", "Container", null, 1);
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(50, "NewParent", "Container", 1);
+    topics.AddRow(51, "NewChild", "Page", 50);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    await tableReader.LoadTopicGraph(referenceTopic: root, cancellationToken: CancellationToken);
+
+    var index                   = root.GetLiveTopicIndex();
+
+    Assert.True(index.ContainsKey(50));
+    Assert.True(index.ContainsKey(51));
+    Assert.Equal(50, index[51].Parent?.Id);
 
   }
 
