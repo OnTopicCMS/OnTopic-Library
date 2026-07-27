@@ -632,6 +632,45 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: ORPHANED SOURCE: DOES NOT REGISTER INCOMING RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a relationship row whose source is an orphan; i.e., its
+  ///   <c>ParentID</c> doesn't resolve to a topic. Confirms the resident target's <see cref="Topic.IncomingRelationships"/>
+  ///   gains no entry from it.
+  /// </summary>
+  /// <remarks>
+  ///   This can occur when the GetUpdates stored procedure returns updates to a topic whose parent hasn't yet been loaded in a
+  ///   lazily loaded topic tree. As a result, processing its associations would leave the resident graph holding a dangling
+  ///   reference to a topic that was otherwise discarded with the load. <see cref="SqlDataReaderExtensions.AddTopic"/> skips
+  ///   the orphan s it desn't end up in the live index, and <see cref="SqlDataReaderExtensions.SetRelationships"/> must, in
+  ///   kind, skip its relationship rows instead of resolving them.
+  /// </remarks>
+  [Fact]
+  public async Task LoadTopicGraph_OrphanedSource_DoesNotRegisterIncomingRelationship() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container");
+    topics.AddRow(2, "Target", "Page", 1);
+    topics.AddRow(99, "Orphan", "Page", 999);
+    relationships.AddRow(99, "Test", 2, false);
+
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
+
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
+
+    Assert.NotNull(topic);
+
+    var target                  = topic.GetLiveTopicIndex()[2];
+
+    Assert.Empty(target.IncomingRelationships.GetValues("Test"));
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WHOLE TREE LOAD: CONVERGES NON-LEAF REGION NODES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
