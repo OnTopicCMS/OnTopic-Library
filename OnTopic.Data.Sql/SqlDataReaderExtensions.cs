@@ -82,8 +82,12 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
     while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
 
-      // Add the topic to the topic graph
+      // Add the topic to the topic graph; a null result means the row couldn't be attached and was skipped
       var addedTopic            = reader.AddTopic(topics, markDirty);
+      if (addedTopic is null) {
+        continue;
+      }
+
       var rawTopic              = (ITopicBackingAccessor)addedTopic;
 
       // The first topic returned is the root topic; materialize its live index so later rows can resolve against it
@@ -211,18 +215,33 @@ internal static class SqlDataReaderExtensions {
   | METHOD: ADD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given the primary topic attributes from the <c>TopicIndex</c> view, establishes a barebones <see cref="Topic"/>
-  ///   instance and adds it to the <paramref name="topics"/> collection.
+  ///   Given the primary topic attributes from the <c>TopicIndex</c> view, establishes a barebones <see cref="Topic"/> instance
+  ///   and attaches it to its parent, if resolvable.
   /// </summary>
+  /// <remarks>
+  ///   Attach-first: A new row is never separately added to an index and then reconciled with its parent; assigning <see cref=
+  ///   "Topic.Parent"/> attaches it to the graph immediately, and the <see cref="TopicIndexRegistry.OnAttached"/> hook indexes
+  ///   it as a side effect. A row whose parent cannot be resolved is unreachable from the returned graph and is skipped (i.e.,
+  ///   returns <see langword="null"/>), <i>unless</i> <paramref name="topics"/> is itself <see langword="null"/>, meaning no
+  ///   root has been established yet for this load, in which case the row becomes the root of a fresh graph and is created
+  ///   unattached. Callers must materialize a live index from that root before the next row is processed, so that the row can
+  ///   resolve against it.
+  /// </remarks>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
-  /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-  /// <param name="markDirty">
-  ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
-  ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
-  ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
-  ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+  /// <param name="topics">
+  ///   The live index of topics resolved so far, or <see langword="null"/> if this load hasn't yet established a root.
   /// </param>
-  private static Topic AddTopic(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  /// <param name="markDirty">
+  ///   Specifies whether the target collection value should be marked as dirty, assuming the value changes. By default, it will
+  ///   be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+  ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+  ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
+  /// </param>
+  /// <returns>
+  ///   The resolved or newly created <see cref="Topic"/>; <see langword="null"/> if the row is unreachable from the returned
+  ///   graph and was skipped.
+  /// </returns>
+  private static Topic? AddTopic(this IDataReader reader, TopicIndex? topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -232,27 +251,43 @@ internal static class SqlDataReaderExtensions {
     var contentType             = reader.GetString("ContentType");
     var parentId                = reader.GetInteger("ParentID");
     var wasDirty                = false;
+    Topic current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish topic
+    | New row: Attach first, per the database ordering which guarantees parents are delivered before children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!topics.TryGetValue(topicId, out var current)) {
+    if (topics is null || !topics.TryGetValue(topicId, out var existing)) {
       current                   = TopicFactory.Create(key, contentType, topicId);
-      topics.TryAdd(current.Id, current);
+
       // Default to NotLoaded; a corresponding row in the version history dataset, if any, promotes this to Loaded
       ((ITopicBackingAccessor)current).VersionHistory.LoadState = LoadState.NotLoaded;
+
+      // No root established yet: This row is the root of a fresh graph, so create it unattached
+      if (topics is null) { }
+
+      // Parent is available: Attach immediately, and the hook indexes the new topic and its (empty) subtree
+      else if (parentId >= 0 && topics.TryGetValue(parentId, out var parentTopic)) {
+        current.Parent          = parentTopic;
+      }
+
+      // Parent is neither available nor previously returned: treat as an orphan and skip (generally unexpected)
+      else {
+        return null;
+      }
+
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Pre-existing row: Update in place, including re-parenting if it moved, assuming the new parent is available
+    \-------------------------------------------------------------------------------------------------------------------------*/
     else {
+      current                   = existing;
       wasDirty                  = current.IsDirty();
       current.Key               = key;
       current.ContentType       = contentType;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Assign parent
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var parentTopic)) {
-      current.Parent            = parentTopic;
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var newParent)) {
+        current.Parent          = newParent;
+      }
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -328,7 +363,10 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its attribute rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
     var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -384,7 +422,10 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify the current topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its attribute rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
     var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -457,7 +498,11 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[sourceTopicId];
+    // A source absent from topics was orphaned and skipped by AddTopic(); its relationship rows are skipped in kind, rather
+    // than resolved, so an orphan never registers on a target's IncomingRelationships
+    if (!topics.TryGetValue(sourceTopicId, out var current)) {
+      return;
+    }
     var rawTopic                = (ITopicBackingAccessor)current;
     var related                 = (Topic?)null;
 
@@ -514,7 +559,11 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[sourceTopicId];
+    // A source absent from topics was orphaned and skipped by AddTopic(); its reference rows are skipped in kind, rather than
+    // resolved, so an orphan never registers on a target's IncomingRelationships
+    if (!topics.TryGetValue(sourceTopicId, out var current)) {
+      return;
+    }
     var rawTopic                = (ITopicBackingAccessor)current;
     var referenced              = (Topic?)null;
 
@@ -545,25 +594,25 @@ internal static class SqlDataReaderExtensions {
   | METHOD: ADD CHILD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Processes a single row from the children result set of a <c>GetTopics</c> response: Adds the child to the <paramref
-  ///   name="topics"/> index via <see cref="AddTopic"/>, then stamps its <c>Attributes.LoadState</c> and <c>Children.LoadState
-  ///   </c> based on the <c>HasExtendedAttributes</c> and <c>HasChildren</c> database hints. Returns <see langword="null"/>
-  ///   when the row represents the <paramref name="parent"/> itself (which the stored procedure includes alongside its
-  ///   children) so callers can skip it.
+  ///   Processes a single row from the children result set of a <c>GetTopics</c> response: Attaches the child via <see cref=
+  ///   "AddTopic"/>, then stamps its <c>Children.LoadState</c> and <c>Attributes.LoadState</c> based on the  <c>HasChildren</c>
+  ///   and <c>HasExtendedAttributes</c> database hints. Returns <see langword="null"/> when the row represents the <paramref
+  ///   name="parent"/> itself (which the stored procedure includes alongside its children), or when <see cref="AddTopic"/>
+  ///   skipped it as an orphan, which is unexpected here.
   /// </summary>
   /// <param name="reader">The <see cref="IDataReader"/>, positioned at a row in the children result set.</param>
   /// <param name="parent">The topic whose children are being loaded; rows matching this ID are skipped.</param>
-  /// <param name="topics">The <see cref="TopicIndex"/> to populate.</param>
+  /// <param name="topics">The live <see cref="TopicIndex"/> of <paramref name="parent"/>'s graph.</param>
   private static Topic? AddChildTopic(this IDataReader reader, Topic parent, TopicIndex topics) {
 
     // Capture pre-existing status before AddTopic() introduces the topic to the index
     var wasPreExisting          = topics.ContainsKey(reader.GetTopicId());
 
-    // Add or update the topic in the index
+    // Add or update the topic in the index; parent is always available, so a null result here isn't expected in practice
     var addedTopic              = reader.AddTopic(topics, markDirty: false);
 
-    // Skip the parent record, which the stored procedure returns alongside its children
-    if (addedTopic.Id == parent.Id) {
+    // Skip the parent record, which the stored procedure returns alongside its children, or for an orphaned row (unexpected)
+    if (addedTopic is null || addedTopic.Id == parent.Id) {
       return null;
     }
 
@@ -634,7 +683,10 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its version rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
     var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
