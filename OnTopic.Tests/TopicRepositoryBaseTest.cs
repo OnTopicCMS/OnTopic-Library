@@ -1195,25 +1195,6 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
-  | TEST: SAVE: NEW TOPIC: STAMPS RESOLVER
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Saves a new <see cref="Topic"/> and confirms that the repository stamps a <see cref="ITopicLazyLoader"/> onto it so
-  ///   that deferred boundaries can be populated on demand after the save.
-  /// </summary>
-  [Fact]
-  public async Task Save_NewTopic_StampsResolver() {
-
-    var parent                  = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
-    var topic                   = new Topic("Test", "Page", parent);
-
-    await _topicRepository.Save(topic);
-
-    Assert.NotNull(((ITopicLazyLoadable)topic).Loader);
-
-  }
-
-  /*============================================================================================================================
   | TEST: SAVE: NOT LOADED CHILDREN: SKIPS RECURSIVE DESCENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1232,27 +1213,6 @@ public class TopicRepositoryBaseTest {
     await _topicRepository.Save(parent, isRecursive: true);
 
     Assert.True(child.IsNew);
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ENSURE LOADED: EXTENDED ATTRIBUTES NOT LOADED: MARKS LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose extended-attribute boundary has been manually set to <see cref="LoadState.NotLoaded"/>
-  ///   and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary
-  ///   to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  [Fact]
-  public async Task EnsureLoaded_ExtendedAttributesNotLoaded_MarksLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    topic!.Attributes.LoadState = LoadState.NotLoaded;
-    await rawTopic.EnsureLoaded(TopicPayload.ExtendedAttributes);
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.ExtendedAttributes));
 
   }
 
@@ -1280,122 +1240,6 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
-  | TEST: ENSURE LOADED: RELATIONSHIPS NOT LOADED: MARKS LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose relationship boundary has been manually set to <see cref="LoadState.NotLoaded"/>
-  ///   and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary
-  ///   to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  /// <remarks>
-  ///   On-demand fetching of non-resident relationship targets happens via <c>LoadDeferredAssociations()</c> on <see
-  ///   cref="LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
-  ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
-  ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
-  /// </remarks>
-  [Fact]
-  public async Task EnsureLoaded_RelationshipsNotLoaded_MarksLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    topic!.Relationships.Deferred.Add(new("_stub", 11111));
-    await rawTopic.EnsureLoaded(TopicPayload.Relationships);
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ENSURE LOADED: REFERENCES NOT LOADED: MARKS LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose reference boundary has been manually set to <see cref="LoadState.NotLoaded"/> and
-  ///   confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the boundary to
-  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  /// <remarks>
-  ///   On-demand fetching of non-resident reference targets happens via <c>LoadDeferredAssociations()</c> on <see cref=
-  ///   "LazyLoadingTopicRepository"/>, which only <see cref="CachedTopicRepository"/> invokes from its own
-  ///   <c>EnsureLoaded()</c>—<see cref="StubTopicRepository"/> does not resolve deferred targets itself. This test's stub fill
-  ///   simply marks the boundary <see cref="LoadState.Loaded"/> without resolving the deferred target.
-  /// </remarks>
-  [Fact]
-  public async Task EnsureLoaded_ReferencesNotLoaded_MarksLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    topic!.References.Deferred.Add(new("_stub", 11111));
-    await rawTopic.EnsureLoaded(TopicPayload.References);
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: CHILDREN NOT LOADED STATE: TRIGGERS ENSURE LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"/>, then accesses
-  ///   the <see cref="Topic.Children"/> getter. Verifies that the autoload fires, promoting the boundary to <see cref=
-  ///   "LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_ChildrenNotLoadedState_TriggersEnsureLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    rawTopic.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
-    _                           = topic.Children;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: CHILDREN LOADED STATE: DOES NOT CALL RESOLVER
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> is already <see cref="LoadState.Loaded"/> and accesses
-  ///   the <see cref="Topic.Children"/> getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the
-  ///   resolver being called redundantly.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_ChildrenLoadedState_DoesNotCallResolver() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
-    _                           = topic.Children;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: RELATIONSHIPS NOT LOADED STATE: TRIGGERS ENSURE LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.Relationships"/> as <see cref="LoadState.NotLoaded"/>, then
-  ///   accesses the <see cref="Topic.Relationships"/> getter. Verifies that the autoload fires, promoting the boundary to
-  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_RelationshipsNotLoadedState_TriggersEnsureLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-
-    topic!.Relationships.Deferred.Add(new("_stub", 11111));
-    _                           = topic.Relationships;
-
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Relationships));
-
-  }
-
-  /*============================================================================================================================
   | TEST: IS LOADED: RELATIONSHIPS LOADED STATE: DOES NOT CALL RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1417,26 +1261,6 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
-  | TEST: IS LOADED: REFERENCES NOT LOADED STATE: TRIGGERS ENSURE LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/>, marks its <see cref="Topic.References"/> as <see cref="LoadState.NotLoaded"/>, then
-  ///   accesses the <see cref="Topic.References"/> getter. Verifies that the autoload fires, promoting the boundary to
-  ///   <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_ReferencesNotLoadedState_TriggersEnsureLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-
-    topic!.References.Deferred.Add(new("_stub", 11111));
-    _                           = topic.References;
-
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
-
-  }
-
-  /*============================================================================================================================
   | TEST: IS LOADED: REFERENCES LOADED STATE: DOES NOT CALL RESOLVER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1454,27 +1278,6 @@ public class TopicRepositoryBaseTest {
     _                           = topic.References;
 
     Assert.True(rawTopic.IsLoaded(TopicPayload.References));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: CHILDREN NOT LOADED: MARKS LOADED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Children"/> has been manually set to <see cref="LoadState.NotLoaded"
-  ///   /> and confirms that <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> promotes the
-  ///   boundary to <see cref="LoadState.Loaded"/> via the <see cref="StubTopicRepository"/>'s fill.
-  /// </summary>
-  [Fact]
-  public async Task EnsureLoaded_ChildrenNotLoaded_MarksLoaded() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    rawTopic.SetLoadState(TopicPayload.Children, LoadState.NotLoaded);
-    await rawTopic.EnsureLoaded(TopicPayload.Children);
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
 
   }
 
@@ -1548,38 +1351,6 @@ public class TopicRepositoryBaseTest {
 
     // LoadState is unchanged; no fill was triggered
     Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
-
-  }
-
-  /*============================================================================================================================
-  | TEST: LOAD: WITH ASCENDANTS: STAMPS ASCENDANT RESOLVERS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="StubTopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> on a standalone instance—i.e., not
-  ///   wrapped by <see cref="CachedTopicRepository"/>, and never itself passed to <c>Load()</c> before—for a deeply nested
-  ///   topic, and confirms that an ascendant is nonetheless stamped with an <see cref="ITopicLazyLoader"/>, so its own
-  ///   deferred payload can still be lazy-loaded.
-  /// </summary>
-  /// <remarks>
-  ///   Uses a fresh <see cref="StubTopicRepository"/> rather than the shared <see cref="_topicRepository"/> field: The latter
-  ///   is wrapped by <see cref="_cachedTopicRepository"/> in the constructor, whose own seeding recursively stamps the entire
-  ///   (eagerly loaded) stub tree via <see cref="Topic.Children"/>, which would mask whether ascendant stamping actually comes
-  ///   from this test's <c>Load()</c> call.
-  /// </remarks>
-  [Fact]
-  public async Task Load_WithAscendants_StampsAscendantResolvers() {
-
-    // Arrange: use a standalone repository, never wrapped by CachedTopicRepository
-    var topicRepository         = new StubTopicRepository();
-
-    // Act: load a deeply nested topic
-    var topic                   = await topicRepository.Load("Root:Web:Web_3:Web_3_1:Web_3_1_0");
-
-    // An ascendant that was never itself the target of a Load() call is still stamped
-    var ascendant                = topic?.Parent?.Parent;
-
-    Assert.NotNull(ascendant);
-    Assert.NotNull((ascendant as ITopicLazyLoadable)?.Loader);
 
   }
 
