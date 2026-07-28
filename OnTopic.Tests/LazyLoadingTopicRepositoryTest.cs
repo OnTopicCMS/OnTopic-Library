@@ -873,7 +873,62 @@ public class LazyLoadingTopicRepositoryTest {
 
   #endregion
 
-  #region M: Deferred Dirty-State Propagation
+  #region M: Depth-Limited Loading
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO: LOADS TWO TIERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a topic with <c>depth: 2</c> and confirms exactly two tiers of descendants are materialized: Both the seed's and
+  ///   its child's <see cref="Topic.Children"/> are <see cref="LoadState.Loaded"/>, while the grandchild's own children remain
+  ///   <see cref="LoadState.NotLoaded"/>, with no fetch recorded against it. Proves depth is modeled by decrementing per level,
+  ///   not merely riding along as part of indefinite recursion (as would be expected with -1).
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwo_LoadsTwoTiers() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web", depth: 2);
+    var web0                    = topic!.Children["Web_0"];
+    var web00                   = web0.Children["Web_0_0"];
+
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)web0).IsLoaded(TopicPayload.Children));
+    Assert.False(((ITopicLazyLoadable)web00).IsLoaded(TopicPayload.Children));
+    Assert.Equal(0, _loadingTopicRepository.GetFetchCount(web00.Id, TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO: IS LOADED AGREES AT DEPTH ONE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a topic with <c>depth: 2</c> and confirms <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> agrees
+  ///   with exactly what was materialized.
+  /// </summary>
+  /// <remarks>
+  ///   Since <see cref="TopicPayload.Children"/> is both the traversal axis and, here, the tested payload, the two are off by
+  ///   one: A <c>depth: 2</c> load promotes tiers 0 and 1 to <see cref="LoadState.Loaded"/> but leaves tier 2 <see cref=
+  ///   "LoadState.NotLoaded"/>, since only its rows, and not its own children, were fetched. <see cref=
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> checks that every visited tier, including the deepest one, itself
+  ///   satisfies the requested payload, so asking for <c>Children</c> at <c>depth: 2</c> also demands the tier-2's own
+  ///   <c>Children</c> be resolved, which a <c>depth: 2</c> load never promotes. The query that agrees with a <c>depth: 2</c>
+  ///   load is therefore <c>depth: 1</c>, not <c>depth: 2</c>.
+  /// </remarks>
+  [Fact]
+  public async Task Load_DepthTwo_IsLoadedAgreesAtDepthOne() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web", depth: 2);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
+
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children, depth: 1));
+    Assert.False(rawTopic.IsLoaded(TopicPayload.Children, depth: 2));
+    Assert.False(rawTopic.IsLoaded(TopicPayload.Children, depth: -1));
+
+  }
+
+  #endregion
+
+  #region N: Deferred Dirty-State Propagation
 
   /*============================================================================================================================
   | TEST: ENSURE LOADED: DIRTY DEFERRED TARGET: RESOLVES AS DIRTY
