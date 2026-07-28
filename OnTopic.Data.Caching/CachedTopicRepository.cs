@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Collections.Concurrent;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
@@ -31,6 +32,22 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   private readonly              HashSet<int>                    _absentTopicIdIndex             = new();
   private readonly              HashSet<string>                 _absentUniqueKeyIndex           = new(StringComparer.OrdinalIgnoreCase);
   private readonly              object                          _syncLock                       = new();
+  private readonly              ConcurrentDictionary<int, SemaphoreSlim> _loadGates             = new();
+
+  /*============================================================================================================================
+  | CONSTANTS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <summary>
+  ///   Payload whose full load lets a per-topic gate be reclaimed.
+  /// </summary>
+  /// <remarks>
+  ///   This excludes <see cref="TopicPayload.VersionHistory"/>, which rarely loads outside the editor, so most gates reclaim as
+  ///   soon as <see cref="TopicPayload.Children"/> and <see cref="TopicPayload.ExtendedAttributes"/> converge, rather than
+  ///   persisting indefinitely. A gate recreated later for a <see cref="TopicPayload.VersionHistory"/>-only fetch is reclaimed
+  ///   immediately once that fetch completes.
+  /// </remarks>
+  private const                 TopicPayload                    _reclaimPayload                  = TopicPayload.Children | TopicPayload.ExtendedAttributes;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -247,7 +264,8 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Filter to pending (i.e., not yet Loaded) payload
     \-------------------------------------------------------------------------------------------------------------------------*/
-    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
+    var rawTopic                = (ITopicLazyLoadable)topic;
+    payload                     = rawTopic.FilterPayload(payload);
 
     if (payload is TopicPayload.None) {
       return;
@@ -265,7 +283,27 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     if (TopicRepository is ITopicLazyLoader loader) {
       var innerPayload          = payload & ~(TopicPayload.Relationships | TopicPayload.References);
       if (innerPayload is not TopicPayload.None) {
-        await loader.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+
+        // Serialize fetches and merges (children, extended attributes, version history) per topic
+        var gate                = _loadGates.GetOrAdd(topic.Id, _ => new(1, 1));
+        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try {
+
+          // Second escape hatch: Re-filter under the gate, since a prior holder may have merged some or all of this payload
+          innerPayload          = rawTopic.FilterPayload(innerPayload);
+          if (innerPayload is not TopicPayload.None) {
+            await loader.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+          }
+        }
+        finally {
+          gate.Release();
+        }
+
+        // Reclaim: Once ReclaimPayload is loaded, the gate is dead weight, so we can drop the cached instance
+        if (rawTopic.IsLoaded(_reclaimPayload)) {
+          _loadGates.TryRemove(new(topic.Id, gate));
+        }
+
       }
     }
 
