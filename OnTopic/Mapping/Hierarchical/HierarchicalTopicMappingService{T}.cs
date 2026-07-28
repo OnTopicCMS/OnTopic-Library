@@ -145,7 +145,6 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task<T?>> taskQueue    = [];
     List<T> children            = [];
     var viewModel               = (T?)null;
 
@@ -169,19 +168,10 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (tiers >= 0 && viewModel.Children.Count == 0) {
       foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible() && validationDelegate(t))) {
-        taskQueue.Add(GetViewModelAsync(topic, tiers, validationDelegate));
-      }
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Process children
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0  && viewModel.Children.Count == 0) {
-      var dtoTask               = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      var dto                   = await dtoTask.ConfigureAwait(false);
-      taskQueue.Remove(dtoTask);
-      if (dto is not null) {
-        children.Add(dto);
+        var dto                 = await GetViewModelAsync(topic, tiers, validationDelegate).ConfigureAwait(false);
+        if (dto is not null) {
+          children.Add(dto);
+        }
       }
     }
 
