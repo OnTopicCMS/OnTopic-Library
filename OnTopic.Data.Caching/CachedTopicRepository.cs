@@ -525,11 +525,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///     "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationship or reference targets
   ///     that just became resident are connected without a further trip.
   ///   </para>
-  ///   <para>
-  ///     Interim top-up cost (Stage 1): the gate itself honors <paramref name="depth"/> precisely, but the underlying <see
-  ///     cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> still over-fetches a full subtree for any <c>depth
-  ///     ≥ 2</c> shortfall until Stage 2 wires up a depth-bounded SQL fetch—correct results, interim cost only.
-  ///   </para>
   /// </remarks>
   /// <param name="topic">The already-resident topic to confirm or top up.</param>
   /// <param name="payload">The <see cref="TopicPayload"/> flags the caller requires to be loaded.</param>
