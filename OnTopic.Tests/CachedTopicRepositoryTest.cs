@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data;
+using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Data.Sql;
@@ -185,7 +186,7 @@ public class CachedTopicRepositoryTest {
   ///   arriving dangling.
   /// </summary>
   [Fact]
-  public async Task EnsureLoaded_DeferredAssociationFallbackWithResidentTargetParent_AttachesToCacheGraph() {
+  public async Task TaskEnsureLoaded_DeferredAssociationFallbackWithResidentTargetParent_AttachesToCacheGraph() {
 
     var inner                   = new FakeSqlTopicRepository()
       .AddTopic(1, "Root", "Container", null)
@@ -214,6 +215,50 @@ public class CachedTopicRepositoryTest {
     Assert.Same(web0, related.Parent);
     Assert.Contains(web0!.Children, child => child.Id == related.Id);
     Assert.Same(root, related.GetRootTopic());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: CONCURRENT CHILDREN REQUESTS: FETCHES ONCE WITHOUT CORRUPTION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reproduces a concurrent-read race on a shared <see cref="LoadState.NotLoaded"/> <see cref="Topic.Children"/> property:
+  ///   Two concurrent <see cref="ITopicLazyLoadable.EnsureLoaded"/> requests for the same cached topic must merge exactly once,
+  ///   not twice, into the shared <see cref="KeyedTopicCollection"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Uses <see cref="BlockingStubLazyLoadingTopicRepository"/>, which suspends inside its own <c>EnsureLoaded</c> until
+  ///   released, to interleave both requests without any <see cref="Thread.Sleep(int)"/> or other timing hack: The first
+  ///   request is proven in flight because it is the one suspended on the gate; the second is proven in flight because calling
+  ///   it synchronously (i.e., without <see langword="await"/>) before releasing the gate runs against to its own suspension
+  ///   before the test proceeds.
+  /// </remarks>
+  [Fact]
+  public async Task EnsureLoaded_ConcurrentChildrenRequests_FetchesOnceWithoutCorruption() {
+
+    var inner                   = new BlockingStubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(inner);
+    var web                     = await cache.Load("Web");
+    var rawWeb                  = (ITopicLazyLoadable)web!;
+
+    Assert.False(rawWeb.IsLoaded(TopicPayload.Children));
+
+    // "Arm" the gate so the first request suspends mid-fetch, then launch both requests without awaiting either
+    inner.ArmGate();
+
+    var firstRequest            = rawWeb.EnsureLoaded(TopicPayload.Children, CancellationToken);
+    var secondRequest           = rawWeb.EnsureLoaded(TopicPayload.Children, CancellationToken);
+
+    // Release the gate and let both requests run to completion
+    inner.ReleaseGate();
+
+    await Task.WhenAll(firstRequest, secondRequest);
+
+    // A single inner fetch, no duplicate children, and a fully loaded boundary confirm the race did not corrupt the merge
+    Assert.Equal(1, inner.FetchCount);
+    Assert.True(rawWeb.IsLoaded(TopicPayload.Children));
+    Assert.Equal(2, web.Children.Count);
+    Assert.Equal(2, web.Children.Select(child => child.Id).Distinct().Count());
 
   }
 
