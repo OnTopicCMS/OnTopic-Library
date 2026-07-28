@@ -20,6 +20,7 @@ SELECT	TopicID,
   	HasExtendedAttributes	= NULL
 FROM	Topics
 WHERE	LastModified		> @Since
+ORDER BY	RangeLeft
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES

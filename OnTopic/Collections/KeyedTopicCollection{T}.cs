@@ -72,7 +72,7 @@ public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T>
   ///   A {typeof(T).Name} with the Key '{item.Key}' already exists. The UniqueKey of the existing {typeof(T).Name} is
   ///   '{GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'.
   /// </exception>
-  protected override sealed void InsertItem(int index, T item) {
+  protected override void InsertItem(int index, T item) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

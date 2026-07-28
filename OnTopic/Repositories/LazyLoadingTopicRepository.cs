@@ -153,7 +153,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
     var rawTopic                = (ITopicBackingAccessor)topic;
 
     // Index the resident graph by id
-    var topicIndex              = topic.GetRootTopic().GetTopicIndex();
+    var topicIndex              = topic.GetLiveTopicIndex();
 
     // Resolve deferred relationship targets
     if (payload.HasFlag(TopicPayload.Relationships)) {

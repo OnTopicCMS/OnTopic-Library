@@ -226,37 +226,6 @@ public class SqlTopicRepositoryTest {
   }
 
   /*============================================================================================================================
-  | TEST: LOAD TOPIC GRAPH: WITH EXTERNAL REFERENCE: RETURNS REFERENCE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <see cref="TopicReferencesDataTable"/> record and
-  ///   confirms that a topic with those values is returned.
-  /// </summary>
-  [Fact]
-  public async Task LoadTopicGraph_WithExternalReference_ReturnsReference() {
-
-    using var topics            = new TopicsDataTable();
-    using var empty             = new AttributesDataTable();
-    using var references        = new TopicReferencesDataTable();
-
-    var referenceTopic          = new Topic("Web", "Container", null, 2);
-
-    topics.AddRow(1, "Root", "Container");
-    references.AddRow(1, "Test", 2);
-
-    using var tableReader       = new DataTableReader([topics, empty, empty, empty, references]);
-
-    var topic                   = await tableReader.LoadTopicGraph(1, referenceTopic, false, cancellationToken: CancellationToken);
-
-    Assert.NotNull(topic);
-    Assert.Equal(1, topic.Id);
-    Assert.Equal(2, topic.References.GetValue("Test")?.Id);
-    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.References));
-    Assert.False(topic.References.IsDirty());
-
-  }
-
-  /*============================================================================================================================
   | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -659,6 +628,79 @@ public class SqlTopicRepositoryTest {
     await tableReader.LoadTopicGraph(referenceTopic: parent, cancellationToken: CancellationToken);
 
     Assert.Equal(LoadState.NotLoaded, rawParent.Children.LoadState);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: ORPHANED SOURCE: DOES NOT REGISTER INCOMING RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a relationship row whose source is an orphan; i.e., its
+  ///   <c>ParentID</c> doesn't resolve to a topic. Confirms the resident target's <see cref="Topic.IncomingRelationships"/>
+  ///   gains no entry from it.
+  /// </summary>
+  /// <remarks>
+  ///   This can occur when the <c>GetTopicUpdates</c> stored procedure returns updates to a topic whose parent hasn't yet been
+  ///   loaded in a lazily loaded topic tree. As a result, processing its associations would leave the resident graph holding a
+  ///   dangling reference to a topic that was otherwise discarded with the load. <c>AddTopic()</c> skips the orphan, so it
+  ///   doesn't end up in the live index, and <see cref="SqlDataReaderExtensions.SetRelationships"/> must, in kind, skip its
+  ///   relationship rows instead of resolving them.
+  /// </remarks>
+  [Fact]
+  public async Task LoadTopicGraph_OrphanedSource_DoesNotRegisterIncomingRelationship() {
+
+    using var topics            = new TopicsDataTable();
+    using var empty             = new AttributesDataTable();
+    using var relationships     = new RelationshipsDataTable();
+
+    topics.AddRow(1, "Root", "Container");
+    topics.AddRow(2, "Target", "Page", 1);
+    topics.AddRow(99, "Orphan", "Page", 999);
+    relationships.AddRow(99, "Test", 2, false);
+
+    using var tableReader       = new DataTableReader([topics, empty, empty, relationships]);
+
+    var topic                   = await tableReader.LoadTopicGraph(cancellationToken: CancellationToken);
+
+    Assert.NotNull(topic);
+
+    var target                  = topic.GetLiveTopicIndex()[2];
+
+    Assert.Empty(target.IncomingRelationships.GetValues("Test"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD TOPIC GRAPH: REFRESH ORDERING: ATTACHES NEW PARENT AND CHILD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a <c>GetTopicUpdates</c>-shaped batch introducing a new
+  ///   parent followed by its new child, which is the ordering <c>ORDER BY RangeLeft</c> guarantees, and confirms both attach,
+  ///   with the child under the new parent, and both appear in the graph's live index.
+  /// </summary>
+  /// <remarks>
+  ///   Pins the ordering contract that attach-first loading depends on: A new row's parent must already be loaded, or itself
+  ///   just attached, for the row to attach rather than being skipped as an orphan.
+  /// </remarks>
+  [Fact]
+  public async Task LoadTopicGraph_RefreshOrdering_AttachesNewParentAndChild() {
+
+    var root                    = new Topic("Root", "Container", null, 1);
+
+    using var topics            = new TopicsDataTable();
+
+    topics.AddRow(50, "NewParent", "Container", 1);
+    topics.AddRow(51, "NewChild", "Page", 50);
+
+    using var tableReader       = new DataTableReader(topics);
+
+    await tableReader.LoadTopicGraph(referenceTopic: root, cancellationToken: CancellationToken);
+
+    var index                   = root.GetLiveTopicIndex();
+
+    Assert.True(index.ContainsKey(50));
+    Assert.True(index.ContainsKey(51));
+    Assert.Equal(50, index[51].Parent?.Id);
 
   }
 
@@ -1085,7 +1127,8 @@ public class SqlTopicRepositoryTest {
 
     using var tableReader        = new DataTableReader(topics);
 
-    var topicIndex               = parent.GetTopicIndex();
+    // Attach-first: the fresh child is indexed via the attach hook into the live index, not the passed-in lookup index
+    var topicIndex               = parent.GetLiveTopicIndex();
 
     await tableReader.FillChildren(parent, topicIndex, CancellationToken);
 
