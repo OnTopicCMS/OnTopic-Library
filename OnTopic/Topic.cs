@@ -690,7 +690,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
         value != this,
         "A topic may not derive from itself."
       );
-      References.SetValue("BaseTopic", value);
+      _references.SetValue("BaseTopic", value);
     }
   }
 
