@@ -9,6 +9,7 @@ using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.TestDoubles;
+using OnTopic.TestDoubles.LazyLoading;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -484,6 +485,57 @@ public class AttributeCollectionTest {
 
     Assert.False(loader.WasCalled);
     Assert.False(baseLoader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS VISIBLE: NOT LOADED EXTENDED ATTRIBUTES TOPIC: PERFORMS ZERO FILLS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="Topic.IsVisible(Boolean)"/> on a topic with pending, not-yet-loaded extended attributes, and confirms
+  ///   it performs zero fills: <see cref="Topic.IsHidden"/> and <see cref="Topic.IsDisabled"/> are indexed attributes and must
+  ///   never trigger the extended attributes to be fetched merely to determine visibility.
+  /// </summary>
+  [Fact]
+  public async Task IsVisible_NotLoadedExtendedAttributesTopic_PerformsZeroFills() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(201, "Sparse", "Page", null, extendedAttributes: new Dictionary<string, string> { ["Summary"] = "Some text." })
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+    var topic                   = await stub.Load("Root:Sparse");
+
+    Assert.True(topic!.IsVisible());
+    Assert.Equal(0, stub.GetFetchCount(201, TopicPayload.ExtendedAttributes));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS HIDDEN: RESIDENT BASE TOPIC: INHERITS VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Resolves a topic's <see cref="Topic.BaseTopic"/> reference against an already-resident base topic, and confirms <see
+  ///   cref="Topic.IsHidden"/> is honored through the base chain once the reference is no longer deferred.
+  /// </summary>
+  [Fact]
+  public async Task IsHidden_ResidentBaseTopic_InheritsValue() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(211, "Base", "Page", null, indexedAttributes: new Dictionary<string, string> { ["IsHidden"] = "1" })
+      .AddTopic(212, "Derived", "Page", null)
+      .AddReference(212, "BaseTopic", 211)
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+
+    await stub.Load("Root:Base");
+    var derived                 = await stub.Load("Root:Derived", null, TopicPayload.References);
+    var rawDerived              = (ITopicBackingAccessor)derived!;
+
+    Assert.Empty(rawDerived.References.Deferred);
+    Assert.True(derived.IsHidden);
+    Assert.Equal(0, stub.GetFetchCount(211, TopicPayload.ExtendedAttributes));
 
   }
 
