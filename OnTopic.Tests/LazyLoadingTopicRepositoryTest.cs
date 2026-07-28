@@ -871,6 +871,58 @@ public class LazyLoadingTopicRepositoryTest {
 
   }
 
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO THEN UNBOUNDED: TOPS UP REMAINING TIERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a subtree to <c>depth: 2</c>, confirms the gate agrees only through <c>depth: 1</c> (i.e., the deepest fetched
+  ///   tier's own children are not yet resolved), then tops the same seed up to <c>depth: -1</c> and confirms the whole subtree
+  ///   converges against the same instance, proving a partial-depth region reissues one deep load and merges without a
+  ///   perpetual-reload loop.
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwoThenUnbounded_TopsUpRemainingTiers() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
+
+    var seed                    = await cache.Load("Root:Web", null, TopicPayload.All, 2);
+
+    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, depth: 1));
+    Assert.False(((ITopicLazyLoadable)seed).IsLoaded(gate, depth: 2));
+
+    var deep                    = await cache.Load("Root:Web", seed, TopicPayload.All, -1);
+
+    Assert.Same(seed, deep);
+    Assert.True(((ITopicLazyLoadable)deep!).IsLoaded(gate, depth: -1));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO THEN DEPTH ONE: IS CLEAN HIT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a subtree to <c>depth: 2</c>, then re-requests it at the shallower <c>depth: 1</c>, and confirms the second call
+  ///   is a converged hit: The same instance is returned and no further fetches are recorded, proving the gate treats a deeper
+  ///   resident region as sufficient for a shallower request rather than re-fetching.
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwoThenDepthOne_IsCleanHit() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+
+    var seed                    = await cache.Load("Root:Web", null, TopicPayload.All, 2);
+    var fetchesAfterFirstLoad   = stub.TotalFetches;
+
+    var reloaded                = await cache.Load("Root:Web", seed, TopicPayload.All, 1);
+
+    Assert.Same(seed, reloaded);
+    Assert.Equal(fetchesAfterFirstLoad, stub.TotalFetches);
+
+  }
+
   #endregion
 
   #region M: Depth-Limited Loading
