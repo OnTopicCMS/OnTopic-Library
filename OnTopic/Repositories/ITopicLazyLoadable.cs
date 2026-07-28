@@ -65,11 +65,12 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   }
 
   /*============================================================================================================================
-  | METHOD: IS LOADED (RECURSIVE)
+  | METHOD: IS LOADED (BY DEPTH)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Returns <see langword="true"/> if every property flag in <paramref name="payload"/> has already been fetched from the
-  ///   underlying persistence store and, if <paramref name="isRecursive"/>, the same is true of every descendant.
+  ///   underlying persistence store and, if <paramref name="depth"/> is non-zero, the same is true of every descendant within
+  ///   that depth.
   /// </summary>
   /// <remarks>
   ///   Recursion is gated on <see cref="ITopicBackingAccessor.Children"/> being fully <see cref="LoadState.Loaded"/> before
@@ -78,18 +79,19 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
   ///   should not trigger a lazy load.
   /// </remarks>
   /// <param name="payload">One or more <see cref="TopicPayload"/> flags to test.</param>
-  /// <param name="isRecursive">
-  ///   Determines whether descendants should also be evaluated against <paramref name="payload"/>.
+  /// <param name="depth">
+  ///   The number of tiers of descendants that must also satisfy <paramref name="payload"/>. <c>-1</c> requires the full
+  ///   subtree; <c>0</c> requires only this topic; <c>N</c> requires <c>N</c> tiers of descendants.
   /// </param>
-  bool IsLoaded(TopicPayload payload, bool isRecursive) {
+  bool IsLoaded(TopicPayload payload, int depth) {
 
     // Evaluate current topic
     if (!IsLoaded(payload)) {
       return false;
     }
 
-    // Return if non-recursive
-    if (!isRecursive) {
+    // Return if seed-only
+    if (depth is 0) {
       return true;
     }
 
@@ -100,7 +102,7 @@ public interface ITopicLazyLoadable : ITopicBackingAccessor {
 
     // Recurse over children
     foreach (var child in Children) {
-      if (!((ITopicLazyLoadable)child).IsLoaded(payload, isRecursive: true)) {
+      if (!((ITopicLazyLoadable)child).IsLoaded(payload, depth is -1 ? -1 : depth - 1)) {
         return false;
       }
     }

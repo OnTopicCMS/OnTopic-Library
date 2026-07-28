@@ -14,7 +14,7 @@ namespace OnTopic.Tests;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides unit tests for the <see cref="ITopicLazyLoadable"/> interface, with a particular emphasis on the recursive <see
-///   cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> overload.
+///   cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> overload.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public class ITopicLazyLoadableTest {
@@ -24,7 +24,7 @@ public class ITopicLazyLoadableTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a topic with fully loaded extended attributes but a <see cref="LoadState.NotLoaded"/> children collection.
-  ///   Verifies that a non-recursive <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> query returns <c>true</c>
+  ///   Verifies that a non-recursive <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> query returns <c>true</c>
   ///   once the requested payload is satisfied, regardless of the state of <see cref="Topic.Children"/>.
   /// </summary>
   [Fact]
@@ -36,7 +36,7 @@ public class ITopicLazyLoadableTest {
       }
     };
 
-    var result                  = topic.IsLoaded(TopicPayload.ExtendedAttributes, isRecursive: false);
+    var result                  = topic.IsLoaded(TopicPayload.ExtendedAttributes, depth: 0);
 
     Assert.True(result);
 
@@ -47,7 +47,7 @@ public class ITopicLazyLoadableTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a topic with a single, unloaded child collection. Verifies that <see cref=
-  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> returns <c>false</c> for a recursive query, since the seed's <see
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> returns <c>false</c> for a recursive query, since the seed's <see
   ///   cref="Topic.Children"/> are not yet loaded.
   /// </summary>
   [Fact]
@@ -59,7 +59,7 @@ public class ITopicLazyLoadableTest {
       }
     };
 
-    Assert.False(topic.IsLoaded(TopicPayload.All, isRecursive: true));
+    Assert.False(topic.IsLoaded(TopicPayload.All, depth: -1));
 
   }
 
@@ -68,7 +68,7 @@ public class ITopicLazyLoadableTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a three-level topic hierarchy with every collection fully loaded. Verifies that <see
-  ///   cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> returns <c>true</c> once the whole subtree is loaded.
+  ///   cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> returns <c>true</c> once the whole subtree is loaded.
   /// </summary>
   [Fact]
   public void IsLoaded_FullyResidentSubtree_Recursive_ReturnsTrue() {
@@ -77,7 +77,7 @@ public class ITopicLazyLoadableTest {
     var child                   = new Topic("Child", "Page", parent, 2);
     _                           = new Topic("Grandchild", "Page", child, 3);
 
-    Assert.True(((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.All, isRecursive: true));
+    Assert.True(((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.All, depth: -1));
 
   }
 
@@ -86,7 +86,7 @@ public class ITopicLazyLoadableTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a three-level topic hierarchy where the middle topic's extended attributes are <see cref=
-  ///   "LoadState.NotLoaded"/>. Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> returns
+  ///   "LoadState.NotLoaded"/>. Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> returns
   ///   <c>false</c> for a recursive query, even though the seed and its <see cref="Topic.Children"/> collection are fully
   ///   loaded.
   /// </summary>
@@ -99,7 +99,7 @@ public class ITopicLazyLoadableTest {
 
     child.Attributes.LoadState  = LoadState.NotLoaded;
 
-    Assert.False(((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.ExtendedAttributes, isRecursive: true));
+    Assert.False(((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.ExtendedAttributes, depth: -1));
 
   }
 
@@ -109,7 +109,7 @@ public class ITopicLazyLoadableTest {
   /// <summary>
   ///   Creates a two-level topic hierarchy where the seed's <see cref="Topic.Children"/> collection is <see cref=
   ///   "LoadState.NotLoaded"/>, and queries a <c>payload</c> parameter that excludes <see cref="TopicPayload.Children"/>.
-  ///   Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> still returns <c>false</c>, confirming
+  ///   Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> still returns <c>false</c>, confirming
   ///   that the children gate is evaluated independently of the requested payload before recursing.
   /// </summary>
   [Fact]
@@ -120,7 +120,7 @@ public class ITopicLazyLoadableTest {
 
     parent.Children.LoadState   = LoadState.NotLoaded;
 
-    var result                  = ((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.ExtendedAttributes, isRecursive: true);
+    var result                  = ((ITopicLazyLoadable)parent).IsLoaded(TopicPayload.ExtendedAttributes, depth: -1);
 
     Assert.False(result);
 
@@ -131,7 +131,7 @@ public class ITopicLazyLoadableTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="LoadState.NotLoaded"/> children
-  ///   collection. Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Boolean)"/> reads <see cref="LoadState"/>
+  ///   collection. Verifies that <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> reads <see cref="LoadState"/>
   ///   directly and returns <c>false</c> without triggering a lazy load of <see cref="Topic.Children"/>.
   /// </summary>
   [Fact]
@@ -144,7 +144,7 @@ public class ITopicLazyLoadableTest {
     rawTopic.Loader             = loader;
     topic.Children.LoadState    = LoadState.NotLoaded;
 
-    var result                  = rawTopic.IsLoaded(TopicPayload.All, isRecursive: true);
+    var result                  = rawTopic.IsLoaded(TopicPayload.All, depth: -1);
 
     Assert.False(result);
     Assert.False(loader.WasCalled);

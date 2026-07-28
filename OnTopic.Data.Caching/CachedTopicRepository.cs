@@ -526,9 +526,9 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///     that just became resident are connected without a further trip.
   ///   </para>
   ///   <para>
-  ///     Interim gate semantics (Stage 1): <paramref name="depth"/> is only distinguished from zero here—any non-zero value is
-  ///     treated as the old <c>isRecursive: true</c>, a documented superset until Stage 3 tightens the gate to honor the
-  ///     requested depth precisely.
+  ///     Interim top-up cost (Stage 1): the gate itself honors <paramref name="depth"/> precisely, but the underlying <see
+  ///     cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> still over-fetches a full subtree for any <c>depth
+  ///     ≥ 2</c> shortfall until Stage 2 wires up a depth-bounded SQL fetch—correct results, interim cost only.
   ///   </para>
   /// </remarks>
   /// <param name="topic">The already-resident topic to confirm or top up.</param>
@@ -544,7 +544,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     var gate                    = payload & ~(TopicPayload.Relationships | TopicPayload.References);
 
     // Return immediately if the resident topic already satisfies the requested scope
-    if (((ITopicLazyLoadable)topic).IsLoaded(gate, depth != 0)) {
+    if (((ITopicLazyLoadable)topic).IsLoaded(gate, depth)) {
       return;
     }
 
