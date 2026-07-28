@@ -1217,71 +1217,6 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
-  | TEST: ENSURE LOADED: MIXED BOUNDARIES: SKIPS LOADED BOUNDARIES
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload, CancellationToken)"/> with a mixed set of flags,
-  ///   including one already set to <see cref="LoadState.Loaded"/> and one <see cref="LoadState.NotLoaded"/>, and confirms that
-  ///   only the pending boundary is forwarded to the resolver, leaving the already-loaded boundary unchanged.
-  /// </summary>
-  [Fact]
-  public async Task EnsureLoaded_MixedBoundaries_SkipsLoadedBoundaries() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    topic!.Attributes.LoadState = LoadState.NotLoaded;
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
-    await rawTopic.EnsureLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes);
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.ExtendedAttributes));
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Children));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: RELATIONSHIPS LOADED STATE: DOES NOT CALL RESOLVER
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.Relationships"/> is already <see cref="LoadState.Loaded"/> and
-  ///   accesses the getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the resolver being called
-  ///   redundantly.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_RelationshipsLoadedState_DoesNotCallResolver() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
-    _                           = topic.Relationships;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.Relationships));
-
-  }
-
-  /*============================================================================================================================
-  | TEST: IS LOADED: REFERENCES LOADED STATE: DOES NOT CALL RESOLVER
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Loads a <see cref="Topic"/> whose <see cref="Topic.References"/> is already <see cref="LoadState.Loaded"/> and accesses
-  ///   the getter. Verifies that the boundary stays <see cref="LoadState.Loaded"/> without the resolver being called
-  ///   redundantly.
-  /// </summary>
-  [Fact]
-  public async Task IsLoaded_ReferencesLoadedState_DoesNotCallResolver() {
-
-    var topic                   = await _topicRepository.Load(11111);
-    var rawTopic                = (ITopicLazyLoadable)topic!;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
-    _                           = topic.References;
-
-    Assert.True(rawTopic.IsLoaded(TopicPayload.References));
-
-  }
-
-  /*============================================================================================================================
   | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1302,55 +1237,6 @@ public class TopicRepositoryBaseTest {
     Assert.True(hasFired);
 
     void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ENSURE LOADED: WITH MISSING RELATIONSHIP TARGET: RESOLVES AND CONNECTS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>Relationships.LoadState</c> is <c>NotLoaded
-  ///   </c>, confirming that the resolver re-queries for the topic's relationships, loads any missing targets, and connects the
-  ///   edges.
-  /// </summary>
-  /// <remarks>
-  ///   The stub pre-seeds a relationship from the root topic to Root:Web (id 10000). The cache is initialized with only the
-  ///   root topic, so the relationship target is initially absent. <c>EnsureLoaded</c> is expected to load it and connect the
-  ///   edge through the full resolver stack.
-  /// </remarks>
-  [Fact]
-  public async Task EnsureLoaded_WithMissingRelationshipTarget_ResolvesAndConnects() {
-
-    // Get the root topic from cache; seed a deferred entry to simulate a pending relationship target
-    var source                  = (await _cachedTopicRepository.Load(-1))!;
-    source.Relationships.Deferred.Add(new("_stub", 11111));
-
-    // Act: EnsureLoaded re-queries, finds the missing target, loads it, and connects the edge
-    await _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
-
-    // Relationships are now Loaded and any pre-seeded edges are connected
-    Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ENSURE LOADED: RELATIONSHIPS: ALREADY LOADED: SKIPS FILL
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose relationships are already <see cref=
-  ///   "LoadState.Loaded"/> and confirms it returns immediately without re-querying.
-  /// </summary>
-  [Fact]
-  public async Task EnsureLoaded_Relationships_AlreadyLoaded_SkipsFill() {
-
-    // Get the root topic; relationships start as Loaded (Deferred is empty) after initialization
-    var source                  = (await _cachedTopicRepository.Load(-1))!;
-
-    // Act
-    await _cachedTopicRepository.EnsureLoaded(source, TopicPayload.Relationships);
-
-    // LoadState is unchanged; no fill was triggered
-    Assert.Equal(LoadState.Loaded, source.Relationships.LoadState);
 
   }
 

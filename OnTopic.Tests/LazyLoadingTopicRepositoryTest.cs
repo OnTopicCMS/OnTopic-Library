@@ -275,6 +275,71 @@ public class LazyLoadingTopicRepositoryTest {
 
   }
 
+  /*============================================================================================================================
+  | TEST: RELATIONSHIPS: ACCESSED TWICE: FETCHES ONCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Touches <see cref="Topic.Relationships"/> twice on a topic with a resolvable target and confirms the record store is
+  ///   only fetched once, via the double's per-topic, per-property fetch-count spy.
+  /// </summary>
+  [Fact]
+  public async Task Relationships_AccessedTwice_FetchesOnce() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_1");
+
+    _                           = topic!.Relationships.GetValues("Related");
+    _                           = topic.Relationships.GetValues("Related");
+
+    Assert.Equal(1, _loadingTopicRepository.GetFetchCount(topic.Id, TopicPayload.Relationships));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: REFERENCES: ACCESSED TWICE: FETCHES ONCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Touches <see cref="Topic.References"/> twice on a topic with a resolvable target and confirms the record store is only
+  ///   fetched once, via the double's per-topic, per-property fetch-count spy.
+  /// </summary>
+  [Fact]
+  public async Task References_AccessedTwice_FetchesOnce() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_1");
+
+    _                           = topic!.References.Contains("BaseTopic");
+    _                           = topic.References.Contains("BaseTopic");
+
+    Assert.Equal(1, _loadingTopicRepository.GetFetchCount(topic.Id, TopicPayload.References));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: MIXED PROPERTIES: ONLY FETCHES PENDING PROPERTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads <see cref="TopicPayload.Children"/> for a topic that also carries an unloaded extended attribute, then calls <see
+  ///   cref="ITopicLazyLoadable.EnsureLoaded(TopicPayload,System.Threading.CancellationToken)"/> with both properties requested
+  ///   together, and confirms only the still-pending <see cref="TopicPayload.ExtendedAttributes"/> property is fetched: The
+  ///   already loaded <see cref="TopicPayload.Children"/> property is filtered out and left untouched, per the fetch-count spy.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_Properties_OnlyFetchesPendingProperty() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web:Web_0:Web_0_0");
+    var rawTopic                = (ITopicLazyLoadable)topic!;
+
+    await rawTopic.EnsureLoaded(TopicPayload.Children, cancellationToken: CancellationToken);
+    await rawTopic.EnsureLoaded(
+      TopicPayload.Children | TopicPayload.ExtendedAttributes,
+      cancellationToken: CancellationToken
+    );
+
+    Assert.Equal(1, _loadingTopicRepository.GetFetchCount(topic.Id, TopicPayload.Children));
+    Assert.Equal(1, _loadingTopicRepository.GetFetchCount(topic.Id, TopicPayload.ExtendedAttributes));
+    Assert.Equal("Extended body content for Web_0_0.", topic.Attributes.GetValue("Body"));
+
+  }
+
   #endregion
 
   #region E: Recursive Lazy Descent
@@ -483,13 +548,36 @@ public class LazyLoadingTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: ENSURE LOADED: MISSING RELATIONSHIP TARGET: RESOLVES AND CONNECTS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>Relationships.LoadState</c> is <c>NotLoaded
+  ///   </c>, confirming that the loader re-queries for the topic's relationships, loads a target initially absent from the
+  ///   cache, and connects the edge. The relationship-target complement to <see cref=
+  ///   "EnsureLoaded_MissingReferenceTarget_ResolvesAndConnects"/>.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_MissingRelationshipTarget_ResolvesAndConnects() {
+
+    // The cache seeds only Root and Root:Configuration; "Web" (id 10000) is initially absent from the cache
+    var root                    = (await _cachedTopicRepository.Load(-1))!;
+    ((ITopicBackingAccessor)root).Relationships.Deferred.Add(new("_stub", 10000));
+
+    await _cachedTopicRepository.EnsureLoaded(root, TopicPayload.Relationships, cancellationToken: CancellationToken);
+
+    Assert.Equal(LoadState.Loaded, root.Relationships.LoadState);
+    Assert.Equal(10000, root.Relationships.GetValues("_stub")[0].Id);
+
+  }
+
+  /*============================================================================================================================
   | TEST: ENSURE LOADED: MISSING REFERENCE TARGET: RESOLVES AND CONNECTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose <c>References.LoadState</c> is <c>NotLoaded</c>,
   ///   confirming that the loader re-queries for the topic's references, loads a target initially absent from the cache, and
   ///   connects the edge. The reference-target complement to <see cref=
-  ///   "TopicRepositoryBaseTest.EnsureLoaded_WithMissingRelationshipTarget_ResolvesAndConnects"/>.
+  ///   "EnsureLoaded_MissingRelationshipTarget_ResolvesAndConnects"/>.
   /// </summary>
   [Fact]
   public async Task EnsureLoaded_MissingReferenceTarget_ResolvesAndConnects() {
@@ -502,6 +590,31 @@ public class LazyLoadingTopicRepositoryTest {
 
     Assert.Equal(LoadState.Loaded, root.References.LoadState);
     Assert.Equal(10000, root.References["_stub"].Value?.Id);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: RELATIONSHIPS: ALREADY LOADED: SKIPS FILL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="CachedTopicRepository.EnsureLoaded"/> on a topic whose relationships are already <see cref=
+  ///   "LoadState.Loaded"/> and confirms it returns immediately without re-querying the underlying record store, per the
+  ///   inner <see cref="StubLazyLoadingTopicRepository"/>'s fetch-count spy.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_Relationships_AlreadyLoaded_SkipsFill() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+
+    // The root's relationships start as Loaded (Deferred is empty); no fetch has been recorded against it
+    var root                    = (await cache.Load(-1))!;
+    var fetchesAfterLoad        = stub.TotalFetches;
+
+    await cache.EnsureLoaded(root, TopicPayload.Relationships, cancellationToken: CancellationToken);
+
+    Assert.Equal(LoadState.Loaded, root.Relationships.LoadState);
+    Assert.Equal(fetchesAfterLoad, stub.TotalFetches);
 
   }
 
