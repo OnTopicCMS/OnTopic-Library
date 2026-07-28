@@ -28,7 +28,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   private                       string                          _contentType;
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
-  private readonly              KeyedTopicCollection            _children                       = [];
+  private readonly              ChildTopicCollection            _children;
   private readonly              TopicRelationshipMultiMap       _relationships;
   private readonly              TopicReferenceCollection        _references;
   private readonly              VersionHistoryCollection        _versionHistory                 = [];
@@ -57,6 +57,11 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// </exception>
   /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
   public Topic(string key, string contentType, Topic? parent = null, int id = -1) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Set children first, since setting Id or Parent below may fire registry hooks that read this topic's children
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    _children                   = new(this);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set collections
@@ -160,7 +165,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The children of the current <see cref="Topic"/>.
   /// </value>
-  public KeyedTopicCollection Children {
+  public ChildTopicCollection Children {
     get {
       if (_children.LoadState is LoadState.NotLoaded) {
         ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.Children).GetAwaiter().GetResult();
@@ -451,7 +456,7 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  KeyedTopicCollection ITopicBackingAccessor.Children => _children;
+  ChildTopicCollection ITopicBackingAccessor.Children => _children;
 
   /// <inheritdoc />
   TopicRelationshipMultiMap ITopicBackingAccessor.Relationships => _relationships;
