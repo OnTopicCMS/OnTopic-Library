@@ -145,14 +145,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish query parameters
-    >-------------------------------------------------------------------------------------------------------------------------
-    | Interim mapping of depth onto GetTopics' boolean parameters until a depth-aware @Depth parameter: -1 loads the full
-    | subtree; 1 loads one tier of children; 0 loads neither; N ≥ 2 is a documented superset that over-fetches the full subtree
-    | until @Depth is wired up.
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
-    command.AddParameter("LoadDescendants", depth is (-1) or >= 2);
-    command.AddParameter("LoadChildren", depth is 1);
+    command.AddParameter("Depth", depth);
     command.AddParameter("LoadAscendants", topicId >= 0);
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
     command.AddParameter("IncludeRelationships", true);
@@ -787,7 +782,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   ///   setting the payload parameters based on the requested <paramref name="payload"/>.
   /// </summary>
   /// <remarks>
-  ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> boundary,
+  ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> property,
   ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, TopicPayload, int)"/> for
   ///   existing topics.
   /// </remarks>
@@ -796,10 +791,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     // Set the topic we're working with
     command.AddParameter("TopicID",                             topicId);
 
-    // Scope: LoadChildren when filling the Children, otherwise we're only interested in this topic's content
-    command.AddParameter("LoadDescendants",                     false);
+    // Scope: One tier of children when filling the Children property, otherwise just this topic's own content
+    command.AddParameter("Depth",                               payload.HasFlag(TopicPayload.Children) ? 1 : 0);
     command.AddParameter("LoadAscendants",                      false);
-    command.AddParameter("LoadChildren",                        payload.HasFlag(TopicPayload.Children));
 
     // Payload: Include only what the requested payload requires; relationships and references are loaded during the initial
     // Load() call, so they do not need to be re-fetched
