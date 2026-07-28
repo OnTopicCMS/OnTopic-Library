@@ -47,7 +47,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Registers a row in the fake row store, keyed by <paramref name="id"/>, and indexes its unique key for <see cref=
-  ///   "Load(String, Topic?, Boolean, TopicPayload)"/> lookups.
+  ///   "Load(String, Topic?, TopicPayload, Int32)"/> lookups.
   /// </summary>
   public FakeSqlTopicRepository AddTopic(int id, string key, string contentType, int? parentId) {
     _rows[id]                   = (key, contentType, parentId);
@@ -60,7 +60,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Registers a relationship row, returned alongside its source topic's ascendant chain on a subsequent <see cref=
-  ///   "Load(Int32, Topic?, Boolean, TopicPayload)"/>.
+  ///   "Load(Int32, Topic?, TopicPayload, Int32)"/>.
   /// </summary>
   public void AddRelationship(int sourceId, string key, int targetId) => _relationships.Add((sourceId, key, targetId));
 
@@ -97,13 +97,13 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
     if (!_keyIndex.TryGetValue(uniqueKey, out var topicId)) {
       return null;
     }
-    return await Load(topicId, referenceTopic, isRecursive, payload).ConfigureAwait(false);
+    return await Load(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
   }
 
   /// <inheritdoc />
@@ -111,13 +111,13 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   ///   Builds the requested topic's ascendant chain into fresh <see cref="TopicsDataTable"/>/<see cref="RelationshipsDataTable"
   ///   /> rows on every call, then feeds them through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>—reproducing
   ///   the new instance per call, reconciled against the <c>referenceTopic</c> behavior of <see cref=
-  ///   "SqlTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>.
+  ///   "SqlTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>.
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     // Bypass for rowstore misses
@@ -142,7 +142,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
     ).ConfigureAwait(false);
 
     // Raise the TopicLoaded event
-    OnTopicLoaded(new(topic!, isRecursive));
+    OnTopicLoaded(new(topic!, depth));
 
     // Finally, return the seed topic
     return topic;
@@ -160,7 +160,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
 
   /// <inheritdoc />
   /// <remarks>
-  ///   Unlike <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>, this builds a single-row <see cref="TopicsDataTable"/>,
+  ///   Unlike <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>, this builds a single-row <see cref="TopicsDataTable"/>,
   ///   without the ascendant chain, and populated from <see cref="_historicalRelationships"/> rather than <see cref=
   ///   "_relationships"/>, then feeds it through <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with no<c>referenceTopic
   ///   </c>, mirroring production's detached <c>GetTopicVersion</c>: The returned <see cref="Topic"/> has no <see cref=
@@ -185,7 +185,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
     ).ConfigureAwait(false);
 
     // Raise the TopicLoaded event
-    OnTopicLoaded(new(topic!, false, version));
+    OnTopicLoaded(new(topic!, 0, version));
 
     // Finally, return the detached topic
     return topic;
@@ -196,7 +196,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   | METHOD: LOAD TOPIC GRAPH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Shared core behind <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> and <see cref="Load(Int32, DateTime)"/>:
+  ///   Shared core behind <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> and <see cref="Load(Int32, DateTime)"/>:
   ///   Builds a fresh set of <see cref="TopicsDataTable"/> and <see cref="RelationshipsDataTable"/> rows, then feeds them
   ///   through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>, exactly as <see cref="SqlTopicRepository"/> does
   ///   from a live reader.

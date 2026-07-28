@@ -50,8 +50,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  isRecursive));
+      OnTopicLoaded(new(topic, depth));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  isRecursive));
+      OnTopicLoaded(new(topic,  depth));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  false, version));
+      OnTopicLoaded(new(topic, 0, version));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------

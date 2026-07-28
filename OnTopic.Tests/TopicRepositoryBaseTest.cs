@@ -54,7 +54,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: VALID TOPIC ID: RETURNS EXPECTED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with a valid <see cref="Topic.Id"/>
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with a valid <see cref="Topic.Id"/>
   ///   and confirms that the expected topic is returned.
   /// </summary>
   [Fact]
@@ -70,7 +70,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: INVALID TOPIC ID: RETURNS EXPECTED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with an invalid <see cref=
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with an invalid <see cref=
   ///   "Topic.Id"/> and confirms that no topic is returned.
   /// </summary>
   [Fact]
@@ -81,7 +81,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with a negative <see cref=
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with a negative <see cref=
   ///   "Topic.Id"/> and confirms that the root topic is returned.
   /// </summary>
   [Fact]
@@ -92,7 +92,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with <c>payload</c> set to <see cref=
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
   ///   "TopicPayload.None"/> and confirms that a topic is still returned. The stub always returns fully-loaded topics
   ///   regardless of this parameter; the test simply verifies the signature is accepted.
   /// </summary>
@@ -109,7 +109,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: NARROW PAYLOAD: EXTENDED ATTRIBUTES LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> with <c>payload</c> set to <see cref=
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
   ///   "TopicPayload.None"/> and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>. The stub does not
   ///   defer extended attributes; this simply confirms no regression for stub-backed tests.
   /// </summary>
@@ -1048,7 +1048,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> and ensures that the
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> and ensures that the
   ///   <see cref="ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]

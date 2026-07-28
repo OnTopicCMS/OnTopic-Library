@@ -147,7 +147,7 @@ public class CachedTopicRepositoryTest {
   /// <summary>
   ///   Simulates the shape produced by <see cref="ITopicRepository.Refresh(Topic, DateTime)"/>, which attaches new topics to an
   ///   existing parent without raising <see cref="ITopicRepository.TopicLoaded"/> (and thus without indexing them), then calls
-  ///   <see cref="CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for the leaf and confirms the cache returns
+  ///   <see cref="CachedTopicRepository.Load(int, Topic?, TopicPayload, int)"/> for the leaf and confirms the cache returns
   ///   the existing attached instances rather than duplicating them. The merge-aware underlying load reuses the loaded topics
   ///   via the reference graph, and <see cref="CachedTopicRepository.OnTopicLoaded(TopicLoadEventArgs)"/> indexes both the leaf
   ///   and any previously unindexed intermediate ancestor ("Web_0") by walking up the parent chain.
@@ -314,7 +314,7 @@ public class CachedTopicRepositoryTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Saves a newly created, unsaved <see cref="Topic"/> under a resident parent, then calls <see cref=
-  ///   "CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for its newly assigned ID and confirms the same
+  ///   "CachedTopicRepository.Load(int, Topic?, TopicPayload, int)"/> for its newly assigned ID and confirms the same
   ///   instance is returned directly from the live index, with no fall-through to the inner repository. Ensures the <see cref=
   ///   "Topic.Id"/> setter's indexing hook from <see cref="TopicIndexRegistry"/> makes a freshly saved topic resolvable by ID.
   /// </summary>
@@ -352,7 +352,7 @@ public class CachedTopicRepositoryTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Recursively saves a newly created parent with a newly created child underneath it, then calls <see cref=
-  ///   "CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for each of their newly assigned IDs and confirms both
+  ///   "CachedTopicRepository.Load(int, Topic?, TopicPayload, int)"/> for each of their newly assigned IDs and confirms both
   ///   resolve directly from the live index, with no fall-through to the inner repository.
   /// </summary>
   /// <remarks>

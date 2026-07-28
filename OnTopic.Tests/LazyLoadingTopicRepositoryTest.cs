@@ -377,7 +377,7 @@ public class LazyLoadingTopicRepositoryTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a topic and confirms it carries a non-null <see cref="ITopicLazyLoadable.Loader"/>, stamped through the public
-  ///   <see cref="ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/>/event path.
+  ///   <see cref="ITopicRepository.Load(String, Topic?, TopicPayload, Int32)"/>/event path.
   /// </summary>
   [Fact]
   public async Task Load_ServedNode_IsStamped() {
@@ -721,8 +721,8 @@ public class LazyLoadingTopicRepositoryTest {
     var reloaded                 = await _cachedTopicRepository.Load(
       "Root:Web:Web_0:Web_0_0",
       topic,
-      false,
-      TopicPayload.ExtendedAttributes
+      TopicPayload.ExtendedAttributes,
+      0
     );
 
     Assert.Same(topic, reloaded);
@@ -747,12 +747,12 @@ public class LazyLoadingTopicRepositoryTest {
     var cache                   = new CachedTopicRepository(stub);
     var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
 
-    var seed                    = await cache.Load("Root:Web:Web_0", null, true, TopicPayload.All);
+    var seed                    = await cache.Load("Root:Web:Web_0", null, TopicPayload.All, -1);
 
-    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, isRecursive: true));
+    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, depth: -1));
 
     var fetchesAfterFirstLoad   = stub.TotalFetches;
-    var reloaded                = await cache.Load("Root:Web:Web_0", null, true, TopicPayload.All);
+    var reloaded                = await cache.Load("Root:Web:Web_0", null, TopicPayload.All, -1);
 
     Assert.Same(seed, reloaded);
     Assert.Equal(fetchesAfterFirstLoad, stub.TotalFetches);
@@ -777,15 +777,15 @@ public class LazyLoadingTopicRepositoryTest {
     var deep                    = await _cachedTopicRepository.Load(
       "Root:Web:Web_0:Web_0_0",
       seed,
-      true,
-      TopicPayload.Children | TopicPayload.ExtendedAttributes
+      TopicPayload.Children | TopicPayload.ExtendedAttributes,
+      -1
     );
 
-    var ancestor                 = deep!.Parent;
+    var ancestor                = deep!.Parent;
 
     Assert.Same(seed, deep);
     Assert.True(
-      ((ITopicLazyLoadable)deep).IsLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes, isRecursive: true)
+      ((ITopicLazyLoadable)deep).IsLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes, depth: -1)
     );
     Assert.Equal("Extended body content for Web_0_0.", deep.Attributes.GetValue("Body"));
     Assert.False(((ITopicLazyLoadable)ancestor!).IsLoaded(TopicPayload.Children));
@@ -812,7 +812,7 @@ public class LazyLoadingTopicRepositoryTest {
     Assert.NotEmpty(rawTopic.Relationships.Deferred);
     Assert.NotEmpty(rawTopic.References.Deferred);
 
-    var web                     = await cache.Load("Root:Web", null, true, TopicPayload.Children);
+    var web                     = await cache.Load("Root:Web", null, TopicPayload.Children, -1);
     var web00                   = web!.Children["Web_0"].Children["Web_0_0"];
     var related                 = topic!.Relationships.GetValues("Related");
 
@@ -843,14 +843,14 @@ public class LazyLoadingTopicRepositoryTest {
     var cache                   = new CachedTopicRepository(stub);
     var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
 
-    var seed                    = await cache.Load(-1, null, false, TopicPayload.None);
+    var seed                    = await cache.Load(-1, null, TopicPayload.None, 0);
 
     Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(TopicPayload.Children));
 
-    var loaded                  = await cache.Load(-1, seed, true, TopicPayload.All);
+    var loaded                  = await cache.Load(-1, seed, TopicPayload.All, -1);
 
     Assert.Same(seed, loaded);
-    Assert.True(((ITopicLazyLoadable)loaded!).IsLoaded(gate, isRecursive: true));
+    Assert.True(((ITopicLazyLoadable)loaded!).IsLoaded(gate, depth: -1));
 
     var web                     = loaded.Children["Web"];
 
@@ -863,8 +863,8 @@ public class LazyLoadingTopicRepositoryTest {
       web.Children["Web_0"].Children["Web_0_0"].Attributes.GetValue("Body")
     );
 
-    var fetchesAfterLoad         = stub.TotalFetches;
-    var reloaded                 = await cache.Load(-1, null, true, TopicPayload.All);
+    var fetchesAfterLoad        = stub.TotalFetches;
+    var reloaded                = await cache.Load(-1, null, TopicPayload.All, -1);
 
     Assert.Same(loaded, reloaded);
     Assert.Equal(fetchesAfterLoad, stub.TotalFetches);
