@@ -215,21 +215,21 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   public abstract Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   );
 
   /// <inheritdoc />
   public abstract Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   );
 
-  /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
+  /// <inheritdoc cref="ITopicRepository.Load(String?, Boolean)"/>
   [ExcludeFromCodeCoverage]
-  [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
+  [Obsolete("This overload has been removed in preference for Load(string, Topic, TopicPayload, int).")]
   public Task<Topic?> Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
 
   /// <inheritdoc />

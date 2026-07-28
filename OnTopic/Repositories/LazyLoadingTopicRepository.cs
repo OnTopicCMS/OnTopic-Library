@@ -72,8 +72,8 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Resolves any relationships and references that were deferred when loaded through this repository's <see cref=
-  ///   "ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, preferring whatever is already available in the topic's
-  ///   graph before falling back to a fresh <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> for any
+  ///   "ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>, preferring whatever is already available in the topic's
+  ///   graph before falling back to a fresh <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for any
   ///   that aren't.
   /// </summary>
   /// <remarks>
@@ -116,7 +116,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
 
   /// <summary>
   ///   Resolves each deferred relationship and reference entry on <paramref name="topic"/> against its resident graph,
-  ///   optionally falling back to <see cref="ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/> for whatever the
+  ///   optionally falling back to <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for whatever the
   ///   graph doesn't have.
   /// </summary>
   /// <remarks>
@@ -136,7 +136,7 @@ public abstract class LazyLoadingTopicRepository : ObservableTopicRepository {
   /// </param>
   /// <param name="fallBackToLoad">
   ///   Whether an association missing from the graph should be fetched via <see cref=
-  ///   "ITopicRepository.Load(Int32, Topic?, Boolean, TopicPayload)"/>, with whatever remains unresolved afterwards cleared as
+  ///   "ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>, with whatever remains unresolved afterwards cleared as
   ///   stale.
   /// </param>
   private async Task ResolveAssociations(Topic topic, TopicPayload payload, bool fallBackToLoad) {

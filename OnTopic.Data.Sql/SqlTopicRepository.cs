@@ -58,8 +58,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return await Load(topicId, referenceTopic, isRecursive, payload).ConfigureAwait(false);
+    return await Load(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
 
   }
 
@@ -121,9 +121,16 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Normalize depth
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (payload.HasFlag(TopicPayload.Children) && depth is 0) {
+      depth                     = 1;
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
@@ -138,10 +145,14 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish query parameters
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Interim mapping of depth onto GetTopics' boolean parameters until a depth-aware @Depth parameter: -1 loads the full
+    | subtree; 1 loads one tier of children; 0 loads neither; N ≥ 2 is a documented superset that over-fetches the full subtree
+    | until @Depth is wired up.
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
-    command.AddParameter("LoadDescendants", isRecursive);
-    command.AddParameter("LoadChildren", payload.HasFlag(TopicPayload.Children) && !isRecursive);
+    command.AddParameter("LoadDescendants", depth is (-1) or >= 2);
+    command.AddParameter("LoadChildren", depth is 1);
     command.AddParameter("LoadAscendants", topicId >= 0);
     command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
     command.AddParameter("IncludeRelationships", true);
@@ -189,7 +200,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    OnTopicLoaded(new(topic, isRecursive));
+    OnTopicLoaded(new(topic, depth < 0));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
@@ -269,7 +280,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    OnTopicLoaded(new(topic, false, version));
+    OnTopicLoaded(new(topic, 0, version));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
@@ -460,7 +471,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (payload.HasFlag(TopicPayload.Children)) {
       foreach (var child in topic.Children) {
-        OnTopicLoaded(new(child, isRecursive: false));
+        OnTopicLoaded(new(child, depth: 0));
       }
     }
 
@@ -777,7 +788,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   /// </summary>
   /// <remarks>
   ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> boundary,
-  ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, bool, TopicPayload)"/> for
+  ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, TopicPayload, int)"/> for
   ///   existing topics.
   /// </remarks>
   private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {

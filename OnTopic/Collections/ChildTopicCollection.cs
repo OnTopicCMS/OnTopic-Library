@@ -54,7 +54,7 @@ public class ChildTopicCollection : KeyedTopicCollection {
   ///   </para>
   ///   <para>
   ///     This setter exists for <see cref="ITopicRepository"/> implementations populating or converging load state during <see
-  ///     cref="ITopicRepository.Load(Int32, Topic?, bool, TopicPayload)"/> or <see cref="ITopicLazyLoader.EnsureLoaded"/>.
+  ///     cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, int)"/> or <see cref="ITopicLazyLoader.EnsureLoaded"/>.
   ///     Setting <see cref="LoadState.Loaded"/> while children remain unfetched masks the deferral from subsequent readers;
   ///     setting <see cref="LoadState.NotLoaded"/> on already-resident children induces a spurious synchronous load on
   ///     next access.
