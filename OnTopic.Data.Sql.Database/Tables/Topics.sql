@@ -54,3 +54,17 @@ INDEX	[IX_Topics_RangeRight]
   ON	[dbo].[Topics] (
 	  [RangeRight] ASC
   );
+
+GO
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- PARENT ID (INDEX)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Provides a dedicated index for evaluating a topic's immediate children, e.g. via the depth-bound recursive CTE in GetTopics.
+-- The (TopicKey, ParentID) unique constraint already indexes ParentID, but in the wrong order for this predicate.
+--------------------------------------------------------------------------------------------------------------------------------
+CREATE	NONCLUSTERED
+INDEX	[IX_Topics_ParentID]
+  ON	[dbo].[Topics] (
+	  [ParentID] ASC
+  );
