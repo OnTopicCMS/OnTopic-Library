@@ -4,8 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Data;
+using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Data.Sql;
+using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles.LazyLoading;
@@ -212,6 +214,136 @@ public class CachedTopicRepositoryTest {
     Assert.Same(web0, related.Parent);
     Assert.Contains(web0!.Children, child => child.Id == related.Id);
     Assert.Same(root, related.GetRootTopic());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: DELETE: LOADED TOPIC: SUBSEQUENT LOAD DOES NOT RETURN DETACHED INSTANCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Deletes a loaded topic and confirms it is absent from <see cref="TopicExtensions.GetLiveTopicIndex(Topic)"/>; i.e., the
+  ///   detach hook in <see cref="TopicIndexRegistry"/> pruned it, since <see cref="CachedTopicRepository.OnTopicDeleted"/> no
+  ///   longer does so.
+  /// </summary>
+  /// <remarks>
+  ///   <see cref="FakeSqlTopicRepository"/>'s <c>DeleteTopic</c> doesn't actually do anything: The row survives in its store,
+  ///   unlike a real deletion. That's exploited for the follow-up assertions: A subsequent <see cref="CachedTopicRepository"/>
+  ///   <c>Load()</c> by ID and then by unique key, both still find a row and reattach a fresh instance. If either index had
+  ///   retained a stale entry instead of being pruned by e.g., the detach hook <see cref="CachedTopicRepository.OnTopicDeleted"
+  ///   />, that lookup would have returned the old, now-detached instance directly, without ever falling through to the inner
+  ///   repository, so the fresh instances are themselves evidence both stale entries are gone, even though this isn't how a
+  ///   real repository handles a delete.
+  /// </remarks>
+  [Fact]
+  public async Task Delete_LoadedTopic_SubsequentLoadDoesNotReturnDetachedInstance() {
+
+    var inner                   = new FakeSqlTopicRepository()
+      .AddTopic(1, "Root", "Container", null)
+      .AddTopic(2, "Web", "Page", 1)
+      .AddTopic(3, "Web_0", "Page", 2);
+
+    var cache                   = new CachedTopicRepository(inner);
+    var root                    = await cache.Load("Root");
+    var web                     = await cache.Load("Web");
+    var web0                    = await cache.Load("Web:Web_0");
+
+    Assert.Contains(web!.Children, child => child.Id == web0!.Id);
+
+    await cache.Delete(web0!, isRecursive: false);
+
+    Assert.DoesNotContain(web.Children, child => child.Id == web0!.Id);
+    Assert.False(root!.GetLiveTopicIndex().ContainsKey(web0!.Id));
+
+    var reloadedById            = await cache.Load(web0!.Id);
+
+    Assert.NotSame(web0, reloadedById);
+
+    var reloadedByKey           = await cache.Load("Web:Web_0");
+
+    Assert.NotSame(web0, reloadedByKey);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: SAVE: NEW TOPIC: RESOLVES VIA LOAD WITHOUT FALLBACK
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Saves a newly created, unsaved <see cref="Topic"/> under a resident parent, then calls <see cref=
+  ///   "CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for its newly assigned ID and confirms the same
+  ///   instance is returned directly from the live index, with no fall-through to the inner repository. Ensures the <see cref=
+  ///   "Topic.Id"/> setter's indexing hook from <see cref="TopicIndexRegistry"/> makes a freshly saved topic resolvable by ID.
+  /// </summary>
+  [Fact]
+  public async Task Save_NewTopic_ResolvesViaLoadWithoutFallback() {
+
+    var inner                   = new FakeSqlTopicRepository()
+      .AddTopic(1, "Root", "Container", null);
+
+    var cache                   = new CachedTopicRepository(inner);
+    var root                    = await cache.Load("Root");
+
+    // Establish a minimal content type graph directly on the live root, required by Save()'s content type validation
+    var configuration           = new Topic("Configuration", "Container", root);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration);
+
+    _                           = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes);
+
+    var newChild                = new Topic("NewChild", "Page", root);
+
+    Assert.True(newChild.IsNew);
+
+    await cache.Save(newChild);
+
+    Assert.False(newChild.IsNew);
+
+    var loaded                  = await cache.Load(newChild.Id);
+
+    Assert.Same(newChild, loaded);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: SAVE: RECURSIVE NEW TOPICS: RESOLVE VIA LOAD WITHOUT FALLBACK
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Recursively saves a newly created parent with a newly created child underneath it, then calls <see cref=
+  ///   "CachedTopicRepository.Load(int, Topic?, bool, TopicPayload)"/> for each of their newly assigned IDs and confirms both
+  ///   resolve directly from the live index, with no fall-through to the inner repository.
+  /// </summary>
+  /// <remarks>
+  ///   Unlike <see cref="Save_NewTopic_ResolvesViaLoadWithoutFallback"/>, which saves a single topic, this ensures that the
+  ///   <see cref="Topic.Id"/> setter's indexing hook also fires correctly for a child of a parent that was itself just assigned
+  ///   an ID moments earlier in the same recursive save; i.e., <see cref="TopicExtensions.GetRootTopic(Topic)"/>, walked from
+  ///   the child at the moment its own ID is assigned, correctly reaches <c>_cache</c> through the freshly attached parent.
+  /// </remarks>
+  [Fact]
+  public async Task Save_RecursiveNewTopics_ResolveViaLoadWithoutFallback() {
+
+    var inner                   = new FakeSqlTopicRepository()
+      .AddTopic(1, "Root", "Container", null);
+
+    var cache                   = new CachedTopicRepository(inner);
+    var root                    = await cache.Load("Root");
+
+    // Establish a minimal content type graph directly on the live root, required by Save()'s content type validation
+    var configuration           = new Topic("Configuration", "Container", root);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration);
+
+    _                           = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes);
+
+    var newParent               = new Topic("NewParent", "Page", root);
+    var newChild                = new Topic("NewChild", "Page", newParent);
+
+    await cache.Save(newParent, isRecursive: true);
+
+    Assert.False(newParent.IsNew);
+    Assert.False(newChild.IsNew);
+
+    var loadedParent            = await cache.Load(newParent.Id);
+    var loadedChild             = await cache.Load(newChild.Id);
+
+    Assert.Same(newParent, loadedParent);
+    Assert.Same(newChild, loadedChild);
 
   }
 
