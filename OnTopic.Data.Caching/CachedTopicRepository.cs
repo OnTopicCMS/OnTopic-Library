@@ -35,21 +35,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   private readonly              ConcurrentDictionary<int, SemaphoreSlim> _loadGates             = new();
 
   /*============================================================================================================================
-  | CONSTANTS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-
-  /// <summary>
-  ///   Payload whose full load lets a per-topic gate be reclaimed.
-  /// </summary>
-  /// <remarks>
-  ///   This excludes <see cref="TopicPayload.VersionHistory"/>, which rarely loads outside the editor, so most gates reclaim as
-  ///   soon as <see cref="TopicPayload.Children"/> and <see cref="TopicPayload.ExtendedAttributes"/> converge, rather than
-  ///   persisting indefinitely. A gate recreated later for a <see cref="TopicPayload.VersionHistory"/>-only fetch is reclaimed
-  ///   immediately once that fetch completes.
-  /// </remarks>
-  private const                 TopicPayload                    _reclaimPayload                  = TopicPayload.Children | TopicPayload.ExtendedAttributes;
-
-  /*============================================================================================================================
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -297,11 +282,6 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
         }
         finally {
           gate.Release();
-        }
-
-        // Reclaim: Once ReclaimPayload is loaded, the gate is dead weight, so we can drop the cached instance
-        if (rawTopic.IsLoaded(_reclaimPayload)) {
-          _loadGates.TryRemove(new(topic.Id, gate));
         }
 
       }
