@@ -244,18 +244,18 @@ public class CachedTopicRepositoryTest {
     Assert.False(rawWeb.IsLoaded(TopicPayload.Children));
 
     // "Arm" the gate so the first request suspends mid-fetch, then launch both requests without awaiting either
-    inner.ArmGate();
+    inner.ArmEnsureLoadedGate();
 
     var firstRequest            = rawWeb.EnsureLoaded(TopicPayload.Children, CancellationToken);
     var secondRequest           = rawWeb.EnsureLoaded(TopicPayload.Children, CancellationToken);
 
     // Release the gate and let both requests run to completion
-    inner.ReleaseGate();
+    inner.ReleaseEnsureLoadedGate();
 
     await Task.WhenAll(firstRequest, secondRequest);
 
     // A single inner fetch, no duplicate children, and a fully loaded boundary confirm the race did not corrupt the merge
-    Assert.Equal(1, inner.FetchCount);
+    Assert.Equal(1, inner.EnsureLoadedFetchCount);
     Assert.True(rawWeb.IsLoaded(TopicPayload.Children));
     Assert.Equal(2, web.Children.Count);
     Assert.Equal(2, web.Children.Select(child => child.Id).Distinct().Count());
