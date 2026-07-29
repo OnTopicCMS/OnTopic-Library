@@ -33,21 +33,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   private readonly              HashSet<string>                 _absentUniqueKeyIndex           = new(StringComparer.OrdinalIgnoreCase);
   private readonly              object                          _syncLock                       = new();
   private readonly              ConcurrentDictionary<int, SemaphoreSlim> _loadGates             = new();
-
-  /*============================================================================================================================
-  | CONSTANTS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-
-  /// <summary>
-  ///   Payload whose full load lets a per-topic gate be reclaimed.
-  /// </summary>
-  /// <remarks>
-  ///   This excludes <see cref="TopicPayload.VersionHistory"/>, which rarely loads outside the editor, so most gates reclaim as
-  ///   soon as <see cref="TopicPayload.Children"/> and <see cref="TopicPayload.ExtendedAttributes"/> converge, rather than
-  ///   persisting indefinitely. A gate recreated later for a <see cref="TopicPayload.VersionHistory"/>-only fetch is reclaimed
-  ///   immediately once that fetch completes.
-  /// </remarks>
-  private const                 TopicPayload                    _reclaimPayload                  = TopicPayload.Children | TopicPayload.ExtendedAttributes;
+  private readonly              ConcurrentDictionary<string, SemaphoreSlim> _keyLoadGates       = new(StringComparer.OrdinalIgnoreCase);
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -116,8 +102,17 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Int32)"/> before being returned. On a
   ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
   ///   fetched and merged into the live graph, using <paramref name="referenceTopic"/> if supplied, or the cache root
-  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. Missing
-  ///   IDs are recorded to prevent redundant round-trips for topics that do not exist.
+  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the referenced graph. This
+  ///   fall-through is serialized per <paramref name="topicId"/> via the same <see cref="_loadGates"/> gate the hit path uses,
+  ///   with a double-checked re-read of both the live index and the Missing ID index under the gate, so concurrent requests for
+  ///   the same uncached ID merge exactly once rather than racing. Missing IDs are recorded to prevent redundant round-trips
+  ///   for topics that do not exist.
+  ///   <para>
+  ///     This only covers duplicates with the same identity; it does not extend to concurrent loads that merge into
+  ///     <em>overlapping</em> regions of the graph under different identities (e.g., an ancestor and one of its not-yet-loaded
+  ///     descendants). See <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for the full concurrency
+  ///     contract.
+  ///   </para>
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
@@ -135,41 +130,56 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by topic identifier; top up and return on a hit
+    | Lookup by topic identifier; top up and return on a hit, or skip a known miss, before falling through to a fresh load
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var topic);
-    if (topic is not null) {
-      await EnsureLoaded(topic, payload, depth).ConfigureAwait(false);
-      return topic;
+    var (resident, isAbsent)    = GetPreviousLoad(topicId);
+
+    if (resident is not null) {
+      await EnsureLoaded(resident, payload, depth).ConfigureAwait(false);
+      return resident;
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip IDs that are known to be missing to avoid redundant round-trips
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    lock (_syncLock) {
-      if (_absentTopicIdIndex.Contains(topicId)) {
-        return null;
-      }
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | On miss: Load with ancestors and merge result into the live graph
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = await TopicRepository
-      .Load(topicId, referenceTopic?? _cache, payload, depth)
-      .ConfigureAwait(false);
-
-    // If it's missing, populate the appropriate index so we don't try loading it again
-    if (loaded is null) {
-      lock (_syncLock) {
-        _absentTopicIdIndex.Add(topicId);
-      }
+    if (isAbsent) {
       return null;
     }
 
-    // Return the topic from the cache; the TopicIndexRegistry hooks indexed it as it was merged above
-    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var result);
-    return result;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | On miss: Load with ancestors and merge result into the live graph, serialized per ID to prevent concurrent per-topic loads
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return await WithLoadGate(_loadGates, topicId, async () => {
+
+      // Second escape hatch: A prior holder may have loaded this ID, or recorded a miss, while this thread waited
+      var (existingTopic, existingIsAbsent) = GetPreviousLoad(topicId);
+
+      // Return match
+      if (existingTopic is not null) {
+        var gate                = payload & ~(TopicPayload.Relationships | TopicPayload.References);
+        if (((ITopicLazyLoadable)existingTopic).IsLoaded(gate, depth)) {
+          return existingTopic;
+        }
+      }
+
+      // If there was a previous load attempt, return early
+      else if (existingIsAbsent) {
+        return null;
+      }
+
+      // Insufficient? Load with ancestors and merge into whichever instance is already available, if any
+      var freshlyLoaded         = await TopicRepository
+        .Load(topicId, existingTopic?? referenceTopic?? _cache, payload, depth)
+        .ConfigureAwait(false);
+
+      // If it's missing, populate the index so we don't try loading it again
+      if (freshlyLoaded is null) {
+        lock (_syncLock) {
+          _absentTopicIdIndex.Add(topicId);
+        }
+      }
+
+      // Return the loaded topic, if present
+      return freshlyLoaded;
+
+    }).ConfigureAwait(false);
 
   }
 
@@ -179,8 +189,15 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Int32)"/> before being returned. On a
   ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
   ///   fetched and merged into the live graph, using <paramref name="referenceTopic"/> if supplied, or the cache root
-  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. Missing
-  ///   IDs are recorded to prevent redundant round-trips for topics that do not exist.
+  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. This
+  ///   fall-through is serialized per <paramref name="uniqueKey"/> via <see cref="_keyLoadGates"/>, with a double-checked
+  ///   reread of both the key and the missing-key index under the gate, so concurrent requests for the same uncached key merge
+  ///   exactly once. Missing keys are recorded to prevent redundant round-trips for topics that do not exist.
+  ///   <para>
+  ///     This only covers same-identity duplicates; it does not extend to concurrent loads that merge into <em>overlapping</em>
+  ///     regions under different identities. See <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for
+  ///     the full concurrency contract.
+  ///   </para>
   /// </remarks>
   public override async Task<Topic?> Load(
     string uniqueKey,
@@ -207,45 +224,57 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by unique key; top up and return on a hit
+    | Lookup by unique key; top up and return on a hit, or skip a known miss, before falling through to a fresh load
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Topic? resident;
-    lock (_syncLock) {
-      _topicKeyIndex.TryGetValue(uniqueKey, out resident);
-    }
+    var (resident, isAbsent)    = GetPreviousLoad(uniqueKey);
+
     if (resident is not null) {
       await EnsureLoaded(resident, payload, depth).ConfigureAwait(false);
       return resident;
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip IDs that are known to be missing to avoid redundant round-trips
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    lock (_syncLock) {
-      if (_absentUniqueKeyIndex.Contains(uniqueKey)) {
-        return null;
-      }
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | On miss: Load with ancestors and merge result into the live graph
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = await TopicRepository
-      .Load(uniqueKey, referenceTopic?? _cache, payload, depth)
-      .ConfigureAwait(false);
-
-    if (loaded is null) {
-      lock (_syncLock) {
-        _absentUniqueKeyIndex.Add(uniqueKey);
-      }
+    if (isAbsent) {
       return null;
     }
 
-    // Return the topic from the cache
-    lock (_syncLock) {
-      _topicKeyIndex.TryGetValue(uniqueKey, out var result);
-      return result;
-    }
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | On miss: Load with ancestors and merge result into the live graph, serialized per key to prevent concurrent loads for the
+    | same uncached uniqueKey
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return await WithLoadGate(_keyLoadGates, uniqueKey, async () => {
+
+      // Second escape hatch: A prior holder may have loaded this key, or recorded a miss, while this thread waited
+      var (existingTopic, existingIsAbsent) = GetPreviousLoad(uniqueKey);
+
+      // Return match
+      if (existingTopic is not null) {
+        var gate                = payload & ~(TopicPayload.Relationships | TopicPayload.References);
+        if (((ITopicLazyLoadable)existingTopic).IsLoaded(gate, depth)) {
+          return existingTopic;
+        }
+      }
+
+      // If there was a previous load attempt, return early
+      else if (existingIsAbsent) {
+        return null;
+      }
+
+      // Insufficient? Load with ancestors and merge into whichever instance is already available, if any
+      var freshlyLoaded         = await TopicRepository
+        .Load(uniqueKey, existingTopic?? referenceTopic?? _cache, payload, depth)
+        .ConfigureAwait(false);
+
+      // If it's missing, populate the index so we don't try loading it again
+      if (freshlyLoaded is null) {
+        lock (_syncLock) {
+          _absentUniqueKeyIndex.Add(uniqueKey);
+        }
+      }
+
+      // Return the loaded topic, if present
+      return freshlyLoaded;
+
+    }).ConfigureAwait(false);
 
   }
 
@@ -285,24 +314,15 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       if (innerPayload is not TopicPayload.None) {
 
         // Serialize fetches and merges (children, extended attributes, version history) per topic
-        var gate                = _loadGates.GetOrAdd(topic.Id, _ => new(1, 1));
-        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try {
+        await WithLoadGate(_loadGates, topic.Id, async () => {
 
           // Second escape hatch: Re-filter under the gate, since a prior holder may have merged some or all of this payload
-          innerPayload          = rawTopic.FilterPayload(innerPayload);
-          if (innerPayload is not TopicPayload.None) {
-            await loader.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+          var remainingPayload  = rawTopic.FilterPayload(innerPayload);
+          if (remainingPayload is not TopicPayload.None) {
+            await loader.EnsureLoaded(topic, remainingPayload, cancellationToken).ConfigureAwait(false);
           }
-        }
-        finally {
-          gate.Release();
-        }
 
-        // Reclaim: Once ReclaimPayload is loaded, the gate is dead weight, so we can drop the cached instance
-        if (rawTopic.IsLoaded(_reclaimPayload)) {
-          _loadGates.TryRemove(new(topic.Id, gate));
-        }
+        }, cancellationToken).ConfigureAwait(false);
 
       }
     }
@@ -521,9 +541,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///     />, which converges <c>LoadState</c> in a single batched round-trip. Any other shortfall, including a whole-tree
   ///     request, performs one deep <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> against the
   ///     underlying repository, using <paramref name="topic"/> itself as the reference into the topic graph, so the underlying
-  ///     load merges the result directly into it. It then looks up any in-graph associations (<see cref=
-  ///     "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationship or reference targets
-  ///     that just became resident are connected without a further trip.
+  ///     load merges the result directly into it. This deep load is serialized per topic via the same <see cref="_loadGates"/>
+  ///     gate as <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>, since both mutate the same <paramref name=
+  ///     "topic"/>'s collections and must not merge concurrently; a double-checked re-read under the gate lets a waiter skip a
+  ///     now-redundant fetch a prior load already satisfied. It then looks up any in-graph associations outside the gate (<see
+  ///     cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationships or references
+  ///     that were just loaded are connected without a further trip.
   ///   </para>
   /// </remarks>
   /// <param name="topic">The already-resident topic to confirm or top up.</param>
@@ -539,21 +562,30 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     var gate                    = payload & ~(TopicPayload.Relationships | TopicPayload.References);
 
     // Return immediately if the resident topic already satisfies the requested scope
-    if (((ITopicLazyLoadable)topic).IsLoaded(gate, depth)) {
+    var rawTopic                = (ITopicLazyLoadable)topic;
+    if (rawTopic.IsLoaded(gate, depth)) {
       return;
     }
 
     // Top up a single-topic shortfall via the loader, which converges LoadState in a single round-trip
     if (depth is 0) {
-      await ((ITopicLazyLoadable)topic).EnsureLoaded(gate).ConfigureAwait(false);
+      await rawTopic.EnsureLoaded(gate).ConfigureAwait(false);
       return;
     }
 
-    // Top up any other shortfall via one deep load, merged into the live graph
-    var loaded                  = await TopicRepository
-      .Load(topic.Id, topic, payload, depth)
-      .ConfigureAwait(false);
+    // Top-up any other shortfall via one deep load, serialized per topic to prevent concurrent same-topic merges
+    var loaded                  = await WithLoadGate(_loadGates, topic.Id, async () => {
 
+      // Second escape hatch: A prior holder may have already merged this (or a deeper) region under the gate
+      if (rawTopic.IsLoaded(gate, depth)) {
+        return null;
+      }
+      return await TopicRepository.Load(topic.Id, topic, payload, depth).ConfigureAwait(false);
+
+    }).ConfigureAwait(false);
+
+    // Resolve associations outside the gate; a waiter that returned at the double-check gate relies on the first holder's
+    // resolution (of the same or a deeper region) or the normal deferred lazy-load, since associations are not gated
     if (loaded is not null) {
 
       // Opportunistically connect any relationship or reference targets that are now resident in the merged region, regardless
@@ -562,6 +594,127 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
         await ResolveAssociations(descendant, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
       }
 
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: GET PREVIOUS LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Looks up <paramref name="topicId"/> in the live index and, on a miss, reports whether it was previously recorded as
+  ///   absent.
+  /// </summary>
+  /// <remarks>
+  ///   Centralizes the lookup mechanics shared by <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>'s pre- and post-gate
+  ///   checks; each caller still decides for itself what a hit, a miss, or a recorded absence means at that point in the flow.
+  /// </remarks>
+  private (Topic? Resident, bool IsAbsent) GetPreviousLoad(int topicId) {
+
+    // Attempt to lookup the item
+    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var resident);
+
+    // If it's found report that
+    if (resident is not null) {
+      return (resident, false);
+    }
+
+    // Otherwise, report of it's already reported as missing
+    lock (_syncLock) {
+      return (null, _absentTopicIdIndex.Contains(topicId));
+    }
+
+  }
+
+  /// <summary>
+  ///   Looks up <paramref name="uniqueKey"/> in the key index and, on a miss, reports whether it was previously recorded as
+  ///   absent.
+  /// </summary>
+  /// <remarks>
+  ///   Centralizes the lookup mechanics shared by <see cref="Load(String, Topic?, TopicPayload, Int32)"/>'s pre- and post-gate
+  ///   checks; each caller still decides for itself what a hit, a miss, or a recorded absence means at that point in the flow.
+  ///   Assumes <paramref name="uniqueKey"/> has already been normalized to its canonical form. Unlike its <see cref=
+  ///   "GetPreviousLoad(Int32)"/> counterpart, both checks share one <see cref="_syncLock"/> block, since <see cref=
+  ///   "_topicKeyIndex"/>—a plain <see cref="Dictionary{TKey, TValue}"/>, not the lock-free <see cref="TopicIndex"/> the id
+  ///   overload reads from—isn't safe to read without it.
+  /// </remarks>
+  private (Topic? Resident, bool IsAbsent) GetPreviousLoad(string uniqueKey) {
+
+    // Attempt to lookup the item
+    lock (_syncLock) {
+      if (_topicKeyIndex.TryGetValue(uniqueKey, out var resident)) {
+        return (resident, false);
+      }
+      return (null, _absentUniqueKeyIndex.Contains(uniqueKey));
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: WITH LOAD GATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Serializes <paramref name="execute"/> against any other in-flight call sharing <paramref name="key"/> in <paramref name=
+  ///   "gates"/>, via a persistent, per-key <see cref="SemaphoreSlim"/> acquired before, and released after, <paramref name=
+  ///   "execute"/> runs.
+  /// </summary>
+  /// <remarks>
+  ///   Shared by every concurrency gate with the same identity in this class: Each supplies its own sufficiency check and load
+  ///   logic via <paramref name="execute"/>, since that varies by call site, while this method owns only the acquire and
+  ///   release ceremony common to all of them.
+  /// </remarks>
+  /// <param name="gates">
+  ///   The per-key gate dictionary to acquire <paramref name="key"/>'s <see cref="SemaphoreSlim"/> from.
+  /// </param>
+  /// <param name="key">The identity to serialize concurrent calls against.</param>
+  /// <param name="execute">The sufficiency check and load logic to run once the gate is acquired.</param>
+  /// <param name="cancellationToken">An optional token that can cancel waiting on the gate itself.</param>
+  private static async Task<Topic?> WithLoadGate<TKey>(
+    ConcurrentDictionary<TKey, SemaphoreSlim> gates,
+    TKey key,
+    Func<Task<Topic?>> execute,
+    CancellationToken cancellationToken = default
+  ) where TKey: notnull {
+
+    // Ensure the gate is established
+    var gate                    = gates.GetOrAdd(key, _ => new(1, 1));
+    await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+    // Execute the action
+    try {
+      return await execute().ConfigureAwait(false);
+    }
+
+    // Release the gate
+    finally {
+      gate.Release();
+    }
+
+  }
+
+  /// <summary>
+  ///   <see cref="WithLoadGate{TKey}(ConcurrentDictionary{TKey, SemaphoreSlim}, TKey, Func{Task{Topic?}}, CancellationToken)"/>
+  ///   for gated work that requires a return <see cref="Topic"/>; this one does not.
+  /// </summary>
+  private static async Task WithLoadGate<TKey>(
+    ConcurrentDictionary<TKey, SemaphoreSlim> gates,
+    TKey key,
+    Func<Task> execute,
+    CancellationToken cancellationToken = default
+  ) where TKey: notnull {
+
+    // Ensure the gate is established
+    var gate                    = gates.GetOrAdd(key, _ => new(1, 1));
+    await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+    // Execute the action
+    try {
+      await execute().ConfigureAwait(false);
+    }
+
+    // Release the gate
+    finally {
+      gate.Release();
     }
 
   }
