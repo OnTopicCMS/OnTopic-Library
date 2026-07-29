@@ -111,6 +111,14 @@ public interface ITopicRepository {
   ///   the seed topic; <c>N</c> loads <c>N</c> tiers of descendants. Ancestor topics are always loaded when needed to place
   ///   the seed topic within the graph.
   /// </param>
+  /// <remarks>
+  ///   Concurrent calls that merge into overlapping regions of the same <paramref name="referenceTopic"/> graph are not
+  ///   guaranteed to be thread-safe: Implementors may serialize duplicate requests for the same identity (i.e., the same
+  ///   <paramref name="topicId"/> or <c>uniqueKey</c>), but a broader, cross-region lock over the graph is not part of this
+  ///   contract. Callers performing an eager or whole-tree warm (<c>depth: -1</c>) against a shared graph should do so in a
+  ///   single threaded, typically during startup, after which the warmed region is effectively read-only and safe for
+  ///   concurrent reads.
+  /// </remarks>
   /// <returns>A topic object.</returns>
   Task<Topic?> Load(
     int topicId,
@@ -129,12 +137,14 @@ public interface ITopicRepository {
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
   /// <param name="payload">
-  ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>
-  ///   for details.
+  ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> for details.
   /// </param>
   /// <param name="depth">
   ///   The number of tiers of descendants to load. See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> for details.
   /// </param>
+  /// <remarks>
+  ///   See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> for the concurrency contract shared by both overloads.
+  /// </remarks>
   /// <returns>A topic object.</returns>
   Task<Topic?> Load(
     string uniqueKey,
@@ -276,8 +286,8 @@ public interface ITopicRepository {
   /// </summary>
   /// <param name="topic">The <see cref="Topic"/> object to delete.</param>
   /// <param name="isRecursive">
-  ///   Boolean indicator nothing whether to recurse through the <see cref="Topic"/>'s descendants and delete them as well. If set to false
-  ///   and the topic has children, including any nested topics, an exception will be thrown. The default is false.
+  ///   Boolean indicator nothing whether to recurse through the <see cref="Topic"/>'s descendants and delete them as well. If
+  ///   set to false and the topic has children, including any nested topics, an exception will be thrown. The default is false.
   /// </param>
   /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
   ///   topic is not null

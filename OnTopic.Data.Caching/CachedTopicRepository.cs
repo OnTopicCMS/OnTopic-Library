@@ -107,6 +107,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   with a double-checked re-read of both the live index and the Missing ID index under the gate, so concurrent requests for
   ///   the same uncached ID merge exactly once rather than racing. Missing IDs are recorded to prevent redundant round-trips
   ///   for topics that do not exist.
+  ///   <para>
+  ///     This only covers duplicates with the same identity; it does not extend to concurrent loads that merge into
+  ///     <em>overlapping</em> regions of the graph under different identities (e.g., an ancestor and one of its not-yet-loaded
+  ///     descendants). See <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for the full concurrency
+  ///     contract.
+  ///   </para>
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
@@ -187,6 +193,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   fall-through is serialized per <paramref name="uniqueKey"/> via <see cref="_keyLoadGates"/>, with a double-checked
   ///   reread of both the key and the missing-key index under the gate, so concurrent requests for the same uncached key merge
   ///   exactly once. Missing keys are recorded to prevent redundant round-trips for topics that do not exist.
+  ///   <para>
+  ///     This only covers same-identity duplicates; it does not extend to concurrent loads that merge into <em>overlapping</em>
+  ///     regions under different identities. See <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> for
+  ///     the full concurrency contract.
+  ///   </para>
   /// </remarks>
   public override async Task<Topic?> Load(
     string uniqueKey,
