@@ -269,7 +269,7 @@ public class CachedTopicRepositoryTest {
   }
 
   /*============================================================================================================================
-  | TEST: LOAD: CONCURRENT COLD MISS REQUESTS: FETCHES ONCE WITHOUT CORRUPTION
+  | TEST: LOAD: CONCURRENT COLD MISS REQUESTS (BY ID): FETCHES ONCE WITHOUT CORRUPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Reproduces a concurrent-read race on the same <c>topicId</c> that hasn't yet been loaded: Two concurrent <see cref=
@@ -284,7 +284,7 @@ public class CachedTopicRepositoryTest {
   ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/>.
   /// </remarks>
   [Fact]
-  public async Task Load_ConcurrentColdMissRequests_FetchesOnceWithoutCorruption() {
+  public async Task Load_ConcurrentColdMissByIdRequests_FetchesOnceWithoutCorruption() {
 
     var inner                   = new BlockingStubLazyLoadingTopicRepository();
     var cache                   = new CachedTopicRepository(inner);
@@ -298,6 +298,51 @@ public class CachedTopicRepositoryTest {
     // "Web_0_0" (id 10002) is not yet resident: Only "Root", "Root:Configuration", and "Web" are seeded by the constructor
     var firstRequest            = cache.Load(10002, payload: TopicPayload.Children, depth: -1);
     var secondRequest           = cache.Load(10002, payload: TopicPayload.Children, depth: -1);
+
+    // Release the gate and let both requests run to completion
+    inner.ReleaseLoadGate();
+
+    var (first, second)         = (await firstRequest, await secondRequest);
+
+    // A single inner fetch, and the same resident instance returned to both callers, confirming the race did not corrupt the
+    // merge
+    Assert.Equal(1, inner.LoadFetchCount - baselineFetchCount);
+    Assert.NotNull(first);
+    Assert.Same(first, second);
+    Assert.Equal("Web_0_0", first!.Key);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: CONCURRENT COLD MISS REQUESTS (BY KEY): FETCHES ONCE WITHOUT CORRUPTION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reproduces a concurrent-read race on the same normalized <c>uniqueKey</c> that hasn't yet been loaded: Two concurrent
+  ///   <see cref="CachedTopicRepository.Load(String, Topic?, TopicPayload, Int32)"/> requests for the same uncached key must
+  ///   deep-load and merge exactly once, not twice, into the shared cache graph, and both callers must resolve to the same
+  ///   attached instance.
+  /// </summary>
+  /// <remarks>
+  ///   Uses the <see cref="BlockingStubLazyLoadingTopicRepository"/>, exactly as <see cref=
+  ///   "Load_ConcurrentColdMissByIdRequests_FetchesOnceWithoutCorruption"/> does for the <c>topicId</c> gate. Requests
+  ///   <c>depth: -1</c> for the same reason that test does: A finite-depth request would never agree with the gated check from
+  ///   <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/>.
+  /// </remarks>
+  [Fact]
+  public async Task Load_ConcurrentColdMissByKeyRequests_FetchesOnceWithoutCorruption() {
+
+    var inner                   = new BlockingStubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(inner);
+
+    // Baseline excludes the constructor's own "Root" and "Root:Configuration" fetches against the inner repository
+    var baselineFetchCount      = inner.LoadFetchCount;
+
+    // "Arm" the load gate so the first request suspends mid-fetch, then launch both requests without awaiting either
+    inner.ArmLoadGate();
+
+    // "Web_0_0" is not yet resident: Only "Root", "Root:Configuration", and "Web" are seeded by the constructor
+    var firstRequest            = cache.Load("Web:Web_0:Web_0_0", payload: TopicPayload.Children, depth: -1);
+    var secondRequest           = cache.Load("Web:Web_0:Web_0_0", payload: TopicPayload.Children, depth: -1);
 
     // Release the gate and let both requests run to completion
     inner.ReleaseLoadGate();
