@@ -270,19 +270,15 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
       if (innerPayload is not TopicPayload.None) {
 
         // Serialize fetches and merges (children, extended attributes, version history) per topic
-        var gate                = _loadGates.GetOrAdd(topic.Id, _ => new(1, 1));
-        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try {
+        await WithLoadGate(_loadGates, topic.Id, async () => {
 
           // Second escape hatch: Re-filter under the gate, since a prior holder may have merged some or all of this payload
-          innerPayload          = rawTopic.FilterPayload(innerPayload);
-          if (innerPayload is not TopicPayload.None) {
-            await loader.EnsureLoaded(topic, innerPayload, cancellationToken).ConfigureAwait(false);
+          var remainingPayload  = rawTopic.FilterPayload(innerPayload);
+          if (remainingPayload is not TopicPayload.None) {
+            await loader.EnsureLoaded(topic, remainingPayload, cancellationToken).ConfigureAwait(false);
           }
-        }
-        finally {
-          gate.Release();
-        }
+
+        }, cancellationToken).ConfigureAwait(false);
 
       }
     }
@@ -542,6 +538,75 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
         await ResolveAssociations(descendant, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
       }
 
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: WITH LOAD GATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Serializes <paramref name="execute"/> against any other in-flight call sharing <paramref name="key"/> in <paramref name=
+  ///   "gates"/>, via a persistent, per-key <see cref="SemaphoreSlim"/> acquired before, and released after, <paramref name=
+  ///   "execute"/> runs.
+  /// </summary>
+  /// <remarks>
+  ///   Shared by every concurrency gate with the same identity in this class: Each supplies its own sufficiency check and load
+  ///   logic via <paramref name="execute"/>, since that varies by call site, while this method owns only the acquire and
+  ///   release ceremony common to all of them.
+  /// </remarks>
+  /// <param name="gates">
+  ///   The per-key gate dictionary to acquire <paramref name="key"/>'s <see cref="SemaphoreSlim"/> from.
+  /// </param>
+  /// <param name="key">The identity to serialize concurrent calls against.</param>
+  /// <param name="execute">The sufficiency check and load logic to run once the gate is acquired.</param>
+  /// <param name="cancellationToken">An optional token that can cancel waiting on the gate itself.</param>
+  private static async Task<Topic?> WithLoadGate<TKey>(
+    ConcurrentDictionary<TKey, SemaphoreSlim> gates,
+    TKey key,
+    Func<Task<Topic?>> execute,
+    CancellationToken cancellationToken = default
+  ) where TKey: notnull {
+
+    // Ensure the gate is established
+    var gate                    = gates.GetOrAdd(key, _ => new(1, 1));
+    await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+    // Execute the action
+    try {
+      return await execute().ConfigureAwait(false);
+    }
+
+    // Release the gate
+    finally {
+      gate.Release();
+    }
+
+  }
+
+  /// <summary>
+  ///   <see cref="WithLoadGate{TKey}(ConcurrentDictionary{TKey, SemaphoreSlim}, TKey, Func{Task{Topic?}}, CancellationToken)"/>
+  ///   for gated work that requires a return <see cref="Topic"/>; this one does not.
+  /// </summary>
+  private static async Task WithLoadGate<TKey>(
+    ConcurrentDictionary<TKey, SemaphoreSlim> gates,
+    TKey key,
+    Func<Task> execute,
+    CancellationToken cancellationToken = default
+  ) where TKey: notnull {
+
+    // Ensure the gate is established
+    var gate                    = gates.GetOrAdd(key, _ => new(1, 1));
+    await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+    // Execute the action
+    try {
+      await execute().ConfigureAwait(false);
+    }
+
+    // Release the gate
+    finally {
+      gate.Release();
     }
 
   }
