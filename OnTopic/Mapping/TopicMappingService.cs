@@ -823,7 +823,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.Relationship,
-      source.Relationships.Contains,
+      key => source.Relationships.Contains(key),
       () => source.Relationships.GetValues(collectionKey)
     );
 
@@ -832,7 +832,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.NestedTopics,
-      source.Children.Contains,
+      key => source.Children.Contains(key),
       () => source.Children[collectionKey].Children
     );
 
@@ -841,7 +841,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.IncomingRelationship,
-      source.IncomingRelationships.Contains,
+      key => source.IncomingRelationships.Contains(key),
       () => source.IncomingRelationships.GetValues(collectionKey)
     );
 
