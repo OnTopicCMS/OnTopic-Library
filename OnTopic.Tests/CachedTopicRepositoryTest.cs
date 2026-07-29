@@ -219,6 +219,56 @@ public class CachedTopicRepositoryTest {
   }
 
   /*============================================================================================================================
+  | TEST: LOAD: CONCURRENT DEPTH TOP-UP REQUESTS: FETCHES ONCE WITHOUT CORRUPTION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reproduces a concurrent-read race on a common topic that is loaded, but has a shallower <c>depth</c> than is being
+  ///   requested: Two concurrent depth-aware <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>
+  ///   requests for the same cached topic must deep-load and merge exactly once, not twice, into the shared subtree.
+  /// </summary>
+  /// <remarks>
+  ///   Uses <see cref="BlockingStubLazyLoadingTopicRepository"/>, which suspends inside its own <c>Load</c> until released, to
+  ///   interleave both requests without any <see cref="Thread.Sleep(int)"/> or other timing hack, exactly as <see cref=
+  ///   "EnsureLoaded_ConcurrentChildrenRequests_FetchesOnceWithoutCorruption"/> does for the payload-only gate. Requests
+  ///   <c>depth: -1</c> rather than a finite depth: A finite-depth <c>Load()</c> only ever agrees with <see cref=
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> one tier shallower than requested (see <see cref=
+  ///   "LazyLoadingTopicRepositoryTest.Load_DepthTwo_IsLoadedAgreesAtDepthOne"/>), so a finite-depth waiter's gate check would
+  ///   never observe sufficiency and would always reissue a redundant fetch, an unrelated, pre-existing asymmetry this test
+  ///   must avoid.
+  /// </remarks>
+  [Fact]
+  public async Task Load_ConcurrentDepthTopUpRequests_FetchesOnceWithoutCorruption() {
+
+    var inner                   = new BlockingStubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(inner);
+    var web                     = await cache.Load("Web");
+    var rawWeb                  = (ITopicLazyLoadable)web!;
+
+    Assert.False(rawWeb.IsLoaded(TopicPayload.Children));
+
+    // Baseline excludes the constructor's own "Root" and "Root:Configuration" fetches against the inner repository
+    var baselineFetchCount      = inner.LoadFetchCount;
+
+    // "Arm" the load gate so the first request suspends mid-fetch, then launch both requests without awaiting either
+    inner.ArmLoadGate();
+
+    var firstRequest            = cache.Load(web!.Id, payload: TopicPayload.Children, depth: -1);
+    var secondRequest           = cache.Load(web!.Id, payload: TopicPayload.Children, depth: -1);
+
+    // Release the gate and let both requests run to completion
+    inner.ReleaseLoadGate();
+
+    await Task.WhenAll(firstRequest, secondRequest);
+
+    // A single inner deep fetch, no duplicate children, and a fully loaded subtree confirm the race did not corrupt the merge
+    Assert.Equal(1, inner.LoadFetchCount - baselineFetchCount);
+    Assert.True(rawWeb.IsLoaded(TopicPayload.Children, depth: -1));
+    Assert.Equal(2, web.Children.Count);
+    Assert.Equal(2, web.Children.Select(child => child.Id).Distinct().Count());
+
+  }
+
+  /*============================================================================================================================
   | TEST: ENSURE LOADED: CONCURRENT CHILDREN REQUESTS: FETCHES ONCE WITHOUT CORRUPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
