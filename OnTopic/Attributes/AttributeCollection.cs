@@ -142,7 +142,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
     bool autoLoad               = true
   ) {
     if (autoLoad && LoadState is LoadState.NotLoaded && !Contains(key)) {
-      ((ITopicLazyLoadable)AssociatedTopic).EnsureLoaded(TopicPayload.ExtendedAttributes);
+      ((ITopicLazyLoadable)AssociatedTopic).EnsureLoaded(TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
     }
     return base.GetValue(key, defaultValue, inheritFromParent, maxHops, autoLoad);
   }
