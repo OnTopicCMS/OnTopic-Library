@@ -6,16 +6,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using OnTopic.Data.Caching;
+using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.TestDoubles.LazyLoading;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.Fixtures;
+using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
+using OnTopic.ViewModels;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -1037,6 +1041,36 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: RELATIONSHIP ONLY: DOES NOT FILL CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a <see cref="RelationshipOnlyTopicViewModel"/>, whose only collection is explicitly typed <see cref=
+  ///   "CollectionType.Relationship"/>, against a <see cref="StubLazyLoadingTopicRepository"/>, and confirms that no
+  ///   synchronous <see cref="TopicPayload.Children"/> fill occurs. Prior to fixing <c>GetSourceCollectionAsync</c>'s
+  ///   collection probes, the <c>NestedTopics</c> probe's signature (<c>source.Children.Contains</c>) was evaluated
+  ///   unconditionally when the argument was constructed, silently triggering the lazy loading of the children regardless of
+  ///   which collection type the view model actually requested.
+  /// </summary>
+  [Fact]
+  public async Task Map_RelationshipOnly_DoesNotFillChildren() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var typeLookupService       = new CompositeTypeLookupService(new TopicViewModelLookupService(), new FakeViewModelLookupService());
+    var mappingService          = new TopicMappingService(cache, typeLookupService);
+
+    var topic                   = await cache.Load("Root:Web:Web_0");
+
+    Contract.Assume(topic);
+
+    var target                  = await mappingService.MapAsync<RelationshipOnlyTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(0, stub.GetFetchCount(topic.Id, TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: TOPIC REFERENCES AS ATTRIBUTE: RETURNS MAPPED MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1330,6 +1364,34 @@ public class TopicMappingServiceTest {
     Assert.NotNull(GetChildTopic(specialized, "ChildTopic2"));
     Assert.NotNull(GetChildTopic(specialized, "ChildTopic3"));
     Assert.Null(GetChildTopic(specialized, "ChildTopic4"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: DESCENDENT: DOES NOT FILL RELATIONSHIPS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a <see cref="DescendentTopicViewModel"/>, whose only collection is <see cref="TopicPayload.Children"/>, against a
+  ///   <see cref="StubLazyLoadingTopicRepository"/>, and confirms that no synchronous <see cref="TopicPayload.Relationships"/>
+  ///   fill occurs. The inverse of <see cref="Map_RelationshipOnly_DoesNotFillChildren"/>: The relationship probe's method call
+  ///   (<c>source.Relationships.Contains</c>) was likewise evaluated unconditionally.
+  /// </summary>
+  [Fact]
+  public async Task Map_Descendent_DoesNotFillRelationships() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var typeLookupService       = new CompositeTypeLookupService(new TopicViewModelLookupService(), new FakeViewModelLookupService());
+    var mappingService          = new TopicMappingService(cache, typeLookupService);
+
+    var topic                   = await cache.Load("Root:Web:Web_0");
+
+    Contract.Assume(topic);
+
+    var target                  = await mappingService.MapAsync<DescendentTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(0, stub.GetFetchCount(topic.Id, TopicPayload.Relationships));
 
   }
 
