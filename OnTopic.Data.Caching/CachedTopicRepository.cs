@@ -497,9 +497,12 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///     />, which converges <c>LoadState</c> in a single batched round-trip. Any other shortfall, including a whole-tree
   ///     request, performs one deep <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> against the
   ///     underlying repository, using <paramref name="topic"/> itself as the reference into the topic graph, so the underlying
-  ///     load merges the result directly into it. It then looks up any in-graph associations (<see cref=
-  ///     "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationship or reference targets
-  ///     that just became resident are connected without a further trip.
+  ///     load merges the result directly into it. This deep load is serialized per topic via the same <see cref="_loadGates"/>
+  ///     gate as <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>, since both mutate the same <paramref name=
+  ///     "topic"/>'s collections and must not merge concurrently; a double-checked re-read under the gate lets a waiter skip a
+  ///     now-redundant fetch a prior load already satisfied. It then looks up any in-graph associations outside the gate (<see
+  ///     cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>), so any relationships or references
+  ///     that were just loaded are connected without a further trip.
   ///   </para>
   /// </remarks>
   /// <param name="topic">The already-resident topic to confirm or top up.</param>
@@ -515,21 +518,30 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     var gate                    = payload & ~(TopicPayload.Relationships | TopicPayload.References);
 
     // Return immediately if the resident topic already satisfies the requested scope
-    if (((ITopicLazyLoadable)topic).IsLoaded(gate, depth)) {
+    var rawTopic                = (ITopicLazyLoadable)topic;
+    if (rawTopic.IsLoaded(gate, depth)) {
       return;
     }
 
     // Top up a single-topic shortfall via the loader, which converges LoadState in a single round-trip
     if (depth is 0) {
-      await ((ITopicLazyLoadable)topic).EnsureLoaded(gate).ConfigureAwait(false);
+      await rawTopic.EnsureLoaded(gate).ConfigureAwait(false);
       return;
     }
 
-    // Top up any other shortfall via one deep load, merged into the live graph
-    var loaded                  = await TopicRepository
-      .Load(topic.Id, topic, payload, depth)
-      .ConfigureAwait(false);
+    // Top-up any other shortfall via one deep load, serialized per topic to prevent concurrent same-topic merges
+    var loaded                  = await WithLoadGate(_loadGates, topic.Id, async () => {
 
+      // Second escape hatch: A prior holder may have already merged this (or a deeper) region under the gate
+      if (rawTopic.IsLoaded(gate, depth)) {
+        return null;
+      }
+      return await TopicRepository.Load(topic.Id, topic, payload, depth).ConfigureAwait(false);
+
+    }).ConfigureAwait(false);
+
+    // Resolve associations outside the gate; a waiter that returned at the double-check gate relies on the first holder's
+    // resolution (of the same or a deeper region) or the normal deferred lazy-load, since associations are not gated
     if (loaded is not null) {
 
       // Opportunistically connect any relationship or reference targets that are now resident in the merged region, regardless
