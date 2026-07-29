@@ -101,8 +101,11 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
   ///   insufficient hit is topped up via <see cref="EnsureLoaded(Topic, TopicPayload, Int32)"/> before being returned. On a
   ///   miss, falls through to the underlying repository with <c>@LoadAscendants</c> enabled so the full ancestor chain is
   ///   fetched and merged into the live graph, using <paramref name="referenceTopic"/> if supplied, or the cache root
-  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the resident graph. Missing
-  ///   IDs are recorded to prevent redundant round-trips for topics that do not exist.
+  ///   otherwise, so the underlying load seeds its working index from, and can attach directly to, the referenced graph. This
+  ///   fall-through is serialized per <paramref name="topicId"/> via the same <see cref="_loadGates"/> gate the hit path uses,
+  ///   with a double-checked re-read of both the live index and the Missing ID index under the gate, so concurrent requests for
+  ///   the same uncached ID merge exactly once rather than racing. Missing IDs are recorded to prevent redundant round-trips
+  ///   for topics that do not exist.
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
@@ -120,41 +123,56 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Lookup by topic identifier; top up and return on a hit
+    | Lookup by topic identifier; top up and return on a hit, or skip a known miss, before falling through to a fresh load
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var topic);
-    if (topic is not null) {
-      await EnsureLoaded(topic, payload, depth).ConfigureAwait(false);
-      return topic;
+    var (resident, isAbsent)    = GetPreviousLoad(topicId);
+
+    if (resident is not null) {
+      await EnsureLoaded(resident, payload, depth).ConfigureAwait(false);
+      return resident;
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Skip IDs that are known to be missing to avoid redundant round-trips
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    lock (_syncLock) {
-      if (_absentTopicIdIndex.Contains(topicId)) {
-        return null;
-      }
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | On miss: Load with ancestors and merge result into the live graph
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var loaded                  = await TopicRepository
-      .Load(topicId, referenceTopic?? _cache, payload, depth)
-      .ConfigureAwait(false);
-
-    // If it's missing, populate the appropriate index so we don't try loading it again
-    if (loaded is null) {
-      lock (_syncLock) {
-        _absentTopicIdIndex.Add(topicId);
-      }
+    if (isAbsent) {
       return null;
     }
 
-    // Return the topic from the cache; the TopicIndexRegistry hooks indexed it as it was merged above
-    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var result);
-    return result;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | On miss: Load with ancestors and merge result into the live graph, serialized per ID to prevent concurrent per-topic loads
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return await WithLoadGate(_loadGates, topicId, async () => {
+
+      // Second escape hatch: A prior holder may have loaded this ID, or recorded a miss, while this thread waited
+      var (existingTopic, existingIsAbsent) = GetPreviousLoad(topicId);
+
+      // Return match
+      if (existingTopic is not null) {
+        var gate                = payload & ~(TopicPayload.Relationships | TopicPayload.References);
+        if (((ITopicLazyLoadable)existingTopic).IsLoaded(gate, depth)) {
+          return existingTopic;
+        }
+      }
+
+      // If there was a previous load attempt, return early
+      else if (existingIsAbsent) {
+        return null;
+      }
+
+      // Insufficient? Load with ancestors and merge into whichever instance is already available, if any
+      var freshlyLoaded         = await TopicRepository
+        .Load(topicId, existingTopic?? referenceTopic?? _cache, payload, depth)
+        .ConfigureAwait(false);
+
+      // If it's missing, populate the index so we don't try loading it again
+      if (freshlyLoaded is null) {
+        lock (_syncLock) {
+          _absentTopicIdIndex.Add(topicId);
+        }
+      }
+
+      // Return the loaded topic, if present
+      return freshlyLoaded;
+
+    }).ConfigureAwait(false);
 
   }
 
@@ -550,6 +568,34 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
         await ResolveAssociations(descendant, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
       }
 
+    }
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: GET PREVIOUS LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Looks up <paramref name="topicId"/> in the live index and, on a miss, reports whether it was previously recorded as
+  ///   absent.
+  /// </summary>
+  /// <remarks>
+  ///   Centralizes the lookup mechanics shared by <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>'s pre- and post-gate
+  ///   checks; each caller still decides for itself what a hit, a miss, or a recorded absence means at that point in the flow.
+  /// </remarks>
+  private (Topic? Resident, bool IsAbsent) GetPreviousLoad(int topicId) {
+
+    // Attempt to lookup the item
+    _cache.GetLiveTopicIndex().TryGetValue(topicId, out var resident);
+
+    // If it's found report that
+    if (resident is not null) {
+      return (resident, false);
+    }
+
+    // Otherwise, report of it's already reported as missing
+    lock (_syncLock) {
+      return (null, _absentTopicIdIndex.Contains(topicId));
     }
 
   }
