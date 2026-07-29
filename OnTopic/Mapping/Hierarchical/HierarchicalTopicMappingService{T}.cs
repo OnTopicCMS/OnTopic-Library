@@ -128,10 +128,46 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
   | GET VIEW MODEL (ASYNC)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
+  /// <remarks>
+  ///   Warms the requested <paramref name="tiers"/>-deep region in a single round-trip before recursing into <see cref=
+  ///   "GetHierarchicalTopicViewModelAsync"/>, so there's no need to lazy load children during the recursive descent. Skipped
+  ///   for an unsaved <paramref name="sourceTopic"/> (<see cref="Topic.IsNew"/>) since the topic's <c>Id</c> of <c>-1</c> is
+  ///   treated by <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> as a request for the root of the
+  ///   entire graph, not a <paramref name="sourceTopic"/> itself, so this would fetch the wrong node's descendants.
+  /// </remarks>
   public async Task<T?> GetViewModelAsync(
     Topic? sourceTopic,
     int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Load the requested region
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (sourceTopic is not null && !sourceTopic.IsNew && tiers > 0) {
+      await TopicRepository.Load(sourceTopic.Id, sourceTopic, depth: tiers).ConfigureAwait(false);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Delegate mapping once reference topic is resolved
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return await GetHierarchicalTopicViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
+
+  }
+
+  /*============================================================================================================================
+  | GET HIERARCHICAL VIEW MODEL (ASYNC)
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Recursively maps each <paramref name="sourceTopic"/> and its descendants, up to <paramref name="tiers"/> deep.
+  /// </summary>
+  /// <param name="sourceTopic">The <see cref="Topic"/> to map.</param>
+  /// <param name="tiers">The number of tiers of descendants, relative to <paramref name="sourceTopic"/>, to include.</param>
+  /// <param name="validationDelegate">An optional function to validate whether a topic should be included.</param>
+  private async Task<T?> GetHierarchicalTopicViewModelAsync(
+    Topic? sourceTopic,
+    int tiers,
+    Func<Topic, bool>? validationDelegate
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -145,7 +181,6 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task<T?>> taskQueue    = [];
     List<T> children            = [];
     var viewModel               = (T?)null;
 
@@ -169,19 +204,10 @@ public class HierarchicalTopicMappingService<T>(ITopicRepository topicRepository
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (tiers >= 0 && viewModel.Children.Count == 0) {
       foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible() && validationDelegate(t))) {
-        taskQueue.Add(GetViewModelAsync(topic, tiers, validationDelegate));
-      }
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Process children
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0  && viewModel.Children.Count == 0) {
-      var dtoTask               = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      var dto                   = await dtoTask.ConfigureAwait(false);
-      taskQueue.Remove(dtoTask);
-      if (dto is not null) {
-        children.Add(dto);
+        var dto                 = await GetHierarchicalTopicViewModelAsync(topic, tiers, validationDelegate).ConfigureAwait(false);
+        if (dto is not null) {
+          children.Add(dto);
+        }
       }
     }
 

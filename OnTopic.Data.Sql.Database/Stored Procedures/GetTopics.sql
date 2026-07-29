@@ -7,9 +7,8 @@
 
 CREATE PROCEDURE [dbo].[GetTopics]
 	@TopicID		INT		= -1,
-	@LoadDescendants	BIT		= 1,
+	@Depth		INT		= 0,
 	@LoadAscendants		BIT		= 0,
-	@LoadChildren		BIT		= 0,
 	@IncludeIndexed		BIT		= 1,
 	@IncludeExtended	BIT		= 1,
 	@IncludeRelationships	BIT		= 1,
@@ -47,9 +46,11 @@ CLUSTERED INDEX	IX_C_Topics_TopicID
 	)
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT TOPIC AND DESCENDENTS
+-- SELECT TOPIC AND DESCENDANTS (FULL SUBTREE)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @LoadDescendants = 1
+-- A @Depth of -1 requests the entire subtree, efficiently expressed via a nested-set range join.
+--------------------------------------------------------------------------------------------------------------------------------
+IF @Depth = -1
   BEGIN
     INSERT	#Topics (
 	  TopicID,
@@ -72,35 +73,44 @@ IF @LoadDescendants = 1
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT IMMEDIATE CHILDREN
+-- SELECT TOPIC AND DESCENDANTS (BOUNDED)
 --------------------------------------------------------------------------------------------------------------------------------
--- Loads only the direct children of the requested topic. Mutually exclusive with LoadDescendants, as loading children of a
--- subtree that is already being loaded is redundant.
+-- A @Depth of 1 or more requests a bounded number of tiers below the seed topic, via a recursive CTE over ParentID. The seed is
+-- included at level 0. SortOrder is populated from RangeLeft, guaranteeing parents precede children and preserve sibling order.
 --------------------------------------------------------------------------------------------------------------------------------
-ELSE IF @LoadChildren = 1
+ELSE IF @Depth >= 1
   BEGIN
+    ;WITH DescendantsCTE AS (
+      SELECT	TopicID,
+	RangeLeft,
+	Level		= 0
+      FROM	Topics
+      WHERE	TopicID		= @TopicID
+      UNION ALL
+      SELECT	T1.TopicID,
+	T1.RangeLeft,
+	Level		= DescendantsCTE.Level + 1
+      FROM	Topics		AS T1
+      INNER JOIN		DescendantsCTE
+      ON	T1.ParentID		= DescendantsCTE.TopicID
+      WHERE	DescendantsCTE.Level		< @Depth
+    )
     INSERT	#Topics (
 	  TopicID,
 	  SortOrder
 	)
-    SELECT	T1.TopicID,
-	T1.RangeLeft
-    FROM	Topics		AS T1
-    WHERE	T1.ParentID		= @TopicID
-    ORDER BY	T1.RangeLeft
-    OPTION (
-      OPTIMIZE
-      FOR (	@TopicID		UNKNOWN
-      )
-    )
+    SELECT	TopicID,
+	RangeLeft
+    FROM	DescendantsCTE
+    OPTION (MAXRECURSION 0)
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC AND ANCESTOR CHAIN
 --------------------------------------------------------------------------------------------------------------------------------
 -- Ancestors are rows whose nested-set range contains the requested node's RangeLeft, i.e., the mirror of the descendant query
--- above. This can be combined with LoadDescendants to load both the subtree and its ancestor chain in a single query. The NOT
--- EXISTS guard prevents duplicate inserts when both are requested.
+-- above. This can be combined with @Depth to load both the subtree and its ancestor chain in a single query. The NOT EXISTS
+-- guard prevents duplicate inserts when both are requested.
 --------------------------------------------------------------------------------------------------------------------------------
 IF @LoadAscendants = 1
   BEGIN
@@ -135,7 +145,7 @@ IF @LoadAscendants = 1
 -- Inserts only the requested topic; used by the lazy-load resolver to fill a single topic's extended attributes without
 -- traversing the tree in either direction.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @LoadDescendants = 0 AND @LoadChildren = 0 AND @LoadAscendants = 0
+IF @Depth = 0 AND @LoadAscendants = 0
   BEGIN
     INSERT	#Topics (
 	  TopicID,

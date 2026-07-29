@@ -4,8 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Associations;
+using OnTopic.Repositories;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
+using OnTopic.TestDoubles.LazyLoading;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -371,6 +373,41 @@ public class TopicReferenceCollectionTest {
     baseTopic.References.SetValue("Reference", reference);
 
     Assert.Null(topic.References.GetValue("Reference", null, false, false));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS HIDDEN: DEFERRED BASE TOPIC: RESOLVES REFERENCE BUT SKIPS EXTENDED ATTRIBUTES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reads <see cref="Topic.IsHidden"/> on a topic whose <see cref="Topic.BaseTopic"/> reference is still deferred (its
+  ///   target was never loaded), and confirms the base topic is resolved so that <see cref="Topic.IsHidden"/> is still
+  ///   correctly inherited from the base, while the base topic's own extended attributes are never fetched, since <c>IsHidden
+  ///   </c> is an indexed attribute that rides along for free once the base is loaded.
+  /// </summary>
+  [Fact]
+  public async Task IsHidden_DeferredBaseTopic_ResolvesReferenceButSkipsExtendedAttributes() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(221, "Base", "Page", null, indexedAttributes: new Dictionary<string, string> { ["IsHidden"] = "1" })
+      .AddTopic(222, "Derived", "Page", null)
+      .AddReference(222, "BaseTopic", 221)
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+
+    // "Base" is never loaded, so its reference stays deferred until something resolves it
+    var derived                 = await stub.Load("Root:Derived");
+    var rawDerived              = (ITopicBackingAccessor)derived!;
+
+    Assert.NotEmpty(rawDerived.References.Deferred);
+
+    // Resolving the base is required, or the topic's key attributes wouldn't even be known: this is a genuine load
+    Assert.True(derived!.IsHidden);
+    Assert.Equal(1, stub.GetFetchCount(222, TopicPayload.References));
+
+    // The base topic's own extended attribute blob is never fetched merely to check an indexed attribute
+    Assert.Equal(0, stub.GetFetchCount(221, TopicPayload.ExtendedAttributes));
 
   }
 

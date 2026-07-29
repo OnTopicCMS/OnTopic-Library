@@ -25,7 +25,7 @@ namespace OnTopic.TestDoubles.LazyLoading;
 ///   </para>
 ///   <para>
 ///     Filling happens two ways, matching how a real, e.g., SQL-backed repository distinguishes a batch <c>Load()</c> from an
-///     on-demand fill. <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> and its overloads only connect association
+///     on-demand fill. <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> and its overloads only connect association
 ///     targets already present in the graph being built, leaving the rest deferred; it never issues an additional fetch to
 ///     resolve a missing target. <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>, invoked either explicitly
 ///     or via one of <see cref="Topic"/>'s autoloading getters, goes further: It recursively loads whatever deferred targets it
@@ -128,8 +128,8 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   public override async Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     // Validate unique key
@@ -144,7 +144,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
 
     // If the root is requested, hardcode the topicId at -1
     if (uniqueKey.Equals(_root.Key, StringComparison.OrdinalIgnoreCase)) {
-      return await Load(-1, referenceTopic, isRecursive, payload).ConfigureAwait(false);
+      return await Load(-1, referenceTopic, payload, depth).ConfigureAwait(false);
     }
 
     // If the unique key isn't in the data store, return null
@@ -153,7 +153,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     }
 
     // Otherwise, use the store's topicId to call the base overload
-    return await Load(topicId, referenceTopic, isRecursive, payload).ConfigureAwait(false);
+    return await Load(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
 
   }
 
@@ -163,14 +163,15 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   again: The event fires only when a topic is genuinely built for the first time, mirroring how a real repository only
   ///   fires when something is actually pulled from the persistence store. On a miss against the record store, builds the
   ///   requested topic and its ancestor chain as shallow, sparse topics, and raises the event for the requested topic. Either
-  ///   way, if <paramref name="payload"/> requests anything not yet loaded, it connects whatever it can from the graph already
-  ///   built so far via <see cref="FillRequestedPayload"/>; targets that aren't yet resident stay deferred.
+  ///   way, if <paramref name="payload"/> or <paramref name="depth"/> requests anything not yet loaded, it connects whatever it
+  ///   can from the graph already built so far via <see cref="FillRequestedPayload"/>; targets that aren't yet resident stay
+  ///   deferred.
   /// </remarks>
   public override async Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) {
 
     // Setup
@@ -197,13 +198,13 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
       topic,
       payload,
       resolveDeferredTargets    : false,
-      isRecursive,
+      depth,
       CancellationToken.None
     ).ConfigureAwait(false);
 
     // Fire the TopicLoaded event, if newly built
     if (isNewlyBuilt) {
-      OnTopicLoaded(new(topic, isRecursive));
+      OnTopicLoaded(new(topic, depth));
     }
 
     // Return the requested topic
@@ -236,7 +237,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     topic.LastModified          = version;
 
     // Fire the TopicLoaded event; this is always assumed to be freshly loaded
-    OnTopicLoaded(new(topic, false, version));
+    OnTopicLoaded(new(topic, 0, version));
 
     // Return the topic version
     return topic;
@@ -281,7 +282,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   /// <remarks>
-  ///   The on-demand fill: Unlike <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>, this recursively resolves deferred
+  ///   The on-demand fill: Unlike <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>, this recursively resolves deferred
   ///   relationship and reference targets via the inherited <c>LoadDeferredAssociations</c>, discarding whatever remains
   ///   unresolved as stale, assuming either <see cref="TopicPayload.Relationships"/> or <see cref="TopicPayload.References"/>.
   /// </remarks>
@@ -300,7 +301,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
       topic,
       payload,
       resolveDeferredTargets    : true,
-      isRecursive               : false,
+      depth                     : 0,
       cancellationToken
     ).ConfigureAwait(false);
 
@@ -313,12 +314,12 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   On a plain <c>Load()</c>, connects resident relationship and reference targets unconditionally, regardless of
   ///   <paramref name="payload"/>. Either way, loads the data requested in <paramref name="payload"/>, after filtering out
   ///   any already <see cref="LoadState.Loaded"/> flags, recording a fetch in the spy for each property filled. Children are
-  ///   fetched from the record store one level at a time, unless <paramref name="isRecursive"/> is set, in which case
-  ///   <see cref="Repositories.TopicPayload.Children"/> rides along so every descendant, not merely the immediate children, are
-  ///   filled. A child already present in <see cref="_served"/> (e.g., attached while building an ancestor chain for a deeper
-  ///   <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> call, or eagerly preloaded) is reused rather than rebuilt, to
-  ///   avoid colliding with the existing instance already attached to the graph, but is still offered the requested payload so
-  ///   a resident child converges to the requested scope instead of being silently skipped.
+  ///   fetched from the record store one tier at a time, decrementing <paramref name="depth"/> at each level, until it reaches
+  ///   <c>0</c>; a <paramref name="depth"/> of <c>-1</c> descends the entire subtree. A child already present in <see cref=
+  ///   "_served"/> (e.g., attached while building ancestor for a deeper <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>
+  ///   call, or eagerly preloaded) is reused rather than rebuilt, to avoid colliding with the existing instance already
+  ///   attached to the graph, but is still offered the requested payload so a resident child converges to the requested scope
+  ///   instead of being silently skipped.
   /// </summary>
   /// <param name="topic">The topic whose requested payload should be filled.</param>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
@@ -329,16 +330,18 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   Load()</c>, which only connects targets already present in the graph, via the inherited <see cref=
   ///   "LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>.
   /// </param>
-  /// <param name="isRecursive">
-  ///   Whether a requested <see cref="Repositories.TopicPayload.Children"/> boundary should recurse into the entire subtree,
-  ///   rather than filling only the immediate level.
+  /// <param name="depth">
+  ///   The number of tiers of descendants to fill below <paramref name="topic"/>. <c>-1</c> fills the full subtree; <c>0</c>
+  ///   fills only <paramref name="topic"/> itself, unless <paramref name="payload"/> requests <see cref="TopicPayload.Children"
+  ///   />, in which case it is treated as <c>1</c>, for continuity with <see cref="Repositories.TopicPayload.Children"/>'s
+  ///   single-tier meaning.
   /// </param>
   /// <param name="cancellationToken">An optional token used only when resolving deferred targets.</param>
   private async Task FillRequestedPayload(
     Topic topic,
     TopicPayload payload,
     bool resolveDeferredTargets,
-    bool isRecursive,
+    int depth,
     CancellationToken cancellationToken
   ) {
 
@@ -369,14 +372,14 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     \-------------------------------------------------------------------------------------------------------------------------*/
     var requestedPayload        = payload;
 
+    // TopicPayload.Children continues to request one tier of children when no explicit depth is given
+    if (requestedPayload.HasFlag(TopicPayload.Children) && depth is 0) {
+      depth                      = 1;
+    }
+
     payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
 
-    // An isRecursive request for Children must still descend into an already-Loaded Children collection, since that only means
-    // this topic's immediate children are resident, not that their own descendants have converged to the requested scope;
-    // FilterPayload has no visibility into descendants, so it can't account for this on its own
-    var descendIntoChildren     = isRecursive && requestedPayload.HasFlag(TopicPayload.Children);
-
-    if (payload is TopicPayload.None && !descendIntoChildren) {
+    if (payload is TopicPayload.None && depth is 0) {
       return;
     }
 
@@ -387,9 +390,15 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
     | Children
     >---------------------------------------------------------------------------------------------------------------------------
     | Unlike ExtendedAttributes, Children never needs a record of its own to fill: It is resolved purely by scanning the store
-    | for records whose ParentId matches, including Root, whose top-level records are stored with a null ParentId
+    | for records whose ParentId matches, including Root, whose top-level records are stored with a null ParentId. Depth, not
+    | the Children flag, is the fetch axis: Any remaining depth descends, even if payload never requested Children directly,
+    | mirroring how a production @Depth-bounded fetch loads every tier within its bound regardless of which payload flags
+    | accompany it.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (payload.HasFlag(TopicPayload.Children) || descendIntoChildren) {
+    if (depth is not 0) {
+
+      // Determine if the children are already loaded
+      var childrenAlreadyLoaded = ((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children);
 
       // Loop through each child record and build the topic from the topic store
       foreach (var childRecord in _store.Values.Where(r => (r.ParentId?? _root.Id) == topic.Id).OrderBy(r => r.Id)) {
@@ -399,27 +408,37 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
         var isNewlyBuilt        = !_served.TryGetValue(childRecord.Id, out var child);
         child                   ??= BuildTopic(childRecord, topic);
 
+        // Decrement the remaining depth budget for the child, unless unbounded (-1)
+        var childDepth          = depth is -1 ? -1 : depth - 1;
+
         // Load the rest of the requested payload for the child, mirroring how a Children fetch also pulls in whatever else was
         // requested (e.g., ExtendedAttributes, VersionHistory) for the whole scope, while relationships and references always
-        // ride along for free. When isRecursive, Children rides along too, so the fill descends into the entire subtree rather
-        // than stopping at one level. This uses requestedPayload, not the filtered payload, since a property that is already
-        // Loaded on a topic doesn't imply it's also already loaded on the child. This applies whether the child was just built
-        // or already served, so an existing child (e.g., eagerly preloaded) still converges to the requested scope
-        var childPayload        = (isRecursive? requestedPayload : requestedPayload & ~TopicPayload.Children)
+        // ride along for free. Children rides along only while depth budget remains for the child, so the fill descends exactly
+        // as many tiers as requested, rather than stopping at one level or recursing unconditionally. This usesrequestedPayload
+        // not the filtered payload, since a property that is already Loaded on a topic doesn't imply it's also already loaded
+        // on the child. This applies whether the child was just built or already served, so an existing child (e.g., eagerly
+        // preloaded) still converges to the requested scope.
+        var childPayload        = (childDepth is not 0 ? requestedPayload : requestedPayload & ~TopicPayload.Children)
           | TopicPayload.Relationships
           | TopicPayload.References;
-        await FillRequestedPayload(child, childPayload, resolveDeferredTargets: false, isRecursive, cancellationToken).ConfigureAwait(false);
+        await FillRequestedPayload(
+          child,
+          childPayload,
+          resolveDeferredTargets: false,
+          childDepth,
+          cancellationToken
+        ).ConfigureAwait(false);
 
         // Fire the TopicLoaded event, if newly built; an already served child was already announced when it was first built
         if (isNewlyBuilt) {
-          OnTopicLoaded(new(child, isRecursive));
+          OnTopicLoaded(new(child, childDepth));
         }
 
       }
 
       // Mark the children as fetched and loaded, if not already done; an already-Loaded Children collection, revisited only to
-      // descend for an isRecursive request, needs no re-fetch or re-stamp of its own
-      if (payload.HasFlag(TopicPayload.Children)) {
+      // descend for a deeper request, needs no re-fetch or re-stamp of its own
+      if (!childrenAlreadyLoaded) {
         RecordFetch(topic.Id, TopicPayload.Children);
         ((ITopicLazyLoadable)topic).SetLoadState(TopicPayload.Children, LoadState.Loaded);
       }

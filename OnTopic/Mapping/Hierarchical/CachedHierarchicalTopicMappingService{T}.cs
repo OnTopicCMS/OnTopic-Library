@@ -53,7 +53,7 @@ public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappin
   | GET HIERARCHICAL ROOT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
+  public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Root:Web") =>
     _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
 
   /*============================================================================================================================

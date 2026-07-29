@@ -503,10 +503,10 @@ public class SqlTopicRepositoryTest {
   ///   than downgraded by the ancestor crawl.
   /// </summary>
   /// <remarks>
-  ///   <c>@LoadAscendants</c> is passed for every <see cref="SqlTopicRepository.Load(Int32, Topic, Boolean, TopicPayload)"/>
-  ///   call outside of the root, regardless of <c>isRecursive</c> or payload, so the ancestor crawl runs on essentially every
-  ///   load of anything beneath an already loaded ancestor. Without this guard, an already complete ancestor would be
-  ///   perpetually reset to <see cref="LoadState.NotLoaded"/>.
+  ///   <c>@LoadAscendants</c> is passed for every <see cref="SqlTopicRepository.Load(Int32, Topic, TopicPayload, Int32)"/>
+  ///   call outside of the root, regardless of <c>depth</c> or payload, so the ancestor crawl runs on essentially every load
+  ///   of anything beneath an already loaded ancestor. Without this guard, an already complete ancestor would be perpetually
+  ///   reset to <see cref="LoadState.NotLoaded"/>.
   /// </remarks>
   [Fact]
   public async Task LoadTopicGraph_PreExistingAncestor_PreservesLoaded() {
@@ -1017,8 +1017,8 @@ public class SqlTopicRepositoryTest {
   | TEST: LOAD TOPIC GRAPH: WITH ONE LEVEL OF CHILDREN: CONVERGES SEED, LEAVES GRANDCHILDREN NOT LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a result set shaped like a non-recursive <c>
-  ///   @LoadChildren</c> call, with the seed's immediate child present, but that child's own children are not, and confirms the
+  ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with a result set shaped like a <c>@Depth: 1</c> call, with
+  ///   the seed's immediate child present, but that child's own children are not, and confirms the
   ///   seed converges to <see cref="LoadState.Loaded"/> while the child (which received no rows of its own) remains <see
   ///   cref="LoadState.NotLoaded"/>.
   /// </summary>

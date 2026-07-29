@@ -83,19 +83,19 @@ public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
   public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) =>
-    TopicRepository.Load(topicId, referenceTopic, isRecursive, payload);
+    TopicRepository.Load(topicId, referenceTopic, payload, depth);
 
   /// <inheritdoc />
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) =>
-    TopicRepository.Load(uniqueKey, referenceTopic, isRecursive, payload);
+    TopicRepository.Load(uniqueKey, referenceTopic, payload, depth);
 
   /// <inheritdoc />
   public override Task<Topic?> Load(Topic topic, DateTime version)

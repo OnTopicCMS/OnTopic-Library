@@ -27,8 +27,8 @@ public static class TopicRepositoryExtensions {
   ///   of the box routes, such as <c>controller</c> and <c>action</c>, the <see cref="ServiceCollectionExtensions"/> defines
   ///   additional topic-specific routes, such as <c>rootTopic</c> and <c>path</c>. These can be combined to identify a topic
   ///   in the repository. By using the extension method, callers needn't assemble their own <see cref="Topic.GetUniqueKey"/>
-  ///   prior to calling <see cref="ITopicRepository.Load(String?, Boolean)"/>, assuming they are using the standard routing
-  ///   variables.
+  ///   prior to calling <see cref="ITopicRepository.Load(String, Topic?, TopicPayload, Int32)"/>, assuming they are using the
+  ///   standard routing variables.
   /// </remarks>
   public static Topic? Load(
     this ITopicRepository topicRepository,

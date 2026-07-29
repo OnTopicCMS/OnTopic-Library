@@ -39,16 +39,16 @@ public class DummyTopicRepository : ObservableTopicRepository {
   public override Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) => Task.FromResult<Topic?>(null);
 
   /// <inheritdoc />
   public override Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   ) => Task.FromResult<Topic?>(null);
 
   /// <inheritdoc />

@@ -377,7 +377,7 @@ public class LazyLoadingTopicRepositoryTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Loads a topic and confirms it carries a non-null <see cref="ITopicLazyLoadable.Loader"/>, stamped through the public
-  ///   <see cref="ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/>/event path.
+  ///   <see cref="ITopicRepository.Load(String, Topic?, TopicPayload, Int32)"/>/event path.
   /// </summary>
   [Fact]
   public async Task Load_ServedNode_IsStamped() {
@@ -721,8 +721,8 @@ public class LazyLoadingTopicRepositoryTest {
     var reloaded                 = await _cachedTopicRepository.Load(
       "Root:Web:Web_0:Web_0_0",
       topic,
-      false,
-      TopicPayload.ExtendedAttributes
+      TopicPayload.ExtendedAttributes,
+      0
     );
 
     Assert.Same(topic, reloaded);
@@ -747,12 +747,12 @@ public class LazyLoadingTopicRepositoryTest {
     var cache                   = new CachedTopicRepository(stub);
     var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
 
-    var seed                    = await cache.Load("Root:Web:Web_0", null, true, TopicPayload.All);
+    var seed                    = await cache.Load("Root:Web:Web_0", null, TopicPayload.All, -1);
 
-    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, isRecursive: true));
+    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, depth: -1));
 
     var fetchesAfterFirstLoad   = stub.TotalFetches;
-    var reloaded                = await cache.Load("Root:Web:Web_0", null, true, TopicPayload.All);
+    var reloaded                = await cache.Load("Root:Web:Web_0", null, TopicPayload.All, -1);
 
     Assert.Same(seed, reloaded);
     Assert.Equal(fetchesAfterFirstLoad, stub.TotalFetches);
@@ -777,15 +777,15 @@ public class LazyLoadingTopicRepositoryTest {
     var deep                    = await _cachedTopicRepository.Load(
       "Root:Web:Web_0:Web_0_0",
       seed,
-      true,
-      TopicPayload.Children | TopicPayload.ExtendedAttributes
+      TopicPayload.Children | TopicPayload.ExtendedAttributes,
+      -1
     );
 
-    var ancestor                 = deep!.Parent;
+    var ancestor                = deep!.Parent;
 
     Assert.Same(seed, deep);
     Assert.True(
-      ((ITopicLazyLoadable)deep).IsLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes, isRecursive: true)
+      ((ITopicLazyLoadable)deep).IsLoaded(TopicPayload.Children | TopicPayload.ExtendedAttributes, depth: -1)
     );
     Assert.Equal("Extended body content for Web_0_0.", deep.Attributes.GetValue("Body"));
     Assert.False(((ITopicLazyLoadable)ancestor!).IsLoaded(TopicPayload.Children));
@@ -812,7 +812,7 @@ public class LazyLoadingTopicRepositoryTest {
     Assert.NotEmpty(rawTopic.Relationships.Deferred);
     Assert.NotEmpty(rawTopic.References.Deferred);
 
-    var web                     = await cache.Load("Root:Web", null, true, TopicPayload.Children);
+    var web                     = await cache.Load("Root:Web", null, TopicPayload.Children, -1);
     var web00                   = web!.Children["Web_0"].Children["Web_0_0"];
     var related                 = topic!.Relationships.GetValues("Related");
 
@@ -843,14 +843,14 @@ public class LazyLoadingTopicRepositoryTest {
     var cache                   = new CachedTopicRepository(stub);
     var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
 
-    var seed                    = await cache.Load(-1, null, false, TopicPayload.None);
+    var seed                    = await cache.Load(-1, null, TopicPayload.None, 0);
 
     Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(TopicPayload.Children));
 
-    var loaded                  = await cache.Load(-1, seed, true, TopicPayload.All);
+    var loaded                  = await cache.Load(-1, seed, TopicPayload.All, -1);
 
     Assert.Same(seed, loaded);
-    Assert.True(((ITopicLazyLoadable)loaded!).IsLoaded(gate, isRecursive: true));
+    Assert.True(((ITopicLazyLoadable)loaded!).IsLoaded(gate, depth: -1));
 
     var web                     = loaded.Children["Web"];
 
@@ -863,17 +863,124 @@ public class LazyLoadingTopicRepositoryTest {
       web.Children["Web_0"].Children["Web_0_0"].Attributes.GetValue("Body")
     );
 
-    var fetchesAfterLoad         = stub.TotalFetches;
-    var reloaded                 = await cache.Load(-1, null, true, TopicPayload.All);
+    var fetchesAfterLoad        = stub.TotalFetches;
+    var reloaded                = await cache.Load(-1, null, TopicPayload.All, -1);
 
     Assert.Same(loaded, reloaded);
     Assert.Equal(fetchesAfterLoad, stub.TotalFetches);
 
   }
 
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO THEN UNBOUNDED: TOPS UP REMAINING TIERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a subtree to <c>depth: 2</c>, confirms the gate agrees only through <c>depth: 1</c> (i.e., the deepest fetched
+  ///   tier's own children are not yet resolved), then tops the same seed up to <c>depth: -1</c> and confirms the whole subtree
+  ///   converges against the same instance, proving a partial-depth region reissues one deep load and merges without a
+  ///   perpetual-reload loop.
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwoThenUnbounded_TopsUpRemainingTiers() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var gate                    = TopicPayload.All & ~(TopicPayload.Relationships | TopicPayload.References);
+
+    var seed                    = await cache.Load("Root:Web", null, TopicPayload.All, 2);
+
+    Assert.True(((ITopicLazyLoadable)seed!).IsLoaded(gate, depth: 1));
+    Assert.False(((ITopicLazyLoadable)seed).IsLoaded(gate, depth: 2));
+
+    var deep                    = await cache.Load("Root:Web", seed, TopicPayload.All, -1);
+
+    Assert.Same(seed, deep);
+    Assert.True(((ITopicLazyLoadable)deep!).IsLoaded(gate, depth: -1));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO THEN DEPTH ONE: IS CLEAN HIT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a subtree to <c>depth: 2</c>, then re-requests it at the shallower <c>depth: 1</c>, and confirms the second call
+  ///   is a converged hit: The same instance is returned and no further fetches are recorded, proving the gate treats a deeper
+  ///   resident region as sufficient for a shallower request rather than re-fetching.
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwoThenDepthOne_IsCleanHit() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+
+    var seed                    = await cache.Load("Root:Web", null, TopicPayload.All, 2);
+    var fetchesAfterFirstLoad   = stub.TotalFetches;
+
+    var reloaded                = await cache.Load("Root:Web", seed, TopicPayload.All, 1);
+
+    Assert.Same(seed, reloaded);
+    Assert.Equal(fetchesAfterFirstLoad, stub.TotalFetches);
+
+  }
+
   #endregion
 
-  #region M: Deferred Dirty-State Propagation
+  #region M: Depth-Limited Loading
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO: LOADS TWO TIERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a topic with <c>depth: 2</c> and confirms exactly two tiers of descendants are materialized: Both the seed's and
+  ///   its child's <see cref="Topic.Children"/> are <see cref="LoadState.Loaded"/>, while the grandchild's own children remain
+  ///   <see cref="LoadState.NotLoaded"/>, with no fetch recorded against it. Proves depth is modeled by decrementing per level,
+  ///   not merely riding along as part of indefinite recursion (as would be expected with -1).
+  /// </summary>
+  [Fact]
+  public async Task Load_DepthTwo_LoadsTwoTiers() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web", depth: 2);
+    var web0                    = topic!.Children["Web_0"];
+    var web00                   = web0.Children["Web_0_0"];
+
+    Assert.True(((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children));
+    Assert.True(((ITopicLazyLoadable)web0).IsLoaded(TopicPayload.Children));
+    Assert.False(((ITopicLazyLoadable)web00).IsLoaded(TopicPayload.Children));
+    Assert.Equal(0, _loadingTopicRepository.GetFetchCount(web00.Id, TopicPayload.Children));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: DEPTH TWO: IS LOADED AGREES AT DEPTH ONE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Loads a topic with <c>depth: 2</c> and confirms <see cref="ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> agrees
+  ///   with exactly what was materialized.
+  /// </summary>
+  /// <remarks>
+  ///   Since <see cref="TopicPayload.Children"/> is both the traversal axis and, here, the tested payload, the two are off by
+  ///   one: A <c>depth: 2</c> load promotes tiers 0 and 1 to <see cref="LoadState.Loaded"/> but leaves tier 2 <see cref=
+  ///   "LoadState.NotLoaded"/>, since only its rows, and not its own children, were fetched. <see cref=
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload, Int32)"/> checks that every visited tier, including the deepest one, itself
+  ///   satisfies the requested payload, so asking for <c>Children</c> at <c>depth: 2</c> also demands the tier-2's own
+  ///   <c>Children</c> be resolved, which a <c>depth: 2</c> load never promotes. The query that agrees with a <c>depth: 2</c>
+  ///   load is therefore <c>depth: 1</c>, not <c>depth: 2</c>.
+  /// </remarks>
+  [Fact]
+  public async Task Load_DepthTwo_IsLoadedAgreesAtDepthOne() {
+
+    var topic                   = await _loadingTopicRepository.Load("Root:Web", depth: 2);
+    var rawTopic                = (ITopicLazyLoadable)topic!;
+
+    Assert.True(rawTopic.IsLoaded(TopicPayload.Children, depth: 1));
+    Assert.False(rawTopic.IsLoaded(TopicPayload.Children, depth: 2));
+    Assert.False(rawTopic.IsLoaded(TopicPayload.Children, depth: -1));
+
+  }
+
+  #endregion
+
+  #region N: Deferred Dirty-State Propagation
 
   /*============================================================================================================================
   | TEST: ENSURE LOADED: DIRTY DEFERRED TARGET: RESOLVES AS DIRTY

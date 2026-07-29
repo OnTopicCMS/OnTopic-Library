@@ -22,7 +22,7 @@ public interface ITopicRepository {
 
   /// <summary>
   ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref=
-  ///   "ITopicRepository.Load(String, Topic?, Boolean, TopicPayload)"/> operation, or one of its overloads.
+  ///   "ITopicRepository.Load(String, Topic?, TopicPayload, Int32)"/> operation, or one of its overloads.
   /// </summary>
   /// <remarks>
   ///  <para>
@@ -90,59 +90,62 @@ public interface ITopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <summary>
-  ///   Loads the root <see cref="Topic"/>, using the same lazy defaults as <see cref=
-  ///   "Load(Int32, Topic?, Boolean, TopicPayload)"/>.
+  ///   Loads the root <see cref="Topic"/>, using the same lazy defaults as <see cref="Load(Int32, Topic?, TopicPayload, Int32)"
+  ///   />.
   /// </summary>
   /// <returns>A topic object.</returns>
   public Task<Topic?> Load() => Load(-1);
 
   /// <summary>
-  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"/>.
+  ///   Loads a <see cref="Topic"/> (and, optionally, some or all of its descendants) based on the specified <paramref name=
+  ///   "topicId"/>.
   /// </summary>
   /// <param name="topicId">The topic identifier.</param>
   /// <param name="referenceTopic">
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
-  /// <param name="isRecursive">
-  ///   Whether to load the full descendant subtree rooted at the seed topic. When <see langword="false"/>, only the seed topic
-  ///   itself is loaded. Ancestor topics are always loaded when needed to place the seed topic within the graph.
-  /// </param>
   /// <param name="payload">Specifies which data to include with each topic.</param>
+  /// <param name="depth">
+  ///   The number of tiers of descendants to load below the seed topic. <c>-1</c> loads the full subtree; <c>0</c> loads only
+  ///   the seed topic; <c>N</c> loads <c>N</c> tiers of descendants. Ancestor topics are always loaded when needed to place
+  ///   the seed topic within the graph.
+  /// </param>
   /// <returns>A topic object.</returns>
   Task<Topic?> Load(
     int topicId,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   );
 
   /// <summary>
-  ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on a specified <paramref name="uniqueKey"/>.
+  ///   Loads a <see cref="Topic"/> (and, optionally, some or all of its descendants) based on a specified <paramref name=
+  ///   "uniqueKey"/>.
   /// </summary>
   /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
   /// <param name="referenceTopic">
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
   /// </param>
-  /// <param name="isRecursive">
-  ///   Whether to load the full descendant subtree. See <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/> for details.
-  /// </param>
   /// <param name="payload">
-  ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
+  ///   Specifies which data to include with each topic. See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>
   ///   for details.
+  /// </param>
+  /// <param name="depth">
+  ///   The number of tiers of descendants to load. See <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> for details.
   /// </param>
   /// <returns>A topic object.</returns>
   Task<Topic?> Load(
     string uniqueKey,
     Topic? referenceTopic       = null,
-    bool isRecursive            = false,
-    TopicPayload payload        = TopicPayload.None
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
   );
 
-  /// <inheritdoc cref="Load(Int32, Topic?, Boolean, TopicPayload)"/>
+  /// <inheritdoc cref="Load(String, Topic?, TopicPayload, Int32)"/>
   [ExcludeFromCodeCoverage]
-  [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
+  [Obsolete("This overload has been removed in preference for Load(string, Topic, TopicPayload, int).")]
   Task<Topic?> Load(string? uniqueKey, bool isRecursive);
 
   /// <summary>
@@ -195,7 +198,7 @@ public interface ITopicRepository {
   ///   Unlike <see cref="Load(Int32, DateTime)"/> or <see cref="Load(Topic, DateTime)"/>, this mutates <paramref name="topic"/>
   ///   in place, immediately followed by <see cref="ITopicRepository.Save(Topic, Boolean)"/>. It is not appropriate for
   ///   previewing a historical version; use <see cref="Load(Topic, DateTime)"/> for that, as it only load the version, without
-  ///   incporating it into any in-memory topic graph or committing the previous version to the persistence store.
+  ///   incorporating it into any in-memory topic graph or committing the previous version to the persistence store.
   /// </remarks>
   /// <param name="topic">The current version of the <see cref="Topic"/> to rollback.</param>
   /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
@@ -263,7 +266,7 @@ public interface ITopicRepository {
   ///   exception="T:System.ArgumentNullException">
   ///   topic is not null
   /// </requires>
-  Task Move(Topic topic, Topic  target, Topic? sibling = null);
+  Task Move(Topic topic, Topic target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
