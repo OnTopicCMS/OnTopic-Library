@@ -326,6 +326,48 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: ATTRIBUTE DICTIONARY: NOT LOADED: RETURNS EXTENDED ATTRIBUTES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a sparse topic whose extended attributes are still <see cref=
+  ///   "LoadState.NotLoaded"/> to a view model with an <see cref="AttributeDictionary"/> constructor. Confirms the extended
+  ///   attribute is present in the mapped result, i.e., that <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+  ///   autoloads the blob rather than silently omitting it by enumerating only resident attributes.
+  /// </summary>
+  [Fact]
+  public async Task Map_AttributeDictionary_NotLoaded_ReturnsExtendedAttributes() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(
+        221,
+        "Sparse",
+        "Page",
+        null,
+        indexedAttributes       : new Dictionary<string, string> {
+          ["Title"]             = "Value",
+          ["ShortTitle"]        = "Short Title",
+          ["Subtitle"]          = "Subtitle",
+          ["MetaTitle"]         = "Meta Title",
+          ["MetaDescription"]   = "Meta Description"
+        },
+        extendedAttributes      : new Dictionary<string, string> {
+          ["MappedProperty"]    = "Mapped Value"
+        }
+      )
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+    var topic                   = await stub.Load("Root:Sparse");
+
+    Contract.Assume(topic);
+
+    var target                  = await _mappingService.MapAsync<AttributeDictionaryConstructorTopicViewModel>(topic);
+
+    Assert.Equal("Mapped Value", target?.MappedProperty);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: CONSTRUCTOR: RETURNS NEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
