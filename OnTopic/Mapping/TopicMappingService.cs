@@ -423,7 +423,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     async Task<IList?> getList(Type targetType) {
 
-      var sourceList            = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
+      var sourceList            = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix, false).ConfigureAwait(false);
       var targetList            = InitializeCollection(targetType);
 
       if (targetList is null) {
@@ -496,7 +496,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     else {
       var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
       if (value is null && propertyAccessor.IsList) {
-        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix).ConfigureAwait(false);
+        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
       }
       else if (value != null && propertyAccessor.CanWrite) {
         propertyAccessor.SetValue(target, value, true);
@@ -549,7 +549,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle by type, attribute
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
+    if (!mapAssociationsOnly && TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
       value                     = compatibleValue;
     }
     else if (itemMetadata.IsConvertible) {
@@ -729,13 +729,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
   private async Task SetCollectionValueAsync(
     Topic                       source,
     object                      target,
     AssociationTypes            associations,
     MemberAccessor              memberAccessor,
     MappedTopicCache            cache,
-    string?                     attributePrefix
+    string?                     attributePrefix,
+    bool                        mapAssociationsOnly
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -756,7 +758,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish source collection to store topics to be mapped
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList              = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix).ConfigureAwait(false);
+    var sourceList              = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate that source collection was identified
@@ -788,11 +790,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
   private async Task<IList<Topic>> GetSourceCollectionAsync(
     Topic                       source,
     AssociationTypes            associations,
     ItemMetadata                itemMetadata,
-    string?                     attributePrefix
+    string?                     attributePrefix,
+    bool                        mapAssociationsOnly
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -850,9 +854,11 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     //The following allows a target collection to be mapped to an IList<Topic> source collection. This is valuable for custom,
     //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific collection type.
-    //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
-    //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
-    if (listSource.Count == 0)  {
+    //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of AttributeDescriptors
+    //from the current ContentTypeDescriptor, as well as all of its ascendants. On an expansion pass, this fallback runs only
+    //when MappedCollections is among the claimed associations, avoiding a redundant reflective source-property read (and its
+    //re-enumeration) for passes that don't claim it.
+    if (listSource.Count == 0 && (!mapAssociationsOnly || associations.HasFlag(AssociationTypes.MappedCollections))) {
       var sourceProperty        = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
       if (
         sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
@@ -870,7 +876,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle Metadata relationship
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
+    if (!mapAssociationsOnly && listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
       var metadataKey           = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
       var metadataParent        = await _topicRepository.Load(metadataKey, source, TopicPayload.Children).ConfigureAwait(false);
       if (metadataParent is not null) {
@@ -896,6 +902,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       var targetAssociations    = AssociationMap.Mappings[collection];
       var preconditionsMet      =
         listSource.Count == 0 &&
+        (!mapAssociationsOnly || targetAssociations is not AssociationTypes.None) &&
         (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
         (collectionType is CollectionType.Children || collection is not CollectionType.Children) &&
         (targetAssociations is  AssociationTypes.None || associations.HasFlag(targetAssociations)) &&
