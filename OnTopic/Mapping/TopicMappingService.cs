@@ -872,7 +872,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
       var metadataKey           = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-      var metadataParent        = await _topicRepository.Load(metadataKey, source).ConfigureAwait(false);
+      var metadataParent        = await _topicRepository.Load(metadataKey, source, TopicPayload.Children).ConfigureAwait(false);
       if (metadataParent is not null) {
         listSource              = [.. metadataParent.Children];
       }
