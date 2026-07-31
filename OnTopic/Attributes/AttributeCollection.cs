@@ -21,12 +21,12 @@ namespace OnTopic.Attributes;
 ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
 ///   the <see cref="AttributeCollection"/> class.
 ///   <para>
-///     When <see cref="LoadState"/> is <see cref="LoadState.NotLoaded"/>, iterating the collection (e.g., via <c>foreach</c>,
-///     LINQ operators, or <see cref="AsAttributeDictionary(Boolean)"/>) returns only the indexed attributes already present and
-///     does not fetch the deferred extended attribute blob. Only a keyed lookup autoloads on a miss. Callers that require a
-///     complete set of attributes must first await <see cref="ITopicLazyLoadable.EnsureLoaded"/> with <see cref=
-///     "TopicPayload.ExtendedAttributes"/>. Otherwise, a decision that depends on seeing every attribute may act on a partial
-///     view without any error being raised.
+///     When <see cref="LoadState"/> is <see cref="LoadState.NotLoaded"/>, iterating the collection directly (e.g., via <c>
+///     foreach</c> or LINQ operators) returns only the indexed attributes already present and does not fetch the deferred
+///     extended attribute blob; only a keyed lookup or <see cref="AsAttributeDictionary(Boolean)"/> autoloads. Callers that
+///     enumerate the collection directly and require a complete set of attributes must first await <see cref=
+///     "ITopicLazyLoadable.EnsureLoaded"/> with <see cref="TopicPayload.ExtendedAttributes"/>. Otherwise, a decision that
+///     depends on seeing every attribute may act on a partial view without any error being raised.
 ///   </para>
 /// </remarks>
 public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
@@ -217,8 +217,9 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   /// <remarks>
   ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on
   ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref=
-  ///   "Topic.LastModified"/>. Like any enumeration over the collection, this reads only the resident attributes; see the <see
-  ///   cref="AttributeCollection"/> remarks for the completeness contract on a <see cref="LoadState.NotLoaded"/> topic.
+  ///   "Topic.LastModified"/>. Unlike a direct enumeration of the collection, this autoloads the extended attribute blob for
+  ///   each source (the current collection, and, if <paramref name="inheritFromBase"/> is <c>true</c>, each <see cref=
+  ///   "Topic.BaseTopic"/> in the chain) that is <see cref="LoadState.NotLoaded"/>, so the result is always complete.
   /// </remarks>
   /// <param name="inheritFromBase">
   ///   Determines if attributes from the <see cref="Topic.BaseTopic"/> should be included. Defaults to <c>false</c>.
@@ -229,6 +230,10 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
     var attributes              = new AttributeDictionary();
     var count                   = 0;
     while (sourceAttributes is  not null && ++count < 5) {
+      if (sourceAttributes.LoadState is LoadState.NotLoaded) {
+        var associatedTopic     = (ITopicLazyLoadable)sourceAttributes.AssociatedTopic;
+        associatedTopic.EnsureLoaded(TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
+      }
       foreach (var attribute in sourceAttributes) {
         if (count is 1 || !attributes.ContainsKey(attribute.Key)) {
           attributes.TryAdd(attribute.Key, attribute.Value);
