@@ -41,6 +41,8 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(DescendentSpecializedTopicViewModel));
     Add(typeof(DescendentTopicViewModel));
     Add(typeof(DisableMappingTopicViewModel));
+    Add(typeof(ExpansionParentTopicViewModel));
+    Add(typeof(ExpansionSharedTopicViewModel));
     Add(typeof(FallbackViewModel));
     Add(typeof(FilteredTopicViewModel));
     Add(typeof(FlattenChildrenTopicViewModel));
