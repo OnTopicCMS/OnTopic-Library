@@ -1364,6 +1364,78 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: EXPANSION PASS: DOES NOT DUPLICATE NESTED TOPICS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps an <see cref="ExpansionParentTopicViewModel"/>, which encounters the same source topic twice with disjoint
+  ///   associations, confirming that the second (expansion) pass does not re-append the ungated nested-topics collection that
+  ///   the initial pass already populated.
+  /// </summary>
+  /// <remarks>
+  ///   Reliability rests on the eager repository mapping the two collections sequentially, so the encounters are strictly
+  ///   ordered: The first builds and fills the cached view model, and the second, requesting a disjoint association, hits the
+  ///   cache and runs an expansion pass (rather than a second, concurrent initial pass). <see cref=
+  ///   "ExpansionSharedTopicViewModel.Categories"/> is then filled once by the ungated nested-topics probe on the initial pass
+  ///   and skipped on the expansion pass, so the count is <c>2</c> whichever collection reflection maps first.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ExpansionPass_DoesNotDuplicateNestedTopics() {
+
+    var parent                  = new Topic("Parent", "ExpansionParent", null, 700);
+    var shared                  = new Topic("Shared", "ExpansionShared", parent, 701);
+    var categories              = new Topic("Categories", "List", shared, 702);
+    _                           = new Topic("Category1", "KeyOnly", categories, 703);
+    _                           = new Topic("Category2", "KeyOnly", categories, 704);
+
+    parent.Relationships.SetValue("Related", shared);
+
+    var target                  = await _mappingService.MapAsync<ExpansionParentTopicViewModel>(parent);
+    var mappedShared            = target?.Children.FirstOrDefault();
+
+    //Assert.Same confirms both collections resolved to the same cached instance, so the second reach was a cache hit and, given
+    //the disjoint associations, ran an expansion pass
+    Assert.NotNull(mappedShared);
+    Assert.Same(mappedShared, target?.Related.FirstOrDefault());
+    Assert.Equal(2, mappedShared.Categories.Count);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: EXPANSION PASS: DOES NOT REMAP COMPATIBLE PROPERTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps an <see cref="ExpansionParentTopicViewModel"/>, which encounters the same source topic twice with disjoint
+  ///   associations, and confirms that the second (expansion) pass does not reassign the compatible <see cref=
+  ///   "ExpansionSharedTopicViewModel.Key"/> property that the initial pass already mapped.
+  /// </summary>
+  /// <remarks>
+  ///   Reliability rests on the eager repository mapping the two collections sequentially, so the encounters are strictly
+  ///   ordered: The first builds and fills the cached view model, and the second, requesting a disjoint association, hits the
+  ///   cache and runs an expansion pass (rather than a second, concurrent initial pass). The compatible <see cref=
+  ///   "ExpansionSharedTopicViewModel.Key"/> is then assigned once on the initial pass and skipped on the expansion pass, so
+  ///   <see cref="ExpansionSharedTopicViewModel.KeyMapCount"/> is <c>1</c> whichever collection reflection maps first.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ExpansionPass_DoesNotRemapCompatibleProperty() {
+
+    var parent                  = new Topic("Parent", "ExpansionParent", null, 710);
+    var shared                  = new Topic("Shared", "ExpansionShared", parent, 711);
+
+    parent.Relationships.SetValue("Related", shared);
+
+    var target                  = await _mappingService.MapAsync<ExpansionParentTopicViewModel>(parent);
+    var mappedShared            = target?.Children.FirstOrDefault();
+
+    //Assert.Same confirms both collections resolved to the same cached instance, so the second reach was a cache hit and, given
+    //the disjoint associations, ran an expansion pass rather than passing vacuously
+    Assert.NotNull(mappedShared);
+    Assert.Same(mappedShared, target?.Related.FirstOrDefault());
+    Assert.Equal("Shared", mappedShared.Key);
+    Assert.Equal(1, mappedShared.KeyMapCount);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
