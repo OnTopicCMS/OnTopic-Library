@@ -761,8 +761,6 @@ public class TopicMappingServiceTest {
 
     var difference              = cacheEntry.GetMissingAssociations(associations);
 
-    cacheEntry.AddMissingAssociations(difference);
-
     Assert.True(difference.HasFlag(AssociationTypes.References));
     Assert.False(difference.HasFlag(AssociationTypes.Children));
     Assert.False(difference.HasFlag(AssociationTypes.Parents));
@@ -770,24 +768,32 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
-  | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: SETS UNION
+  | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: RETURNS NEWLY ADDED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
-  ///   its <see cref="MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> correctly extends the missing
-  ///   associations.
+  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that two overlapping calls to its <see cref=
+  ///   "MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> return disjoint flags (each reporting only what it
+  ///   newly added) whose union is the missing set, and that the recorded <see cref="MappedTopicCacheEntry.Associations"/>
+  ///   reflect both calls.
   /// </summary>
+  /// <remarks>
+  ///   Each association may only be added once. Even though both requests include <see cref="AssociationTypes.Parents"/>,
+  ///   only the first call adds it; the second call sees it as already recorded and returns only the remainder. This is what
+  ///   ensures two concurrent passes map disjoint associations rather than both mapping the overlap.
+  /// </remarks>
   [Fact]
-  public void MappedTopicCacheEntry_AddMissingAssociations_SetsUnion() {
+  public void MappedTopicCacheEntry_AddMissingAssociations_ReturnsNewlyAdded() {
 
     var cacheEntry              = new MappedTopicCacheEntry() {
       Associations              = AssociationTypes.Children
     };
-    var associations            = AssociationTypes.Children | AssociationTypes.Parents;
 
-    cacheEntry.AddMissingAssociations(associations);
+    var firstResult             = cacheEntry.AddMissingAssociations(AssociationTypes.Children | AssociationTypes.Parents);
+    var secondResult            = cacheEntry.AddMissingAssociations(AssociationTypes.Parents | AssociationTypes.References);
 
-    Assert.Equal(AssociationTypes.Children | AssociationTypes.Parents, cacheEntry.Associations);
+    Assert.Equal(AssociationTypes.Parents, firstResult);
+    Assert.Equal(AssociationTypes.References, secondResult);
+    Assert.Equal(AssociationTypes.Children | AssociationTypes.Parents | AssociationTypes.References, cacheEntry.Associations);
 
   }
 
