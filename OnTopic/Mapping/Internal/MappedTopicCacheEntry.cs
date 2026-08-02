@@ -15,13 +15,19 @@ namespace OnTopic.Mapping.Internal;
 /// </summary>
 /// <remarks>
 ///   In addition to the actual <see cref="MappedTopic"/>, this also includes a <see cref="Associations"/> property for
-///   tracking what associations were mapped to the <see cref="MappedTopic"/>. This allows the <see cref="TopicMappingService"
-///   /> to be update the cached object with any missing associations, which can be identified using the <see cref=
-///   "GetMissingAssociations(AssociationTypes)"/> method. In turn, the cache can then be updated to reflect those new
-///   associations by using <see cref="AddMissingAssociations(AssociationTypes)"/>. This ensures that even if a topic has
-///   already been mapped, its scope can be expanded without duplicating effort.
+///   tracking what associations were mapped to the <see cref="MappedTopic"/>. This allows the <see cref="TopicMappingService"/>
+///   to expand the cached object with any missing associations. A caller may peek at the missing associations using the
+///   <see cref="GetMissingAssociations(AssociationTypes)"/> method, or record them and receive the newly added subset in a
+///   single atomic operation using <see cref="AddMissingAssociations(AssociationTypes)"/>, so that concurrent passes don't both
+///   end up mapping the same associations. This ensures that even if a topic has already been mapped, its scope can be expanded
+///   without duplicating effort.
 /// </remarks>
 internal sealed class MappedTopicCacheEntry {
+
+  /*============================================================================================================================
+  | PRIVATE VARIABLES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private readonly              object                          _lock                           = new();
 
   /*============================================================================================================================
   | PROPERTY: MAPPED TOPIC
@@ -61,15 +67,33 @@ internal sealed class MappedTopicCacheEntry {
   ///   Given a target <paramref name="associations"/>, identifies any associations not covered by <see cref="Associations"/>
   ///   and returns them as a new <see cref="AssociationTypes"/> instance.
   /// </summary>
+  /// <remarks>
+  ///   This is intended as a quick hint to decide e.g., whether an expansion is needed at all, without any side effects. It
+  ///   does not record the result; a caller that intends to map the missing associations should instead use <see cref=
+  ///   "AddMissingAssociations(AssociationTypes)"/>, so that concurrent passes cannot both map the same associations.
+  /// </remarks>
   internal AssociationTypes GetMissingAssociations(AssociationTypes associations) => Associations ^ (associations | Associations);
 
   /*============================================================================================================================
   | METHOD: ADD MISSING ASSOCIATIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a target <paramref name="associations"/>, adds any missing <see cref="AssociationTypes"/> to the <see cref=
-  ///   "Associations"/> property.
+  ///   Given a target <paramref name="associations"/>, adds any not already covered by <see cref="Associations"/> and returns
+  ///   the subset that this call just added.
   /// </summary>
-  internal void AddMissingAssociations(AssociationTypes associations) => Associations = associations | Associations;
+  /// <remarks>
+  ///   This is the mutating counterpart to <see cref="GetMissingAssociations(AssociationTypes)"/>: It adds any associations
+  ///   that aren't already covered, and reports which ones were added back to the caller so the caller knows which associations
+  ///   to process. Because the delta is calculated and saved  under a single lock, two concurrent passes over the same cached
+  ///   instance receive disjoint results, ensuring each association is mapped by exactly one caller. A caller that receives
+  ///   <see cref="AssociationTypes.None"/> has nothing left to map and should return the cached instance.
+  /// </remarks>
+  internal AssociationTypes AddMissingAssociations(AssociationTypes associations) {
+    lock (_lock) {
+      var missing               = GetMissingAssociations(associations);
+      Associations              = associations | Associations;
+      return missing;
+    }
+  }
 
 } //Class
