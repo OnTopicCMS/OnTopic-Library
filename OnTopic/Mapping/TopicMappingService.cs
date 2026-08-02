@@ -326,15 +326,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Handle cached objects
     >-------------------------------------------------------------------------------------------------------------------------
     | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
-    | If it doesn't, determine the missing associations and request to have those mapped.
+    | Otherwise, add the missing associations to the cache entry and map only the subset this pass added, so that a concurrent
+    | pass doesn't remap the same associations.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (cache.TryGetValue(topic.Id, target.GetType(), out var cacheEntry)) {
-      associations              = cacheEntry.GetMissingAssociations(associations);
+      associations              = cacheEntry.AddMissingAssociations(associations);
       target                    = cacheEntry.MappedTopic;
       if (associations is AssociationTypes.None) {
         return cacheEntry.MappedTopic;
       }
-      cacheEntry.AddMissingAssociations(associations);
     }
     else if (!topic.IsNew) {
       cache.Register(
