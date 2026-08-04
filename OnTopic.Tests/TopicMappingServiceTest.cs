@@ -873,6 +873,27 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP PATH: CONTAINS: DETECTS PAIRS ON PATH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a two-frame <see cref="MapPath"/> and confirms that <see cref="MapPath.Contains(Int32, Type)"/> recognizes a
+  ///   topic and view model type pair anywhere on the path, whether at the current frame or an ancestor, while rejecting pairs
+  ///   that are not on the path, including one whose topic identifier matches but whose type does not.
+  /// </summary>
+  [Fact]
+  public void MapPath_Contains_DetectsPairsOnPath() {
+
+    var root                    = new MapPath(1, typeof(EmptyViewModel), null);
+    var child                   = new MapPath(2, typeof(KeyOnlyTopicViewModel), root);
+
+    Assert.True(child.Contains(2, typeof(KeyOnlyTopicViewModel)));
+    Assert.True(child.Contains(1, typeof(EmptyViewModel)));
+    Assert.False(child.Contains(3, typeof(EmptyViewModel)));
+    Assert.False(child.Contains(1, typeof(KeyOnlyTopicViewModel)));
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: RELATIONSHIPS: RETURNS MAPPED MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
