@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.Tests.TestDoubles;
 using Xunit;
@@ -18,6 +19,11 @@ namespace OnTopic.Tests;
 /// </summary>
 [ExcludeFromCodeCoverage]
 public class ITopicLazyLoadableTest {
+
+  /*============================================================================================================================
+  | PROPERTY: CANCELLATION TOKEN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  private static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
 
   /*============================================================================================================================
   | TEST: IS LOADED: NON-RECURSIVE: IGNORES UNLOADED CHILDREN
@@ -161,7 +167,39 @@ public class ITopicLazyLoadableTest {
   [Fact]
   public void EnsureLoaded_NullResolver_DoesNotThrow() {
     var topic                   = new Topic("Topic", "Page");
-    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.All);
+    ((ITopicLazyLoadable)topic).EnsureLoaded(TopicPayload.All, CancellationToken);
+  }
+
+  /*============================================================================================================================
+  | TEST: ENSURE LOADED: CLEARED RELATIONSHIP: DOES NOT RESURRECT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Registers a <see cref="Topic.Relationships"/> deferred entry, then calls <see cref=
+  ///   "TopicRelationshipMultiMap.Clear(String)"/> on that key. Confirms that a subsequent <see cref=
+  ///   "ITopicLazyLoadable.EnsureLoaded(TopicPayload,System.Threading.CancellationToken)"/> for <see cref=
+  ///   "TopicPayload.Relationships"/> never reaches the <see cref="ITopicLazyLoader"/>; since <see cref=
+  ///   "TopicRelationshipMultiMap.Clear(String)"/> already purged the deferred entry, there is nothing left to resolve, and the
+  ///   previously cleared relationship isn't resurrected.
+  /// </summary>
+  [Fact]
+  public async Task EnsureLoaded_ClearedRelationship_DoesNotResurrect() {
+
+    var topic                   = new Topic("Test", "Page", null, 1);
+    var rawLoadable             = (ITopicLazyLoadable)topic;
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    var loader                  = new TrackingTopicLazyLoader();
+
+    // Set up and clear via the backing accessor so this doesn't itself trigger a load once LoadState flips to NotLoaded; the
+    // loader is stamped afterward, ahead of the explicit EnsureLoaded() call below
+    rawTopic.Relationships.Deferred.SetValue("Related", 999);
+    rawTopic.Relationships.Clear("Related");
+    rawLoadable.Loader          = loader;
+
+    await rawLoadable.EnsureLoaded(TopicPayload.Relationships, CancellationToken);
+
+    Assert.False(loader.WasCalled);
+    Assert.Empty(rawTopic.Relationships.GetValues("Related"));
+
   }
 
   /*============================================================================================================================
