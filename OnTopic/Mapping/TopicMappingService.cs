@@ -69,12 +69,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
   private async Task<object?>   MapAsync(
     Topic?                      topic,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -99,7 +101,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Perform mapping
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return await MapAsync(topic, viewModelType, associations, cache, attributePrefix).ConfigureAwait(false);
+    return await MapAsync(topic, viewModelType, associations, cache, attributePrefix, mapPath).ConfigureAwait(false);
 
   }
 
@@ -128,13 +130,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
   private async Task<object?>   MapAsync(
     Topic?                      topic,
     Type                        type,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -251,7 +255,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
       if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
-        propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false));
+        propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false, mapPath));
       }
     }
 
@@ -292,6 +296,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <remarks>
   ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
   ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with <see cref
@@ -305,7 +310,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     object                      target,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -351,7 +357,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(target.GetType());
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
-      taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null));
+      taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null, mapPath));
     }
     await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
 
@@ -374,12 +380,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="parameter">Information related to the current parameter.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetParameterAsync(
     Topic source,
     AssociationTypes associations,
     ParameterMetadata parameter,
     MappedTopicCache cache,
-    string? attributePrefix     = null
+    string? attributePrefix     = null,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -403,14 +411,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
         parameter.Type,
         associations,
         cache,
-        configuration.AttributePrefix + attributePrefix
+        configuration.AttributePrefix + attributePrefix,
+        mapPath
       ).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var value                   = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false).ConfigureAwait(false);
+    var value                   = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false, mapPath).ConfigureAwait(false);
 
     if (value is null && parameter.IsList) {
       return await getList(parameter.Type).ConfigureAwait(false);
@@ -430,7 +439,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
         return null;
       }
 
-      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache, mapPath).ConfigureAwait(false);
 
       return targetList;
 
@@ -452,6 +461,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
   /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task SetPropertyAsync(
     Topic                       source,
     object                      target,
@@ -459,7 +469,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     MemberAccessor              propertyAccessor,
     MappedTopicCache            cache,
     string?                     attributePrefix                 = null,
-    bool                        mapAssociationsOnly             = false
+    bool                        mapAssociationsOnly             = false,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -485,7 +496,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
           targetProperty,
           associations,
           cache,
-          configuration.AttributePrefix + attributePrefix
+          configuration.AttributePrefix + attributePrefix,
+          mapPath
         ).ConfigureAwait(false);
       }
     }
@@ -494,9 +506,9 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
     else {
-      var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
+      var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly, mapPath).ConfigureAwait(false);
       if (value is null && propertyAccessor.IsList) {
-        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
+        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly, mapPath).ConfigureAwait(false);
       }
       else if (value != null && propertyAccessor.CanWrite) {
         propertyAccessor.SetValue(target, value, true);
@@ -523,6 +535,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
   /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetValue(
     Topic source,
     Type targetType,
@@ -530,7 +543,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     ItemMetadata itemMetadata,
     MappedTopicCache cache,
     string? attributePrefix     = "",
-    bool mapAssociationsOnly    = false
+    bool mapAssociationsOnly    = false,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -562,7 +576,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     }
     else if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
       if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
-        value                   = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache, mapPath).ConfigureAwait(false);
       }
     }
     else if (configuration.MapToParent) {
@@ -571,7 +585,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     else if (itemMetadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
       var topicReference        = await getTopicReference().ConfigureAwait(false);
       if (topicReference is not null) {
-        value                   = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache, mapPath).ConfigureAwait(false);
       }
     }
 
@@ -730,6 +744,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
   /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task SetCollectionValueAsync(
     Topic                       source,
     object                      target,
@@ -737,7 +752,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     MemberAccessor              memberAccessor,
     MappedTopicCache            cache,
     string?                     attributePrefix,
-    bool                        mapAssociationsOnly
+    bool                        mapAssociationsOnly,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -768,7 +784,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map the topics from the source collection, and add them to the target collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache).ConfigureAwait(false);
+    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache, mapPath).ConfigureAwait(false);
 
   }
 
@@ -922,11 +938,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task PopulateTargetCollectionAsync(
     IList<Topic>                sourceList,
     IList                       targetList,
     ItemMetadata                itemMetadata,
-    MappedTopicCache            cache
+    MappedTopicCache            cache,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -981,7 +999,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       if (!typeof(Topic).IsAssignableFrom(listType)) {
         var mappingType         = GetValidatedMappingType(configuration.MapAs, listType)?? GetValidatedMappingType(childTopic, listType);
         if (mappingType is not  null) {
-          taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache));
+          taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache, mapPath: mapPath));
         }
       }
       else {
@@ -1055,11 +1073,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="targetType">The <see cref="Type"/> expected for the mapped <paramref name="source"/>.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the item's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetTopicReferenceAsync(
     Topic source,
     Type targetType,
     ItemMetadata itemMetadata,
-    MappedTopicCache cache
+    MappedTopicCache cache,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -1083,7 +1103,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     var mappingType             = GetValidatedMappingType(configuration.MapAs, targetType)?? GetValidatedMappingType(source, targetType);
 
     if (mappingType is not null) {
-      topicDto                  = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
+      topicDto                  = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache, mapPath: mapPath).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
