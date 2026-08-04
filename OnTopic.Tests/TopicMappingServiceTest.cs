@@ -1273,6 +1273,42 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CHILDREN: STAGGERED COMPLETION: PRESERVES SOURCE ORDER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> with children whose mapping tasks are forced to complete in reverse of
+  ///   source order, and tests that the mapped collection nonetheless preserves source order.
+  /// </summary>
+  /// <remarks>
+  ///   Each child is stamped with its own <see cref="StaggeredTopicLazyLoader"/> and left <see cref="LoadState.NotLoaded"/>
+  ///   for <see cref="TopicPayload.Children"/>, so mapping it genuinely awaits a delay before completing. The first child gets
+  ///   the longest delay and the last gets none, so completion order is the reverse of source order; if collection population
+  ///   added results in completion order rather than source order, this would come back reversed.
+  /// </remarks>
+  [Fact]
+  public async Task Map_Children_StaggeredCompletion_PreservesSourceOrder() {
+
+    var topic                   = new Topic("Test", "Descendent");
+    var childKeys               = new[] { "ChildTopic1", "ChildTopic2", "ChildTopic3", "ChildTopic4" };
+
+    for (var index = 0; index < childKeys.Length; index++) {
+      var child                 = new Topic(childKeys[index], "Descendent", topic);
+      var delay                 = TimeSpan.FromMilliseconds((childKeys.Length - index) * 25);
+      ((ITopicLazyLoadable)child).Loader = new StaggeredTopicLazyLoader(delay);
+      ((ITopicBackingAccessor)child).Children.LoadState = LoadState.NotLoaded;
+    }
+
+    var target                  = await _mappingService.MapAsync<DescendentTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(childKeys.Length, target.Children.Count);
+    for (var index = 0; index < childKeys.Length; index++) {
+      Assert.Equal(childKeys[index], target.Children[index].Key);
+    }
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: WITH DISABLED: SKIPS DISABLED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
