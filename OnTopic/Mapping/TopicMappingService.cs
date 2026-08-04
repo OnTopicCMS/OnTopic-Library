@@ -825,12 +825,29 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Ensure target list is created
+    | Establish per-entry lock
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Two concurrent passes expanding the same cached target with disjoint associations (see e.g., the cache-hit path in
+    | MapAsync) can populate the same member's target list from different sources, so its creation and population are
+    | synchronized on the shared cache entry. A target that isn't cached (i.e., a new topic) is never shared across passes, so
+    | its own instance serves as a sufficient and uncontended lock.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var targetList              = (IList?)memberAccessor.GetValue(target);
-    if (targetList is null) {
-      targetList                = InitializeCollection(memberAccessor.Type);
-      memberAccessor.SetValue(target, targetList);
+    cache.TryGetValue(source.Id, target.GetType(), out var cacheEntry);
+    var collectionLock          = (object?)cacheEntry?? target;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure target list is created
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Locked so two concurrent passes can't both observe a null list and instantiate competing instances, which would orphan the
+    | items added to whichever collection is overwritten. The lock is synchronous and never held across an await.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    IList? targetList;
+    lock (collectionLock) {
+      targetList                = (IList?)memberAccessor.GetValue(target);
+      if (targetList is null) {
+        targetList              = InitializeCollection(memberAccessor.Type);
+        memberAccessor.SetValue(target, targetList);
+      }
     }
 
     Contract.Assume(
