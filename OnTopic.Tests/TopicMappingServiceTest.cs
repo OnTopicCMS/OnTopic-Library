@@ -468,6 +468,35 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CONSTRUCTOR (RECORD): RETURNS NEW MODEL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a positional <c>record</c> whose constructor accepts a
+  ///   non-cyclic topic reference, confirming that the reference is resolved and the record is constructed as expected.
+  /// </summary>
+  /// <remarks>
+  ///   As this is a mapping of a positional <c>record</c> that carries constructor parameters, it also confirms that the
+  ///   primary constructor is correctly selected and its parameters mapped.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConstructorRecord_ReturnsNewModel() {
+
+    var topic                   = new Topic("Parent", "CircularConstructor", null, 1);
+    var child                   = new Topic("Child", "CircularConstructor", null, 2);
+
+    topic.References.SetValue("Self", child);
+
+    var target                  = await _mappingService.MapAsync<CircularConstructorTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal("Parent", target.Key);
+    Assert.NotNull(target.Self);
+    Assert.Equal("Child", target.Self.Key);
+    Assert.Null(target.Self.Self);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
