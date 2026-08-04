@@ -150,16 +150,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle cached objects
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Included entries that are still initializing, so a circular constructor reference (i.e., the same topic and type are
+    | already under construction higher up the current chain) can be distinguished from concurrent siblings (i.e., two
+    | independent branches mapping the same topic and type at once). The former throws; the latter awaits for the first one to
+    | finish construction and then uses the same cached view model.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var target                  = (object?)null;
-
-    if (cache.TryGetValue(topic.Id, type, out var cacheEntry)) {
-      target                    = cacheEntry.MappedTopic;
-      if (cacheEntry.GetMissingAssociations(associations) == AssociationTypes.None) {
-        return target;
-      }
-      //Call MapAsync() with target object to map missing attributes
-      return await MapAsync(topic, target, associations, cache, attributePrefix).ConfigureAwait(false);
+    if (cache.TryGetValue(topic.Id, type, out var cacheEntry, includeInitializing: true)) {
+      return await resolveCachedEntry(cacheEntry, mapPath).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -175,15 +173,27 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Pre-cache entry
     >-------------------------------------------------------------------------------------------------------------------------
-    | In property mapping, we deal with circular references by returning a cached reference. That isn't practical with
-    | circular references in constructor mapping. To help avoid these, we register a pre-cache entry as IsInitializing, but
-    | without a mapped object; the TopicMappingCache is expected to throw an exception if an attempt to map that topic to that
-    | type occurs again prior to the constructor mapping being completed.
+    | In property mapping, we deal with circular references by returning a cached reference. That isn't practical with circular
+    | references in constructor mapping. To help avoid these, we register a pre-cache entry as IsInitializing, but without a
+    | mapped object. If a concurrent sibling wins the race to preregister the same topic and view model type, we defer to its
+    | result rather than constructing a duplicate. If we're constructing the same topic and view model type as we're already in
+    | the middle of constructing further up the MapPath chain, however, that's a true circular construction reference, handled
+    | via the local resolveCachedEntry() function.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    cache.Preregister(topic.Id, type);
+    var (entry, isNew)          = cache.Preregister(topic.Id, type);
 
-
+    if (!isNew) {
+      return await resolveCachedEntry(entry, mapPath).ConfigureAwait(false);
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish mapping path chain
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Now that this pass owns constructing a new view model, establish the initial topic and view model type in the MapPath, so
+    | any nested mapping that arrives back to the same pair while it is still initializing is recognized as a true circular
+    | constructor reference rather than harmless concurrency among independent siblings.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    mapPath                     = new(topic.Id, type, mapPath);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct and register the target
@@ -289,6 +299,41 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     return target;
 
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve cached entry
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Returns a cached instance, expanding it with any missing associations when needed. If the entry is still initializing, it
+    | is either a true circular constructor reference on the current path (in which we throw an exception) or it's concurrent
+    | mapping of two independent siblings of the same topic and view model (in which we simply await its completion, then
+    | return the shared instance as a normal cache hit).
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    async Task<object?> resolveCachedEntry(MappedTopicCacheEntry pendingEntry, MapPath? path) {
+
+      // Distinguish a constructor cycle from sibling concurrency for an entry that is still being constructed
+      if (pendingEntry.IsInitializing) {
+        if (path?.Contains(topic.Id, type) == true) {
+          throw new TopicMappingException(
+            $"A circular reference was detected while constructing the '{type.Name}' instance for topic '{topic.Id}'. Circular " +
+            $"references must be mapped as properties, not as constructor parameters, so that a cached instance can be returned."
+          );
+        }
+        // Not on the current path: a concurrent sibling owns construction, so await its completion before resolving. A mutual
+        // constructor cycle split across two concurrently mapped branches is the one case this cannot distinguish and would
+        // deadlock; such cycles are unsupported, and still throw when reached from a single branch via the path check above.
+        await pendingEntry.Completion.ConfigureAwait(false);
+      }
+
+      // Return the cached instance as-is when it already covers the requested associations
+      var cachedTarget          = pendingEntry.MappedTopic;
+      if (pendingEntry.GetMissingAssociations(associations) is AssociationTypes.None) {
+        return cachedTarget;
+      }
+
+      // Otherwise expand the cached instance, mapping only the missing associations
+      return await MapAsync(topic, cachedTarget, associations, cache, attributePrefix, path).ConfigureAwait(false);
+
+    }
+
   }
 
   /*============================================================================================================================
@@ -353,7 +398,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle cached objects
-    >-------------------------------------------------------------------------------------------------------------------------
+    >---------------------------------------------------------------------------------------------------------------------------
     | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
     | Otherwise, add the missing associations to the cache entry and map only the subset this pass added, so that a concurrent
     | pass doesn't remap the same associations.

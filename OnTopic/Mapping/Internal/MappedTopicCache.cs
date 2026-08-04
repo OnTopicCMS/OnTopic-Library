@@ -90,34 +90,31 @@ internal sealed class MappedTopicCache {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Attempts to preregister a <see cref="MappedTopicCacheEntry"/> for a <see cref="Topic"/> that is in the process of
-  ///   being mapped to <paramref name="type"/>.
+  ///   being mapped to <paramref name="type"/>, returning the entry along with whether this call created it.
   /// </summary>
+  /// <remarks>
+  ///   The returned <c>IsNew</c> flag is <c>true</c> when this call established the entry, and therefore owns its construction;
+  ///   it is <c>false</c> when a concurrent pass had already preregistered the same <paramref name="topicId"/> and <paramref
+  ///   name="type"/>, in which case the returned entry is that concurrent pass's entry.
+  /// </remarks>
   /// <param name="topicId">The <see cref="Topic.Id"/> associated with the cache entry.</param>
   /// <param name="type">The <see cref="Type"/> that the <see cref="Topic"/> is being mapped to.</param>
-  internal MappedTopicCacheEntry Preregister(int topicId, Type type) {
+  internal (MappedTopicCacheEntry Entry, bool IsNew) Preregister(int topicId, Type type) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct cache entry
     \-------------------------------------------------------------------------------------------------------------------------*/
     var cacheKey                = GetCacheKey(topicId, type);
-    var cacheEntry              = new MappedTopicCacheEntry() {
-      IsInitializing            = true
-    };
+    var cacheEntry              = new MappedTopicCacheEntry();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Get or add entry
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topicId > 0 && !type.Equals(typeof(object))) {
       var existingCacheEntry    = _cache.GetOrAdd(cacheKey, cacheEntry);
-      if (existingCacheEntry != cacheEntry) {
-        throw new TopicMappingException(
-          $"An attempt has been made to map '{topicId}' to a {type.Name} has resulted in a circular reference during the " +
-          $"construction of the {type.Name} instance. This is not allowed. Circular must be be mapped as properties, not " +
-          $"as constructor parameters, so that cached entries can be returned."
-        );
-      }
+      return (existingCacheEntry, existingCacheEntry == cacheEntry);
     }
-    return cacheEntry;
+    return (cacheEntry, true);
 
   }
 
