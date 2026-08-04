@@ -292,7 +292,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       }
     }
 
-    await Task.WhenAll([.. propertyQueue]).ConfigureAwait(false);
+    await Task.WhenAll(propertyQueue).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return target
@@ -427,7 +427,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
       taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null, mapPath));
     }
-    await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
+    await Task.WhenAll(taskQueue).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return result
