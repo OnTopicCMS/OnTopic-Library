@@ -1101,11 +1101,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process mapping tasks
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Awaited as a batch, then added in the order the tasks were queued in, rather than completion order; this keeps sibling
+    | order deterministic regardless of which child mappings genuinely await
     \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0) {
-      var dtoTask               = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      var dto                   = await dtoTask.ConfigureAwait(false);
-      taskQueue.Remove(dtoTask);
+    var dtos                    = await Task.WhenAll(taskQueue).ConfigureAwait(false);
+
+    foreach (var dto in dtos) {
       if (dto is not null) {
         addToList(dto);
       }
