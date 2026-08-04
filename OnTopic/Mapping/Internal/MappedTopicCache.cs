@@ -32,9 +32,23 @@ internal sealed class MappedTopicCache {
   /// <param name="topicId">The <see cref="Topic.Id"/> associated with the cache entry.</param>
   /// <param name="type">The <see cref="Type"/> that the <see cref="Topic"/> has been mapped to.</param>
   /// <param name="cacheEntry">The <see cref="MappedTopicCacheEntry"/> containing the cached instance and metadata.</param>
+  /// <param name="includeInitializing">
+  ///   Determines whether an entry that is still <see cref="MappedTopicCacheEntry.IsInitializing"/> should be returned. Left
+  ///   <c>false</c> by default, so callers continue to see only fully constructed entries; set <c>true</c> only by callers who
+  ///   are prepared to distinguish a constructor cycle from sibling concurrency and to await an in-progress entry's completion.
+  /// </param>
   /// <returns>Returns <c>true</c> if a cached entry could be found, and otherwise <c>false</c>.</returns>
-  internal bool TryGetValue(int topicId, Type type, [NotNullWhen(true)] out MappedTopicCacheEntry? cacheEntry) {
-    if (_cache.TryGetValue(GetCacheKey(topicId, type), out var existingCacheEntry) && !existingCacheEntry.IsInitializing) {
+  internal bool TryGetValue(
+    int                         topicId,
+    Type                        type,
+    [NotNullWhen(true)]
+    out MappedTopicCacheEntry?  cacheEntry,
+    bool                        includeInitializing             = false
+  ) {
+    if (
+      _cache.TryGetValue(GetCacheKey(topicId, type), out var existingCacheEntry) &&
+      (includeInitializing || !existingCacheEntry.IsInitializing)
+    ) {
       cacheEntry                = existingCacheEntry;
       return true;
     };
