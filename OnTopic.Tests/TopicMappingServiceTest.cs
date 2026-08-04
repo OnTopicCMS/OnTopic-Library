@@ -798,6 +798,81 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: IS INITIALIZING: REFLECTS COMPLETION STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a set of <see cref="MappedTopicCacheEntry"/> instances and confirms that <see cref=
+  ///   "MappedTopicCacheEntry.IsInitializing"/> is derived from the completion state: A fresh entry is initializing, a
+  ///   completed entry is not, and a faulted entry remains initializing so an awaiting pass observes the fault instead of a
+  ///   null instance.
+  /// </summary>
+  [Fact]
+  public void MappedTopicCacheEntry_IsInitializing_ReflectsCompletionState() {
+
+    var completed               = new MappedTopicCacheEntry();
+    var faulted                 = new MappedTopicCacheEntry();
+
+    Assert.True(completed.IsInitializing);
+    Assert.True(faulted.IsInitializing);
+
+    completed.Complete(new EmptyViewModel(), AssociationTypes.None);
+    faulted.Fault(new InvalidOperationException());
+
+    Assert.False(completed.IsInitializing);
+    Assert.True(faulted.IsInitializing);
+
+    // Observe the faulted task so its exception isn't surfaced as unobserved
+    Assert.NotNull(faulted.Completion.Exception);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: COMPLETION: SETTLES ON COMPLETE OR FAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a pair of <see cref="MappedTopicCacheEntry"/> instances and confirms that <see cref=
+  ///   "MappedTopicCacheEntry.Completion"/> resolves when the entry is completed, and throws the recorded exception when the
+  ///   entry is faulted, so that a second pass awaiting the entry is always released rather than left hanging.
+  /// </summary>
+  [Fact]
+  public async Task MappedTopicCacheEntry_Completion_SettlesOnCompleteOrFault() {
+
+    var completed               = new MappedTopicCacheEntry();
+    var faulted                 = new MappedTopicCacheEntry();
+
+    completed.Complete(new EmptyViewModel(), AssociationTypes.None);
+    faulted.Fault(new InvalidOperationException("Construction failed."));
+
+    Assert.True(completed.Completion.IsCompletedSuccessfully);
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await faulted.Completion.ConfigureAwait(false));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: COMPLETE: RETAINS FIRST RESULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and confirms that only the first <see cref=
+  ///   "MappedTopicCacheEntry.Complete(Object, AssociationTypes)"/> call takes effect: A later duplicate registration is
+  ///   ignored, keeping both the <see cref="MappedTopicCacheEntry.MappedTopic"/> and its <see cref=
+  ///   "MappedTopicCacheEntry.Associations"/> stable.
+  /// </summary>
+  [Fact]
+  public void MappedTopicCacheEntry_Complete_RetainsFirstResult() {
+
+    var entry                   = new MappedTopicCacheEntry();
+    var first                   = new EmptyViewModel();
+    var second                  = new EmptyViewModel();
+
+    entry.Complete(first, AssociationTypes.Children);
+    entry.Complete(second, AssociationTypes.Parents);
+
+    Assert.Same(first, entry.MappedTopic);
+    Assert.Equal(AssociationTypes.Children, entry.Associations);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: RELATIONSHIPS: RETURNS MAPPED MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
