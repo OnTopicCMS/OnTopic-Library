@@ -497,6 +497,27 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CONSTRUCTOR (RECORD): THROWS EXCEPTION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a positional <c>record</c> whose constructor references the
+  ///   topic being mapped, and confirms that this circular constructor reference is detected and a <see cref=
+  ///   "TopicMappingException"/> is thrown.
+  /// </summary>
+  [Fact]
+  public async Task Map_ConstructorRecord_ThrowsException() {
+
+    var topic                   = new Topic("Topic", "CircularConstructor", null, 1);
+
+    topic.References.SetValue("Self", topic);
+
+    await Assert.ThrowsAsync<TopicMappingException>(async () =>
+      await _mappingService.MapAsync<CircularConstructorTopicViewModel>(topic).ConfigureAwait(false)
+    );
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
