@@ -37,6 +37,8 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(AscendentTopicViewModel));
     Add(typeof(CircularConstructorTopicViewModel));
     Add(typeof(CircularTopicViewModel));
+    Add(typeof(ConcurrentExpansionRootTopicViewModel));
+    Add(typeof(ConcurrentExpansionSharedTopicViewModel));
     Add(typeof(ConcurrentReferenceTopicViewModel));
     Add(typeof(ConstructedTopicViewModel));
     Add(typeof(DefaultValueTopicViewModel));
