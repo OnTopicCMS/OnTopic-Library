@@ -77,6 +77,16 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
   public void ReleaseEnsureLoadedGate() => _ensureLoadedGate?.SetResult();
 
   /*============================================================================================================================
+  | METHOD: FAULT ENSURE LOADED GATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Faults a suspended <see cref="EnsureLoaded"/> call "armed" via <see cref="ArmEnsureLoadedGate"/> with the supplied
+  ///   <paramref name="exception"/>, so a test can simulate a lazy load that throws while a second pass awaits the same entry.
+  /// </summary>
+  /// <param name="exception">The exception to surface from the suspended <see cref="EnsureLoaded"/> call.</param>
+  public void FaultEnsureLoadedGate(Exception exception) => _ensureLoadedGate?.SetException(exception);
+
+  /*============================================================================================================================
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
