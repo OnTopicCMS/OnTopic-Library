@@ -609,6 +609,57 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SHARED COLLECTION: POPULATES DETERMINISTICALLY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Stress test confirming that two concurrent passes expanding the same shared model with disjoint associations, each
+  ///   populating the same collection from a different source, deterministically produce the union of both sources without
+  ///   corrupting the shared list.
+  /// </summary>
+  /// <remarks>
+  ///   A parent references one shared topic twice, with disjoint <see cref="IncludeAttribute"/> sets (<see cref=
+  ///   "AssociationTypes.Relationships"/> and <see cref="AssociationTypes.IncomingRelationships"/>). Whichever pass wins
+  ///   construction populates the shared <see cref="ConcurrentExpansionSharedTopicViewModel.Related"/> list from one source;
+  ///   the other expands it from the other, so the result should always be the union of both, regardless of which pass wins. A
+  ///   <see cref="RendezvousTopicLazyLoader"/> holds the two passes at the collection warm-up until both arrive, then releases
+  ///   them together, so their list mutations genuinely overlap. Repeated many times to give the race a chance to manifest;
+  ///   without the shared-list mutation guard, the concurrent adds corrupt the list, dropping items or throwing.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSharedCollection_PopulatesDeterministically() {
+
+    const int                   relationshipCount               = 12;
+    const int                   incomingCount                   = 12;
+    const int                   repetitions                     = 100;
+
+    var loader                  = new RendezvousTopicLazyLoader(participantCount: 2);
+
+    for (var repetition = 0; repetition < repetitions; repetition++) {
+
+      var root                  = BuildConcurrentExpansionGraph(loader, relationshipCount, incomingCount, out var shared);
+
+      // Guard against an incomplete setup: Both sources must be loaded before mapping; read them via the backing accessor so
+      // the precondition check doesn't itself trip the loader's rendezvous and hang
+      var backing               = (ITopicBackingAccessor)shared;
+      Assert.Equal(relationshipCount, backing.Relationships.GetValues("Related").Count);
+      Assert.Equal(incomingCount, shared.IncomingRelationships.GetValues("Related").Count);
+
+      var result                = await _mappingService.MapAsync<ConcurrentExpansionRootTopicViewModel>(root);
+
+      Assert.NotNull(result);
+      Assert.NotNull(result.RelationshipsView);
+      Assert.NotNull(result.IncomingView);
+
+      // Both references resolve to the one shared instance, whose list holds the union of both sources
+      Assert.Same(result.RelationshipsView, result.IncomingView);
+      Assert.NotNull(result.RelationshipsView.Related);
+      Assert.Equal(relationshipCount + incomingCount, result.RelationshipsView.Related.Count);
+
+    }
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -776,7 +827,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref=
-  ///   "MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
+  ///   "MappedTopicCache.TryGetValue"/>.
   /// </summary>
   [Fact]
   public void MappedTopicCache_TryGetValue_ReturnsEntry() {
@@ -799,7 +850,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that it is not returned via <see cref="MappedTopicCache
-  ///   .TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/> if the <see cref="Type"/> doesn't match.
+  ///   .TryGetValue"/> if the <see cref="Type"/> doesn't match.
   /// </summary>
   [Fact]
   public void MappedTopicCache_TryGetValue_ReturnsNull() {
@@ -2108,6 +2159,74 @@ public class TopicMappingServiceTest {
     var inner                   = new BlockingStubLazyLoadingTopicRepository();
     var cache                   = new CachedTopicRepository(inner);
     return (inner, cache, new TopicMappingService(cache, _typeLookupService));
+  }
+
+  /*============================================================================================================================
+  | METHOD: BUILD CONCURRENT EXPANSION GRAPH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Builds an in-memory graph for <see cref="Map_ConcurrentSharedCollection_PopulatesDeterministically"/>: A parent that
+  ///   references a single <paramref name="shared"/> topic twice, that topic having <paramref name="relationshipCount"/>
+  ///   outgoing relationships and <paramref name="incomingCount"/> incoming relationships under the key <c>Related</c>.
+  /// </summary>
+  /// <remarks>
+  ///   Everything is preloaded, so <paramref name="loader"/> performs no fetching; only the <paramref name="shared"/> topic is
+  ///   stamped for lazy loading, since only its <c>EnsureLoaded</c> needs to "rendezvous" the two passes. Its <see cref=
+  ///   "TopicPayload.Children"/> is left <see cref="LoadState.NotLoaded"/> so the mapper's collection warm-up actually calls
+  ///   the loader, which then marks it <see cref="LoadState.Loaded"/> before the base pass's nested-topic probe reads it. The
+  ///   relationships are already <see cref="LoadState.Loaded"/>. The shared topic deliberately has no <c>Related</c> child, so
+  ///   the nested-topic probe never displaces the relationship and incoming-relationship sources.
+  /// </remarks>
+  /// <param name="loader">The lazy loader to stamp on the shared topic.</param>
+  /// <param name="relationshipCount">The number of outgoing relationships to wire under <c>Related</c>.</param>
+  /// <param name="incomingCount">The number of incoming relationships to wire under <c>Related</c>.</param>
+  /// <param name="shared">The shared topic referenced twice by the returned parent.</param>
+  /// <returns>The parent topic to map.</returns>
+  private static Topic BuildConcurrentExpansionGraph(
+    ITopicLazyLoader            loader,
+    int                         relationshipCount,
+    int                         incomingCount,
+    out Topic                   shared
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish the parent and the shared target
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var identity                = 1;
+    var root                    = new Topic("ConcurrentExpansionRoot", "ConcurrentExpansionRoot", null, identity++);
+    shared                      = new Topic("Shared", "ConcurrentExpansionShared", null, identity++);
+    var backing                 = (ITopicBackingAccessor)shared;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Wire the shared target's outgoing relationships (the first source for the shared collection)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var index = 0; index < relationshipCount; index++) {
+      backing.Relationships.SetValue("Related", new($"Relationship_{index}", "KeyOnly", null, identity++));
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Wire the shared target's incoming relationships (the second source), via each origin's reciprocal outgoing relationship
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var index = 0; index < incomingCount; index++) {
+      var origin                = new Topic($"Incoming_{index}", "KeyOnly", null, identity++);
+      origin.Relationships.SetValue("Related", shared);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Stamp the shared target and leave children NotLoaded so the collection warm-up calls the loader exactly once per pass; the
+    | relationships are already Loaded (no deferred targets), so the relationship probe reads them without autoloading
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ((ITopicLazyLoadable)shared).Loader = loader;
+    backing.Children.LoadState  = LoadState.NotLoaded;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Reference the shared target twice from the parent, so both references map it concurrently
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    root.References.SetValue("RelationshipsView", shared);
+    root.References.SetValue("IncomingView", shared);
+
+    return root;
+
   }
 
 } //Class
