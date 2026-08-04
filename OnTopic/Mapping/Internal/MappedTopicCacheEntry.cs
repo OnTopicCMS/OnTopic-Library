@@ -36,7 +36,13 @@ internal sealed class MappedTopicCacheEntry {
   /// <summary>
   ///   Provides a reference to the mapped object.
   /// </summary>
-  internal object MappedTopic   { get; set; } = null!;
+  /// <remarks>
+  ///   Assigned only by <see cref="Complete(Object, AssociationTypes)"/>, which also settles the <see cref="Completion"/> task,
+  ///   so the mapped instance is never published outside the completion cycle. This topic is fully constructed, but may not yet
+  ///   have all of its properties mapped; the <see cref="Complete(Object, AssociationTypes)"/> only prevents two instances of
+  ///   the same view model from being constructed, but doesn't guarantee that mapping is finished.
+  /// </remarks>
+  internal object MappedTopic  { get; private set; } = null!;
 
   /*============================================================================================================================
   | PROPERTY: IS INITIALIZING
@@ -47,11 +53,12 @@ internal sealed class MappedTopicCacheEntry {
   /// <remarks>
   ///   The <see cref="IsInitializing"/> property allows an entry to be pre-cached prior to the object being completed. This
   ///   allows the <see cref="TopicMappingService"/> to detect circular references within the object initialization sequence.
-  ///   This is important because, unlikely property mapping where a cached reference can be returned, a circular reference
-  ///   in constructor mapping is expected to throw an exception. By registering that an object is being initialized, the
-  ///   <see cref="MappedTopicCache"/> is able to detect circuluar references during constructor mapping.
+  ///   This is important because, unlike property mapping where a cached reference can be returned, a circular reference in
+  ///   constructor mapping is expected to throw an exception. It is derived from the <see cref="Completion"/> task rather than
+  ///   stored, so a faulted entry remains initializing, ensuring an awaiting pass observes the fault instead of a null <see
+  ///   cref="MappedTopic"/>.
   /// </remarks>
-  internal bool IsInitializing  { get; set; }
+  internal bool IsInitializing  => !_completionSource.Task.IsCompletedSuccessfully;
 
   /*============================================================================================================================
   | PROPERTY: ASSOCIATIONS
@@ -103,7 +110,7 @@ internal sealed class MappedTopicCacheEntry {
   /// <remarks>
   ///   This is the mutating counterpart to <see cref="GetMissingAssociations(AssociationTypes)"/>: It adds any associations
   ///   that aren't already covered, and reports which ones were added back to the caller so the caller knows which associations
-  ///   to process. Because the delta is calculated and saved  under a single lock, two concurrent passes over the same cached
+  ///   to process. Because the delta is calculated and saved under a single lock, two concurrent passes over the same cached
   ///   instance receive disjoint results, ensuring each association is mapped by exactly one caller. A caller that receives
   ///   <see cref="AssociationTypes.None"/> has nothing left to map and should return the cached instance.
   /// </remarks>

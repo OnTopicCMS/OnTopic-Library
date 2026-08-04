@@ -73,21 +73,14 @@ internal sealed class MappedTopicCache {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var type                    = viewModel.GetType();
     var cacheKey                = GetCacheKey(topicId, type);
-    var cacheEntry              = new MappedTopicCacheEntry() {
-      MappedTopic               = viewModel,
-      Associations              = associations
-    };
+    var cacheEntry              = new MappedTopicCacheEntry();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Get or add entry
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topicId > 0 && !type.Equals(typeof(object))) {
+    if (topicId > 0 && type != typeof(object)) {
       cacheEntry                = _cache.GetOrAdd(cacheKey, cacheEntry);
-      if (cacheEntry.IsInitializing) {
-        cacheEntry.IsInitializing = false;
-        cacheEntry.MappedTopic  = viewModel;
-        cacheEntry.Associations = associations;
-      }
+      cacheEntry.Complete(viewModel, associations);
     }
 
   }
