@@ -28,6 +28,7 @@ internal sealed class MappedTopicCacheEntry {
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              object                          _lock                           = new();
+  private readonly              TaskCompletionSource            _completionSource               = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
   /*============================================================================================================================
   | PROPERTY: MAPPED TOPIC
@@ -59,6 +60,24 @@ internal sealed class MappedTopicCacheEntry {
   ///   Provides a reference to the associations that the <see cref="MappedTopic"/> was mapped with.
   /// </summary>
   internal AssociationTypes Associations { get; set; } = AssociationTypes.None;
+
+  /*============================================================================================================================
+  | PROPERTY: COMPLETION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Returns a <see cref="Task"/> that completes once the <see cref="MappedTopic"/> has been constructed and registered, even
+  ///   if not all properties have yet been mapped, thus allowing a second pass to await a first pass that is still initializing
+  ///   the same entry, instead of duplicating its work or, worse yet, failing.
+  /// </summary>
+  /// <remarks>
+  ///   The task is settled by <see cref="Complete(Object, AssociationTypes)"/> once the target has been constructed, or by
+  ///   <see cref="Fault(Exception)"/> if construction throws, so a second pass awaiting it never hangs. It is settled during
+  ///   registration, after the constructor runs but before the first pass maps the target's properties, so a second pass may
+  ///   observe an instance whose constructor parameters are set but whose properties are not yet mapped. This early publication
+  ///   is what allows a property-level circular reference to resolve to the cached (if partially populated) instance instead of
+  ///   recursing indefinitely, while still catching constructor-level circular references.
+  /// </remarks>
+  internal Task                 Completion                      => _completionSource.Task;
 
   /*============================================================================================================================
   | METHOD: GET MISSING ASSOCIATIONS
@@ -95,5 +114,41 @@ internal sealed class MappedTopicCacheEntry {
       return missing;
     }
   }
+
+  /*============================================================================================================================
+  | METHOD: COMPLETE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Publishes the constructed <paramref name="viewModel"/> and its <paramref name="associations"/> as the entry's <see cref=
+  ///   "MappedTopic"/> and <see cref="Associations"/>, and settles the <see cref="Completion"/> task, releasing any second pass
+  ///   awaiting this entry.
+  /// </summary>
+  /// <remarks>
+  ///   This is the sole writer of <see cref="MappedTopic"/> and the initial writer of <see cref="Associations"/>, so the
+  ///   instance, its associations, and the completion signal are always published together under a single lock. Only the first
+  ///   completion takes effect; a later duplicate registration is ignored, keeping the cached instance stable, while remaining
+  ///   unobservable before the entry is completed.
+  /// </remarks>
+  /// <param name="viewModel">The constructed view model associated with the entry.</param>
+  /// <param name="associations">The associations that the view model was mapped with.</param>
+  internal void Complete(object viewModel, AssociationTypes associations) {
+    lock (_lock) {
+      if (!_completionSource.Task.IsCompleted) {
+        MappedTopic             = viewModel;
+        Associations            = associations;
+        _completionSource.TrySetResult();
+      }
+    }
+  }
+
+  /*============================================================================================================================
+  | METHOD: FAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Faults the <see cref="Completion"/> task with the supplied <paramref name="exception"/> so that any pass awaiting the
+  ///   entry observes the failure instead of hanging when construction of the entry throws.
+  /// </summary>
+  /// <param name="exception">The exception that occurred while constructing the entry.</param>
+  internal void Fault(Exception exception) => _completionSource.TrySetException(exception);
 
 } //Class
