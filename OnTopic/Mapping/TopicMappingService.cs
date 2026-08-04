@@ -507,7 +507,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
         return null;
       }
 
-      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache, mapPath).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache, targetList, mapPath).ConfigureAwait(false);
 
       return targetList;
 
@@ -869,7 +869,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map the topics from the source collection, and add them to the target collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache, mapPath).ConfigureAwait(false);
+    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache, collectionLock, mapPath).ConfigureAwait(false);
 
   }
 
@@ -1023,12 +1023,18 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+  /// <param name="collectionLock">
+  ///   The object to lock on while adding to <paramref name="targetList"/>, so concurrent passes populating a shared target's
+  ///   list from disjoint sources don't modify it simultaneously. Callers pass the shared cache entry for a cached target, or
+  ///   the (unshared) list itself when populating a constructor parameter.
+  /// </param>
   /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task PopulateTargetCollectionAsync(
     IList<Topic>                sourceList,
     IList                       targetList,
     ItemMetadata                itemMetadata,
     MappedTopicCache            cache,
+    object                      collectionLock,
     MapPath?                    mapPath                         = null
   ) {
 
@@ -1107,14 +1113,19 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Function: Add to List
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Locked so a concurrent pass populating the same shared list from a disjoint source can't add at the same time; the lock
+    | is synchronous and never held across an await, as child mapping happens outside of it via the above task queue.
     \-------------------------------------------------------------------------------------------------------------------------*/
     void addToList(object dto)  {
-      try {
-        targetList.Add(dto);
-      }
-      catch (ArgumentException) {
-        //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
-        //We would defensively check for this, except IList doesn't provide a suitable method to do so
+      lock (collectionLock) {
+        try {
+          targetList.Add(dto);
+        }
+        catch (ArgumentException) {
+          //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+          //We would defensively check for this, except IList doesn't provide a suitable method to do so
+        }
       }
     }
 
