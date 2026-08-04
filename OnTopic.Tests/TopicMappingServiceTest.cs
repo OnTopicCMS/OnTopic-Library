@@ -39,6 +39,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   readonly                      ITopicRepository                _topicRepository;
   readonly                      ITopicMappingService            _mappingService;
+  readonly                      ITypeLookupService              _typeLookupService;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -64,6 +65,7 @@ public class TopicMappingServiceTest {
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = fixture.CachedTopicRepository;
     _mappingService             = fixture.MappingService;
+    _typeLookupService          = fixture.TypeLookupService;
 
   }
 
@@ -1995,5 +1997,28 @@ public class TopicMappingServiceTest {
 
   public static TopicViewModel? GetChildTopic(IEnumerable<TopicViewModel>? topicCollection, string key)
     => topicCollection?.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
+
+  /*============================================================================================================================
+  | METHOD: CREATE GATED MAPPING SERVICE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Assembles a fresh <see cref="TopicMappingService"/> over a <see cref="BlockingStubLazyLoadingTopicRepository"/>,
+  ///   returning the service together with that gated repository and the <see cref="CachedTopicRepository"/> wrapping it.
+  /// </summary>
+  /// <remarks>
+  ///   Each call returns a new, isolated set so concurrent-mapping tests can "arm", release, or fault their own gate without
+  ///   interfering with one another. The stateless <see cref="TopicInfrastructureFixture{T}.TypeLookupService"/> is reused, so
+  ///   only the gated repository is constructed per test.
+  /// </remarks>
+  /// <returns>The gated repository, the cache over it, and the mapping service.</returns>
+  private (
+    BlockingStubLazyLoadingTopicRepository Repository,
+    CachedTopicRepository Cache,
+    ITopicMappingService MappingService
+  ) CreateGatedMappingService() {
+    var inner                   = new BlockingStubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(inner);
+    return (inner, cache, new TopicMappingService(cache, _typeLookupService));
+  }
 
 } //Class
