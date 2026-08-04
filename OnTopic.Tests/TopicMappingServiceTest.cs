@@ -520,6 +520,55 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SIBLINGS: RETURNS SHARED INSTANCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that two concurrent branches mapping the same topic to the same type within a single pass share one instance,
+  ///   rather than the second branch mistaking the first's still-initializing entry for a circular constructor reference.
+  /// </summary>
+  /// <remarks>
+  ///   Uses <see cref="BlockingStubLazyLoadingTopicRepository"/>, which suspends inside its own <c>EnsureLoaded</c> until
+  ///   released, to hold the branch that wins construction of the shared model mid-constructor, guaranteeing the second branch
+  ///   reaches the still-initializing entry and thus must await its completion. The shared topic is loaded through the
+  ///   repository so it is stamped for lazy loading, and its constructor's collection parameter actually engages the gate; the
+  ///   root is a plain <see cref="Topic"/> whose in-memory references cannot trip the gate before the shared model is
+  ///   constructed. Asserting the in-process task has not completed proves the first branch actually suspended, so the test
+  ///   cannot pass without exercising the await path.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSiblings_ReturnsSharedInstance() {
+
+    var (inner, cache, mappingService) = CreateGatedMappingService();
+
+    var shared                  = await cache.Load("Web");
+
+    Contract.Assume(shared);
+
+    var root                    = new Topic("ConcurrentRoot", "Container", null, 5);
+
+    root.References.SetValue("FirstReference", shared);
+    root.References.SetValue("SecondReference", shared);
+
+    // "Arm" the gate so the branch that constructs the shared model suspends mid-constructor
+    inner.ArmEnsureLoadedGate();
+
+    var mapTask                 = mappingService.MapAsync<ConcurrentReferenceTopicViewModel>(root);
+
+    // Prove the first branch is genuinely suspended, so the second must await its completion
+    Assert.False(mapTask.IsCompleted);
+
+    inner.ReleaseEnsureLoadedGate();
+
+    var result                  = await mapTask;
+
+    Assert.NotNull(result);
+    Assert.NotNull(result.FirstReference);
+    Assert.NotNull(result.SecondReference);
+    Assert.Same(result.FirstReference, result.SecondReference);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
