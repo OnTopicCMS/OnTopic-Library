@@ -569,6 +569,46 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SIBLINGS: OBSERVES FAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that when the branch constructing a shared model faults, a concurrent branch awaiting the same entry observes
+  ///   the exception rather than hanging on a mapping that will never complete.
+  /// </summary>
+  /// <remarks>
+  ///   Uses the same setup as <see cref="Map_ConcurrentSiblings_ReturnsSharedInstance"/>, but releases the gate with a fault so
+  ///   the constructing branch throws while the second branch is awaiting the entry's completion. That the map throws, rather
+  ///   than deadlocking, is what confirms the faulted entry releases its waiter.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSiblings_ObservesFault() {
+
+    var (inner, cache, mappingService) = CreateGatedMappingService();
+
+    var shared                  = await cache.Load("Web");
+
+    Contract.Assume(shared);
+
+    var root                    = new Topic("ConcurrentRoot", "Container", null, 5);
+
+    root.References.SetValue("FirstReference", shared);
+    root.References.SetValue("SecondReference", shared);
+
+    // "Arm" the gate so the branch that constructs the shared model suspends mid-constructor
+    inner.ArmEnsureLoadedGate();
+
+    var mapTask                 = mappingService.MapAsync<ConcurrentReferenceTopicViewModel>(root);
+
+    // Prove the first branch is genuinely suspended, so the second must await its completion
+    Assert.False(mapTask.IsCompleted);
+
+    inner.FaultEnsureLoadedGate(new InvalidOperationException("Simulated load failure."));
+
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await mapTask.ConfigureAwait(false));
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
