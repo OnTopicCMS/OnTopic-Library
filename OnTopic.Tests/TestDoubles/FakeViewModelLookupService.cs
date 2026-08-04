@@ -37,6 +37,7 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(AscendentTopicViewModel));
     Add(typeof(CircularConstructorTopicViewModel));
     Add(typeof(CircularTopicViewModel));
+    Add(typeof(ConcurrentReferenceTopicViewModel));
     Add(typeof(ConstructedTopicViewModel));
     Add(typeof(DefaultValueTopicViewModel));
     Add(typeof(DescendentSpecializedTopicViewModel));
@@ -61,6 +62,7 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(RelationWithChildrenTopicViewModel));
     Add(typeof(RequiredObjectTopicViewModel));
     Add(typeof(RequiredTopicViewModel));
+    Add(typeof(SharedConcurrentTopicViewModel));
     Add(typeof(TopicReferenceAttributeDescriptorTopicViewModel));
     Add(typeof(TopicReferenceTopicViewModel));
 
