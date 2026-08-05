@@ -373,6 +373,66 @@ public class ReverseTopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: SPARSE TOPIC: FILLS EXTENDED ATTRIBUTES ONCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a scalar-only binding model onto a target stamped with a <see cref="TrackingTopicLazyLoader"/> whose <see cref=
+  ///   "Topic.Attributes"/> are <see cref="LoadState.NotLoaded"/>. Confirms <see cref="ReverseTopicMappingService"/> warms <see
+  ///   cref="TopicPayload.ExtendedAttributes"/> exactly once at the start of the map, rather than leaving it to the attribute
+  ///   collection's own synchronous autoload.
+  /// </summary>
+  [Fact]
+  public async Task Map_ScalarProperties_FillsExtendedAttributesOnce() {
+
+    var bindingModel            = new TextAttributeTopicBindingModel("Test") {
+      ContentType               = "TextAttributeDescriptor",
+      DefaultValue              = "World"
+    };
+
+    var target                  = new TextAttributeDescriptor("Test", "TextAttributeDescriptor");
+    var loader                  = new TrackingTopicLazyLoader(markLoaded: true);
+
+    ((ITopicLazyLoadable)target).Loader = loader;
+    target.Attributes.LoadState = LoadState.NotLoaded;
+
+    _                           = await _mappingService.MapAsync(bindingModel, target);
+
+    Assert.Equal(1, loader.CallCount);
+    Assert.Equal(TopicPayload.ExtendedAttributes, loader.Payloads[0]);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: NESTED TOPICS: FILLS CONTAINER CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a nested-topic binding model onto a target whose <c>Attributes</c> container is stamped with its own <see cref=
+  ///   "TrackingTopicLazyLoader"/> and left <see cref="LoadState.NotLoaded"/>, even though the target's own <see cref=
+  ///   "Topic.Children"/> are already loaded. Confirms <see cref="ReverseTopicMappingService"/> warms the container
+  ///   independently before <c>PopulateTargetCollectionAsync</c> probes its existing children.
+  /// </summary>
+  [Fact]
+  public async Task Map_NestedTopics_FillsContainerChildren() {
+
+    var bindingModel              = new ContentTypeDescriptorTopicBindingModel("Test");
+
+    bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute1"));
+
+    var target                    = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+    var container                 = new Topic("Attributes", "List", target);
+    var containerLoader           = new TrackingTopicLazyLoader(markLoaded: true);
+
+    ((ITopicLazyLoadable)container).Loader = containerLoader;
+    container.Children.LoadState  = LoadState.NotLoaded;
+
+    _                              = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, target);
+
+    Assert.Equal(1, containerLoader.CallCount);
+    Assert.Equal(TopicPayload.Children, containerLoader.Payloads[0]);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
