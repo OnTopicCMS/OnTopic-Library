@@ -25,7 +25,6 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   readonly                      ITopicRepository                _topicRepository;
-  readonly                      ContentTypeDescriptorCollection _contentTypeDescriptors;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -44,16 +43,6 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Set dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = topicRepository;
-    _contentTypeDescriptors     = topicRepository.GetContentTypeDescriptors();
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Validate dependencies
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Assume(
-      _contentTypeDescriptors,
-      $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
-      $"or data source."
-    );
 
   }
 
@@ -133,7 +122,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     Contract.Assume(source.ContentType, nameof(source.ContentType));
 
     //Ensure the content type is valid
-    if (!_contentTypeDescriptors.Contains(source.ContentType)) {
+    if (!GetContentTypeDescriptors().Contains(source.ContentType)) {
       throw new MappingModelValidationException(
         $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
         $"are no matching content types in the ITopicRepository provided. This suggests that the binding model is invalid. " +
@@ -166,6 +155,30 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     \-------------------------------------------------------------------------------------------------------------------------*/
     return await MapAsync(source, target, null).ConfigureAwait(false);
 
+  }
+
+  /*============================================================================================================================
+  | PRIVATE: GET CONTENT TYPE DESCRIPTORS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves the <see cref="ContentTypeDescriptorCollection"/> from the <see cref="ITopicRepository"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Called per-use rather than cached into a field, since content types can be added after this service is constructed, and
+  ///   a local cache would silently exclude any updates for the life of the service. Further, <see cref="TopicRepository"/>,
+  ///   the base class for every production <see cref="ITopicRepository"/> in this library, already caches the result after the
+  ///   first call and maintains the live collection in place (e.g. <c>Delete</c> refreshes it), so the per-call access here is
+  ///   expected to be cheap, acknowledging that's a property of that base class, not a guarantee of the <see cref=
+  ///   "ITopicRepository"/> interface itself.
+  /// </remarks>
+  private ContentTypeDescriptorCollection GetContentTypeDescriptors() {
+    var contentTypeDescriptors  = _topicRepository.GetContentTypeDescriptors();
+    Contract.Assume(
+      contentTypeDescriptors,
+      $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
+      $"data source."
+    );
+    return contentTypeDescriptors;
   }
 
   /*============================================================================================================================
@@ -209,7 +222,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Validate model
     \-------------------------------------------------------------------------------------------------------------------------*/
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(source.GetType());
-    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
+    var contentTypeDescriptor   = GetContentTypeDescriptors().GetValue(target.ContentType);
 
     BindingModelValidator.ValidateModel(typeAccessor, contentTypeDescriptor, attributePrefix);
 
@@ -252,7 +265,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Establish per-property variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var configuration           = memberAccessor.Configuration;
-    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
+    var contentTypeDescriptor   = GetContentTypeDescriptors().GetValue(target.ContentType);
     var compositeAttributeKey   = configuration.GetCompositeAttributeKey(attributePrefix);
 
     Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
