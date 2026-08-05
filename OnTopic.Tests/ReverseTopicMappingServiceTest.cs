@@ -15,6 +15,7 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -322,6 +323,52 @@ public class ReverseTopicMappingServiceTest {
     Assert.NotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
     Assert.Equal("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
     Assert.Null(target?.AttributeDescriptors.GetValue("Attribute4"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: NESTED TOPICS: STAGGERED COMPLETION: PRESERVES SOURCE ORDER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="ReverseTopicMappingService"/> backed by a <see cref="StaggeredStubTopicRepository"/> whose
+  ///   per-item topic reference lookups resolve out of call order: The first-declared item resolves slowest, the last-declared
+  ///   item resolves instantly. Confirms nested topics still land in the binding model's source order, since <see cref=
+  ///   "ReverseTopicMappingService"/> maps and adds each child sequentially rather than racing completions.
+  /// </summary>
+  [Fact]
+  public async Task Map_NestedTopics_StaggeredCompletion_PreservesSourceOrder() {
+
+    // Declared in call order; delays fall in reverse, so the first-added item resolves last
+    List<(string UniqueKey, TimeSpan Delay)> attributes = [
+      ("Root:Configuration:ContentTypes:Attributes:Key", TimeSpan.FromMilliseconds(120)),
+      ("Root:Configuration:ContentTypes:Attributes:ContentType", TimeSpan.FromMilliseconds(60)),
+      ("Root:Configuration:ContentTypes:Attributes:Title", TimeSpan.Zero)
+    ];
+
+    var delaysByKey             = attributes.ToDictionary(attribute => attribute.UniqueKey, attribute => attribute.Delay);
+    var topicRepository         = new StaggeredStubTopicRepository(delaysByKey);
+    var mappingService          = new ReverseTopicMappingService(topicRepository);
+    var bindingModel            = new ContentTypeDescriptorTopicBindingModel("Test");
+
+    for (var i = 0; i < attributes.Count; i++) {
+      bindingModel.Attributes.Add(
+        new NestedReferenceAttributeTopicBindingModel($"Attribute{i + 1}") {
+          BaseTopic             = new() {
+            UniqueKey           = attributes[i].UniqueKey
+          }
+        }
+      );
+    }
+
+    var topic                   = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+    var target                  = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic);
+    var container               = target?.Children.GetValue("Attributes");
+
+    Assert.NotNull(container);
+    Assert.Equal(
+      Enumerable.Range(1, attributes.Count).Select(i => $"Attribute{i}"),
+      container.Children.Select(child => child.Key)
+    );
 
   }
 
