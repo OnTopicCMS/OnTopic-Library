@@ -35,12 +35,18 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(AmbiguousRelationTopicViewModel));
     Add(typeof(AscendentSpecializedTopicViewModel));
     Add(typeof(AscendentTopicViewModel));
+    Add(typeof(CircularConstructorTopicViewModel));
     Add(typeof(CircularTopicViewModel));
+    Add(typeof(ConcurrentExpansionRootTopicViewModel));
+    Add(typeof(ConcurrentExpansionSharedTopicViewModel));
+    Add(typeof(ConcurrentReferenceTopicViewModel));
     Add(typeof(ConstructedTopicViewModel));
     Add(typeof(DefaultValueTopicViewModel));
     Add(typeof(DescendentSpecializedTopicViewModel));
     Add(typeof(DescendentTopicViewModel));
     Add(typeof(DisableMappingTopicViewModel));
+    Add(typeof(ExpansionParentTopicViewModel));
+    Add(typeof(ExpansionSharedTopicViewModel));
     Add(typeof(FallbackViewModel));
     Add(typeof(FilteredTopicViewModel));
     Add(typeof(FlattenChildrenTopicViewModel));
@@ -58,6 +64,7 @@ public class FakeViewModelLookupService: TopicViewModelLookupService {
     Add(typeof(RelationWithChildrenTopicViewModel));
     Add(typeof(RequiredObjectTopicViewModel));
     Add(typeof(RequiredTopicViewModel));
+    Add(typeof(SharedConcurrentTopicViewModel));
     Add(typeof(TopicReferenceAttributeDescriptorTopicViewModel));
     Add(typeof(TopicReferenceTopicViewModel));
 

@@ -6,16 +6,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using OnTopic.Data.Caching;
+using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.TestDoubles.LazyLoading;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.Fixtures;
+using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
+using OnTopic.ViewModels;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -35,6 +39,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   readonly                      ITopicRepository                _topicRepository;
   readonly                      ITopicMappingService            _mappingService;
+  readonly                      ITypeLookupService              _typeLookupService;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -60,6 +65,7 @@ public class TopicMappingServiceTest {
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = fixture.CachedTopicRepository;
     _mappingService             = fixture.MappingService;
+    _typeLookupService          = fixture.TypeLookupService;
 
   }
 
@@ -322,6 +328,48 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: ATTRIBUTE DICTIONARY: NOT LOADED: RETURNS EXTENDED ATTRIBUTES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a sparse topic whose extended attributes are still <see cref=
+  ///   "LoadState.NotLoaded"/> to a view model with an <see cref="AttributeDictionary"/> constructor. Confirms the extended
+  ///   attribute is present in the mapped result, i.e., that <see cref="AttributeCollection.AsAttributeDictionary(Boolean)"/>
+  ///   autoloads the blob rather than silently omitting it by enumerating only resident attributes.
+  /// </summary>
+  [Fact]
+  public async Task Map_AttributeDictionary_NotLoaded_ReturnsExtendedAttributes() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(
+        221,
+        "Sparse",
+        "Page",
+        null,
+        indexedAttributes       : new Dictionary<string, string> {
+          ["Title"]             = "Value",
+          ["ShortTitle"]        = "Short Title",
+          ["Subtitle"]          = "Subtitle",
+          ["MetaTitle"]         = "Meta Title",
+          ["MetaDescription"]   = "Meta Description"
+        },
+        extendedAttributes      : new Dictionary<string, string> {
+          ["MappedProperty"]    = "Mapped Value"
+        }
+      )
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+    var topic                   = await stub.Load("Root:Sparse");
+
+    Contract.Assume(topic);
+
+    var target                  = await _mappingService.MapAsync<AttributeDictionaryConstructorTopicViewModel>(topic);
+
+    Assert.Equal("Mapped Value", target?.MappedProperty);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: CONSTRUCTOR: RETURNS NEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -418,6 +466,196 @@ public class TopicMappingServiceTest {
     await Assert.ThrowsAsync<TopicMappingException>(async () =>
       await _mappingService.MapAsync<ConstructedTopicViewModel>(topic).ConfigureAwait(false)
     );
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: CONSTRUCTOR (RECORD): RETURNS NEW MODEL
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a positional <c>record</c> whose constructor accepts a
+  ///   non-cyclic topic reference, confirming that the reference is resolved and the record is constructed as expected.
+  /// </summary>
+  /// <remarks>
+  ///   As this is a mapping of a positional <c>record</c> that carries constructor parameters, it also confirms that the
+  ///   primary constructor is correctly selected and its parameters mapped.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConstructorRecord_ReturnsNewModel() {
+
+    var topic                   = new Topic("Parent", "CircularConstructor", null, 1);
+    var child                   = new Topic("Child", "CircularConstructor", null, 2);
+
+    topic.References.SetValue("Self", child);
+
+    var target                  = await _mappingService.MapAsync<CircularConstructorTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal("Parent", target.Key);
+    Assert.NotNull(target.Self);
+    Assert.Equal("Child", target.Self.Key);
+    Assert.Null(target.Self.Self);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: CONSTRUCTOR (RECORD): THROWS EXCEPTION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> and maps a positional <c>record</c> whose constructor references the
+  ///   topic being mapped, and confirms that this circular constructor reference is detected and a <see cref=
+  ///   "TopicMappingException"/> is thrown.
+  /// </summary>
+  [Fact]
+  public async Task Map_ConstructorRecord_ThrowsException() {
+
+    var topic                   = new Topic("Topic", "CircularConstructor", null, 1);
+
+    topic.References.SetValue("Self", topic);
+
+    await Assert.ThrowsAsync<TopicMappingException>(async () =>
+      await _mappingService.MapAsync<CircularConstructorTopicViewModel>(topic).ConfigureAwait(false)
+    );
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SIBLINGS: RETURNS SHARED INSTANCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that two concurrent branches mapping the same topic to the same type within a single pass share one instance,
+  ///   rather than the second branch mistaking the first's still-initializing entry for a circular constructor reference.
+  /// </summary>
+  /// <remarks>
+  ///   Uses <see cref="BlockingStubLazyLoadingTopicRepository"/>, which suspends inside its own <c>EnsureLoaded</c> until
+  ///   released, to hold the branch that wins construction of the shared model mid-constructor, guaranteeing the second branch
+  ///   reaches the still-initializing entry and thus must await its completion. The shared topic is loaded through the
+  ///   repository so it is stamped for lazy loading, and its constructor's collection parameter actually engages the gate; the
+  ///   root is a plain <see cref="Topic"/> whose in-memory references cannot trip the gate before the shared model is
+  ///   constructed. Asserting the in-process task has not completed proves the first branch actually suspended, so the test
+  ///   cannot pass without exercising the await path.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSiblings_ReturnsSharedInstance() {
+
+    var (inner, cache, mappingService) = CreateGatedMappingService();
+
+    var shared                  = await cache.Load("Web");
+
+    Contract.Assume(shared);
+
+    var root                    = new Topic("ConcurrentRoot", "Container", null, 5);
+
+    root.References.SetValue("FirstReference", shared);
+    root.References.SetValue("SecondReference", shared);
+
+    // "Arm" the gate so the branch that constructs the shared model suspends mid-constructor
+    inner.ArmEnsureLoadedGate();
+
+    var mapTask                 = mappingService.MapAsync<ConcurrentReferenceTopicViewModel>(root);
+
+    // Prove the first branch is genuinely suspended, so the second must await its completion
+    Assert.False(mapTask.IsCompleted);
+
+    inner.ReleaseEnsureLoadedGate();
+
+    var result                  = await mapTask;
+
+    Assert.NotNull(result);
+    Assert.NotNull(result.FirstReference);
+    Assert.NotNull(result.SecondReference);
+    Assert.Same(result.FirstReference, result.SecondReference);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SIBLINGS: OBSERVES FAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Confirms that when the branch constructing a shared model faults, a concurrent branch awaiting the same entry observes
+  ///   the exception rather than hanging on a mapping that will never complete.
+  /// </summary>
+  /// <remarks>
+  ///   Uses the same setup as <see cref="Map_ConcurrentSiblings_ReturnsSharedInstance"/>, but releases the gate with a fault so
+  ///   the constructing branch throws while the second branch is awaiting the entry's completion. That the map throws, rather
+  ///   than deadlocking, is what confirms the faulted entry releases its waiter.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSiblings_ObservesFault() {
+
+    var (inner, cache, mappingService) = CreateGatedMappingService();
+
+    var shared                  = await cache.Load("Web");
+
+    Contract.Assume(shared);
+
+    var root                    = new Topic("ConcurrentRoot", "Container", null, 5);
+
+    root.References.SetValue("FirstReference", shared);
+    root.References.SetValue("SecondReference", shared);
+
+    // "Arm" the gate so the branch that constructs the shared model suspends mid-constructor
+    inner.ArmEnsureLoadedGate();
+
+    var mapTask                 = mappingService.MapAsync<ConcurrentReferenceTopicViewModel>(root);
+
+    // Prove the first branch is genuinely suspended, so the second must await its completion
+    Assert.False(mapTask.IsCompleted);
+
+    inner.FaultEnsureLoadedGate(new InvalidOperationException("Simulated load failure."));
+
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await mapTask.ConfigureAwait(false));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: CONCURRENT SHARED COLLECTION: POPULATES DETERMINISTICALLY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Stress test confirming that two concurrent passes expanding the same shared model with disjoint associations, each
+  ///   populating the same collection from a different source, deterministically produce the union of both sources without
+  ///   corrupting the shared list.
+  /// </summary>
+  /// <remarks>
+  ///   A parent references one shared topic twice, with disjoint <see cref="IncludeAttribute"/> sets (<see cref=
+  ///   "AssociationTypes.Relationships"/> and <see cref="AssociationTypes.IncomingRelationships"/>). Whichever pass wins
+  ///   construction populates the shared <see cref="ConcurrentExpansionSharedTopicViewModel.Related"/> list from one source;
+  ///   the other expands it from the other, so the result should always be the union of both, regardless of which pass wins. A
+  ///   <see cref="RendezvousTopicLazyLoader"/> holds the two passes at the collection warm-up until both arrive, then releases
+  ///   them together, so their list mutations genuinely overlap. Repeated many times to give the race a chance to manifest;
+  ///   without the shared-list mutation guard, the concurrent adds corrupt the list, dropping items or throwing.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ConcurrentSharedCollection_PopulatesDeterministically() {
+
+    const int                   relationshipCount               = 12;
+    const int                   incomingCount                   = 12;
+    const int                   repetitions                     = 100;
+
+    var loader                  = new RendezvousTopicLazyLoader(participantCount: 2);
+
+    for (var repetition = 0; repetition < repetitions; repetition++) {
+
+      var root                  = BuildConcurrentExpansionGraph(loader, relationshipCount, incomingCount, out var shared);
+
+      // Guard against an incomplete setup: Both sources must be loaded before mapping; read them via the backing accessor so
+      // the precondition check doesn't itself trip the loader's rendezvous and hang
+      var backing               = (ITopicBackingAccessor)shared;
+      Assert.Equal(relationshipCount, backing.Relationships.GetValues("Related").Count);
+      Assert.Equal(incomingCount, shared.IncomingRelationships.GetValues("Related").Count);
+
+      var result                = await _mappingService.MapAsync<ConcurrentExpansionRootTopicViewModel>(root);
+
+      Assert.NotNull(result);
+      Assert.NotNull(result.RelationshipsView);
+      Assert.NotNull(result.IncomingView);
+
+      // Both references resolve to the one shared instance, whose list holds the union of both sources
+      Assert.Same(result.RelationshipsView, result.IncomingView);
+      Assert.NotNull(result.RelationshipsView.Related);
+      Assert.Equal(relationshipCount + incomingCount, result.RelationshipsView.Related.Count);
+
+    }
 
   }
 
@@ -589,7 +827,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that it is returned via <see cref=
-  ///   "MappedTopicCache.TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/>.
+  ///   "MappedTopicCache.TryGetValue"/>.
   /// </summary>
   [Fact]
   public void MappedTopicCache_TryGetValue_ReturnsEntry() {
@@ -612,7 +850,7 @@ public class TopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="MappedTopicCache"/> and then confirms that it is not returned via <see cref="MappedTopicCache
-  ///   .TryGetValue(Int32, Type, out MappedTopicCacheEntry)"/> if the <see cref="Type"/> doesn't match.
+  ///   .TryGetValue"/> if the <see cref="Type"/> doesn't match.
   /// </summary>
   [Fact]
   public void MappedTopicCache_TryGetValue_ReturnsNull() {
@@ -715,8 +953,6 @@ public class TopicMappingServiceTest {
 
     var difference              = cacheEntry.GetMissingAssociations(associations);
 
-    cacheEntry.AddMissingAssociations(difference);
-
     Assert.True(difference.HasFlag(AssociationTypes.References));
     Assert.False(difference.HasFlag(AssociationTypes.Children));
     Assert.False(difference.HasFlag(AssociationTypes.Parents));
@@ -724,24 +960,128 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
-  | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: SETS UNION
+  | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: RETURNS NEWLY ADDED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
-  ///   its <see cref="MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> correctly extends the missing
-  ///   associations.
+  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and then confirms that two overlapping calls to its <see cref=
+  ///   "MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> return disjoint flags (each reporting only what it
+  ///   newly added) whose union is the missing set, and that the recorded <see cref="MappedTopicCacheEntry.Associations"/>
+  ///   reflect both calls.
   /// </summary>
+  /// <remarks>
+  ///   Each association may only be added once. Even though both requests include <see cref="AssociationTypes.Parents"/>,
+  ///   only the first call adds it; the second call sees it as already recorded and returns only the remainder. This is what
+  ///   ensures two concurrent passes map disjoint associations rather than both mapping the overlap.
+  /// </remarks>
   [Fact]
-  public void MappedTopicCacheEntry_AddMissingAssociations_SetsUnion() {
+  public void MappedTopicCacheEntry_AddMissingAssociations_ReturnsNewlyAdded() {
 
     var cacheEntry              = new MappedTopicCacheEntry() {
       Associations              = AssociationTypes.Children
     };
-    var associations            = AssociationTypes.Children | AssociationTypes.Parents;
 
-    cacheEntry.AddMissingAssociations(associations);
+    var firstResult             = cacheEntry.AddMissingAssociations(AssociationTypes.Children | AssociationTypes.Parents);
+    var secondResult            = cacheEntry.AddMissingAssociations(AssociationTypes.Parents | AssociationTypes.References);
 
-    Assert.Equal(AssociationTypes.Children | AssociationTypes.Parents, cacheEntry.Associations);
+    Assert.Equal(AssociationTypes.Parents, firstResult);
+    Assert.Equal(AssociationTypes.References, secondResult);
+    Assert.Equal(AssociationTypes.Children | AssociationTypes.Parents | AssociationTypes.References, cacheEntry.Associations);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: IS INITIALIZING: REFLECTS COMPLETION STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a set of <see cref="MappedTopicCacheEntry"/> instances and confirms that <see cref=
+  ///   "MappedTopicCacheEntry.IsInitializing"/> is derived from the completion state: A fresh entry is initializing, a
+  ///   completed entry is not, and a faulted entry remains initializing so an awaiting pass observes the fault instead of a
+  ///   null instance.
+  /// </summary>
+  [Fact]
+  public void MappedTopicCacheEntry_IsInitializing_ReflectsCompletionState() {
+
+    var completed               = new MappedTopicCacheEntry();
+    var faulted                 = new MappedTopicCacheEntry();
+
+    Assert.True(completed.IsInitializing);
+    Assert.True(faulted.IsInitializing);
+
+    completed.Complete(new EmptyViewModel(), AssociationTypes.None);
+    faulted.Fault(new InvalidOperationException());
+
+    Assert.False(completed.IsInitializing);
+    Assert.True(faulted.IsInitializing);
+
+    // Observe the faulted task so its exception isn't surfaced as unobserved
+    Assert.NotNull(faulted.Completion.Exception);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: COMPLETION: SETTLES ON COMPLETE OR FAULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a pair of <see cref="MappedTopicCacheEntry"/> instances and confirms that <see cref=
+  ///   "MappedTopicCacheEntry.Completion"/> resolves when the entry is completed, and throws the recorded exception when the
+  ///   entry is faulted, so that a second pass awaiting the entry is always released rather than left hanging.
+  /// </summary>
+  [Fact]
+  public async Task MappedTopicCacheEntry_Completion_SettlesOnCompleteOrFault() {
+
+    var completed               = new MappedTopicCacheEntry();
+    var faulted                 = new MappedTopicCacheEntry();
+
+    completed.Complete(new EmptyViewModel(), AssociationTypes.None);
+    faulted.Fault(new InvalidOperationException("Construction failed."));
+
+    Assert.True(completed.Completion.IsCompletedSuccessfully);
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await faulted.Completion.ConfigureAwait(false));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAPPED TOPIC CACHE ENTRY: COMPLETE: RETAINS FIRST RESULT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="MappedTopicCacheEntry"/> and confirms that only the first <see cref=
+  ///   "MappedTopicCacheEntry.Complete(Object, AssociationTypes)"/> call takes effect: A later duplicate registration is
+  ///   ignored, keeping both the <see cref="MappedTopicCacheEntry.MappedTopic"/> and its <see cref=
+  ///   "MappedTopicCacheEntry.Associations"/> stable.
+  /// </summary>
+  [Fact]
+  public void MappedTopicCacheEntry_Complete_RetainsFirstResult() {
+
+    var entry                   = new MappedTopicCacheEntry();
+    var first                   = new EmptyViewModel();
+    var second                  = new EmptyViewModel();
+
+    entry.Complete(first, AssociationTypes.Children);
+    entry.Complete(second, AssociationTypes.Parents);
+
+    Assert.Same(first, entry.MappedTopic);
+    Assert.Equal(AssociationTypes.Children, entry.Associations);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP PATH: CONTAINS: DETECTS PAIRS ON PATH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a two-frame <see cref="MapPath"/> and confirms that <see cref="MapPath.Contains(Int32, Type)"/> recognizes a
+  ///   topic and view model type pair anywhere on the path, whether at the current frame or an ancestor, while rejecting pairs
+  ///   that are not on the path, including one whose topic identifier matches but whose type does not.
+  /// </summary>
+  [Fact]
+  public void MapPath_Contains_DetectsPairsOnPath() {
+
+    var root                    = new MapPath(1, typeof(EmptyViewModel), null);
+    var child                   = new MapPath(2, typeof(KeyOnlyTopicViewModel), root);
+
+    Assert.True(child.Contains(2, typeof(KeyOnlyTopicViewModel)));
+    Assert.True(child.Contains(1, typeof(EmptyViewModel)));
+    Assert.False(child.Contains(3, typeof(EmptyViewModel)));
+    Assert.False(child.Contains(1, typeof(KeyOnlyTopicViewModel)));
 
   }
 
@@ -933,6 +1273,42 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: CHILDREN: STAGGERED COMPLETION: PRESERVES SOURCE ORDER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="TopicMappingService"/> with children whose mapping tasks are forced to complete in reverse of
+  ///   source order, and tests that the mapped collection nonetheless preserves source order.
+  /// </summary>
+  /// <remarks>
+  ///   Each child is stamped with its own <see cref="StaggeredTopicLazyLoader"/> and left <see cref="LoadState.NotLoaded"/>
+  ///   for <see cref="TopicPayload.Children"/>, so mapping it genuinely awaits a delay before completing. The first child gets
+  ///   the longest delay and the last gets none, so completion order is the reverse of source order; if collection population
+  ///   added results in completion order rather than source order, this would come back reversed.
+  /// </remarks>
+  [Fact]
+  public async Task Map_Children_StaggeredCompletion_PreservesSourceOrder() {
+
+    var topic                   = new Topic("Test", "Descendent");
+    var childKeys               = new[] { "ChildTopic1", "ChildTopic2", "ChildTopic3", "ChildTopic4" };
+
+    for (var index = 0; index < childKeys.Length; index++) {
+      var child                 = new Topic(childKeys[index], "Descendent", topic);
+      var delay                 = TimeSpan.FromMilliseconds((childKeys.Length - index) * 25);
+      ((ITopicLazyLoadable)child).Loader = new StaggeredTopicLazyLoader(delay);
+      ((ITopicBackingAccessor)child).Children.LoadState = LoadState.NotLoaded;
+    }
+
+    var target                  = await _mappingService.MapAsync<DescendentTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(childKeys.Length, target.Children.Count);
+    for (var index = 0; index < childKeys.Length; index++) {
+      Assert.Equal(childKeys[index], target.Children[index].Key);
+    }
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: WITH DISABLED: SKIPS DISABLED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1033,6 +1409,36 @@ public class TopicMappingServiceTest {
     Assert.NotNull(target);
     Assert.Single(target.Relationships);
     Assert.IsType<AscendentTopicViewModel>(target.Relationships.FirstOrDefault());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: RELATIONSHIP ONLY: DOES NOT FILL CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a <see cref="RelationshipOnlyTopicViewModel"/>, whose only collection is explicitly typed <see cref=
+  ///   "CollectionType.Relationship"/>, against a <see cref="StubLazyLoadingTopicRepository"/>, and confirms that no
+  ///   synchronous <see cref="TopicPayload.Children"/> fill occurs. Prior to fixing <c>GetSourceCollectionAsync</c>'s
+  ///   collection probes, the <c>NestedTopics</c> probe's signature (<c>source.Children.Contains</c>) was evaluated
+  ///   unconditionally when the argument was constructed, silently triggering the lazy loading of the children regardless of
+  ///   which collection type the view model actually requested.
+  /// </summary>
+  [Fact]
+  public async Task Map_RelationshipOnly_DoesNotFillChildren() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var typeLookupService       = new CompositeTypeLookupService(new TopicViewModelLookupService(), new FakeViewModelLookupService());
+    var mappingService          = new TopicMappingService(cache, typeLookupService);
+
+    var topic                   = await cache.Load("Root:Web:Web_0");
+
+    Contract.Assume(topic);
+
+    var target                  = await mappingService.MapAsync<RelationshipOnlyTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(0, stub.GetFetchCount(topic.Id, TopicPayload.Children));
 
   }
 
@@ -1288,6 +1694,78 @@ public class TopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: EXPANSION PASS: DOES NOT DUPLICATE NESTED TOPICS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps an <see cref="ExpansionParentTopicViewModel"/>, which encounters the same source topic twice with disjoint
+  ///   associations, confirming that the second (expansion) pass does not re-append the ungated nested-topics collection that
+  ///   the initial pass already populated.
+  /// </summary>
+  /// <remarks>
+  ///   Reliability rests on the eager repository mapping the two collections sequentially, so the encounters are strictly
+  ///   ordered: The first builds and fills the cached view model, and the second, requesting a disjoint association, hits the
+  ///   cache and runs an expansion pass (rather than a second, concurrent initial pass). <see cref=
+  ///   "ExpansionSharedTopicViewModel.Categories"/> is then filled once by the ungated nested-topics probe on the initial pass
+  ///   and skipped on the expansion pass, so the count is <c>2</c> whichever collection reflection maps first.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ExpansionPass_DoesNotDuplicateNestedTopics() {
+
+    var parent                  = new Topic("Parent", "ExpansionParent", null, 700);
+    var shared                  = new Topic("Shared", "ExpansionShared", parent, 701);
+    var categories              = new Topic("Categories", "List", shared, 702);
+    _                           = new Topic("Category1", "KeyOnly", categories, 703);
+    _                           = new Topic("Category2", "KeyOnly", categories, 704);
+
+    parent.Relationships.SetValue("Related", shared);
+
+    var target                  = await _mappingService.MapAsync<ExpansionParentTopicViewModel>(parent);
+    var mappedShared            = target?.Children.FirstOrDefault();
+
+    //Assert.Same confirms both collections resolved to the same cached instance, so the second reach was a cache hit and, given
+    //the disjoint associations, ran an expansion pass
+    Assert.NotNull(mappedShared);
+    Assert.Same(mappedShared, target?.Related.FirstOrDefault());
+    Assert.Equal(2, mappedShared.Categories.Count);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: EXPANSION PASS: DOES NOT REMAP COMPATIBLE PROPERTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps an <see cref="ExpansionParentTopicViewModel"/>, which encounters the same source topic twice with disjoint
+  ///   associations, and confirms that the second (expansion) pass does not reassign the compatible <see cref=
+  ///   "ExpansionSharedTopicViewModel.Key"/> property that the initial pass already mapped.
+  /// </summary>
+  /// <remarks>
+  ///   Reliability rests on the eager repository mapping the two collections sequentially, so the encounters are strictly
+  ///   ordered: The first builds and fills the cached view model, and the second, requesting a disjoint association, hits the
+  ///   cache and runs an expansion pass (rather than a second, concurrent initial pass). The compatible <see cref=
+  ///   "ExpansionSharedTopicViewModel.Key"/> is then assigned once on the initial pass and skipped on the expansion pass, so
+  ///   <see cref="ExpansionSharedTopicViewModel.KeyMapCount"/> is <c>1</c> whichever collection reflection maps first.
+  /// </remarks>
+  [Fact]
+  public async Task Map_ExpansionPass_DoesNotRemapCompatibleProperty() {
+
+    var parent                  = new Topic("Parent", "ExpansionParent", null, 710);
+    var shared                  = new Topic("Shared", "ExpansionShared", parent, 711);
+
+    parent.Relationships.SetValue("Related", shared);
+
+    var target                  = await _mappingService.MapAsync<ExpansionParentTopicViewModel>(parent);
+    var mappedShared            = target?.Children.FirstOrDefault();
+
+    //Assert.Same confirms both collections resolved to the same cached instance, so the second reach was a cache hit and, given
+    //the disjoint associations, ran an expansion pass rather than passing vacuously
+    Assert.NotNull(mappedShared);
+    Assert.Same(mappedShared, target?.Related.FirstOrDefault());
+    Assert.Equal("Shared", mappedShared.Key);
+    Assert.Equal(1, mappedShared.KeyMapCount);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -1330,6 +1808,34 @@ public class TopicMappingServiceTest {
     Assert.NotNull(GetChildTopic(specialized, "ChildTopic2"));
     Assert.NotNull(GetChildTopic(specialized, "ChildTopic3"));
     Assert.Null(GetChildTopic(specialized, "ChildTopic4"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: DESCENDENT: DOES NOT FILL RELATIONSHIPS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a <see cref="DescendentTopicViewModel"/>, whose only collection is <see cref="TopicPayload.Children"/>, against a
+  ///   <see cref="StubLazyLoadingTopicRepository"/>, and confirms that no synchronous <see cref="TopicPayload.Relationships"/>
+  ///   fill occurs. The inverse of <see cref="Map_RelationshipOnly_DoesNotFillChildren"/>: The relationship probe's method call
+  ///   (<c>source.Relationships.Contains</c>) was likewise evaluated unconditionally.
+  /// </summary>
+  [Fact]
+  public async Task Map_Descendent_DoesNotFillRelationships() {
+
+    var stub                    = new StubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(stub);
+    var typeLookupService       = new CompositeTypeLookupService(new TopicViewModelLookupService(), new FakeViewModelLookupService());
+    var mappingService          = new TopicMappingService(cache, typeLookupService);
+
+    var topic                   = await cache.Load("Root:Web:Web_0");
+
+    Contract.Assume(topic);
+
+    var target                  = await mappingService.MapAsync<DescendentTopicViewModel>(topic);
+
+    Assert.NotNull(target);
+    Assert.Equal(0, stub.GetFetchCount(topic.Id, TopicPayload.Relationships));
 
   }
 
@@ -1667,5 +2173,96 @@ public class TopicMappingServiceTest {
 
   public static TopicViewModel? GetChildTopic(IEnumerable<TopicViewModel>? topicCollection, string key)
     => topicCollection?.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
+
+  /*============================================================================================================================
+  | METHOD: CREATE GATED MAPPING SERVICE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Assembles a fresh <see cref="TopicMappingService"/> over a <see cref="BlockingStubLazyLoadingTopicRepository"/>,
+  ///   returning the service together with that gated repository and the <see cref="CachedTopicRepository"/> wrapping it.
+  /// </summary>
+  /// <remarks>
+  ///   Each call returns a new, isolated set so concurrent-mapping tests can "arm", release, or fault their own gate without
+  ///   interfering with one another. The stateless <see cref="TopicInfrastructureFixture{T}.TypeLookupService"/> is reused, so
+  ///   only the gated repository is constructed per test.
+  /// </remarks>
+  /// <returns>The gated repository, the cache over it, and the mapping service.</returns>
+  private (
+    BlockingStubLazyLoadingTopicRepository Repository,
+    CachedTopicRepository Cache,
+    ITopicMappingService MappingService
+  ) CreateGatedMappingService() {
+    var inner                   = new BlockingStubLazyLoadingTopicRepository();
+    var cache                   = new CachedTopicRepository(inner);
+    return (inner, cache, new TopicMappingService(cache, _typeLookupService));
+  }
+
+  /*============================================================================================================================
+  | METHOD: BUILD CONCURRENT EXPANSION GRAPH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Builds an in-memory graph for <see cref="Map_ConcurrentSharedCollection_PopulatesDeterministically"/>: A parent that
+  ///   references a single <paramref name="shared"/> topic twice, that topic having <paramref name="relationshipCount"/>
+  ///   outgoing relationships and <paramref name="incomingCount"/> incoming relationships under the key <c>Related</c>.
+  /// </summary>
+  /// <remarks>
+  ///   Everything is preloaded, so <paramref name="loader"/> performs no fetching; only the <paramref name="shared"/> topic is
+  ///   stamped for lazy loading, since only its <c>EnsureLoaded</c> needs to "rendezvous" the two passes. Its <see cref=
+  ///   "TopicPayload.Children"/> is left <see cref="LoadState.NotLoaded"/> so the mapper's collection warm-up actually calls
+  ///   the loader, which then marks it <see cref="LoadState.Loaded"/> before the base pass's nested-topic probe reads it. The
+  ///   relationships are already <see cref="LoadState.Loaded"/>. The shared topic deliberately has no <c>Related</c> child, so
+  ///   the nested-topic probe never displaces the relationship and incoming-relationship sources.
+  /// </remarks>
+  /// <param name="loader">The lazy loader to stamp on the shared topic.</param>
+  /// <param name="relationshipCount">The number of outgoing relationships to wire under <c>Related</c>.</param>
+  /// <param name="incomingCount">The number of incoming relationships to wire under <c>Related</c>.</param>
+  /// <param name="shared">The shared topic referenced twice by the returned parent.</param>
+  /// <returns>The parent topic to map.</returns>
+  private static Topic BuildConcurrentExpansionGraph(
+    ITopicLazyLoader            loader,
+    int                         relationshipCount,
+    int                         incomingCount,
+    out Topic                   shared
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish the parent and the shared target
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var identity                = 1;
+    var root                    = new Topic("ConcurrentExpansionRoot", "ConcurrentExpansionRoot", null, identity++);
+    shared                      = new Topic("Shared", "ConcurrentExpansionShared", null, identity++);
+    var backing                 = (ITopicBackingAccessor)shared;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Wire the shared target's outgoing relationships (the first source for the shared collection)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var index = 0; index < relationshipCount; index++) {
+      backing.Relationships.SetValue("Related", new($"Relationship_{index}", "KeyOnly", null, identity++));
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Wire the shared target's incoming relationships (the second source), via each origin's reciprocal outgoing relationship
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    for (var index = 0; index < incomingCount; index++) {
+      var origin                = new Topic($"Incoming_{index}", "KeyOnly", null, identity++);
+      origin.Relationships.SetValue("Related", shared);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Stamp the shared target and leave children NotLoaded so the collection warm-up calls the loader exactly once per pass; the
+    | relationships are already Loaded (no deferred targets), so the relationship probe reads them without autoloading
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ((ITopicLazyLoadable)shared).Loader = loader;
+    backing.Children.LoadState  = LoadState.NotLoaded;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Reference the shared target twice from the parent, so both references map it concurrently
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    root.References.SetValue("RelationshipsView", shared);
+    root.References.SetValue("IncomingView", shared);
+
+    return root;
+
+  }
 
 } //Class

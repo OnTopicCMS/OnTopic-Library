@@ -67,20 +67,35 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   }
 
   /// <summary>
-  ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>.
+  ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>, as well as any <see
+  ///   cref="Deferred"/> entries registered under that key.
   /// </summary>
   /// <remarks>
-  ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref=
-  ///   "TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>. Delegates to <see
-  ///   cref="Remove(String, Topic)"/> for each entry so the reciprocal relationship is also removed from each target's <see
-  ///   cref="Topic.IncomingRelationships"/>.
+  ///   If there are any <see cref="Topic"/> objects or <see cref="Deferred"/> entries registered under the specified <paramref
+  ///   name="relationshipKey"/>, then the <see cref="TopicRelationshipMultiMap"/> will be marked as <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/>. Delegates to <see cref="Remove(String, Topic)"/> for each resolved entry so the
+  ///   reciprocal relationship is also removed from each target's <see cref="Topic.IncomingRelationships"/>. Clearing the <see
+  ///   cref="Deferred"/> entries prevents a subsequent <see cref="ITopicLazyLoadable.EnsureLoaded"/> from resolving and
+  ///   resurrecting relationships this call just removed.
   /// </remarks>
   /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
   public void Clear(string relationshipKey) {
+
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
+
+    var hadLoadedValues         = _storage.GetValues(relationshipKey).Count > 0;
+    var hadDeferredEntries      = Deferred.Remove(relationshipKey);
+
     foreach (var topic in _storage.GetValues(relationshipKey).ToArray()) {
       Remove(relationshipKey, topic);
     }
+
+    // Remove() already marks the key dirty for each resident topic it removes; if only deferred entries existed, mark it here
+    // so the clear isn't silently lost
+    if (!hadLoadedValues && hadDeferredEntries) {
+      _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
+    }
+
   }
 
   /// <inheritdoc cref="Clear(String)"/>

@@ -492,6 +492,30 @@ public class TopicRelationshipMultiMapTest {
   }
 
   /*============================================================================================================================
+  | TEST: CLEAR: DEFERRED ENTRIES: REMOVES DEFERRED ENTRIES AND IS DIRTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Registers a <see cref="TopicRelationshipMultiMap.Deferred"/> entry with no corresponding target <see cref="Topic"/> and
+  ///   calls <see cref="TopicRelationshipMultiMap.Clear(String)"/>, confirming that the deferred entry is purged and <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> reports <c>true</c>, even though no target topic was removed.
+  /// </summary>
+  [Fact]
+  public void Clear_DeferredEntries_RemovesDeferredEntriesAndIsDirty() {
+
+    var topic                   = new Topic("Test", "Page", null, 1);
+    var relationships           = new TopicRelationshipMultiMap(topic);
+
+    relationships.Deferred.SetValue("Related", 999);
+    relationships.Deferred.SetValue("Other", 998);
+    relationships.Clear("Related");
+
+    Assert.False(relationships.Deferred.Remove("Related"));
+    Assert.True(relationships.Deferred.Remove("Other"));
+    Assert.True(relationships.IsDirty());
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: MARK NOT DIRTY: IS NOT DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>

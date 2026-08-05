@@ -25,7 +25,6 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   readonly                      ITopicRepository                _topicRepository;
-  readonly                      ContentTypeDescriptorCollection _contentTypeDescriptors;
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -44,16 +43,6 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Set dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = topicRepository;
-    _contentTypeDescriptors     = topicRepository.GetContentTypeDescriptors();
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Validate dependencies
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Assume(
-      _contentTypeDescriptors,
-      $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
-      $"or data source."
-    );
 
   }
 
@@ -133,7 +122,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     Contract.Assume(source.ContentType, nameof(source.ContentType));
 
     //Ensure the content type is valid
-    if (!_contentTypeDescriptors.Contains(source.ContentType)) {
+    if (!GetContentTypeDescriptors().Contains(source.ContentType)) {
       throw new MappingModelValidationException(
         $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
         $"are no matching content types in the ITopicRepository provided. This suggests that the binding model is invalid. " +
@@ -169,6 +158,30 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   }
 
   /*============================================================================================================================
+  | PRIVATE: GET CONTENT TYPE DESCRIPTORS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves the <see cref="ContentTypeDescriptorCollection"/> from the <see cref="ITopicRepository"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Called per-use rather than cached into a field, since content types can be added after this service is constructed, and
+  ///   a local cache would silently exclude any updates for the life of the service. Further, <see cref="TopicRepository"/>,
+  ///   the base class for every production <see cref="ITopicRepository"/> in this library, already caches the result after the
+  ///   first call and maintains the live collection in place (e.g. <c>Delete</c> refreshes it), so the per-call access here is
+  ///   expected to be cheap, acknowledging that's a property of that base class, not a guarantee of the <see cref=
+  ///   "ITopicRepository"/> interface itself.
+  /// </remarks>
+  private ContentTypeDescriptorCollection GetContentTypeDescriptors() {
+    var contentTypeDescriptors  = _topicRepository.GetContentTypeDescriptors();
+    Contract.Assume(
+      contentTypeDescriptors,
+      $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
+      $"data source."
+    );
+    return contentTypeDescriptors;
+  }
+
+  /*============================================================================================================================
   | PRIVATE: MAP (TOPIC)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -183,6 +196,13 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// <returns>
   ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
   /// </returns>
+  /// <remarks>
+  ///   Properties are mapped sequentially, in source order, rather than concurrently; this avoids concurrent mutation of the
+  ///   association collections (<see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, etc.), which aren't thread
+  ///   safe, and which individual property mappers write to on the shared <paramref name="target"/>. As a result, an exception
+  ///   thrown while mapping one property surfaces immediately, without waiting for or aggregating exceptions from subsequent
+  ///   properties, and any properties mapped before the failure remain applied to <paramref name="target"/>.
+  /// </remarks>
   private async Task<Topic?> MapAsync(object? source, Topic target, string? attributePrefix) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -191,21 +211,27 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     if (source is null) return  target;
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm extended attributes
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Without this, TrackedRecordCollection.SetValue() potentially runs against an unloaded extended attributes, and thus marks
+    | attributes as dirty even if they're unchanged, causing needless version rows on save.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)target).EnsureLoaded(TopicPayload.ExtendedAttributes).ConfigureAwait(false);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Validate model
     \-------------------------------------------------------------------------------------------------------------------------*/
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(source.GetType());
-    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
+    var contentTypeDescriptor   = GetContentTypeDescriptors().GetValue(target.ContentType);
 
     BindingModelValidator.ValidateModel(typeAccessor, contentTypeDescriptor, attributePrefix);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task> taskQueue        = [];
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
-      taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
+      await SetPropertyAsync(source, target, property, attributePrefix).ConfigureAwait(false);
     }
-    await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return result
@@ -239,7 +265,7 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     | Establish per-property variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var configuration           = memberAccessor.Configuration;
-    var contentTypeDescriptor   = _contentTypeDescriptors.GetValue(target.ContentType);
+    var contentTypeDescriptor   = GetContentTypeDescriptors().GetValue(target.ContentType);
     var compositeAttributeKey   = configuration.GetCompositeAttributeKey(attributePrefix);
 
     Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
@@ -445,6 +471,13 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     var sourceList              = (IList?)memberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm target's children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Replaces the Children getter's synchronous autoload with an explicit, asynchronous warm-up prior to the below probe
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)target).EnsureLoaded(TopicPayload.Children).ConfigureAwait(false);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Establish target collection to store mapped topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     var container               = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
@@ -452,6 +485,14 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
       container                 = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
       container.IsHidden        = true;
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm container's children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | The container can be NotLoaded even when target is loaded; PopulateTargetCollectionAsync()'s Contains() check for existing
+    | children as well as it's check for orphans require the complete set
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)container).EnsureLoaded(TopicPayload.Children).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map the topics from the source collection, and add them to the target collection
@@ -535,26 +576,15 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// </summary>
   /// <param name="sourceList">The <see cref="IList{ITopicBindingModel}"/> to pull the binding models from.</param>
   /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
+  /// <remarks>
+  ///   Children are mapped and added sequentially, in <paramref name="sourceList"/> order, rather than concurrently; this
+  ///   avoids concurrent mutation on the shared target <see cref="Topic"/> and guarantees <paramref name="targetList"/>'s
+  ///   resulting order matches the binding model, instead of varying with completion order.
+  /// </remarks>
   private async Task PopulateTargetCollectionAsync(
     IList                       sourceList,
     KeyedTopicCollection        targetList
   ) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Queue up mapping tasks
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task<Topic?>> taskQueue = [];
-
-    //Map child binding model to target collection on the target
-    foreach (ITopicBindingModel childBindingModel in sourceList) {
-      Contract.Assume(childBindingModel.Key);
-      if (targetList.Contains(childBindingModel.Key)) {
-        taskQueue.Add(MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!));
-      }
-      else {
-        taskQueue.Add(MapAsync(childBindingModel));
-      }
-    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove orphaned topics
@@ -567,15 +597,23 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Process mapping tasks
+    | Map and add children in source order
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Sequential by design: concurrent MapAsync() calls would mutate non-thread-safe collections on the shared target Topic in
+    | parallel, and completion-order nondeterminism would make targetList's resulting order unpredictable.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0) {
-      var topicTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      taskQueue.Remove(topicTask);
-      var topic                 = await topicTask.ConfigureAwait(false);
-      if (topic is not null &&  !targetList.Contains(topic.Key)) {
+    foreach (ITopicBindingModel childBindingModel in sourceList) {
+
+      Contract.Assume(childBindingModel.Key);
+
+      var topic                 = targetList.Contains(childBindingModel.Key)
+        ? await MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!).ConfigureAwait(false)
+        : await MapAsync(childBindingModel).ConfigureAwait(false);
+
+      if (topic is not null && !targetList.Contains(topic.Key)) {
         targetList.Add(topic);
       }
+
     }
 
   }

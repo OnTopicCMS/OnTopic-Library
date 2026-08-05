@@ -69,12 +69,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
   private async Task<object?>   MapAsync(
     Topic?                      topic,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -99,7 +101,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Perform mapping
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return await MapAsync(topic, viewModelType, associations, cache, attributePrefix).ConfigureAwait(false);
+    return await MapAsync(topic, viewModelType, associations, cache, attributePrefix, mapPath).ConfigureAwait(false);
 
   }
 
@@ -128,13 +130,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
   private async Task<object?>   MapAsync(
     Topic?                      topic,
     Type                        type,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -146,16 +150,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle cached objects
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Included entries that are still initializing, so a circular constructor reference (i.e., the same topic and type are
+    | already under construction higher up the current chain) can be distinguished from concurrent siblings (i.e., two
+    | independent branches mapping the same topic and type at once). The former throws; the latter awaits for the first one to
+    | finish construction and then uses the same cached view model.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var target                  = (object?)null;
-
-    if (cache.TryGetValue(topic.Id, type, out var cacheEntry)) {
-      target                    = cacheEntry.MappedTopic;
-      if (cacheEntry.GetMissingAssociations(associations) == AssociationTypes.None) {
-        return target;
-      }
-      //Call MapAsync() with target object to map missing attributes
-      return await MapAsync(topic, target, associations, cache, attributePrefix).ConfigureAwait(false);
+    if (cache.TryGetValue(topic.Id, type, out var cacheEntry, includeInitializing: true)) {
+      return await resolveCachedEntry(cacheEntry, mapPath).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -171,77 +173,112 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Pre-cache entry
     >-------------------------------------------------------------------------------------------------------------------------
-    | In property mapping, we deal with circular references by returning a cached reference. That isn't practical with
-    | circular references in constructor mapping. To help avoid these, we register a pre-cache entry as IsInitializing, but
-    | without a mapped object; the TopicMappingCache is expected to throw an exception if an attempt to map that topic to that
-    | type occurs again prior to the constructor mapping being completed.
+    | In property mapping, we deal with circular references by returning a cached reference. That isn't practical with circular
+    | references in constructor mapping. To help avoid these, we register a pre-cache entry as IsInitializing, but without a
+    | mapped object. If a concurrent sibling wins the race to preregister the same topic and view model type, we defer to its
+    | result rather than constructing a duplicate. If we're constructing the same topic and view model type as we're already in
+    | the middle of constructing further up the MapPath chain, however, that's a true circular construction reference, handled
+    | via the local resolveCachedEntry() function.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    cache.Preregister(topic.Id, type);
+    var (entry, isNew)          = cache.Preregister(topic.Id, type);
+
+    if (!isNew) {
+      return await resolveCachedEntry(entry, mapPath).ConfigureAwait(false);
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Handle AttributeDictionary constructor
-    >-------------------------------------------------------------------------------------------------------------------------
-    | A model may optionally expose a constructor with a single parameter accepting an AttributeDictionary. In this scenario,
-    | the TopicMappingService may optionally pass a lightweight AttributeDictionary, allowing the model's constructor to
-    | populate scalar values, instead of relying on reflection.
+    | Establish mapping path chain
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Now that this pass owns constructing a new view model, establish the initial topic and view model type in the MapPath, so
+    | any nested mapping that arrives back to the same pair while it is still initializing is recognized as a true circular
+    | constructor reference rather than harmless concurrency among independent siblings.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
+    mapPath                     = new(topic.Id, type, mapPath);
 
-      // This strategy is only performant if there are quite a several scalar properties and they are well-covered by the
-      // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and three or more compatible
-      // properties. In practice, this should be benefitial with any more than mapped attributes, but we also expect that most
-      // topics will have 2-3 excluded or unmapped attributes (e.g., Title, LastModified). With models, we can be a bit more
-      // intelligent, by excluding any members that are likely compatible with Topic properties, thus exluding e.g., Id, Key,
-      // WebPath, etc. This doesn't guarantee that the attributes map to the properties, but a more accurate evaluation would
-      // undermine the performance benefits of this optimization.
-      if (topic.Attributes.Count >= 5 && properties.Count(p => !p.MaybeCompatible) >= 3) {
-        var attributes          = topic.Attributes.AsAttributeDictionary(true);
-        arguments[0]            = attributes;
-        attributeArguments      = attributes;
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Construct and register the target
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Only the construction span is guarded, so the entry's completion is always settled: cache.Register() settles it on
+    | success and the catch faults it on failure, so a pass awaiting this entry observes the failure instead of hanging.
+    | Property mapping runs afterward, outside the guard, since the entry is already settled by then.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    object? target;
+
+    try {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle AttributeDictionary constructor
+      >-------------------------------------------------------------------------------------------------------------------------
+      | A model may optionally expose a constructor with a single parameter accepting an AttributeDictionary. In this scenario,
+      | the TopicMappingService may optionally pass a lightweight AttributeDictionary, allowing the model's constructor to
+      | populate scalar values, instead of relying on reflection.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (parameters.Count is 1 && parameters[0].Type == typeof(AttributeDictionary)) {
+
+        // This strategy is only performant if there are quite a several scalar properties and they are well-covered by the
+        // attributes. As a fast heuristic to evaluate this, we expect five or more attributes and three or more compatible
+        // properties. In practice, this should be benefitial with any more than mapped attributes, but we also expect that most
+        // topics will have 2-3 excluded or unmapped attributes (e.g., Title, LastModified). With models, we can be a bit more
+        // intelligent, by excluding any members that are likely compatible with Topic properties, thus exluding e.g., Id, Key,
+        // WebPath, etc. This doesn't guarantee that the attributes map to the properties, but a more accurate evaluation would
+        // undermine the performance benefits of this optimization.
+        if (topic.Attributes.Count >= 5 && properties.Count(p => !p.MaybeCompatible) >= 3) {
+          var attributes        = topic.Attributes.AsAttributeDictionary(true);
+          arguments[0]          = attributes;
+          attributeArguments    = attributes;
+        }
+        else {
+          parameters            = new();
+          arguments             = [];
+        }
+
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle other constructors
+      >-------------------------------------------------------------------------------------------------------------------------
+      | A model may optionally expose a constructor with multiple parameters, which can be defined via reflection in the same
+      | way as properties would be. This is especially useful for records using the positional syntax (i.e., where properties
+      | are defined using the constructor). This also, optionally, provides the model with more control, where needed, over how
+      | it's constructed.
+      \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        parameters              = new();
-        arguments               = [];
+
+        foreach (var parameter in parameters) {
+          parameterQueue.Add(parameter.ParameterInfo.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix, mapPath));
+        }
+
+        await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
+
+        foreach (var parameter in parameterQueue) {
+          arguments[parameter.Key] = await parameter.Value.ConfigureAwait(false);
+        }
+
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      target                    = Activator.CreateInstance(type, arguments);
+
+      Contract.Assume(
+        target,
+        $"The target type '{type}' could not be properly constructed, as required to map the topic '{topic.GetUniqueKey()}'."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Cache object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      cache.Register(topic.Id, associations, target);
 
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Handle other constructors
-    >-------------------------------------------------------------------------------------------------------------------------
-    | A model may optionally expose a constructor with multiple parameters, which can be defined via reflection in the same
-    | way as properties would be. This is especially useful for records using the positional syntax (i.e., where properties
-    | are defined using the constructor). This also, optionally, provides the model with more control, where needed, over how
-    | it's constructed.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    else {
-
-      foreach (var parameter in parameters) {
-        parameterQueue.Add(parameter.ParameterInfo.Position, GetParameterAsync(topic, associations, parameter, cache, attributePrefix));
-      }
-
-      await Task.WhenAll(parameterQueue.Values).ConfigureAwait(false);
-
-      foreach (var parameter in parameterQueue) {
-        arguments[parameter.Key] = await parameter.Value.ConfigureAwait(false);
-      }
-
+    // Construction failed before the entry was registered, so fault it; a concurrent pass awaiting this entry's completion then
+    // observes the failure instead of hanging on a map that will never complete
+    catch (Exception exception) {
+      entry.Fault(exception);
+      throw;
     }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Initialize object
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    target                      = Activator.CreateInstance(type, arguments);
-
-    Contract.Assume(
-      target,
-      $"The target type '{type}' could not be properly constructed, as required to map the topic '{topic.GetUniqueKey()}'."
-    );
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Cache object
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    cache.Register(topic.Id, associations, target);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
@@ -251,16 +288,51 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
       if (!mappedParameters.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) {
-        propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false));
+        propertyQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, false, mapPath));
       }
     }
 
-    await Task.WhenAll([.. propertyQueue]).ConfigureAwait(false);
+    await Task.WhenAll(propertyQueue).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return target
     \-------------------------------------------------------------------------------------------------------------------------*/
     return target;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve cached entry
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Returns a cached instance, expanding it with any missing associations when needed. If the entry is still initializing, it
+    | is either a true circular constructor reference on the current path (in which we throw an exception) or it's concurrent
+    | mapping of two independent siblings of the same topic and view model (in which we simply await its completion, then
+    | return the shared instance as a normal cache hit).
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    async Task<object?> resolveCachedEntry(MappedTopicCacheEntry pendingEntry, MapPath? path) {
+
+      // Distinguish a constructor cycle from sibling concurrency for an entry that is still being constructed
+      if (pendingEntry.IsInitializing) {
+        if (path?.Contains(topic.Id, type) == true) {
+          throw new TopicMappingException(
+            $"A circular reference was detected while constructing the '{type.Name}' instance for topic '{topic.Id}'. Circular " +
+            $"references must be mapped as properties, not as constructor parameters, so that a cached instance can be returned."
+          );
+        }
+        // Not on the current path: a concurrent sibling owns construction, so await its completion before resolving. A mutual
+        // constructor cycle split across two concurrently mapped branches is the one case this cannot distinguish and would
+        // deadlock; such cycles are unsupported, and still throw when reached from a single branch via the path check above.
+        await pendingEntry.Completion.ConfigureAwait(false);
+      }
+
+      // Return the cached instance as-is when it already covers the requested associations
+      var cachedTarget          = pendingEntry.MappedTopic;
+      if (pendingEntry.GetMissingAssociations(associations) is AssociationTypes.None) {
+        return cachedTarget;
+      }
+
+      // Otherwise expand the cached instance, mapping only the missing associations
+      return await MapAsync(topic, cachedTarget, associations, cache, attributePrefix, path).ConfigureAwait(false);
+
+    }
 
   }
 
@@ -292,6 +364,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   /// <remarks>
   ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
   ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with <see cref
@@ -305,7 +378,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     object                      target,
     AssociationTypes            associations,
     MappedTopicCache            cache,
-    string?                     attributePrefix                 = null
+    string?                     attributePrefix                 = null,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -324,17 +398,17 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle cached objects
-    >-------------------------------------------------------------------------------------------------------------------------
+    >---------------------------------------------------------------------------------------------------------------------------
     | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
-    | If it doesn't, determine the missing associations and request to have those mapped.
+    | Otherwise, add the missing associations to the cache entry and map only the subset this pass added, so that a concurrent
+    | pass doesn't remap the same associations.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (cache.TryGetValue(topic.Id, target.GetType(), out var cacheEntry)) {
-      associations              = cacheEntry.GetMissingAssociations(associations);
+      associations              = cacheEntry.AddMissingAssociations(associations);
       target                    = cacheEntry.MappedTopic;
       if (associations is AssociationTypes.None) {
         return cacheEntry.MappedTopic;
       }
-      cacheEntry.AddMissingAssociations(associations);
     }
     else if (!topic.IsNew) {
       cache.Register(
@@ -351,9 +425,9 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(target.GetType());
 
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
-      taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null));
+      taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry is not null, mapPath));
     }
-    await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
+    await Task.WhenAll(taskQueue).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return result
@@ -374,12 +448,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="parameter">Information related to the current parameter.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetParameterAsync(
     Topic source,
     AssociationTypes associations,
     ParameterMetadata parameter,
     MappedTopicCache cache,
-    string? attributePrefix     = null
+    string? attributePrefix     = null,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -403,14 +479,15 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
         parameter.Type,
         associations,
         cache,
-        configuration.AttributePrefix + attributePrefix
+        configuration.AttributePrefix + attributePrefix,
+        mapPath
       ).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var value                   = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false).ConfigureAwait(false);
+    var value                   = await GetValue(source, parameter.Type, associations, parameter, cache, attributePrefix, false, mapPath).ConfigureAwait(false);
 
     if (value is null && parameter.IsList) {
       return await getList(parameter.Type).ConfigureAwait(false);
@@ -423,14 +500,14 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     async Task<IList?> getList(Type targetType) {
 
-      var sourceList            = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix).ConfigureAwait(false);
+      var sourceList            = await GetSourceCollectionAsync(source, associations, parameter, attributePrefix, false).ConfigureAwait(false);
       var targetList            = InitializeCollection(targetType);
 
       if (targetList is null) {
         return null;
       }
 
-      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, targetList, parameter, cache, targetList, mapPath).ConfigureAwait(false);
 
       return targetList;
 
@@ -452,6 +529,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
   /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task SetPropertyAsync(
     Topic                       source,
     object                      target,
@@ -459,7 +537,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     MemberAccessor              propertyAccessor,
     MappedTopicCache            cache,
     string?                     attributePrefix                 = null,
-    bool                        mapAssociationsOnly             = false
+    bool                        mapAssociationsOnly             = false,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -485,7 +564,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
           targetProperty,
           associations,
           cache,
-          configuration.AttributePrefix + attributePrefix
+          configuration.AttributePrefix + attributePrefix,
+          mapPath
         ).ConfigureAwait(false);
       }
     }
@@ -494,9 +574,9 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     | Determine value
     \-------------------------------------------------------------------------------------------------------------------------*/
     else {
-      var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
+      var value                 = await GetValue(source, propertyAccessor.Type, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly, mapPath).ConfigureAwait(false);
       if (value is null && propertyAccessor.IsList) {
-        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix).ConfigureAwait(false);
+        await SetCollectionValueAsync(source, target, associations, propertyAccessor, cache, attributePrefix, mapAssociationsOnly, mapPath).ConfigureAwait(false);
       }
       else if (value != null && propertyAccessor.CanWrite) {
         propertyAccessor.SetValue(target, value, true);
@@ -523,6 +603,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
   /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetValue(
     Topic source,
     Type targetType,
@@ -530,7 +611,8 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     ItemMetadata itemMetadata,
     MappedTopicCache cache,
     string? attributePrefix     = "",
-    bool mapAssociationsOnly    = false
+    bool mapAssociationsOnly    = false,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -549,7 +631,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle by type, attribute
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
+    if (!mapAssociationsOnly && TryGetCompatibleProperty(source, targetType, itemMetadata, attributePrefix, out var compatibleValue)) {
       value                     = compatibleValue;
     }
     else if (itemMetadata.IsConvertible) {
@@ -562,7 +644,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     }
     else if (configuration.GetCompositeAttributeKey(attributePrefix) is "Parent") {
       if (associations.HasFlag(AssociationTypes.Parents) && source.Parent is not null) {
-        value                   = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(source.Parent, targetType, itemMetadata, cache, mapPath).ConfigureAwait(false);
       }
     }
     else if (configuration.MapToParent) {
@@ -571,7 +653,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     else if (itemMetadata.Type.IsClass && associations.HasFlag(AssociationTypes.References)) {
       var topicReference        = await getTopicReference().ConfigureAwait(false);
       if (topicReference is not null) {
-        value                   = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache).ConfigureAwait(false);
+        value                   = await GetTopicReferenceAsync(topicReference, targetType, itemMetadata, cache, mapPath).ConfigureAwait(false);
       }
     }
 
@@ -729,22 +811,43 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="memberAccessor">The <see cref="MemberAccessor"/> with details about the property's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task SetCollectionValueAsync(
     Topic                       source,
     object                      target,
     AssociationTypes            associations,
     MemberAccessor              memberAccessor,
     MappedTopicCache            cache,
-    string?                     attributePrefix
+    string?                     attributePrefix,
+    bool                        mapAssociationsOnly,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Ensure target list is created
+    | Establish per-entry lock
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Two concurrent passes expanding the same cached target with disjoint associations (see e.g., the cache-hit path in
+    | MapAsync) can populate the same member's target list from different sources, so its creation and population are
+    | synchronized on the shared cache entry. A target that isn't cached (i.e., a new topic) is never shared across passes, so
+    | its own instance serves as a sufficient and uncontended lock.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var targetList              = (IList?)memberAccessor.GetValue(target);
-    if (targetList is null) {
-      targetList                = InitializeCollection(memberAccessor.Type);
-      memberAccessor.SetValue(target, targetList);
+    cache.TryGetValue(source.Id, target.GetType(), out var cacheEntry);
+    var collectionLock          = (object?)cacheEntry?? target;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure target list is created
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Locked so two concurrent passes can't both observe a null list and instantiate competing instances, which would orphan the
+    | items added to whichever collection is overwritten. The lock is synchronous and never held across an await.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    IList? targetList;
+    lock (collectionLock) {
+      targetList                = (IList?)memberAccessor.GetValue(target);
+      if (targetList is null) {
+        targetList              = InitializeCollection(memberAccessor.Type);
+        memberAccessor.SetValue(target, targetList);
+      }
     }
 
     Contract.Assume(
@@ -756,7 +859,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish source collection to store topics to be mapped
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sourceList              = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix).ConfigureAwait(false);
+    var sourceList              = await GetSourceCollectionAsync(source, associations, memberAccessor, attributePrefix, mapAssociationsOnly).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate that source collection was identified
@@ -766,7 +869,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map the topics from the source collection, and add them to the target collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache).ConfigureAwait(false);
+    await PopulateTargetCollectionAsync(sourceList, targetList, memberAccessor, cache, collectionLock, mapPath).ConfigureAwait(false);
 
   }
 
@@ -788,11 +891,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="associations">Determines what associations the mapping should include, if any.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+  /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
   private async Task<IList<Topic>> GetSourceCollectionAsync(
     Topic                       source,
     AssociationTypes            associations,
     ItemMetadata                itemMetadata,
-    string?                     attributePrefix
+    string?                     attributePrefix,
+    bool                        mapAssociationsOnly
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -823,7 +928,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.Relationship,
-      source.Relationships.Contains,
+      key => source.Relationships.Contains(key),
       () => source.Relationships.GetValues(collectionKey)
     );
 
@@ -832,7 +937,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.NestedTopics,
-      source.Children.Contains,
+      key => source.Children.Contains(key),
       () => source.Children[collectionKey].Children
     );
 
@@ -841,7 +946,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     listSource                  = getCollection(
       CollectionType.IncomingRelationship,
-      source.IncomingRelationships.Contains,
+      key => source.IncomingRelationships.Contains(key),
       () => source.IncomingRelationships.GetValues(collectionKey)
     );
 
@@ -850,9 +955,11 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     \-------------------------------------------------------------------------------------------------------------------------*/
     //The following allows a target collection to be mapped to an IList<Topic> source collection. This is valuable for custom,
     //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific collection type.
-    //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
-    //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
-    if (listSource.Count == 0)  {
+    //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of AttributeDescriptors
+    //from the current ContentTypeDescriptor, as well as all of its ascendants. On an expansion pass, this fallback runs only
+    //when MappedCollections is among the claimed associations, avoiding a redundant reflective source-property read (and its
+    //re-enumeration) for passes that don't claim it.
+    if (listSource.Count == 0 && (!mapAssociationsOnly || associations.HasFlag(AssociationTypes.MappedCollections))) {
       var sourceProperty        = TypeAccessorCache.GetTypeAccessor(source.GetType()).GetMember(configuration.GetCompositeAttributeKey(attributePrefix));
       if (
         sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
@@ -870,9 +977,9 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle Metadata relationship
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
+    if (!mapAssociationsOnly && listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
       var metadataKey           = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-      var metadataParent        = await _topicRepository.Load(metadataKey, source).ConfigureAwait(false);
+      var metadataParent        = await _topicRepository.Load(metadataKey, source, TopicPayload.Children).ConfigureAwait(false);
       if (metadataParent is not null) {
         listSource              = [.. metadataParent.Children];
       }
@@ -896,6 +1003,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       var targetAssociations    = AssociationMap.Mappings[collection];
       var preconditionsMet      =
         listSource.Count == 0 &&
+        (!mapAssociationsOnly || targetAssociations is not AssociationTypes.None) &&
         (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
         (collectionType is CollectionType.Children || collection is not CollectionType.Children) &&
         (targetAssociations is  AssociationTypes.None || associations.HasFlag(targetAssociations)) &&
@@ -915,11 +1023,19 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the property's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+  /// <param name="collectionLock">
+  ///   The object to lock on while adding to <paramref name="targetList"/>, so concurrent passes populating a shared target's
+  ///   list from disjoint sources don't modify it simultaneously. Callers pass the shared cache entry for a cached target, or
+  ///   the (unshared) list itself when populating a constructor parameter.
+  /// </param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task PopulateTargetCollectionAsync(
     IList<Topic>                sourceList,
     IList                       targetList,
     ItemMetadata                itemMetadata,
-    MappedTopicCache            cache
+    MappedTopicCache            cache,
+    object                      collectionLock,
+    MapPath?                    mapPath                         = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -974,7 +1090,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
       if (!typeof(Topic).IsAssignableFrom(listType)) {
         var mappingType         = GetValidatedMappingType(configuration.MapAs, listType)?? GetValidatedMappingType(childTopic, listType);
         if (mappingType is not  null) {
-          taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache));
+          taskQueue.Add(MapAsync(childTopic, mappingType, configuration.IncludeAssociations, cache, mapPath: mapPath));
         }
       }
       else {
@@ -985,11 +1101,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process mapping tasks
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Awaited as a batch, then added in the order the tasks were queued in, rather than completion order; this keeps sibling
+    | order deterministic regardless of which child mappings genuinely await
     \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0) {
-      var dtoTask               = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      var dto                   = await dtoTask.ConfigureAwait(false);
-      taskQueue.Remove(dtoTask);
+    var dtos                    = await Task.WhenAll(taskQueue).ConfigureAwait(false);
+
+    foreach (var dto in dtos) {
       if (dto is not null) {
         addToList(dto);
       }
@@ -997,14 +1115,19 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Function: Add to List
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Locked so a concurrent pass populating the same shared list from a disjoint source can't add at the same time; the lock
+    | is synchronous and never held across an await, as child mapping happens outside of it via the above task queue.
     \-------------------------------------------------------------------------------------------------------------------------*/
     void addToList(object dto)  {
-      try {
-        targetList.Add(dto);
-      }
-      catch (ArgumentException) {
-        //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
-        //We would defensively check for this, except IList doesn't provide a suitable method to do so
+      lock (collectionLock) {
+        try {
+          targetList.Add(dto);
+        }
+        catch (ArgumentException) {
+          //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+          //We would defensively check for this, except IList doesn't provide a suitable method to do so
+        }
       }
     }
 
@@ -1048,11 +1171,13 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
   /// <param name="targetType">The <see cref="Type"/> expected for the mapped <paramref name="source"/>.</param>
   /// <param name="itemMetadata">The <see cref="ItemMetadata"/> with details about the item's attributes.</param>
   /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+  /// <param name="mapPath">The current mapping request's path, used to detect circular references during construction.</param>
   private async Task<object?>   GetTopicReferenceAsync(
     Topic source,
     Type targetType,
     ItemMetadata itemMetadata,
-    MappedTopicCache cache
+    MappedTopicCache cache,
+    MapPath? mapPath            = null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -1076,7 +1201,7 @@ public class TopicMappingService(ITopicRepository topicRepository, ITypeLookupSe
     var mappingType             = GetValidatedMappingType(configuration.MapAs, targetType)?? GetValidatedMappingType(source, targetType);
 
     if (mappingType is not null) {
-      topicDto                  = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache).ConfigureAwait(false);
+      topicDto                  = await MapAsync(source, mappingType, configuration.IncludeAssociations, cache, mapPath: mapPath).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
