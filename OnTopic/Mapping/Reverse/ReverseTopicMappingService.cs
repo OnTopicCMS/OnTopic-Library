@@ -183,6 +183,13 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// <returns>
   ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
   /// </returns>
+  /// <remarks>
+  ///   Properties are mapped sequentially, in source order, rather than concurrently; this avoids concurrent mutation of the
+  ///   association collections (<see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, etc.), which aren't thread
+  ///   safe, and which individual property mappers write to on the shared <paramref name="target"/>. As a result, an exception
+  ///   thrown while mapping one property surfaces immediately, without waiting for or aggregating exceptions from subsequent
+  ///   properties, and any properties mapped before the failure remain applied to <paramref name="target"/>.
+  /// </remarks>
   private async Task<Topic?> MapAsync(object? source, Topic target, string? attributePrefix) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -201,11 +208,9 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Loop through properties, mapping each one
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task> taskQueue        = [];
     foreach (var property in typeAccessor.GetMembers(MemberTypes.Property)) {
-      taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
+      await SetPropertyAsync(source, target, property, attributePrefix).ConfigureAwait(false);
     }
-    await Task.WhenAll([.. taskQueue]).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return result
@@ -535,26 +540,15 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
   /// </summary>
   /// <param name="sourceList">The <see cref="IList{ITopicBindingModel}"/> to pull the binding models from.</param>
   /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
+  /// <remarks>
+  ///   Children are mapped and added sequentially, in <paramref name="sourceList"/> order, rather than concurrently; this
+  ///   avoids concurrent mutation on the shared target <see cref="Topic"/> and guarantees <paramref name="targetList"/>'s
+  ///   resulting order matches the binding model, instead of varying with completion order.
+  /// </remarks>
   private async Task PopulateTargetCollectionAsync(
     IList                       sourceList,
     KeyedTopicCollection        targetList
   ) {
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Queue up mapping tasks
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Task<Topic?>> taskQueue = [];
-
-    //Map child binding model to target collection on the target
-    foreach (ITopicBindingModel childBindingModel in sourceList) {
-      Contract.Assume(childBindingModel.Key);
-      if (targetList.Contains(childBindingModel.Key)) {
-        taskQueue.Add(MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!));
-      }
-      else {
-        taskQueue.Add(MapAsync(childBindingModel));
-      }
-    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove orphaned topics
@@ -567,15 +561,23 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Process mapping tasks
+    | Map and add children in source order
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Sequential by design: concurrent MapAsync() calls would mutate non-thread-safe collections on the shared target Topic in
+    | parallel, and completion-order nondeterminism would make targetList's resulting order unpredictable.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    while (taskQueue.Count > 0) {
-      var topicTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-      taskQueue.Remove(topicTask);
-      var topic                 = await topicTask.ConfigureAwait(false);
-      if (topic is not null &&  !targetList.Contains(topic.Key)) {
+    foreach (ITopicBindingModel childBindingModel in sourceList) {
+
+      Contract.Assume(childBindingModel.Key);
+
+      var topic                 = targetList.Contains(childBindingModel.Key)
+        ? await MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!).ConfigureAwait(false)
+        : await MapAsync(childBindingModel).ConfigureAwait(false);
+
+      if (topic is not null && !targetList.Contains(topic.Key)) {
         targetList.Add(topic);
       }
+
     }
 
   }
