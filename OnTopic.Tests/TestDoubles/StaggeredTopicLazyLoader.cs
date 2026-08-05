@@ -16,7 +16,13 @@ namespace OnTopic.Tests.TestDoubles;
 ///   genuinely complete out of source order.
 /// </summary>
 /// <remarks>
-///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+///   <para>
+///     This is similar to <see cref="StaggeredStubTopicRepository"/>, except that it staggers calls to <see cref=
+///     "ITopicLazyLoader.EnsureLoaded"/>, not <see cref="ITopicRepository.Load()"/>.
+///   </para>
+///   <para>
+///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+///   </para>
 /// </remarks>
 [ExcludeFromCodeCoverage]
 internal sealed class StaggeredTopicLazyLoader(TimeSpan delay): ITopicLazyLoader {
