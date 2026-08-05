@@ -198,6 +198,14 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     if (source is null) return  target;
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm extended attributes
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Without this, TrackedRecordCollection.SetValue() potentially runs against an unloaded extended attributes, and thus marks
+    | attributes as dirty even if they're unchanged, causing needless version rows on save.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)target).EnsureLoaded(TopicPayload.ExtendedAttributes).ConfigureAwait(false);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Validate model
     \-------------------------------------------------------------------------------------------------------------------------*/
     var typeAccessor            = TypeAccessorCache.GetTypeAccessor(source.GetType());
@@ -450,6 +458,13 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
     var sourceList              = (IList?)memberAccessor.GetValue(source) ?? new List<ITopicBindingModel>();
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm target's children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Replaces the Children getter's synchronous autoload with an explicit, asynchronous warm-up prior to the below probe
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)target).EnsureLoaded(TopicPayload.Children).ConfigureAwait(false);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Establish target collection to store mapped topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     var container               = target.Children.GetValue(configuration.GetCompositeAttributeKey(attributePrefix));
@@ -457,6 +472,14 @@ public class ReverseTopicMappingService : IReverseTopicMappingService {
       container                 = TopicFactory.Create(configuration.GetCompositeAttributeKey(attributePrefix), "List", target);
       container.IsHidden        = true;
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Warm container's children
+    >---------------------------------------------------------------------------------------------------------------------------
+    | The container can be NotLoaded even when target is loaded; PopulateTargetCollectionAsync()'s Contains() check for existing
+    | children as well as it's check for orphans require the complete set
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ((ITopicLazyLoadable)container).EnsureLoaded(TopicPayload.Children).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Map the topics from the source collection, and add them to the target collection
