@@ -16,8 +16,8 @@ namespace OnTopic.Collections.Specialized;
 /// <remarks>
 ///   The <see cref="TrackedRecord{T}"/> class is comparable to the <see cref="KeyValuePair"/>, in that it tracks the <see
 ///   cref="Key"/> and <see cref="Value"/> for an item, but it additionally provides metadata related to the record, including
-///   the <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref="
-///   ITopicRepository"/> implementations to make more informed decisions about whether a record needs to be saved or
+///   the <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref=
+///   "ITopicRepository"/> implementations to make more informed decisions about whether a record needs to be saved or
 ///   overwritten during a <see cref="ITopicRepository.Refresh"/> or <see cref="ITopicRepository.Rollback"/>.
 /// </remarks>
 public abstract record TrackedRecord<T> {
@@ -102,10 +102,11 @@ public abstract record TrackedRecord<T> {
   ///   Gets the <see cref="LastModified"/> for the given item.
   /// </summary>
   /// <remarks>
-  ///   If loaded from a data store from e.g. <see cref="ITopicRepository.Load(Int32, Topic?, Boolean)"/>, the <see cref="
-  ///   LastModified"/> should be set to the <c>Version</c>. If the <see cref="Value"/> is novel, however, then it should be
-  ///   set to the current date. That won't be the same date established by <see cref="ITopicRepository.Save(Topic, Boolean)"
-  ///   /> for the <c>Version</c>, however, which is why this property is labeled <see cref="LastModified"/>.
+  ///   If loaded from a data store from e.g. <see cref="ITopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>, the
+  ///   <see cref="LastModified"/> should be set to the <c>Version</c>. If the <see cref="Value"/> is novel, however, then it
+  ///   should be set to the current date. That won't be the same date established by <see cref=
+  ///   "ITopicRepository.Save(Topic, Boolean)"/> for the <c>Version</c>, however, which is why this property is labeled <see
+  ///   cref="LastModified"/>.
   /// </remarks>
   public DateTime LastModified  { get; init; }
 

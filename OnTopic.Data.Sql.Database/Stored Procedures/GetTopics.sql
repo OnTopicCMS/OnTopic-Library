@@ -6,8 +6,14 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[GetTopics]
-	@TopicID		INT	= -1,
-	@DeepLoad		BIT	= 1,
+	@TopicID		INT		= -1,
+	@Depth		INT		= 0,
+	@LoadAscendants		BIT		= 0,
+	@IncludeIndexed		BIT		= 1,
+	@IncludeExtended	BIT		= 1,
+	@IncludeRelationships	BIT		= 1,
+	@IncludeReferences	BIT		= 1,
+	@IncludeHistory		BIT		= 1,
 	@UniqueKey		NVARCHAR(255)	= NULL
 AS
 
@@ -40,9 +46,11 @@ CLUSTERED INDEX	IX_C_Topics_TopicID
 	)
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT TOPIC AND DESCENDENTS
+-- SELECT TOPIC AND DESCENDANTS (FULL SUBTREE)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @DeepLoad = 1
+-- A @Depth of -1 requests the entire subtree, efficiently expressed via a nested-set range join.
+--------------------------------------------------------------------------------------------------------------------------------
+IF @Depth = -1
   BEGIN
     INSERT	#Topics (
 	  TopicID,
@@ -65,23 +73,86 @@ IF @DeepLoad = 1
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT TOPIC ONLY
+-- SELECT TOPIC AND DESCENDANTS (BOUNDED)
 --------------------------------------------------------------------------------------------------------------------------------
-ELSE
+-- A @Depth of 1 or more requests a bounded number of tiers below the seed topic, via a recursive CTE over ParentID. The seed is
+-- included at level 0. SortOrder is populated from RangeLeft, guaranteeing parents precede children and preserve sibling order.
+--------------------------------------------------------------------------------------------------------------------------------
+ELSE IF @Depth >= 1
   BEGIN
+    ;WITH DescendantsCTE AS (
+      SELECT	TopicID,
+	RangeLeft,
+	Level		= 0
+      FROM	Topics
+      WHERE	TopicID		= @TopicID
+      UNION ALL
+      SELECT	T1.TopicID,
+	T1.RangeLeft,
+	Level		= DescendantsCTE.Level + 1
+      FROM	Topics		AS T1
+      INNER JOIN		DescendantsCTE
+      ON	T1.ParentID		= DescendantsCTE.TopicID
+      WHERE	DescendantsCTE.Level		< @Depth
+    )
     INSERT	#Topics (
 	  TopicID,
 	  SortOrder
 	)
     SELECT	TopicID,
-	1
-    FROM	Topics
-    WHERE	TopicID		= @TopicID
+	RangeLeft
+    FROM	DescendantsCTE
+    OPTION (MAXRECURSION 0)
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SELECT TOPIC AND ANCESTOR CHAIN
+--------------------------------------------------------------------------------------------------------------------------------
+-- Ancestors are rows whose nested-set range contains the requested node's RangeLeft, i.e., the mirror of the descendant query
+-- above. This can be combined with @Depth to load both the subtree and its ancestor chain in a single query. The NOT EXISTS
+-- guard prevents duplicate inserts when both are requested.
+--------------------------------------------------------------------------------------------------------------------------------
+IF @LoadAscendants = 1
+  BEGIN
+    INSERT	#Topics (
+	  TopicID,
+	  SortOrder
+	)
+    SELECT	T1.TopicID,
+	T1.RangeLeft
+    FROM	Topics		AS T1
+    INNER JOIN	Topics		AS T2
+    ON	T2.RangeLeft
+      BETWEEN	T1.RangeLeft
+        AND	T1.RangeRight
+      AND	T2.TopicID		= @TopicID
+    WHERE	NOT EXISTS (
+	  SELECT	1
+	  FROM		#Topics
+	  WHERE		TopicID		= T1.TopicID
+	)
+    ORDER BY	T1.RangeLeft
     OPTION (
       OPTIMIZE
       FOR (	@TopicID		UNKNOWN
       )
     )
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SELECT SINGLE TOPIC (NO SCOPE)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Inserts only the requested topic; used by the lazy-load resolver to fill a single topic's extended attributes without
+-- traversing the tree in either direction.
+--------------------------------------------------------------------------------------------------------------------------------
+IF @Depth = 0 AND @LoadAscendants = 0
+  BEGIN
+    INSERT	#Topics (
+	  TopicID,
+	  SortOrder
+	)
+    SELECT	@TopicID,
+	0
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -91,7 +162,31 @@ SELECT	Topics.TopicID,
   	ContentType,
   	ParentID,
   	TopicKey,
-  	SortOrder
+  	SortOrder,
+  	HasChildren		= CAST(
+	  CASE
+	    WHEN		Topics.RangeRight - Topics.RangeLeft > 1
+	    THEN		1
+	    ELSE		0
+	  END AS BIT
+	),
+  	HasExtendedAttributes	=
+  	  CASE
+  	    WHEN		@IncludeExtended 	= 0
+  	    THEN		CAST(
+	      CASE
+	        WHEN EXISTS (
+  	          SELECT	1
+  	          FROM		ExtendedAttributeIndex	AS Extended
+  	          WHERE		Extended.TopicID	= Topics.TopicID
+  	          AND		Extended.AttributesXml	<> '<attributes></attributes>'
+  	        )
+	        THEN 		1
+	        ELSE 		0
+	      END 		AS BIT
+  	    )
+  	    ELSE NULL
+  	  END
 FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Topics.TopicID
@@ -107,6 +202,7 @@ SELECT	Attributes.TopicID,
 FROM	AttributeIndex		AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
+WHERE	@IncludeIndexed		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT EXTENDED ATTRIBUTES
@@ -117,6 +213,7 @@ SELECT	Attributes.TopicID,
 FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
+WHERE	@IncludeExtended	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
@@ -128,6 +225,7 @@ SELECT	Source_TopicID,
 FROM	RelationshipIndex	AS Relationships
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
+WHERE	@IncludeRelationships	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT REFERENCES
@@ -138,6 +236,7 @@ SELECT	Source_TopicID,
 FROM	ReferenceIndex		AS TopicReferences
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= TopicReferences.Source_TopicID
+WHERE	@IncludeReferences	= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
@@ -146,4 +245,5 @@ SELECT	History.TopicID,
 	Version
 FROM	VersionHistoryIndex	AS History
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= History.TopicID;
+  ON	Storage.TopicID		= History.TopicID
+WHERE	@IncludeHistory		= 1;

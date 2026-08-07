@@ -35,7 +35,7 @@ public sealed class IncludeAttribute : Attribute {
   /// </summary>
   /// <param name="associations">The specific associations that should be crawled.</param>
   public IncludeAttribute(AssociationTypes associations) {
-    Associations = associations;
+    Associations                = associations;
   }
 
   /*============================================================================================================================

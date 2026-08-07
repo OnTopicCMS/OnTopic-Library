@@ -55,8 +55,8 @@ public class NavigationViewModel<T> where T : class, IHierarchicalTopicViewModel
   /// <remarks>
   ///   <para>
   ///     In order to determine whether any given <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/>, the views
-  ///     will need to know where in the hierarchy the user currently is. By storing this on the <see cref="
-  ///     NavigationViewModel{T}"/> used as the root view model for every navigation component, we ensure that the views
+  ///     will need to know where in the hierarchy the user currently is. By storing this on the <see cref=
+  ///     "NavigationViewModel{T}"/> used as the root view model for every navigation component, we ensure that the views
   ///     always have access to this information.
   ///   </para>
   ///   <para>

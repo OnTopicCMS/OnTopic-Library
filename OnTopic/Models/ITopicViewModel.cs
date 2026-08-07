@@ -23,8 +23,8 @@ namespace OnTopic.Models;
 ///   </para>
 ///   <para>
 ///     For instance, in the default MVC library, the <c>TopicViewResult</c> class requires that the <see cref="Topic.
-///     ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a <see cref="
-///     ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the presentation
+///     ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a <see cref=
+///     "ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the presentation
 ///     layer and any supporting libraries.
 ///   </para>
 /// </remarks>
@@ -56,8 +56,8 @@ public interface ITopicViewModel: ICoreTopicViewModel, IAssociatedTopicBindingMo
   /// </summary>
   /// <remarks>
   ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
-  ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref="
-  ///   ICoreTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="ICoreTopicViewModel.
+  ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref=
+  ///   "ICoreTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="ICoreTopicViewModel.
   ///   ContentType"/>; e.g., if the Content Type is <c>Page</c>, then the view will be <c>Page</c>. This will cause the <c>
   ///   TopicViewResultExecutor</c> to look for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
   /// </remarks>

@@ -36,6 +36,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
   private readonly              ITypeLookupService              _typeLookupService;
   private readonly              ITopicMappingService            _topicMappingService;
   private readonly              ITopicRepository                _topicRepository;
+  private readonly              ISitemapTopicRepository         _sitemapTopicRepository;
   private                       DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
   /*============================================================================================================================
@@ -64,17 +65,17 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize Topic Repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sqlTopicRepository              = new SqlTopicRepository(connectionString);
-    var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-    _                                                         = new PageTopicViewModel();
+    var sqlTopicRepository      = new SqlTopicRepository(connectionString);
+    var cachedTopicRepository   = new CachedTopicRepository(sqlTopicRepository);
+    _                           = new PageTopicViewModel();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository                                          = cachedTopicRepository;
-    _typeLookupService                                        = new DynamicTopicViewModelLookupService();
-    _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-    _                                                         = _topicRepository.Load();
+    _topicRepository            = cachedTopicRepository;
+    _sitemapTopicRepository     = new SqlSitemapTopicRepository(connectionString);
+    _typeLookupService          = new DynamicTopicViewModelLookupService();
+    _topicMappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service
@@ -100,20 +101,20 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(context,  nameof(context));
+    Contract.Requires(context, nameof(context));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine controller type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+    var type                    = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Periodically update cache
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
-      var currentUpdate = DateTime.UtcNow;
-      _topicRepository.Refresh(_topicRepository.Load()!, _cacheLastUpdated);
-      _cacheLastUpdated = currentUpdate;
+      var currentUpdate         = DateTime.UtcNow;
+      _topicRepository.Refresh(_topicRepository.Load().GetAwaiter().GetResult()!, _cacheLastUpdated).GetAwaiter().GetResult();
+      _cacheLastUpdated         = currentUpdate;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +126,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
       nameof(ErrorController) =>
         new ErrorController(_topicRepository, _topicMappingService),
       nameof(SitemapController) =>
-        new SitemapController(_topicRepository),
+        new SitemapController(_sitemapTopicRepository),
       nameof(RedirectController) =>
         new RedirectController(_topicRepository),
       _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
@@ -142,12 +143,12 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Contract.Requires(context,  nameof(context));
+    Contract.Requires(context, nameof(context));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine view component type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ViewComponentDescriptor.TypeInfo.AsType();
+    var type                    = context.ViewComponentDescriptor.TypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate view component

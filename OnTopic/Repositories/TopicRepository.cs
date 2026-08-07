@@ -20,20 +20,20 @@ namespace OnTopic.Repositories;
 /// <remarks>
 ///   <para>
 ///     The <see cref="TopicRepository"/> is a highly opinionated base implementation of <see cref="ITopicRepository"/>.
-///     In addition to validating parameters and raising events on <see cref="Save(Topic, Boolean)"/>, <see cref="Delete(
-///     Topic, Boolean)"/>, and <see cref="Move(Topic, Topic, Topic?)"/>, it also provides a number of (protected) methods to
-///     aid implementors in evaluating and parsing <see cref="Topic"/> data, such as <see cref="GetUnmatchedAttributes(Topic)
-///     "/>. It is recommended that all concrete implementations of <see cref="ITopicRepository"/> that are responsible for
-///     persisting data to a data store use this as a base class.
+///     In addition to validating parameters and raising events on <see cref="Save(Topic, Boolean)"/>, <see cref=
+///     "Delete(Topic, Boolean)"/>, and <see cref="Move(Topic, Topic, Topic?)"/>, it also provides a number of (protected)
+///     methods to aid implementors in evaluating and parsing <see cref="Topic"/> data, such as <see cref=
+///     "GetUnmatchedAttributes(Topic)"/>. It is recommended that all concrete implementations of <see cref="ITopicRepository"/>
+///     that are responsible for persisting data to a data store use this as a base class.
 ///   </para>
 ///   <para>
 ///     Implementations of <see cref="ITopicRepository"/> which need to use different business logic, or do not need to
-///     implement business logic (such as unit test doubles) may instead opt to derive directly from the <see cref="
-///     ObservableTopicRepository"/>, which handles the basic event handling, and nothing else. Implementations of decorators
+///     implement business logic (such as unit test doubles) may instead opt to derive directly from the <see cref=
+///     "ObservableTopicRepository"/>, which handles the basic event handling, and nothing else. Implementations of decorators
 ///     should instead derive from the <see cref="TopicRepositoryDecorator"/>.
 ///   </para>
 /// </remarks>
-public abstract class TopicRepository : ObservableTopicRepository {
+public abstract class TopicRepository : LazyLoadingTopicRepository {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -57,7 +57,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
       var configuration         = (Topic?)null;
 
       try {
-        configuration           = Load("Root:Configuration");
+        configuration           = Load("Root:Configuration").GetAwaiter().GetResult();
       }
       catch (TopicNotFoundException) {
         //Swallow missing configuration, as this is an expected condition when working with a new database
@@ -127,14 +127,15 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// <remarks>
   ///   By default, the <see cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method will load data from the
   ///   concrete implementation of the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be
-  ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
-  ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
-  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
-  ///   Topic, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+  ///   preferable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic
+  ///   database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
+  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref=
+  ///   "ITopicRepository.Save(Topic, Boolean)"/> when the topic graph being saved includes any new <see cref=
+  ///   "ContentTypeDescriptor"/>s.
   /// </remarks>
   /// <param name="rootContentType">
-  ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
-  ///   cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
+  ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see cref=
+  ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
   ///   "ContentTypeDescriptor"/>, but also any descendents.
   /// </param>
   /// <returns></returns>
@@ -196,7 +197,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     var contentType             = sourceTopic.ContentType;
     var contentTypes            = GetContentTypeDescriptors();
-    var contentTypeDescriptor = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
+    var contentTypeDescriptor   = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
     if (contentTypeDescriptor is not null) {
       return contentTypeDescriptor;
@@ -218,21 +219,27 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(Topic topic, DateTime version) {
+  public override Task<Topic?> Load(Topic topic, DateTime version) {
     Contract.Requires(topic, nameof(topic));
     Contract.Requires<ArgumentException>(
       !topic.IsNew,
       $"The version '{version}' of '{topic.GetUniqueKey()}' cannot be loaded. Topics must be saved in order to load " +
       $"previous versions."
     );
-    return Load(topic.Id, version, topic);
+    return Load(topic.Id, version);
   }
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
+  /// <remarks>
+  ///   Merges the detached topic returned by <see cref="Load(Topic, DateTime)"/> into <paramref name="topic"/> using <see cref=
+  ///   "MergeVersion(Topic, Topic)"/>, then resolves whatever relationships and references are already loaded in <paramref
+  ///   name="topic"/>'s graph via <see cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>, leaving
+  ///   the rest deferred for lazy loading, before committing the result via <see cref="Save(Topic, Boolean)"/>.
+  /// </remarks>
+  public override async Task Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -245,14 +252,32 @@ public abstract class TopicRepository : ObservableTopicRepository {
     );
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Retrieve topic from database
+    | Retrieve historical version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Load(topic, version);
+    var historicalTopic         = await Load(topic, version).ConfigureAwait(false)?? throw new TopicNotFoundException(topic.Id);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge historical version into the live topic
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Some ITopicRepository implementations (e.g., test doubles backed by a single resident graph) may return the same instance
+    | from Load(Topic, DateTime); in that case, there's nothing to merge.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (!ReferenceEquals(historicalTopic, topic)) {
+      MergeVersion(topic, historicalTopic);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve associations against the resident graph
+    >-------------------------------------------------------------------------------------------------------------------------
+    | Every entry MergeVersion() placed into Deferred is marked IsDirty via ReplaceAll(), so resolving them here also marks the
+    | corresponding Relationships and References dirty, ensuring Save() detects and persists them.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    await ResolveAssociations(topic, TopicPayload.Relationships | TopicPayload.References).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Save as new version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Save(topic, false);
+    await Save(topic).ConfigureAwait(false);
 
   }
 
@@ -260,7 +285,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
+  public override sealed async Task Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish parameters
@@ -281,14 +306,14 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle first pass
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Save(topic, isRecursive, unresolvedTopics, version);
+    await Save(topic, isRecursive, unresolvedTopics, version).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Attempt to resolve outstanding associations
     \-------------------------------------------------------------------------------------------------------------------------*/
     foreach (var unresolvedTopic in unresolvedTopics.ToList()) {
       unresolvedTopics.Remove(unresolvedTopic);
-      Save(unresolvedTopic, false, unresolvedTopics, version);
+      await Save(unresolvedTopic, false, unresolvedTopics, version).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -327,7 +352,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
   /// <param name="unresolvedTopics">A list of <see cref="Topic"/>s with unresolved topic references.</param>
   /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
-  private void Save([NotNull]Topic topic, bool isRecursive, TopicCollection unresolvedTopics, DateTime version) {
+  private async Task Save([NotNull]Topic topic, bool isRecursive, TopicCollection unresolvedTopics, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -338,13 +363,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Establish variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var isNew                   = topic.IsNew;
-    var areRelationshipsDirty = topic.Relationships.IsDirty();
+    var areRelationshipsDirty   = topic.Relationships.IsDirty();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate content type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var contentTypeDescriptors= GetContentTypeDescriptors();
-    var contentTypeDescriptor = GetContentTypeDescriptor(topic);
+    var contentTypeDescriptors  = GetContentTypeDescriptors();
+    var contentTypeDescriptor   = GetContentTypeDescriptor(topic);
 
     if (contentTypeDescriptor is null) {
       throw new ReferentialIntegrityException(
@@ -369,7 +394,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
-    SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
+    await SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic)).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark as clean
@@ -392,12 +417,12 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Perform reordering and/or move
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.Parent is not null && !topic.IsNew && topic.IsDirty("Parent")) {
-      var topicIndex = topic.Parent.Children.IndexOf(topic);
+      var topicIndex            = topic.Parent.Children.IndexOf(topic);
       if (topicIndex > 0) {
-        Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
+        await Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]).ConfigureAwait(false);
       }
       else {
-        Move(topic, topic.Parent);
+        await Move(topic, topic.Parent).ConfigureAwait(false);
       }
     }
 
@@ -442,14 +467,14 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Reset original key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    topic.OriginalKey = null;
+    topic.OriginalKey           = null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Recurse over children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (isRecursive) {
+    if (isRecursive && ((ITopicLazyLoadable)topic).IsLoaded(TopicPayload.Children)) {
       foreach (var childTopic in topic.Children.ToList()) {
-        Save(childTopic, isRecursive, unresolvedTopics, version);
+        await Save(childTopic, isRecursive, unresolvedTopics, version).ConfigureAwait(false);
       }
     }
 
@@ -464,13 +489,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   The main <see cref="Save(Topic, Boolean)"/> implementation handles advanced validation of the parameters, updating the
-  ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref="
-  ///   ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref="
-  ///   ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref="
-  ///   SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
-  ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
-  ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
-  ///   true</c>.
+  ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref=
+  ///   "ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref=
+  ///   "ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref=
+  ///   "SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
+  ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref=
+  ///   "Topic.Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to
+  ///   <c>true</c>.
   /// </remarks>
   /// <param name="topic">The source <see cref="Topic"/> to save.</param>
   /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
@@ -480,13 +505,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   call <c>isRecursive</c>; in that case, <see cref="Save(Topic, Boolean)"/> will circle back and attempt to save them
   ///   after the rest of the topic graph has been saved.
   /// </param>
-  protected abstract void SaveTopic([NotNull] Topic topic, DateTime version, bool persistRelationships);
+  protected abstract Task SaveTopic([NotNull] Topic topic, DateTime version, bool persistRelationships);
 
   /*============================================================================================================================
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
+  public override sealed async Task Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -513,7 +538,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topic.IsNew && !target.IsNew && !(sibling?.IsNew?? true)) {
-      MoveTopic(topic, target,  sibling);
+      await MoveTopic(topic, target,  sibling).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -567,13 +592,13 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///   The derived implementation of <see cref="MoveTopic(Topic, Topic, Topic?)"/> is then left to focus exclusively on the
   ///   core logic of persisting the change to the underlying data store.
   /// </remarks>
-  protected abstract void MoveTopic(Topic topic, Topic target, Topic? sibling = null);
+  protected abstract Task MoveTopic(Topic topic, Topic target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override sealed void   Delete([ValidatedNotNull]Topic topic, bool isRecursive = false) {
+  public override sealed async Task Delete([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -582,8 +607,16 @@ public abstract class TopicRepository : ObservableTopicRepository {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate descendants
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Reads Children via ITopicLazyLoadable, not the autoloading getter, so a lazy-loaded topic isn't forced to fetch its
+    | children merely to be deleted. Both signals are already definitive: An ITopicRepository only ever stamps Children as
+    | NotLoaded when the topic genuinely has children it hasn't fully fetched, so no count check is needed for that case. When
+    | Loaded, the resident Children collection is complete, so its count is authoritative.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isRecursive && topic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase))) {
+    var rawTopic                = (ITopicLazyLoadable)topic;
+    var hasResidentChildren     = rawTopic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase));
+
+    if (!isRecursive && (hasResidentChildren || !rawTopic.IsLoaded(TopicPayload.Children))) {
       throw new ReferentialIntegrityException(
         $"The topic '{topic.GetUniqueKey()}' cannot be deleted. It has child topics, but '{nameof(isRecursive)}' is set to " +
         $"false. To delete '{topic.GetUniqueKey()}' and all of its descendants, set '{nameof(isRecursive)}' to true."
@@ -609,7 +642,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!topic.IsNew) {
-      DeleteTopic(topic);
+      await DeleteTopic(topic).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -676,7 +709,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var args = new TopicEventArgs(topic);
+    var args                    = new TopicEventArgs(topic);
     OnTopicDeleted(args);
 
   }
@@ -690,12 +723,12 @@ public abstract class TopicRepository : ObservableTopicRepository {
   /// </summary>
   /// <remarks>
   ///   The main <see cref="Delete(Topic, Boolean)"/> implementation handles advanced validation of the parameters,
-  ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref="
-  ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
+  ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref=
+  ///   "AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
   ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
   ///   persisting the change to the underlying data store.
   /// </remarks>
-  protected abstract void DeleteTopic(Topic topic);
+  protected abstract Task DeleteTopic(Topic topic);
 
   /*============================================================================================================================
   | METHOD: GET ATTRIBUTES
@@ -717,8 +750,8 @@ public abstract class TopicRepository : ObservableTopicRepository {
   protected IEnumerable<AttributeRecord> GetAttributes(
     Topic topic,
     bool? isExtendedAttribute,
-    bool? isDirty = null,
-    bool excludeLastModified =  false
+    bool? isDirty               = null,
+    bool excludeLastModified    =  false
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -739,7 +772,7 @@ public abstract class TopicRepository : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Get indexed attributes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var attributes              = new List<AttributeRecord>();
+    List<AttributeRecord> attributes = [];
 
     foreach (var attributeValue in topic.Attributes) {
 
@@ -794,8 +827,8 @@ public abstract class TopicRepository : ObservableTopicRepository {
   | METHOD: GET UNMATCHED ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see cref="
-  ///   ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeCollection"/>.
+  ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see cref=
+  ///   "ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeCollection"/>.
   /// </summary>
   /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
   protected IEnumerable<AttributeDescriptor> GetUnmatchedAttributes(Topic topic) {
@@ -898,8 +931,9 @@ public abstract class TopicRepository : ObservableTopicRepository {
   ///     The <see cref="AttributeDescriptor.IsExtendedAttribute"/> determines where an attribute <i>should</i> be stored; the
   ///     <see cref="AttributeRecord.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
   ///     values are in conflict, that suggests the coniguration for <see cref="AttributeDescriptor.IsExtendedAttribute"/> has
-  ///     changed since the attribute value was last saved. In that case, it should be treated as <see cref="TrackedRecord{T}.
-  ///     IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is updated.
+  ///     changed since the attribute value was last saved. In that case, it should be treated as <see cref=
+  ///     "TrackedRecord{T}.IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is
+  ///     updated.
   ///   </para>
   ///   <para>
   ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeRecord"/> is arbitrary attribute
@@ -942,6 +976,62 @@ public abstract class TopicRepository : ObservableTopicRepository {
     else if (topic is ContentTypeDescriptor descriptor) {
       descriptor.ResetAttributeDescriptors();
     }
+  }
+
+
+  /*============================================================================================================================
+  | METHOD: MERGE VERSION
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Merges the attributes, relationships, and references of a detached <paramref name="historicalTopic"/>, as returned by
+  ///   <see cref="Load(Topic, DateTime)"/>, onto the live <paramref name="topic"/> it corresponds to.
+  /// </summary>
+  /// <remarks>
+  ///   Relationships and references are replaced wholesale: Each collection's <c>Clear()</c> empties the resolved half
+  ///   (including reciprocal associations on previously related topics, e.g., <see cref="Topic.IncomingRelationships"/>), then
+  ///   <paramref name="historicalTopic"/>'s <c>Deferred</c> entries are written onto <paramref name="topic"/>'s <c>Deferred</c>
+  ///   collections, marked dirty, ready for <see cref="LazyLoadingTopicRepository.ResolveAssociations(Topic, TopicPayload)"/>
+  ///   to reconnect against whatever is already present in <paramref name="topic"/>'s graph. Only <c>Deferred</c> needs to be
+  ///   read, not any resolved associations on <paramref name="historicalTopic"/>, because <see cref="Load(Topic, DateTime)"/>
+  ///   is contractually incapable of resolving associations: With no <c>referenceTopic</c> parameter, it has no graph to
+  ///   resolve them against, so every association it returns is, by construction, <c>Deferred</c>.
+  /// </remarks>
+  /// <param name="topic">The live <see cref="Topic"/> to merge the historical version into.</param>
+  /// <param name="historicalTopic">The detached historical version, as returned by <see cref="Load(Topic, DateTime)"/>.</param>
+  private static void MergeVersion(Topic topic, Topic historicalTopic) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Setup
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    var rawHistoricalTopic      = (ITopicBackingAccessor)historicalTopic;
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge attributes
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    foreach (var attribute in rawHistoricalTopic.Attributes) {
+      rawTopic.Attributes.SetValue(attribute.Key, attribute.Value, isExtendedAttribute: attribute.IsExtendedAttribute);
+    }
+
+    // Remove attributes that were introduced after the requested version
+    foreach (var attribute in rawTopic.Attributes.ToArray()) {
+      if (!rawHistoricalTopic.Attributes.Contains(attribute.Key)) {
+        rawTopic.Attributes.Remove(attribute.Key);
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge relationships
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    rawTopic.Relationships.Clear();
+    rawTopic.Relationships.Deferred.ReplaceAll(rawHistoricalTopic.Relationships.Deferred);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Merge references
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    rawTopic.References.Clear();
+    rawTopic.References.Deferred.ReplaceAll(rawHistoricalTopic.References.Deferred);
+
   }
 
 } //Class

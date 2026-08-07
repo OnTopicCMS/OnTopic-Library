@@ -20,7 +20,9 @@ SELECT	TopicID,
   	ContentType,
   	ParentID,
   	TopicKey,
-  	0 AS SortOrder
+  	0 AS SortOrder,
+  	HasChildren		= NULL,
+  	HasExtendedAttributes	= NULL
 FROM	Topics
 WHERE	TopicID		= @TopicID
 

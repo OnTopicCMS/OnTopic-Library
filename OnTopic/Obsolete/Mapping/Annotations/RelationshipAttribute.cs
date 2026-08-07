@@ -23,8 +23,8 @@ public sealed class RelationshipAttribute : Attribute {
   /// </summary>
   /// <param name="key">The key value of the collection associated with the current property.</param>
   public RelationshipAttribute(string key) {
-    TopicFactory.ValidateKey(key, false);
-    Key = key;
+    TopicFactory.ValidateKey(key);
+    Key                         = key;
   }
 
   /// <summary>
@@ -32,7 +32,7 @@ public sealed class RelationshipAttribute : Attribute {
   /// </summary>
   /// <param name="type">Optional. The type of collection the collection is associated with.</param>
   public RelationshipAttribute(RelationshipType type = RelationshipType.Any) {
-    Type = type;
+    Type                        = type;
   }
 
   /*============================================================================================================================

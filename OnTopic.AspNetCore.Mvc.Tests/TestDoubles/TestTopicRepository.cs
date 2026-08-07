@@ -6,6 +6,7 @@
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 
 namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
@@ -33,8 +34,8 @@ public class TestTopicRepository: DummyTopicRepository {
   ///   Instantiates a new instance of the StubTopicRepository.
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
-  public TestTopicRepository()  : base() {
-    _cache = CreateFakeData();
+  public TestTopicRepository()  {
+    _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }
 
@@ -42,7 +43,15 @@ public class TestTopicRepository: DummyTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load() => _cache;
+  public override Task<Topic?> Load() => Task.FromResult<Topic?>(_cache);
+
+  /// <inheritdoc />
+  public override Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) => Task.FromResult(String.IsNullOrEmpty(uniqueKey)? null : _cache.FindFirst(t => t.GetUniqueKey() == uniqueKey));
 
   /*============================================================================================================================
   | METHOD: CREATE FAKE DATA

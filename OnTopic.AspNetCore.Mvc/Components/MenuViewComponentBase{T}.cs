@@ -31,10 +31,10 @@ namespace OnTopic.AspNetCore.Mvc.Components;
 ///     <c>abstract</c> and suffixed with <c>Base</c>.
 ///   </para>
 ///   <para>
-///     While the <see cref="MenuViewComponentBase{T}"/> only requires that the <typeparamref name="T"/> implement <see cref="
-///     IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be determined on a per-case
-///     basis, as required by the implementation. Implementaters, however, should consider implementing the <see cref="
-///     INavigationTopicViewModel{T}"/> interface, which provides the standard properties that most views will likely need, as
+///     While the <see cref="MenuViewComponentBase{T}"/> only requires that the <typeparamref name="T"/> implement <see cref=
+///     "IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be determined on a per-case
+///     basis, as required by the implementation. Implementaters, however, should consider implementing the <see cref=
+///     "INavigationTopicViewModel{T}"/> interface, which provides the standard properties that most views will likely need, as
 ///     well as a <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/> method for determining if the navigation item
 ///     is currently selected.
 ///   </para>
@@ -82,9 +82,9 @@ public abstract class MenuViewComponentBase<T> :
     var                         configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
 
     if (!String.IsNullOrEmpty(configuredRoot)) {
-      navigationRootTopic = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic);
+      navigationRootTopic       = TopicRepository.Load("Root:" + configuredRoot, CurrentTopic).GetAwaiter().GetResult();
     }
-    navigationRootTopic ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
+    navigationRootTopic         ??= HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Root:Web");
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return root
@@ -117,14 +117,14 @@ public abstract class MenuViewComponentBase<T> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve root topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationRootTopic = GetNavigationRoot();
+    var navigationRootTopic     = GetNavigationRoot();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct view model
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationViewModel = new NavigationViewModel<T>() {
-      NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
-      CurrentWebPath = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
+    var navigationViewModel     = new NavigationViewModel<T>() {
+      NavigationRoot            = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
+      CurrentWebPath            = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
     };
 
     /*--------------------------------------------------------------------------------------------------------------------------

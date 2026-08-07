@@ -43,7 +43,7 @@ public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where 
     ITopicRepository topicRepository,
     IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
   ) {
-    TopicRepository = topicRepository;
+    TopicRepository             = topicRepository;
     HierarchicalTopicMappingService = hierarchicalTopicMappingService;
   }
 
@@ -67,8 +67,8 @@ public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where 
   ///   be mapped.
   /// </summary>
   /// <returns>
-  ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="
-  ///   NavigationTopicViewComponentBase{T}"/>.
+  ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref=
+  ///   "NavigationTopicViewComponentBase{T}"/>.
   /// </returns>
   protected IHierarchicalTopicMappingService<T> HierarchicalTopicMappingService { get; }
 
@@ -81,7 +81,7 @@ public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where 
   /// <returns>The Topic associated with the current request.</returns>
   protected Topic? CurrentTopic {
     get {
-      field ??= TopicRepository.Load(RouteData);
+      field                     ??= TopicRepository.Load(RouteData);
       return field;
     }
   }

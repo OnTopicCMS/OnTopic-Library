@@ -27,7 +27,7 @@ public class Startup {
   ///   The shared <see cref="IConfiguration"/> dependency.
   /// </param>
   public Startup(IConfiguration configuration) {
-    Configuration = configuration;
+    Configuration               = configuration;
   }
 
   /*============================================================================================================================
@@ -62,7 +62,7 @@ public class Startup {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Register: Activators
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var activator = new SampleActivator();
+    var activator               = new SampleActivator();
 
     services.AddSingleton<IControllerActivator>(activator);
     services.AddSingleton<IViewComponentActivator>(activator);

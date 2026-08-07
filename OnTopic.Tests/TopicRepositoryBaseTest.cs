@@ -5,10 +5,12 @@
 \=============================================================================================================================*/
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
+using OnTopic.Data.Sql;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -44,21 +46,21 @@ public class TopicRepositoryBaseTest {
   ///   crawling the object graph.
   /// </remarks>
   public TopicRepositoryBaseTest() {
-    _topicRepository            = new StubTopicRepository();
-    _cachedTopicRepository      = new CachedTopicRepository(_topicRepository);
+    _topicRepository            = new();
+    _cachedTopicRepository      = new(_topicRepository);
   }
 
   /*============================================================================================================================
   | TEST: LOAD: VALID TOPIC ID: RETURNS EXPECTED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a valid <see cref="Topic.Id"/> and
-  ///   confirms that the expected topic is returned.
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with a valid <see cref="Topic.Id"/>
+  ///   and confirms that the expected topic is returned.
   /// </summary>
   [Fact]
-  public void Load_ValidTopicId_ReturnsExpectedTopic() {
+  public async Task Load_ValidTopicId_ReturnsExpectedTopic() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = await _topicRepository.Load(11111);
 
     Assert.Equal(11111, topic?.Id);
 
@@ -68,36 +70,71 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: INVALID TOPIC ID: RETURNS EXPECTED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with an invalid <see cref="Topic.Id"/> and
-  ///   confirms that no topic is returned.
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with an invalid <see cref=
+  ///   "Topic.Id"/> and confirms that no topic is returned.
   /// </summary>
   [Fact]
-  public void Load_InvalidTopicId_ReturnsExpectedTopic() =>
-   Assert.Null(_topicRepository.Load(11113));
+  public async Task Load_InvalidTopicId_ReturnsExpectedTopic() =>
+    Assert.Null(await _topicRepository.Load(11113));
 
   /*============================================================================================================================
   | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a negative <see cref="Topic.Id"/> and
-  ///   confirms that the root topic is returned.
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with a negative <see cref=
+  ///   "Topic.Id"/> and confirms that the root topic is returned.
   /// </summary>
   [Fact]
-  public void Load_NegativeTopicId_ReturnsRootTopic() =>
-    Assert.Equal("Root", _cachedTopicRepository.Load(-2)?.GetUniqueKey());
+  public async Task Load_NegativeTopicId_ReturnsRootTopic() =>
+    Assert.Equal("Root", (await _cachedTopicRepository.Load(-2))?.GetUniqueKey());
+
+  /*============================================================================================================================
+  | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
+  ///   "TopicPayload.None"/> and confirms that a topic is still returned. The stub always returns fully-loaded topics
+  ///   regardless of this parameter; the test simply verifies the signature is accepted.
+  /// </summary>
+  [Fact]
+  public async Task Load_WithNarrowPayload_ReturnsTopic() {
+
+    var topic                   = await _topicRepository.Load(11111, payload: TopicPayload.None);
+
+    Assert.NotNull(topic);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: LOAD: NARROW PAYLOAD: EXTENDED ATTRIBUTES LOADED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
+  ///   "TopicPayload.None"/> and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>. The stub does not
+  ///   defer extended attributes; this simply confirms no regression for stub-backed tests.
+  /// </summary>
+  [Fact]
+  public async Task Load_WithNarrowPayload_ExtendedAttributesLoaded() {
+
+    var topic                   = await _topicRepository.Load(11111, payload: TopicPayload.None);
+
+    Assert.NotNull(topic);
+    Assert.Equal(LoadState.Loaded, topic.Attributes.LoadState);
+
+  }
 
   /*============================================================================================================================
   | TEST: LOAD: VALID DATE: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a valid date and ensures that topic
   ///   with that date is returned.
   /// </summary>
   [Fact]
-  public void Load_ValidDate_ReturnsTopic() {
+  public async Task Load_ValidDate_ReturnsTopic() {
 
     var version                 = DateTime.UtcNow.AddDays(-1);
-    var topic                   = _cachedTopicRepository.Load(11111, version);
+    var topic                   = await _cachedTopicRepository.Load(11111, version);
 
     Assert.True(topic?.VersionHistory.Contains(version));
     Assert.Equal(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
@@ -108,18 +145,18 @@ public class TopicRepositoryBaseTest {
   | TEST: ROLLBACK: TOPIC: UPDATES LAST MODIFIED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
-  ///   LastModified"/> value is updated.
+  ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref=
+  ///   "Topic.LastModified"/> value is updated.
   /// </summary>
   [Fact]
-  public void Rollback_Topic_UpdatesLastModified() {
+  public async Task Rollback_Topic_UpdatesLastModified() {
 
     var version                 = DateTime.UtcNow.AddDays(-1);
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = await _topicRepository.Load(11111);
 
     if (topic is not null) {
       topic.VersionHistory.Add(version);
-      _topicRepository.Rollback(topic, version);
+      await _topicRepository.Rollback(topic, version);
     }
 
     Assert.True(topic?.VersionHistory.Contains(version));
@@ -128,15 +165,72 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: ROLLBACK: DIVERGENT RELATIONSHIPS: MERGES RECIPROCALLY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Rolls back a topic whose current <c>Related</c> relationship differs from the historical version being restored: The
+  ///   live topic is currently related to one topic that the historical version doesn't include, and the historical version
+  ///   includes a different topic that the live topic isn't currently related to. Confirms that, after <see cref=
+  ///   "TopicRepository.Rollback(Topic, DateTime)"/>, the live topic's relationship matches the historical version exactly,
+  ///   and that the reciprocal <see cref="Topic.IncomingRelationships"/> on both the previously and newly related topics are
+  ///   updated to match.
+  /// </summary>
+  /// <remarks>
+  ///   Unlike <see cref="Rollback_Topic_UpdatesLastModified"/>, which used <see cref="StubTopicRepository"/>, whose <c>
+  ///   Load(Int32, DateTime)</c> returns the very same live instance being rolled back, short-circuiting <see cref=
+  ///   "TopicRepository.Rollback(Topic, DateTime)"/>'s merge entirely, this uss a <see cref="FakeSqlTopicRepository"/>, which
+  ///   serves a genuinely detached historical graph via the real, production <see cref="SqlDataReaderExtensions.LoadTopicGraph"
+  ///   />, with relationship data that can diverge from the current, live state. That divergence is what actually tests the
+  ///   merge.
+  /// </remarks>
+  [Fact]
+  public async Task Rollback_DivergentRelationships_MergesReciprocally() {
+
+    // Establish a minimal content type graph, required by Save()'s content type validation
+    var root                    = new Topic("Root", "Container", null, 1);
+    var configuration           = new Topic("Configuration", "Container", root, 2);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, 3);
+    _                           = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, 4);
+
+    // Establish topics: A is being rolled back; D is A's current (soon to be stale) relationship; E is A's historical
+    // relationship, currently unrelated
+    var topicA                  = new Topic("A", "Page", root, 100);
+    var topicD                  = new Topic("D", "Page", root, 101);
+    var topicE                  = new Topic("E", "Page", root, 102);
+    var version                 = DateTime.UtcNow.AddDays(-30);
+
+    topicA.Relationships.SetValue("Related", topicD);
+    topicA.Relationships.MarkClean();
+    topicA.VersionHistory.Add(version);
+
+    // Establish repository with divergent historical data: A is historically related to E, not D
+    var repository               = new FakeSqlTopicRepository().AddTopic(100, "A", "Page", null);
+
+    repository.AddHistoricalRelationship(100, "Related", 102);
+
+    // Rollback
+    await repository.Rollback(topicA, version);
+
+    // A's relationship now matches the historical version
+    Assert.Contains(topicE, topicA.Relationships.GetValues("Related"));
+    Assert.DoesNotContain(topicD, topicA.Relationships.GetValues("Related"));
+
+    // Reciprocal relationships were updated on both sides
+    Assert.DoesNotContain(topicA, topicD.IncomingRelationships.GetValues("Related"));
+    Assert.Contains(topicA, topicE.IncomingRelationships.GetValues("Related"));
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD: FUTURE DATE: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a future <see cref="DateTime"/> and
   ///   confirms that an exception is thrown.
   /// </summary>
   [Fact]
-  public void Load_FutureDate_ThrowsException() =>
-    Assert.Throws<InvalidOperationException>(() =>
+  public async Task Load_FutureDate_ThrowsException() =>
+    await Assert.ThrowsAsync<InvalidOperationException>(() =>
       _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1))
     );
 
@@ -144,12 +238,12 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: OLD DATE: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
+  ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime)"/> with a date prior to versioning being
   ///   introduced and ensures that an exception is thrown.
   /// </summary>
   [Fact]
-  public void Load_OldDate_ThrowsException() =>
-    Assert.Throws<InvalidOperationException>(() =>
+  public async Task Load_OldDate_ThrowsException() =>
+    await Assert.ThrowsAsync<InvalidOperationException>(() =>
       _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15))
     );
 
@@ -157,10 +251,10 @@ public class TopicRepositoryBaseTest {
   | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
+  ///   Deletes a topic which other topics, outside the graph, derive from. Expects exception.
   /// </summary>
   [Fact]
-  public void Delete_BaseTopic_ThrowsException() {
+  public async Task Delete_BaseTopic_ThrowsException() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -169,7 +263,7 @@ public class TopicRepositoryBaseTest {
       BaseTopic                 = child
     };
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Delete(topic, true)
     );
 
@@ -182,7 +276,7 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic which another topic within the graph derives from. Expects success.
   /// </summary>
   [Fact]
-  public void Delete_InternallyDerivedTopic_Succeeds() {
+  public async Task Delete_InternallyDerivedTopic_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -191,7 +285,7 @@ public class TopicRepositoryBaseTest {
       BaseTopic                 = child
     };
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(root.Children);
 
@@ -204,13 +298,13 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
   /// </summary>
   [Fact]
-  public void Delete_Descendants_ThrowsException() {
+  public async Task Delete_Descendants_ThrowsException() {
 
     var topic                   = new Topic("Topic", "Page");
     _                           = new Topic("Child", "Page", topic);
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
-      _topicRepository.Delete(topic, false)
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
+      _topicRepository.Delete(topic)
     );
 
   }
@@ -222,13 +316,13 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
   /// </summary>
   [Fact]
-  public void Delete_DescendantsWithRecursive_Succeeds() {
+  public async Task Delete_DescendantsWithRecursive_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
     _                           = new Topic("Child", "Page", topic);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(root.Children);
 
@@ -241,13 +335,13 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
   /// </summary>
   [Fact]
-  public void Delete_NestedTopics_Succeeds() {
+  public async Task Delete_NestedTopics_Succeeds() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
     _                           = new Topic("Child", "List", topic);
 
-    _topicRepository.Delete(topic, false);
+    await _topicRepository.Delete(topic);
 
     Assert.Empty(root.Children);
 
@@ -261,7 +355,7 @@ public class TopicRepositoryBaseTest {
   ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
   /// </summary>
   [Fact]
-  public void Delete_Relationships_DeleteRelationships() {
+  public async Task Delete_Relationships_DeleteRelationships() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -271,7 +365,7 @@ public class TopicRepositoryBaseTest {
     child.Relationships.SetValue("Related", associated);
     child.References.SetValue("Referenced", associated);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(associated.IncomingRelationships.GetValues("Related"));
     Assert.Empty(associated.IncomingRelationships.GetValues("Referenced"));
@@ -285,7 +379,7 @@ public class TopicRepositoryBaseTest {
   ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
   /// </summary>
   [Fact]
-  public void Delete_IncomingRelationships_DeleteAssociations() {
+  public async Task Delete_IncomingRelationships_DeleteAssociations() {
 
     var root                    = new Topic("Root", "Page");
     var topic                   = new Topic("Topic", "Page", root);
@@ -296,7 +390,7 @@ public class TopicRepositoryBaseTest {
     source1.Relationships.SetValue("Associations", child);
     source2.References.SetValue("Associations", child);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(source1.Relationships.GetValues("Associations"));
 
@@ -306,8 +400,8 @@ public class TopicRepositoryBaseTest {
   | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-  ///   cref="AttributeDescriptor.IsExtendedAttribute"/>.
+  ///   Retrieves a list of attributes from a topic, without any filtering by whether the attribute is an <see cref=
+  ///   "AttributeDescriptor.IsExtendedAttribute"/>.
   /// </summary>
   [Fact]
   public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
@@ -326,9 +420,9 @@ public class TopicRepositoryBaseTest {
   | TEST: GET ATTRIBUTES: EMPTY ATTRIBUTES: SKIPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-  ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
-  ///   be skipped.
+  ///   Retrieves a list of attributes from a topic, without any filtering by whether the attribute is an <see cref=
+  ///   "AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should be
+  ///   skipped.
   /// </summary>
   [Fact]
   public void GetAttributes_EmptyAttributes_Skips() {
@@ -338,7 +432,7 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("EmptyAttribute", "");
     topic.Attributes.SetValue("NullAttribute", null);
 
-    var attributes              = _topicRepository.GetAttributesProxy(topic, null);
+    var attributes              = _topicRepository.GetAttributesProxy(topic, null).ToList();
 
     Assert.DoesNotContain(attributes, a => a.Key is "EmptyAttribute");
     Assert.DoesNotContain(attributes, a => a.Key is "NullAttribute");
@@ -401,10 +495,10 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("MetaTitle", "Metatitle", markDirty: false, isExtendedAttribute: null);
     topic.Attributes.SetValue("Arbitrary", "Value", markDirty: false, isExtendedAttribute: true);
 
-    var dirtyExtended           = _topicRepository.GetAttributesProxy(topic, true, true);
-    var dirtyIndexed            = _topicRepository.GetAttributesProxy(topic, false, true);
-    var cleanExtended           = _topicRepository.GetAttributesProxy(topic, true, false);
-    var cleanIndexed            = _topicRepository.GetAttributesProxy(topic, false, false);
+    var dirtyExtended           = _topicRepository.GetAttributesProxy(topic, true, true).ToList();
+    var dirtyIndexed            = _topicRepository.GetAttributesProxy(topic, false, true).ToList();
+    var cleanExtended           = _topicRepository.GetAttributesProxy(topic, true, false).ToList();
+    var cleanIndexed            = _topicRepository.GetAttributesProxy(topic, false, false).ToList();
 
     //Expect Title, even though it isn't IsDirty
     Assert.Single(dirtyExtended);
@@ -472,7 +566,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
-  ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
+  ///   ensures that it is returned as an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
   ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
   /// </summary>
   [Fact]
@@ -493,7 +587,7 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
-  ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
+  ///   ensures that it is returned as an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
   ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
   /// </summary>
   [Fact]
@@ -501,7 +595,7 @@ public class TopicRepositoryBaseTest {
 
     var topic                   = new Topic("Test", "ContentTypes");
 
-    topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
+    topic.Attributes.SetValue("ArbitraryAttribute", new('x', 256));
 
     var attributes              = _topicRepository.GetAttributesProxy(topic, true);
 
@@ -523,9 +617,9 @@ public class TopicRepositoryBaseTest {
 
     topic.Attributes.SetValue("Title", "Title");
 
-    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic);
+    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic).ToList();
 
-    Assert.True(attributes.Any());
+    Assert.True(attributes.Count != 0);
     Assert.DoesNotContain(attributes, a => a.Key is "Title");
 
   }
@@ -550,7 +644,7 @@ public class TopicRepositoryBaseTest {
     topic.Attributes.SetValue("YetAnotherArbitraryAttribute", "Value");
     topic.Attributes.SetValue("YetAnotherArbitraryAttribute", null);
 
-    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic);
+    var attributes              = _topicRepository.GetUnmatchedAttributesProxy(topic).ToList();
 
     Assert.Contains(attributes, a => a.Key is "ArbitraryAttribute");
     Assert.Contains(attributes, a => a.Key is "YetAnotherArbitraryAttribute");
@@ -623,9 +717,9 @@ public class TopicRepositoryBaseTest {
   ///   attempts to retrieve it from the <see cref="Topic"/>'s graph.
   /// </summary>
   [Fact]
-  public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
+  public async Task GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
 
-    var rootTopic               = _topicRepository.Load("Root");
+    var rootTopic               = await _topicRepository.Load("Root");
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var rootContentType         = contentTypes.GetValue("ContentTypes");
     var newContentType          = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor", rootContentType);
@@ -647,13 +741,13 @@ public class TopicRepositoryBaseTest {
   ///   typically only occur when initializing a new database, and is an unexpected condition.
   /// </summary>
   [Fact]
-  public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
+  public async Task GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
 
     var topicRepository         = new StubTopicRepository();
-    var configuration           = topicRepository.Load("Root:Configuration");
+    var configuration           = await topicRepository.Load("Root:Configuration");
     var topic                   = new Topic("Test", "Page");
 
-    topicRepository.Delete(configuration!, true);
+    await topicRepository.Delete(configuration!, true);
 
     var contentType             = topicRepository.GetContentTypeDescriptorProxy(topic);
 
@@ -686,12 +780,12 @@ public class TopicRepositoryBaseTest {
   ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var topic                   = new ContentTypeDescriptor("NewContentType", "ContentTypeDescriptor");
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.Contains(topic, contentTypes);
 
@@ -706,7 +800,7 @@ public class TopicRepositoryBaseTest {
   ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
   /// </summary>
   [Fact]
-  public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
+  public async Task Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var contentTypesRoot        = contentTypes.GetValue("ContentTypes");
@@ -721,7 +815,7 @@ public class TopicRepositoryBaseTest {
 
     pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
 
-    _topicRepository.Save(contentTypesRoot, true);
+    await _topicRepository.Save(contentTypesRoot, true);
 
     Assert.NotEqual(initialCount, pageContentType.PermittedContentTypes.Count);
 
@@ -735,12 +829,12 @@ public class TopicRepositoryBaseTest {
   ///   new version.
   /// </summary>
   [Fact]
-  public void Save_NewTopic_UpdatesVersionHistory() {
+  public async Task Save_NewTopic_UpdatesVersionHistory() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
     var topic                   = new Topic("Test", "Page", parent);
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.True(topic.VersionHistory.Count > 0);
 
@@ -754,13 +848,13 @@ public class TopicRepositoryBaseTest {
   ///   child <see cref="Topic"/> is correctly updated.
   /// </summary>
   [Fact]
-  public void Save_IsRecursive_SavesChild() {
+  public async Task Save_IsRecursive_SavesChild() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
     var topic                   = new Topic("Test", "Page", parent);
     var child                   = new Topic("Child", "Page", topic);
 
-    _topicRepository.Save(topic, true);
+    await _topicRepository.Save(topic, true);
 
     Assert.False(child.IsNew);
 
@@ -771,19 +865,19 @@ public class TopicRepositoryBaseTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
-  ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedRecordCollection{TItem,
-  ///   TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
+  ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref=
+  ///   "TrackedRecordCollection{TItem,TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
   /// </summary>
   [Fact]
-  public void Save_UnresolvedReference_Resolves() {
+  public async Task Save_UnresolvedReference_Resolves() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
     var topic                   = new Topic("Test", "Page", parent);
     var reference               = new Topic("Reference", "Page", topic);
 
     topic.References.SetValue("Test", reference);
 
-    _topicRepository.Save(topic, true);
+    await _topicRepository.Save(topic, true);
 
   }
 
@@ -795,15 +889,15 @@ public class TopicRepositoryBaseTest {
   ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
   /// </summary>
   [Fact]
-  public void Save_UnresolvedReference_ThrowsException() {
+  public async Task Save_UnresolvedReference_ThrowsException() {
 
-    var parent                  = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+    var parent                  = await _topicRepository.Load("Root:Web:Web_3:Web_3_0");
     var topic                   = new Topic("Test", "Page", parent);
     var reference               = new Topic("Reference", "Page", parent);
 
     topic.References.SetValue("Test", reference);
 
-    Assert.Throws<ReferentialIntegrityException>(() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Save(topic, true)
     );
 
@@ -817,8 +911,8 @@ public class TopicRepositoryBaseTest {
   ///   expected <see cref="ReferentialIntegrityException"/>.
   /// </summary>
   [Fact]
-  public void Save_InvalidContentType_ThrowsException() =>
-    Assert.Throws<ReferentialIntegrityException>(() =>
+  public async Task Save_InvalidContentType_ThrowsException() =>
+    await Assert.ThrowsAsync<ReferentialIntegrityException>(() =>
       _topicRepository.Save(new("Test", "InvalidContentType"))
     );
 
@@ -831,14 +925,14 @@ public class TopicRepositoryBaseTest {
   ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var contentType             = contentTypes.Contains("Page")? contentTypes["Page"] : null;
 
     Contract.Assume(contentType);
 
-    _topicRepository.Delete(contentType);
+    await _topicRepository.Delete(contentType);
 
     Assert.DoesNotContain(contentType, contentTypes);
 
@@ -851,7 +945,7 @@ public class TopicRepositoryBaseTest {
   ///   Moves a <see cref="Topic"/> after a sibling in another parent, and ensures it is set correctly.
   /// </summary>
   [Fact]
-  public void Move_AfterSibling_SetCorrectly() {
+  public async Task Move_AfterSibling_SetCorrectly() {
 
     var source                  = new Topic("Source", "Page");
     var topic                   = new Topic("Test", "Page", source);
@@ -859,7 +953,7 @@ public class TopicRepositoryBaseTest {
     var sibling                 = new Topic("Sibling", "Page", target);
     var olderSibling            = new Topic("OlderSibling", "Page", target);
 
-    _topicRepository.Move(topic, target, sibling);
+    await _topicRepository.Move(topic, target, sibling);
 
     Assert.Equal(target, topic.Parent);
     Assert.Equal(0, target.Children.IndexOf(sibling));
@@ -878,19 +972,19 @@ public class TopicRepositoryBaseTest {
   ///   cref="ContentTypeDescriptor"/>s.
   /// </summary>
   [Fact]
-  public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
+  public async Task Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
 
     var contentTypes            = _topicRepository.GetContentTypeDescriptors();
     var pageContentType         = contentTypes.Contains("Page")? contentTypes["Page"] : null;
     var contactContentType      = contentTypes.Contains("Contact")? contentTypes["Contact"] : null;
-    var contactAttributeCount = contactContentType?.AttributeDescriptors.Count;
+    var contactAttributeCount   = contactContentType?.AttributeDescriptors.Count;
 
     Contract.Assume(contactContentType);
     Contract.Assume(pageContentType);
 
-    _topicRepository.Move(contactContentType, pageContentType);
+    await _topicRepository.Move(contactContentType, pageContentType);
 
-    Assert.NotEqual(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
+    Assert.NotEqual(contactContentType.AttributeDescriptors.Count, contactAttributeCount);
 
   }
 
@@ -903,7 +997,7 @@ public class TopicRepositoryBaseTest {
   ///   of the child reflects the change.
   /// </summary>
   [Fact]
-  public void Save_AttributeDescriptor_UpdatesContentType() {
+  public async Task Save_AttributeDescriptor_UpdatesContentType() {
 
     var contentType             = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor", null, 1);
     var attributeList           = new Topic("Attributes", "List", contentType, 2);
@@ -917,7 +1011,7 @@ public class TopicRepositoryBaseTest {
 
     Contract.Assume(newAttribute);
 
-    _topicRepository.Save(newAttribute);
+    await _topicRepository.Save(newAttribute);
 
     Assert.Equal(attributeCount+1, childContentType.AttributeDescriptors.Count);
 
@@ -932,7 +1026,7 @@ public class TopicRepositoryBaseTest {
   ///   cref="ContentTypeDescriptor.AttributeDescriptors"/> of the child reflects the change.
   /// </summary>
   [Fact]
-  public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
+  public async Task Delete_AttributeDescriptor_UpdatesContentTypeCache() {
 
     var contentType             = new ContentTypeDescriptor("Parent", "ContentTypeDescriptor");
     var attributeList           = new Topic("Attributes", "List", contentType);
@@ -944,7 +1038,7 @@ public class TopicRepositoryBaseTest {
 
     var attributeCount          = childContentType.AttributeDescriptors.Count;
 
-    _topicRepository.Delete(newAttribute);
+    await _topicRepository.Delete(newAttribute);
 
     Assert.True(childContentType.AttributeDescriptors.Count < attributeCount);
 
@@ -954,17 +1048,17 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean)"/> and ensures that the <see cref="
-  ///   ITopicRepository.TopicLoaded"/> event is raised.
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> and ensures that the
+  ///   <see cref="ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]
-  public void Load_TopicLoadedEvent_IsRaised() {
+  public async Task Load_TopicLoadedEvent_IsRaised() {
 
     var hasFired                = false;
 
     _cachedTopicRepository.TopicLoaded += eventHandler;
 
-    var topic                   = _topicRepository.Load("Root:Web");
+    var topic                   = await _topicRepository.Load("Root:Web");
 
     _cachedTopicRepository.TopicLoaded -= eventHandler;
 
@@ -978,19 +1072,19 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED WITH VERSION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
-  ///   ITopicRepository.TopicLoaded"/> event is raised.
+  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime)"/> and ensures that the <see cref=
+  ///   "ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]
-  public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
+  public async Task Load_TopicLoadedEvent_IsRaisedWithVersion() {
 
     var hasFired                = false;
-    var topicId                 = _topicRepository.Load("Root:Web")?.Id;
+    var topicId                 = (await _topicRepository.Load("Root:Web"))?.Id;
     var version                 = DateTime.UtcNow;
 
     _cachedTopicRepository.TopicLoaded += eventHandler;
 
-    var topic                   = _topicRepository.Load(topicId?? -1, version);
+    var topic                   = await _topicRepository.Load(topicId?? -1, version);
 
     _cachedTopicRepository.TopicLoaded -= eventHandler;
 
@@ -1006,18 +1100,18 @@ public class TopicRepositoryBaseTest {
   | TEST: DELETE: TOPIC DELETED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-  ///   TopicDeleted"/> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicDeleted"/> event is raised.
   /// </summary>
   [Fact]
-  public void Delete_TopicDeletedEvent_IsRaised() {
+  public async Task Delete_TopicDeletedEvent_IsRaised() {
 
     var topic                   = new Topic("Test", "Page");
     var hasFired                = false;
 
-    _cachedTopicRepository.Save(topic);
+    await _cachedTopicRepository.Save(topic);
     _cachedTopicRepository.TopicDeleted += eventHandler;
-    _cachedTopicRepository.Delete(topic);
+    await _cachedTopicRepository.Delete(topic);
     _cachedTopicRepository.TopicDeleted -= eventHandler;
 
     Assert.True(hasFired);
@@ -1034,13 +1128,13 @@ public class TopicRepositoryBaseTest {
   ///   /> event is raised.
   /// </summary>
   [Fact]
-  public void Save_TopicSavedEvent_IsRaised() {
+  public async Task Save_TopicSavedEvent_IsRaised() {
 
     var topic                   = new Topic("Test", "Page");
     var hasFired                = false;
 
     _cachedTopicRepository.TopicSaved += eventHandler;
-    _cachedTopicRepository.Save(topic);
+    await _cachedTopicRepository.Save(topic);
     _cachedTopicRepository.TopicSaved -= eventHandler;
 
     Assert.True(hasFired);
@@ -1053,11 +1147,11 @@ public class TopicRepositoryBaseTest {
   | TEST: SAVE: TOPIC RENAMED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
-  ///   "/> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed"
+  ///   /> event is raised.
   /// </summary>
   [Fact]
-  public void Save_TopicRenamedEvent_IsRaised() {
+  public async Task Save_TopicRenamedEvent_IsRaised() {
 
     var topic                   = new Topic("Test", "Page", null, 1);
     var hasFired                = false;
@@ -1065,7 +1159,7 @@ public class TopicRepositoryBaseTest {
     topic.Key                   = "New";
 
     _cachedTopicRepository.TopicRenamed += eventHandler;
-    _cachedTopicRepository.Save(topic);
+    await _cachedTopicRepository.Save(topic);
     _cachedTopicRepository.TopicRenamed -= eventHandler;
 
     Assert.True(hasFired);
@@ -1078,11 +1172,11 @@ public class TopicRepositoryBaseTest {
   | TEST: SAVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
-  ///   TopicMoved"/> event is raised.
+  ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicMoved"/> event is raised.
   /// </summary>
   [Fact]
-  public void Save_TopicMovedEvent_IsRaised() {
+  public async Task Save_TopicMovedEvent_IsRaised() {
 
     var topic                   = new Topic("Test", "Page", null, 1);
     var parent                  = new Topic("Products", "Page", null, 2);
@@ -1091,7 +1185,7 @@ public class TopicRepositoryBaseTest {
     topic.Parent                = parent;
 
     _cachedTopicRepository.TopicMoved += eventHandler;
-    _cachedTopicRepository.Save(topic);
+    await _cachedTopicRepository.Save(topic);
     _cachedTopicRepository.TopicMoved -= eventHandler;
 
     Assert.True(hasFired);
@@ -1101,21 +1195,43 @@ public class TopicRepositoryBaseTest {
   }
 
   /*============================================================================================================================
+  | TEST: SAVE: NOT LOADED CHILDREN: SKIPS RECURSIVE DESCENT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a parent topic with a child, marks the parent's <see cref="Topic.Children"/> as <see cref="LoadState.NotLoaded"
+  ///   />, then saves recursively. Verifies that the child is not saved; the recursive-save loop is gated on <see cref=
+  ///   "ITopicLazyLoadable.IsLoaded(TopicPayload)"/>, so a not-loaded children collection prevents descent.
+  /// </summary>
+  [Fact]
+  public async Task Save_NotLoadedChildren_SkipsRecursiveDescent() {
+
+    var parent                  = new Topic("Parent", "Page");
+    var child                   = new Topic("Child", "Page", parent);
+
+    parent.Children.LoadState   = LoadState.NotLoaded;
+
+    await _topicRepository.Save(parent, isRecursive: true);
+
+    Assert.True(child.IsNew);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
-  ///   /> event is raised.
+  ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"/>
+  ///   event is raised.
   /// </summary>
   [Fact]
-  public void Move_TopicMovedEvent_IsRaised() {
+  public async Task Move_TopicMovedEvent_IsRaised() {
 
     var topic                   = new Topic("Test", "Page", null, 1);
     var parent                  = new Topic("Products", "Page", null, 2);
     var hasFired                = false;
 
     _cachedTopicRepository.TopicMoved += eventHandler;
-    _cachedTopicRepository.Move(topic, parent);
+    await _cachedTopicRepository.Move(topic, parent);
     _cachedTopicRepository.TopicMoved -= eventHandler;
 
     Assert.True(hasFired);
@@ -1128,11 +1244,11 @@ public class TopicRepositoryBaseTest {
   | TEST: MOVE: SAME LOCATION: EVENT NOT RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref="
-  ///   ITopicRepository.TopicMoved"/> event is not raised.
+  ///   Creates a <see cref="Topic"/> and then moves it to the exact same location in the tree. Ensures that the <see cref=
+  ///   "ITopicRepository.TopicMoved"/> event is not raised.
   /// </summary>
   [Fact]
-  public void Move_SameLocation_EventNotRaised() {
+  public async Task Move_SameLocation_EventNotRaised() {
 
     var parent                  = new Topic("Parent", "Page", null, 1);
     var sibling                 = new Topic("Sibling", "Page", parent, 2);
@@ -1140,7 +1256,7 @@ public class TopicRepositoryBaseTest {
     var hasFired                = false;
 
     _cachedTopicRepository.TopicMoved += eventHandler;
-    _cachedTopicRepository.Move(topic, parent, sibling);
+    await _cachedTopicRepository.Move(topic, parent, sibling);
     _cachedTopicRepository.TopicMoved -= eventHandler;
 
     Assert.False(hasFired);

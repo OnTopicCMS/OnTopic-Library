@@ -28,7 +28,7 @@ public class InvalidTypeException: TopicMappingException {
   /// <summary>
   ///   Initializes a new <see cref="InvalidTypeException" /> instance.
   /// </summary>
-  public InvalidTypeException() : base() { }
+  public InvalidTypeException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="InvalidTypeException" /> instance with a specific error message.

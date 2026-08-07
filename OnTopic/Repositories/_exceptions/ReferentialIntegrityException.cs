@@ -26,7 +26,7 @@ public class ReferentialIntegrityException: TopicRepositoryException {
   /// <summary>
   ///   Initializes a new <see cref="ReferentialIntegrityException" /> instance.
   /// </summary>
-  public ReferentialIntegrityException() : base() { }
+  public ReferentialIntegrityException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="ReferentialIntegrityException" /> instance based on a <paramref name=

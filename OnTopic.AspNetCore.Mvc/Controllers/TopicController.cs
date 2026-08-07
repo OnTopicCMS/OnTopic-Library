@@ -47,10 +47,10 @@ public class TopicController(ITopicRepository topicRepository, ITopicMappingServ
   /// <returns>The Topic associated with the current request.</returns>
   public Topic? CurrentTopic {
     get {
-      field ??= TopicRepository.Load(RouteData);
+      field                     ??= TopicRepository.Load(RouteData);
       return field;
     }
-    set => field = value;
+    set => field                = value;
   }
 
   /*============================================================================================================================
@@ -67,7 +67,7 @@ public class TopicController(ITopicRepository topicRepository, ITopicMappingServ
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish default view model
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topicViewModel = await  _topicMappingService.MapAsync(CurrentTopic).ConfigureAwait(false);
+    var topicViewModel          = await _topicMappingService.MapAsync(CurrentTopic).ConfigureAwait(false);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate dependencies

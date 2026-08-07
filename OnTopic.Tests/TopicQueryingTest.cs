@@ -51,7 +51,7 @@ public class TopicQueryingTest  {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository = fixture.CachedTopicRepository;
+    _topicRepository            = fixture.CachedTopicRepository;
 
   }
 
@@ -167,7 +167,7 @@ public class TopicQueryingTest  {
     var parentTopic             = new Topic("ParentTopic", "Page", null, 1);
     _                           = new Topic("ChildTopic", "Page", parentTopic, 2);
 
-    var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
+    var foundTopic              = parentTopic.GetByUniqueKey("ParentTopic");
 
     Assert.NotNull(foundTopic);
     Assert.Equal(parentTopic, foundTopic);
@@ -186,10 +186,10 @@ public class TopicQueryingTest  {
     var parentTopic             = new Topic("ParentTopic", "Page", null, 1);
     var childTopic              = new Topic("ChildTopic", "Page", parentTopic, 5);
     var grandChildTopic         = new Topic("GrandChildTopic", "Page", childTopic, 20);
-    var greatGrandChildTopic1 = new Topic("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
-    var greatGrandChildTopic2 = new Topic("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
+    var greatGrandChildTopic1   = new Topic("GreatGrandChildTopic1", "Page", grandChildTopic, 7);
+    var greatGrandChildTopic2   = new Topic("GreatGrandChildTopic2", "Page", grandChildTopic, 7);
 
-    var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+    var foundTopic              = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
     Assert.Equal(greatGrandChildTopic2, foundTopic);
 
@@ -210,7 +210,7 @@ public class TopicQueryingTest  {
     var grandChildTopic         = new Topic("GrandChildTopic", "Page", childTopic, 20);
     var greatGrandChildTopic    = new Topic("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
-    var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+    var foundTopic              = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
     Assert.Null(foundTopic);
 
@@ -223,10 +223,10 @@ public class TopicQueryingTest  {
   ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="ContentTypeDescriptor"/>.
   /// </summary>
   [Fact]
-  public void GetContentType_ValidContentType_ReturnsContentType() {
+  public async Task GetContentType_ValidContentType_ReturnsContentType() {
 
-    var topic                   = _topicRepository.Load(11111);
-    var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
+    var topic                   = await _topicRepository.Load(11111);
+    var contentTypeDescriptor   = topic?.GetContentTypeDescriptor();
 
     Assert.NotNull(contentTypeDescriptor);
     Assert.Equal("Page", contentTypeDescriptor?.Key);
@@ -241,16 +241,16 @@ public class TopicQueryingTest  {
   ///   /> returns <c>null</c>.
   /// </summary>
   [Fact]
-  public void GetContentType_InvalidContentType_ReturnsNull() {
+  public async Task GetContentType_InvalidContentType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111);
+    var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "NonExistent", parentTopic);
-    var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+    var contentTypeDescriptor   = topic.GetContentTypeDescriptor();
 
     Assert.Null(contentTypeDescriptor);
 
     //Revert state
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
   }
 
@@ -262,56 +262,20 @@ public class TopicQueryingTest  {
   ///   /> returns <c>null</c>.
   /// </summary>
   /// <remarks>
-  ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref="
-  ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
+  ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref=
+  ///   "Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
   /// </remarks>
   [Fact]
-  public void GetContentType_InvalidType_ReturnsNull() {
+  public async Task GetContentType_InvalidType_ReturnsNull() {
 
-    var parentTopic             = _topicRepository.Load(11111);
+    var parentTopic             = await _topicRepository.Load(11111);
     var topic                   = new Topic("Test", "Title", parentTopic);
-    var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+    var contentTypeDescriptor   = topic.GetContentTypeDescriptor();
 
     Assert.Null(contentTypeDescriptor);
 
     //Revert state
-    _topicRepository.Delete(topic);
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ANY DIRTY: DIRTY COLLECTION: RETURN TRUE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsDirty(String)"/>,
-  ///   returns <c>true</c>.
-  /// </summary>
-  [Fact]
-  public void AnyDirty_DirtyCollection_ReturnTrue() {
-
-    var topics = new TopicCollection {
-      new Topic("Test", "Page")
-    };
-
-    Assert.True(topics.AnyDirty());
-
-  }
-
-  /*============================================================================================================================
-  | TEST: ANY DIRTY: CLEAN COLLECTION: RETURN FALSE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
-  ///   returns <c>false</c>.
-  /// </summary>
-  [Fact]
-  public void AnyDirty_CleanCollection_ReturnFalse() {
-
-    var topics = new TopicCollection {
-      new Topic("Test", "Page", null, 1)
-    };
-
-    Assert.False(topics.AnyDirty());
+    await _topicRepository.Delete(topic);
 
   }
 
@@ -325,8 +289,8 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyNew_ContainsNew_ReturnTrue() {
 
-    var topics = new TopicCollection {
-      new Topic("Test", "Page")
+    var topics                  = new TopicCollection {
+      new("Test", "Page")
     };
 
     Assert.True(topics.AnyNew());
@@ -343,11 +307,65 @@ public class TopicQueryingTest  {
   [Fact]
   public void AnyNew_ContainsExisting_ReturnFalse() {
 
-    var topics = new TopicCollection {
-      new Topic("Test", "Page", null, 1)
+    var topics                  = new TopicCollection {
+      new("Test", "Page", null, 1)
     };
 
     Assert.False(topics.AnyNew());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: FIND FIRST: NOT LOADED CHILD: STILL FINDS RESIDENT DESCENDANT
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a three-level topic hierarchy and manually sets the middle topic's <see cref="Topic.Children"/> to <see cref=
+  ///   "LoadState.NotLoaded"/> despite already having a grandchild (e.g., as left behind by an ancestor crawl or a partial
+  ///   fill). Verifies that <see cref="TopicExtensions.FindFirst"/> traverses via the non-triggering backing field and so still
+  ///   finds the grandchild, rather than treating the <see cref="LoadState.NotLoaded"/> stamp as if the branch were empty.
+  /// </summary>
+  [Fact]
+  public void FindFirst_WithNotLoadedChild_StillFindsResidentDescendant() {
+
+    var parent                  = new Topic("Parent", "Page", null, 1);
+    var child                   = new Topic("Child", "Page", parent, 2);
+    var grandchild              = new Topic("Grandchild", "Page", child, 3);
+
+    child.Children.LoadState    = LoadState.NotLoaded;
+
+    var result                  = parent.FindFirst(t => t == grandchild);
+
+    Assert.Equal(grandchild, result);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: FIND ALL: PARTIALLY LOADED GRAPH: INCLUDES RESIDENT NOT LOADED SUBTREES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic graph where one branch has a <see cref="LoadState.NotLoaded"/> children collection despite already
+  ///   having a grandchild (e.g., as left behind by an ancestor crawl or a partial fill). Verifies that <see cref=
+  ///   "TopicExtensions.FindAll(Topic)"/> traverses via the non-triggering backing field and so still returns the grandchild,
+  ///   rather than treating the <see cref="LoadState.NotLoaded"/> stamp as if the branch were empty.
+  /// </summary>
+  [Fact]
+  public void FindAll_WithPartiallyLoadedGraph_IncludesResidentNotLoadedSubtrees() {
+
+    var parent                  = new Topic("Parent", "Page", null, 1);
+    var childA                  = new Topic("ChildA", "Page", parent, 2);
+    var childB                  = new Topic("ChildB", "Page", parent, 3);
+    var grandchildA             = new Topic("GrandchildA", "Page", childA, 4);
+    var grandchildB             = new Topic("GrandchildB", "Page", childB, 5);
+
+    childB.Children.LoadState   = LoadState.NotLoaded;
+
+    var results                 = parent.FindAll();
+
+    Assert.Contains(parent, results);
+    Assert.Contains(childA, results);
+    Assert.Contains(grandchildA, results);
+    Assert.Contains(childB, results);
+    Assert.Contains(grandchildB, results);
 
   }
 

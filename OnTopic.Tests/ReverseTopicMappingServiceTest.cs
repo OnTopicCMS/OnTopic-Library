@@ -15,6 +15,7 @@ using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Fixtures;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -141,7 +142,7 @@ public class ReverseTopicMappingServiceTest {
     target.Title                = "Original Attribute";
     target.DefaultValue         = "Hello";
     target.IsRequired           = true;
-    target.IsExtendedAttribute= false;
+    target.IsExtendedAttribute  = false;
 
     target.Attributes.SetValue("Description", "Original Description");
 
@@ -244,10 +245,10 @@ public class ReverseTopicMappingServiceTest {
 
     topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
-    for (var i = 0; i < 3; i++) {
+    for (var i                  = 0; i < 3; i++) {
       bindingModel.ContentTypes.Add(
         new() {
-          UniqueKey = contentTypes[i].GetUniqueKey()
+          UniqueKey             = contentTypes[i].GetUniqueKey()
         }
       );
     }
@@ -261,7 +262,7 @@ public class ReverseTopicMappingServiceTest {
     Assert.False(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
     //Revert state
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
   }
 
@@ -280,7 +281,7 @@ public class ReverseTopicMappingServiceTest {
 
     bindingModel.ContentTypes.Add(
       new() {
-        UniqueKey = "Root:Configuration:InvalidKey"
+        UniqueKey               = "Root:Configuration:InvalidKey"
       }
     );
 
@@ -326,6 +327,112 @@ public class ReverseTopicMappingServiceTest {
   }
 
   /*============================================================================================================================
+  | TEST: MAP: NESTED TOPICS: STAGGERED COMPLETION: PRESERVES SOURCE ORDER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Establishes a <see cref="ReverseTopicMappingService"/> backed by a <see cref="StaggeredStubTopicRepository"/> whose
+  ///   per-item topic reference lookups resolve out of call order: The first-declared item resolves slowest, the last-declared
+  ///   item resolves instantly. Confirms nested topics still land in the binding model's source order, since <see cref=
+  ///   "ReverseTopicMappingService"/> maps and adds each child sequentially rather than racing completions.
+  /// </summary>
+  [Fact]
+  public async Task Map_NestedTopics_StaggeredCompletion_PreservesSourceOrder() {
+
+    // Declared in call order; delays fall in reverse, so the first-added item resolves last
+    List<(string UniqueKey, TimeSpan Delay)> attributes = [
+      ("Root:Configuration:ContentTypes:Attributes:Key", TimeSpan.FromMilliseconds(120)),
+      ("Root:Configuration:ContentTypes:Attributes:ContentType", TimeSpan.FromMilliseconds(60)),
+      ("Root:Configuration:ContentTypes:Attributes:Title", TimeSpan.Zero)
+    ];
+
+    var delaysByKey             = attributes.ToDictionary(attribute => attribute.UniqueKey, attribute => attribute.Delay);
+    var topicRepository         = new StaggeredStubTopicRepository(delaysByKey);
+    var mappingService          = new ReverseTopicMappingService(topicRepository);
+    var bindingModel            = new ContentTypeDescriptorTopicBindingModel("Test");
+
+    for (var i = 0; i < attributes.Count; i++) {
+      bindingModel.Attributes.Add(
+        new NestedReferenceAttributeTopicBindingModel($"Attribute{i + 1}") {
+          BaseTopic             = new() {
+            UniqueKey           = attributes[i].UniqueKey
+          }
+        }
+      );
+    }
+
+    var topic                   = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+    var target                  = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic);
+    var container               = target?.Children.GetValue("Attributes");
+
+    Assert.NotNull(container);
+    Assert.Equal(
+      Enumerable.Range(1, attributes.Count).Select(i => $"Attribute{i}"),
+      container.Children.Select(child => child.Key)
+    );
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: SPARSE TOPIC: FILLS EXTENDED ATTRIBUTES ONCE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a scalar-only binding model onto a target stamped with a <see cref="TrackingTopicLazyLoader"/> whose <see cref=
+  ///   "Topic.Attributes"/> are <see cref="LoadState.NotLoaded"/>. Confirms <see cref="ReverseTopicMappingService"/> warms <see
+  ///   cref="TopicPayload.ExtendedAttributes"/> exactly once at the start of the map, rather than leaving it to the attribute
+  ///   collection's own synchronous autoload.
+  /// </summary>
+  [Fact]
+  public async Task Map_ScalarProperties_FillsExtendedAttributesOnce() {
+
+    var bindingModel            = new TextAttributeTopicBindingModel("Test") {
+      ContentType               = "TextAttributeDescriptor",
+      DefaultValue              = "World"
+    };
+
+    var target                  = new TextAttributeDescriptor("Test", "TextAttributeDescriptor");
+    var loader                  = new TrackingTopicLazyLoader(markLoaded: true);
+
+    ((ITopicLazyLoadable)target).Loader = loader;
+    target.Attributes.LoadState = LoadState.NotLoaded;
+
+    _                           = await _mappingService.MapAsync(bindingModel, target);
+
+    Assert.Equal(1, loader.CallCount);
+    Assert.Equal(TopicPayload.ExtendedAttributes, loader.Payloads[0]);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: MAP: NESTED TOPICS: FILLS CONTAINER CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Maps a nested-topic binding model onto a target whose <c>Attributes</c> container is stamped with its own <see cref=
+  ///   "TrackingTopicLazyLoader"/> and left <see cref="LoadState.NotLoaded"/>, even though the target's own <see cref=
+  ///   "Topic.Children"/> are already loaded. Confirms <see cref="ReverseTopicMappingService"/> warms the container
+  ///   independently before <c>PopulateTargetCollectionAsync</c> probes its existing children.
+  /// </summary>
+  [Fact]
+  public async Task Map_NestedTopics_FillsContainerChildren() {
+
+    var bindingModel              = new ContentTypeDescriptorTopicBindingModel("Test");
+
+    bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute1"));
+
+    var target                    = new ContentTypeDescriptor("Test", "ContentTypeDescriptor");
+    var container                 = new Topic("Attributes", "List", target);
+    var containerLoader           = new TrackingTopicLazyLoader(markLoaded: true);
+
+    ((ITopicLazyLoadable)container).Loader = containerLoader;
+    container.Children.LoadState  = LoadState.NotLoaded;
+
+    _                              = (ContentTypeDescriptor?)await _mappingService.MapAsync(bindingModel, target);
+
+    Assert.Equal(1, containerLoader.CallCount);
+    Assert.Equal(TopicPayload.Children, containerLoader.Payloads[0]);
+
+  }
+
+  /*============================================================================================================================
   | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -334,7 +441,7 @@ public class ReverseTopicMappingServiceTest {
   [Fact]
   public async Task Map_TopicReferences_ReturnsMappedTopic() {
 
-    var topic                   = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+    var topic                   = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
 
     Contract.Assume(topic);
 
@@ -362,8 +469,8 @@ public class ReverseTopicMappingServiceTest {
   [Fact]
   public async Task Map_NullTopicReference_Delete() {
 
-    var topic                   = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
-    var baseTopic               = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
+    var topic                   = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+    var baseTopic               = await _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
 
     Contract.Assume(topic);
 
@@ -478,7 +585,7 @@ public class ReverseTopicMappingServiceTest {
 
     var target                  = await _mappingService.MapAsync(bindingModel);
 
-    Assert.Equal("Default page  description", target?.Attributes.GetValue("MetaDescription"));
+    Assert.Equal("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
   }
 
@@ -618,8 +725,8 @@ public class ReverseTopicMappingServiceTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Maps a content type that has a nested topic that implements an invalid collection type—i.e., it implements a <see
-  ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref="
-  ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+  ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref=
+  ///   "IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
   /// </summary>
   [Fact]
   public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
@@ -636,9 +743,9 @@ public class ReverseTopicMappingServiceTest {
   | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see cref="
-  ///   TopicViewModel"/>, even though references are expected to return a type implementing <see cref="
-  ///   IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+  ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see cref=
+  ///   "TopicViewModel"/>, even though references are expected to return a type implementing <see cref=
+  ///   "IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
   /// </summary>
   [Fact]
   public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {
@@ -666,7 +773,7 @@ public class ReverseTopicMappingServiceTest {
       UnmappedAttribute         = "Hello World"
     };
 
-    var target = await _mappingService.MapAsync(bindingModel);
+    var target                  = await _mappingService.MapAsync(bindingModel);
 
     Assert.Null(target?.Attributes.GetValue("UnmappedAttribute", null));
 

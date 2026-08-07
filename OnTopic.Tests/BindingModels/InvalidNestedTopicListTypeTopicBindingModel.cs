@@ -12,8 +12,8 @@ namespace OnTopic.Tests.BindingModels;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides a custom binding model with an invalid collection type—i.e., it implements a <see cref="Dictionary{TKey,
-///   TValue}"/>, even though nested topics are expected to return a type implementing <see cref="IList"/>. An <see cref="
-///   InvalidOperationException"/> should be thrown when it is mapped.
+///   TValue}"/>, even though nested topics are expected to return a type implementing <see cref="IList"/>. An <see cref=
+///   "InvalidOperationException"/> should be thrown when it is mapped.
 /// </summary>
 /// <remarks>
 ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.

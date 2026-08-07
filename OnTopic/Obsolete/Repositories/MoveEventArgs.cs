@@ -43,8 +43,8 @@ public class MoveEventArgs : EventArgs {
     Contract.Requires(topic, "topic");
     Contract.Requires(target, "target");
     Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
-    Topic = topic;
-    Target = target;
+    Topic                       = topic;
+    Target                      = target;
   }
 
   /*============================================================================================================================

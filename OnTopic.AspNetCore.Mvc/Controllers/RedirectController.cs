@@ -41,7 +41,7 @@ public class RedirectController(ITopicRepository topicRepository) : Controller {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find the topic with the correct PageID.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic                   = _topicRepository.Load(topicId);
+    var topic                   = _topicRepository.Load(topicId).GetAwaiter().GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide error handling

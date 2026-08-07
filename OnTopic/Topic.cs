@@ -3,13 +3,12 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
-using OnTopic.Associations;
+using OnTopic.Repositories;
 
 namespace OnTopic;
 
@@ -20,7 +19,7 @@ namespace OnTopic;
 ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
 ///   with the particular node, a list of children, etc.
 /// </summary>
-public class Topic: ITrackDirtyKeys {
+public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -29,7 +28,11 @@ public class Topic: ITrackDirtyKeys {
   private                       string                          _contentType;
   private                       string?                         _originalKey;
   private                       Topic?                          _parent;
-  readonly                      DirtyKeyCollection              _dirtyKeys                      = new();
+  private readonly              ChildTopicCollection            _children;
+  private readonly              TopicRelationshipMultiMap       _relationships;
+  private readonly              TopicReferenceCollection        _references;
+  private readonly              VersionHistoryCollection        _versionHistory                 = [];
+  readonly                      DirtyKeyCollection              _dirtyKeys                      = [];
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -39,8 +42,8 @@ public class Topic: ITrackDirtyKeys {
   ///   optionally, <see cref="Parent"/>, <see cref="Id"/>.
   /// </summary>
   /// <remarks>
-  ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Key"/> and <see cref="
-  ///   ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to correctly save new
+  ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Key"/> and <see cref=
+  ///   "ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to correctly save new
   ///   topics to the database. When the <paramref name="id"/> parameter is set, however, the <see cref="TrackedRecord{T}.
   ///   IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as it is assumed these
   ///   are being set to the same values currently used in the persistence store.
@@ -56,14 +59,17 @@ public class Topic: ITrackDirtyKeys {
   public Topic(string key, string contentType, Topic? parent = null, int id = -1) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Set children first, since setting Id or Parent below may fire registry hooks that read this topic's children
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    _children                   = new(this);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Set collections
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Children                    = new();
     Attributes                  = new(this);
     IncomingRelationships       = new(this, true);
-    Relationships               = new(this, false);
-    References                  = new(this);
-    VersionHistory              = new();
+    _relationships              = new(this);
+    _references                 = new(this);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set entity identifier, if present
@@ -115,9 +121,10 @@ public class Topic: ITrackDirtyKeys {
       if (field > 0 && !field.Equals(value)) {
         throw new InvalidOperationException($"The value of this topic has already been set to {field}; it cannot be changed.");
       }
-      field = value;
+      field                     = value;
+      TopicIndexRegistry.OnIdAssigned(this);
     }
-  } = -1;
+  }                             = -1;
 
   /*============================================================================================================================
   | PROPERTY: PARENT
@@ -145,7 +152,7 @@ public class Topic: ITrackDirtyKeys {
     set {
       if (_parent != value) {
         Contract.Requires(value, "Parent cannot be explicitly set to null.");
-        SetParent(value, value.Children.LastOrDefault());
+        SetParent(value, value._children.LastOrDefault());
       }
     }
   }
@@ -159,7 +166,14 @@ public class Topic: ITrackDirtyKeys {
   /// <value>
   ///   The children of the current <see cref="Topic"/>.
   /// </value>
-  public KeyedTopicCollection   Children { get; }
+  public ChildTopicCollection Children {
+    get {
+      if (_children.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.Children).GetAwaiter().GetResult();
+      }
+      return _children;
+    }
+  }
 
   /*============================================================================================================================
   | PROPERTY: CONTENT TYPE
@@ -218,10 +232,10 @@ public class Topic: ITrackDirtyKeys {
       else if (_key is not null || IsNew) {
         _dirtyKeys.MarkDirty("Key");
       }
-      _originalKey ??= _key;
+      _originalKey              ??= _key;
       //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
       if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
-        Parent.Children.ChangeKey(this, value);
+        Parent._children.ChangeKey(this, value);
       }
       _key                      = value;
     }
@@ -252,7 +266,7 @@ public class Topic: ITrackDirtyKeys {
     get => _originalKey;
     set {
       TopicFactory.ValidateKey(value, true);
-      _originalKey = value;
+      _originalKey              = value;
     }
   }
 
@@ -285,7 +299,7 @@ public class Topic: ITrackDirtyKeys {
   [AttributeSetter]
   public string? View {
     get =>
-      Attributes.GetValue("View", "");
+      Attributes.GetValue("View", "", false, 5, autoLoad: false);
     set {
       TopicFactory.ValidateKey(value, true);
       SetAttributeValue("View", value);
@@ -345,7 +359,7 @@ public class Topic: ITrackDirtyKeys {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Determines whether or not a topic should be visible based on IsHidden, IsDisabled, and an optional parameter
-  ///   specifying whether or not to show disabled items (which may by triggered if, for example, a user is an administrator).
+  ///   specifying whether or not to show disabled items (which may be triggered if, for example, a user is an administrator).
   /// </summary>
   /// <remarks>
   ///   If an item is not marked as IsVisible, then the item will not be visible independent of whether showDisabled is set.
@@ -374,7 +388,7 @@ public class Topic: ITrackDirtyKeys {
   ///   !string.IsNullOrWhiteSpace(value)
   /// </requires>
   public string Title {
-    get => Attributes.GetValue("Title", Key);
+    get => Attributes.GetValue("Title", Key, false, 5, autoLoad: false);
     set => SetAttributeValue("Title", value);
   }
 
@@ -424,9 +438,38 @@ public class Topic: ITrackDirtyKeys {
   ///   !string.IsNullOrWhiteSpace(value.ToString())
   /// </requires>
   public DateTime LastModified  {
-    get => Attributes.GetDateTime("LastModified", VersionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
+    get => Attributes.GetDateTime("LastModified", _versionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
     set => SetAttributeValue("LastModified", value.ToString(CultureInfo.InvariantCulture));
   }
+
+  #endregion
+
+  #region Lazy-Loading Infrastructure
+
+  /*============================================================================================================================
+  | PROPERTY: LOADER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc cref="ITopicLazyLoadable.Loader"/>
+  ITopicLazyLoader? ITopicLazyLoadable.Loader { get; set; }
+
+  /*============================================================================================================================
+  | INTERFACE: TOPIC BACKING ACCESSOR
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  ChildTopicCollection ITopicBackingAccessor.Children => _children;
+
+  /// <inheritdoc />
+  TopicRelationshipMultiMap ITopicBackingAccessor.Relationships => _relationships;
+
+  /// <inheritdoc />
+  TopicReferenceCollection ITopicBackingAccessor.References => _references;
+
+  /// <inheritdoc />
+  AttributeCollection ITopicBackingAccessor.Attributes => Attributes;
+
+  /// <inheritdoc />
+  VersionHistoryCollection ITopicBackingAccessor.VersionHistory => _versionHistory;
 
   #endregion
 
@@ -469,7 +512,7 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Check to ensure that the topic isn't being moved to a parent with a duplicate key
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (parent != _parent && parent.Children.Contains(Key)) {
+    if (parent != _parent && parent._children.Contains(Key)) {
       throw new InvalidKeyException(
         $"Duplicate key when setting Parent property: the topic with the name '{Key}' already exists in the '{parent.Key}' " +
         $"topic."
@@ -479,16 +522,16 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Move topic to new location
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _parent?.Children.Remove(Key);
-    var insertAt = (sibling is  not null)? parent.Children.IndexOf(sibling)+1 : 0;
-    parent.Children.Insert(insertAt, this);
+    _parent?._children.Remove(Key);
+    var insertAt                = (sibling is  not null)? parent._children.IndexOf(sibling)+1 : 0;
+    parent._children.Insert(insertAt, this);
     _dirtyKeys.MarkDirty("Parent");
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set parent values
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (_parent != parent) {
-      _parent = parent;
+      _parent                   = parent;
     }
 
   }
@@ -510,13 +553,13 @@ public class Topic: ITrackDirtyKeys {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Crawl up tree to define uniqueKey
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var uniqueKey = "";
-    var topic = (Topic?)this;
+    var uniqueKey               = "";
+    var topic                   = (Topic?)this;
 
     while (topic is not null) {
       if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
-      uniqueKey = topic.Key + uniqueKey;
-      topic = topic.Parent;
+      uniqueKey                 = topic.Key + uniqueKey;
+      topic                     = topic.Parent;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -539,11 +582,11 @@ public class Topic: ITrackDirtyKeys {
   /// </remarks>
   /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
   public string GetWebPath() {
-    var uniqueKey = GetUniqueKey()
+    var uniqueKey               = GetUniqueKey()
       .Replace("Root:", "/", StringComparison.Ordinal)
       .Replace(":", "/", StringComparison.Ordinal) + "/";
     if (!uniqueKey.StartsWith('/')) {
-      uniqueKey = $"/{uniqueKey}";
+      uniqueKey                 = $"/{uniqueKey}";
     }
     return uniqueKey;
   }
@@ -552,112 +595,52 @@ public class Topic: ITrackDirtyKeys {
   | METHOD: IS DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
 
-  /// <inheritdoc/>
-  public bool IsDirty() => IsDirty(false, false);
+  /// <summary>
+  ///   Determines whether the <see cref="Topic"/>'s key attributes—i.e., its <see cref="Key"/>, <see cref="ContentType"/>, and
+  ///   other tracked keys—have been modified. This does <i>not</i> evaluate the <see cref="Attributes"/> (overall), <see cref=
+  ///   "Relationships"/>, or <see cref="References"/> collections; query those through their own <see cref=
+  ///   "ITrackDirtyKeys.IsDirty()"/> methods.
+  /// </summary>
+  /// <returns>Returns <c>true</c> if the <see cref="Key"/> or <see cref="ContentType"/> have been modified.</returns>
+  public bool IsDirty() => IsNew || _dirtyKeys.IsDirty();
 
   /// <summary>
-  ///   Determines if the topic is dirty, optionally checking <see cref="Relationships"/> and <see cref="Attributes"/>.
+  ///   Determines whether the <paramref name="key"/> on the <see cref="Topic"/> key attributes has been modified. This does
+  ///   <i>not</i> evaluate the <see cref="Attributes"/> (overall), <see cref="Relationships"/>, or <see cref="References"/>
+  ///   collections; query those through their own <see cref="ITrackDirtyKeys.IsDirty(String)"/> methods.
   /// </summary>
-  /// <param name="checkCollections">
-  ///   Determines if <see cref="Attributes"/>, <see cref="Relationships"/>, and <see cref="References"/> should be checked.
-  /// </param>
-  /// <param name="excludeLastModified">
-  ///   Optionally excludes <see cref="AttributeRecord"/>s whose keys start with <c>LastModified</c>. This is useful for
-  ///   excluding the byline (<c>LastModifiedBy</c>) and dateline (<c>LastModified</c>) since these values are automatically
-  ///   generated by e.g. the OnTopic Editor and, thus, may be irrelevant updates if no other attribute values have changed.
-  /// </param>
-  /// <returns>
-  ///   Returns <c>true</c> if the <see cref="Key"/>, <see cref="ContentType"/>, or, optionally, any collections have been
-  ///   modified.
-  /// </returns>
-  public bool IsDirty(bool checkCollections, bool excludeLastModified = false) {
-    if (IsNew || _dirtyKeys.IsDirty()) {
-      return true;
-    }
-    else if (!checkCollections) {
-      return false;
-    }
-    else if (
-      Attributes.IsDirty(excludeLastModified) ||
-      Relationships.IsDirty() ||
-      References.IsDirty()
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  /// <inheritdoc/>
-  public bool IsDirty(string key) => IsDirty(key, false);
-
-
-  /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
-  public bool IsDirty(string key, bool checkCollections) {
-    if (IsNew || _dirtyKeys.IsDirty(key)) {
-      return true;
-    }
-    else if (!checkCollections) {
-      return false;
-    }
-    else if (
-      Attributes.IsDirty(key) ||
-      Relationships.IsDirty(key) ||
-      References.IsDirty(key)
-    ) {
-      return true;
-    }
-    return false;
-  }
+  /// <param name="key">The key of the attribute to check.</param>
+  /// <returns>Returns <c>true</c> if the <paramref name="key"/> has been modified.</returns>
+  public bool IsDirty(string key) => IsNew || _dirtyKeys.IsDirty(key);
 
   /*============================================================================================================================
   | METHOD: MARK CLEAN
   \---------------------------------------------------------------------------------------------------------------------------*/
 
-  /// <inheritdoc/>
-  public void MarkClean() => MarkClean(false);
-
   /// <summary>
-  ///   Resets the <see cref="IsDirty()"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using
-  ///   the <paramref name="includeCollections"/> parameter.
+  ///   Resets the <see cref="IsDirty()"/> status of the <see cref="Topic"/>'s own record, covering its key attributes. This
+  ///   does <i>not</i> affect the <see cref="Attributes"/> (overall), <see cref="Relationships"/>, or <see cref="References"/>
+  ///   collections; reset those through their own <see cref="ITrackDirtyKeys.MarkClean()"/> methods.
   /// </summary>
-  /// <param name="includeCollections">
-  ///   Determines if <see cref="Attributes"/>, <see cref="Relationships"/>, and <see cref="References"/> should be included.
-  /// </param>
-  /// <param name="version">
-  ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
-  ///   VersionHistory"/>.
-  /// </param>
-  public void MarkClean(bool includeCollections, DateTime? version = null) {
+  public void MarkClean() {
     if (IsNew) {
       return;
     }
     _dirtyKeys.MarkClean();
-    if (includeCollections) {
-      Attributes.MarkClean(version);
-      Relationships.MarkClean();
-      References.MarkClean();
-    }
   }
 
-  /// <inheritdoc/>
-  public void MarkClean(string  key) {
-    if (IsNew) {
-      return;
-    }
-    MarkClean(key, false);
-  }
-
-  /// <inheritdoc cref="MarkClean(Boolean, DateTime?)"/>
-  public void MarkClean(string  key, bool includeCollections) {
+  /// <summary>
+  ///   Resets the <see cref="IsDirty(String)"/> status of the <paramref name="key"/> on the <see cref="Topic"/>'s own record,
+  ///   covering its key attributes. This does <i>not</i> affect the <see cref="Attributes"/> (overall), <see cref=
+  ///   "Relationships"/>, or <see cref="References"/> collections; reset those through their own <see cref=
+  ///   "ITrackDirtyKeys.MarkClean(String)"/> methods.
+  /// </summary>
+  /// <param name="key">The key of the attribute to mark as clean.</param>
+  public void MarkClean(string key) {
     if (IsNew) {
       return;
     }
     _dirtyKeys.MarkClean(key);
-    if (includeCollections) {
-      Attributes.MarkClean(key);
-      Relationships.MarkClean(key);
-      References.MarkClean(key);
-    }
   }
 
   #endregion
@@ -678,16 +661,16 @@ public class Topic: ITrackDirtyKeys {
   ///     local value for the attribute.
   ///   </para>
   ///   <para>
-  ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref="
-  ///     TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
+  ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref=
+  ///     "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
   ///     of five "hops" in order to help avoid an infinite loop.
   ///   </para>
   ///   <para>
   ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
   ///     {String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="Topic"/> hasn't been
   ///     saved, then the reference will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
-  ///     repository upon <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>. That said, when <see cref="
-  ///     Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
+  ///     repository upon <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>. That said, when <see cref=
+  ///     "Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
   ///     and, if it has subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory
   ///     topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the
   ///     underlying data storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is
@@ -707,7 +690,7 @@ public class Topic: ITrackDirtyKeys {
         value != this,
         "A topic may not derive from itself."
       );
-      References.SetValue("BaseTopic", value);
+      _references.SetValue("BaseTopic", value);
     }
   }
 
@@ -750,7 +733,14 @@ public class Topic: ITrackDirtyKeys {
   ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s relationships.</value>
-  public TopicRelationshipMultiMap Relationships { get; }
+  public TopicRelationshipMultiMap Relationships {
+    get {
+      if (_relationships.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.Relationships).GetAwaiter().GetResult();
+      }
+      return _relationships;
+    }
+  }
 
   /*============================================================================================================================
   | PROPERTY: REFERENCES
@@ -763,7 +753,14 @@ public class Topic: ITrackDirtyKeys {
   ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s references.</value>
-  public TopicReferenceCollection References { get; }
+  public TopicReferenceCollection References {
+    get {
+      if (_references.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.References).GetAwaiter().GetResult();
+      }
+      return _references;
+    }
+  }
 
   /*============================================================================================================================
   | PROPERTY: INCOMING RELATIONSHIPS
@@ -791,7 +788,14 @@ public class Topic: ITrackDirtyKeys {
   ///   its derived providers).
   /// </remarks>
   /// <value>The current <see cref="Topic"/>'s version history.</value>
-  public Collection<DateTime>   VersionHistory { get; }
+  public VersionHistoryCollection VersionHistory {
+    get {
+      if (_versionHistory.LoadState is LoadState.NotLoaded) {
+        ((ITopicLazyLoadable)this).EnsureLoaded(TopicPayload.VersionHistory).GetAwaiter().GetResult();
+      }
+      return _versionHistory;
+    }
+  }
 
   #endregion
 
@@ -807,8 +811,8 @@ public class Topic: ITrackDirtyKeys {
   /// <remarks>
   ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
   ///   called by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers
-  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref="
-  ///   AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
+  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
+  ///   "AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
   ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
   ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
   /// </remarks>

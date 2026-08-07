@@ -34,7 +34,7 @@ public class ValidateTopicAttributeTest {
 
     var modelState              = new ModelStateDictionary();
 
-    var actionContext = new ActionContext(
+    var actionContext           = new ActionContext(
       new DefaultHttpContext(),
       new(),
       new ControllerActionDescriptor(),
@@ -43,7 +43,7 @@ public class ValidateTopicAttributeTest {
 
     var actionExecutingContext  = new ActionExecutingContext(
       actionContext,
-      new List<IFilterMetadata>(),
+      [],
       new Dictionary<string, object?>(),
       controller
     );
@@ -62,9 +62,9 @@ public class ValidateTopicAttributeTest {
   public static ControllerContext GetControllerContext() =>
     new(
       new() {
-        HttpContext               = new DefaultHttpContext(),
-        RouteData                 = new(),
-        ActionDescriptor          = new ControllerActionDescriptor()
+        HttpContext             = new DefaultHttpContext(),
+        RouteData               = new(),
+        ActionDescriptor        = new ControllerActionDescriptor()
       }
     );
 
@@ -291,16 +291,16 @@ public class ValidateTopicAttributeTest {
   [Fact]
   public void PageGroupTopic_Empty_ReturnsRedirect() {
 
-    var validateFilter = new ValidateTopicAttribute();
-    var topic = new Topic("Key", "PageGroup");
-    var controller = GetTopicController(topic);
-    var context = GetActionExecutingContext(controller);
+    var validateFilter          = new ValidateTopicAttribute();
+    var topic                   = new Topic("Key", "PageGroup");
+    var controller              = GetTopicController(topic);
+    var context                 = GetActionExecutingContext(controller);
 
     validateFilter.OnActionExecuting(context);
 
     controller.Dispose();
 
-    var result = context.Result as StatusCodeResult;
+    var result                  = context.Result as StatusCodeResult;
 
     Assert.NotNull(result);
     Assert.Equal(403, result?.StatusCode);

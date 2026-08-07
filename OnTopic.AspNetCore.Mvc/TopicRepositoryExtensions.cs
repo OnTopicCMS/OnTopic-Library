@@ -27,8 +27,8 @@ public static class TopicRepositoryExtensions {
   ///   of the box routes, such as <c>controller</c> and <c>action</c>, the <see cref="ServiceCollectionExtensions"/> defines
   ///   additional topic-specific routes, such as <c>rootTopic</c> and <c>path</c>. These can be combined to identify a topic
   ///   in the repository. By using the extension method, callers needn't assemble their own <see cref="Topic.GetUniqueKey"/>
-  ///   prior to calling <see cref="ITopicRepository.Load(String?, Boolean)"/>, assuming they are using the standard routing
-  ///   variables.
+  ///   prior to calling <see cref="ITopicRepository.Load(String, Topic?, TopicPayload, Int32)"/>, assuming they are using the
+  ///   standard routing variables.
   /// </remarks>
   public static Topic? Load(
     this ITopicRepository topicRepository,
@@ -59,24 +59,24 @@ public static class TopicRepositoryExtensions {
     | case particular routes aren't present. That said, if they are defined, but should be excluded from a fallback, then
     | that path does need to be defined—thus e.g. {area}/{controller}/{path}.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var paths = new List<string?>() {
+    List<string?> paths         = [
       cleanPath($"{rootTopic}/{path}"),
       cleanPath($"{area}/{controller}/{action}/{path}"),
       cleanPath($"{area}/{controller}/{path}"),
       cleanPath($"{area}/{action}/{path}"),
       cleanPath($"{area}/{path}")
-    };
+    ];
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Load by path
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = (Topic?)null;
+    var topic                   = (Topic?)null;
 
     foreach (var searchPath in  paths) {
       if (topic is not null) break;
       if (String.IsNullOrEmpty(searchPath)) continue;
       try {
-        topic = topicRepository.Load(searchPath);
+        topic                   = topicRepository.Load(searchPath).GetAwaiter().GetResult();
       }
       catch (InvalidKeyException) {
         //As route data comes from user-submitted requests, it's expected that some may contain invalid keys. From this

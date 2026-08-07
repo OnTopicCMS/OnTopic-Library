@@ -25,7 +25,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   /// </summary>
   public ReadOnlyTopicMultiMap(TopicMultiMap source) {
     Contract.Requires(source, nameof(source));
-    Source = source;
+    Source                      = source;
   }
 
   /*============================================================================================================================
@@ -37,11 +37,11 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   /// </summary>
   /// <returns>
   ///   The <see cref="Source"/> must be passed in via either the public <see cref="ReadOnlyTopicMultiMap(TopicMultiMap)"/>
-  ///   constructor, or must be set manually from the constructor of a derived class when using the protected <see cref="
-  ///   ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
+  ///   constructor, or must be set manually from the constructor of a derived class when using the protected <see cref=
+  ///   "ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
   /// </returns>
   [NotNull, DisallowNull]
-  protected TopicMultiMap? Source { get; init; }
+  private protected TopicMultiMap? Source { get; init; }
 
   /*============================================================================================================================
   | PROPERTY: KEYS
@@ -101,7 +101,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
     if (Contains(key)) {
       return new(Source[key].Values);
     }
-    return new(new List<Topic>());
+    return new([]);
   }
 
   /// <inheritdoc cref="GetValues(String)"/>

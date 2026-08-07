@@ -64,8 +64,8 @@ public class ContentTypeDescriptor : Topic {
   public ContentTypeDescriptor(
     string key,
     string contentType,
-    Topic? parent = null,
-    int id = -1
+    Topic? parent               = null,
+    int id                      = -1
   ) : base(
     key,
     contentType,

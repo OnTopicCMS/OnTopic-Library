@@ -16,8 +16,8 @@ namespace OnTopic.Tests;
 | CLASS: TYPE LOOKUP SERVICE TEST
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, such as the <see cref="
-///   StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
+///   Provides unit tests for the <see cref="ITypeLookupService"/> interface and its implementations, such as the <see cref=
+///   "StaticTypeLookupService"/>, <see cref="DynamicTypeLookupService"/>, <see cref="DynamicTopicBindingModelLookupService"/>,
 ///   and the underlying <see cref="TypeCollection"/>.
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -33,11 +33,11 @@ public class TypeLookupServiceTest {
   [Fact]
   public void TypeCollection_Constructor_ContainsUniqueTypes() {
 
-    var topics = new List<Type> {
+    List<Type> topics           = [
       typeof(BasicTopicBindingModel),
       typeof(CustomTopic),
       typeof(CustomTopic)
-    };
+    ];
     var typeCollection          = new TypeCollection(topics);
 
     Assert.Equal(2, typeCollection.Count);
@@ -56,9 +56,7 @@ public class TypeLookupServiceTest {
   [Fact]
   public void StaticLookupService_TryAdd_ReturnsExpected() {
 
-    var topics = new List<Type> {
-      typeof(CustomTopic)
-    };
+    List<Type> topics           = [typeof(CustomTopic)];
     var lookupService           = new DummyStaticTypeLookupService(topics);
 
     Assert.False(lookupService.TryAdd(typeof(CustomTopic)));
@@ -76,10 +74,7 @@ public class TypeLookupServiceTest {
   [Fact]
   public void StaticLookupService_Lookup_ReturnsFallback() {
 
-    var topics = new List<Type> {
-      typeof(AscendentTopicViewModel),
-      typeof(FallbackViewModel)
-    };
+    List<Type> topics           = [typeof(AscendentTopicViewModel), typeof(FallbackViewModel)];
     var lookupService           = new StaticTypeLookupService(topics);
 
     Assert.Equal(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
@@ -109,8 +104,8 @@ public class TypeLookupServiceTest {
   | TEST: DYNAMIC TYPE LOOKUP SERVICE: PREDICATE: RETURNS EXPECTED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
-  ///   StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
+  ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref=
+  ///   "StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
   /// </summary>
   [Fact]
   public void DynamicTypeLookupService_Predicate_ReturnsExpected() {
@@ -136,21 +131,17 @@ public class TypeLookupServiceTest {
   [Fact]
   public void CompositeTypeLookupService_Lookup_ReturnsFallback() {
 
-    var lookupService1          = new StaticTypeLookupService(
-      new List<Type> {
-        typeof(EmptyViewModel),
-        typeof(FallbackViewModel),
-        typeof(Internal.Diagnostics.Contract)
-      }
-    );
+    var lookupService1          = new StaticTypeLookupService([
+      typeof(EmptyViewModel),
+      typeof(FallbackViewModel),
+      typeof(Contract)
+    ]);
 
-    var lookupService2          = new StaticTypeLookupService(
-      new List<Type> {
-        typeof(AscendentTopicViewModel),
-        typeof(FallbackViewModel),
-        typeof(System.Diagnostics.Contracts.Contract)
-      }
-    );
+    var lookupService2          = new StaticTypeLookupService([
+      typeof(AscendentTopicViewModel),
+      typeof(FallbackViewModel),
+      typeof(System.Diagnostics.Contracts.Contract)
+    ]);
 
     var lookupService           = new CompositeTypeLookupService(lookupService1, lookupService2);
 
@@ -170,9 +161,7 @@ public class TypeLookupServiceTest {
   [Fact]
   public void DefaultTopicLookupService_Lookup_ReturnsExpected() {
 
-    var topics = new List<Type> {
-      typeof(CustomTopic)
-    };
+    List<Type> topics           = [typeof(CustomTopic)];
     var lookupService           = new DefaultTopicLookupService(topics);
 
     Assert.Equal(typeof(AttributeDescriptor), lookupService.Lookup(nameof(AttributeDescriptor)));

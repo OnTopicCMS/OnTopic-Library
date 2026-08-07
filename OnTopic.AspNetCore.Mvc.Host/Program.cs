@@ -14,21 +14,29 @@ using OnTopic.Internal.Diagnostics;
 /*==============================================================================================================================
 | CONFIGURE SERVICES
 \-----------------------------------------------------------------------------------------------------------------------------*/
-var builder = WebApplication.CreateBuilder(args);
+var builder                     = WebApplication.CreateBuilder(args);
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Cookie Policy
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.Configure<CookiePolicyOptions>(options => {
   // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-  options.CheckConsentNeeded =  context => true;
+  options.CheckConsentNeeded    =  context => true;
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
 /*------------------------------------------------------------------------------------------------------------------------------
-| Configure: Output Caching
+| Configure: Response Caching
 \-----------------------------------------------------------------------------------------------------------------------------*/
 builder.Services.AddResponseCaching();
+
+/*------------------------------------------------------------------------------------------------------------------------------
+| Configure: Output Caching
+>-------------------------------------------------------------------------------------------------------------------------------
+| Required for MapTopicSitemap()'s default caching policy to take effect; without this, the sitemap still renders correctly on
+| every request via the dedicated SqlSitemapTopicRepository, but it isn't cached.
+\-----------------------------------------------------------------------------------------------------------------------------*/
+builder.Services.AddOutputCache();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC
@@ -53,7 +61,7 @@ builder.Services.AddSingleton<IViewComponentActivator>(activator);
 /*==============================================================================================================================
 | CONFIGURE APPLICATION
 \-----------------------------------------------------------------------------------------------------------------------------*/
-var app = builder.Build();
+var app                         = builder.Build();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: Error Pages
@@ -74,6 +82,7 @@ app.UseCookiePolicy();
 app.UseRouting();
 app.UseCors("default");
 app.UseResponseCaching();
+app.UseOutputCache();
 
 /*------------------------------------------------------------------------------------------------------------------------------
 | Configure: MVC

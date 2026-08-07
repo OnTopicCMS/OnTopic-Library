@@ -23,7 +23,7 @@ namespace OnTopic.TestDoubles;
 ///   dependency on a live database or persistent data.
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public class StubTopicRepository : TopicRepository, ITopicRepository {
+public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazyLoader {
 
   /*============================================================================================================================
   | VARIABLES
@@ -38,8 +38,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   ///   Instantiates a new instance of the StubTopicRepository.
   /// </summary>
   /// <returns>A new instance of the StubTopicRepository.</returns>
-  public StubTopicRepository()  : base() {
-    _cache = CreateFakeData();
+  public StubTopicRepository()  {
+    _cache                      = CreateFakeData();
     Contract.Assume(_cache);
   }
 
@@ -47,62 +47,72 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Task<Topic?> Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache;
+    var topic                   = _cache;
 
     if (topicId > 0) {
-      topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      topic                     = _cache.FindFirst(t => t.Id.Equals(topicId));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  isRecursive));
+      OnTopicLoaded(new(topic, depth));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult<Topic?>(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (String.IsNullOrEmpty(uniqueKey)) {
-      return null;
+      return Task.FromResult<Topic?>(null);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicKey
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache.GetByUniqueKey(uniqueKey);
+    var topic                   = _cache.GetByUniqueKey(uniqueKey);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  isRecursive));
+      OnTopicLoaded(new(topic,  depth));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic;
+    return Task.FromResult<Topic?>(topic);
 
   }
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  public override Task<Topic?> Load(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -116,17 +126,17 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by TopicId
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var topic = _cache;
+    var topic                   = _cache;
 
     if (topicId > 0) {
-      topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      topic                     = _cache.FindFirst(t => t.Id.Equals(topicId));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic != null) {
-      OnTopicLoaded(new(topic,  false, version));
+      OnTopicLoaded(new(topic, 0, version));
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -136,13 +146,13 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
       if (!topic.VersionHistory.Contains(version)) {
         topic.VersionHistory.Add(version);
       }
-      topic.LastModified = version;
+      topic.LastModified        = version;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return topic?? throw new TopicNotFoundException(topicId);
+    return Task.FromResult<Topic?>(topic ?? throw new TopicNotFoundException(topicId));
 
   }
 
@@ -150,20 +160,57 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) { }
+  public override Task Refresh(Topic referenceTopic, DateTime since) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
+  protected override Task SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Assign faux identity
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic.IsNew) {
-      topic.Id = _identity++;
+      topic.Id                  = _identity++;
     }
+
+    return Task.CompletedTask;
+
+  }
+
+  /*============================================================================================================================
+  | METHODS: TOPIC LAZY LOADER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc />
+  /// <remarks>
+  ///   Stub topics always have their children fully populated in memory. For extended attributes, the boundary is promoted to
+  ///   <see cref="LoadState.Loaded"/> without merging real blob data, allowing tests to exercise the fill path without a live
+  ///   database.
+  /// </remarks>
+  public virtual Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Mark payload as loaded; stubs have all relationships and references pre-built in memory, so all targets are resident
+    | and marking Loaded is always safe. Children is already populated in the stubs and needs no action.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ((ITopicLazyLoadable)topic).SetLoadState(payload, LoadState.Loaded);
+
+    // Relationships and References are computed from Deferred.Count; clear any test-seeded deferred entries to express Loaded
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    if (payload.HasFlag(TopicPayload.Relationships)) {
+      rawTopic.Relationships.Deferred.Clear();
+    }
+    if (payload.HasFlag(TopicPayload.References)) {
+      rawTopic.References.Deferred.Clear();
+    }
+
+    return Task.CompletedTask;
 
   }
 
@@ -171,13 +218,13 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) { }
+  protected override Task MoveTopic(Topic topic, Topic target, Topic? sibling = null) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override void DeleteTopic(Topic topic) { }
+  protected override Task DeleteTopic(Topic topic) => Task.CompletedTask;
 
   /*============================================================================================================================
   | METHOD: GET ATTRIBUTES (PROXY)
@@ -186,8 +233,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   public IEnumerable<AttributeRecord> GetAttributesProxy(
     Topic topic,
     bool? isExtendedAttribute,
-    bool? isDirty = null,
-    bool excludeLastModified =  false
+    bool? isDirty               = null,
+    bool excludeLastModified    =  false
   ) => base.GetAttributes(topic, isExtendedAttribute, isDirty, excludeLastModified);
 
   /*============================================================================================================================
@@ -233,21 +280,21 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish root
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var currentAttributeId = 800;
-    var rootTopic = new Topic("Root", "Container", null, currentAttributeId++);
+    var currentAttributeId      = 800;
+    var rootTopic               = new Topic("Root", "Container", null, currentAttributeId++);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish configuration
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var configuration = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
-    var contentTypes = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
+    var configuration           = new Topic("Configuration", "Container", rootTopic, currentAttributeId++);
+    var contentTypes            = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor", configuration, currentAttributeId++);
 
     addAttribute(contentTypes,  "Key", "TextAttributeDescriptor", false, true);
     addAttribute(contentTypes,  "ContentType", "TextAttributeDescriptor", false, true);
     addAttribute(contentTypes,  "Title", "TextAttributeDescriptor", true, true);
     addAttribute(contentTypes,  "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
-    var contentTypeDescriptor = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var contentTypeDescriptor   = new ContentTypeDescriptor("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
     addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
@@ -257,7 +304,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
     TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
-    var attributeDescriptor = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var attributeDescriptor     = new ContentTypeDescriptor("AttributeDescriptor", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
     addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
@@ -269,14 +316,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
     TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
-    var pageContentType = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var pageContentType         = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(pageContentType, "MetaTitle");
     addAttribute(pageContentType, "MetaDescription");
     addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
     addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-    var contactContentType = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
+    var contactContentType      = new ContentTypeDescriptor("Contact", "ContentTypeDescriptor", contentTypes, currentAttributeId++);
 
     addAttribute(contactContentType, "Name", isExtended: false);
     addAttribute(contactContentType, "AlternateEmail", isExtended: false);
@@ -314,14 +361,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
     var categories              = new Topic("Categories", "Lookup", metadata, currentAttributeId++);
     var lookup                  = new Topic("LookupList", "List", categories, currentAttributeId++);
 
-    for (var i=1; i<=5; i++) {
-      _ = new Topic("Category"  + i, "LookupListItem", lookup);
+    for (var i                  =1; i<=5; i++) {
+      _                         = new Topic("Category"  + i, "LookupListItem", lookup);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish content
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var web = TopicFactory.Create("Web", "Page", rootTopic, 10000);
+    var web                     = TopicFactory.Create("Web", "Page", rootTopic, 10000);
 
     CreateFakeData(web, 2, 3);
 
@@ -346,8 +393,8 @@ public class StubTopicRepository : TopicRepository, ITopicRepository {
   ///   Creates a collection of fake data recursively based on a parent topic, and set number of levels.
   /// </summary>
   private static void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
-    for (var i = 0; i < count;  i++) {
-      var topic = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
+    for (var i                  = 1; i <= count; i++) {
+      var topic                 = new Topic(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
       topic.Attributes.SetValue("ParentKey", parent.Key);
       topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
       if (depth > 0) {

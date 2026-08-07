@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net;
 using OnTopic.Collections.Specialized;
 using OnTopic.Querying;
+using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql;
 
@@ -35,6 +36,12 @@ internal static class SqlDataReaderExtensions {
   ///   topics and populate their attributes, associations, and children.
   /// </summary>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+  /// <param name="seedTopicId">
+  ///   The <see cref="Topic.Id"/> that was passed to the underlying query (i.e., the root of the requested subtree or the topic
+  ///   whose ancestors were requested). Used to identify which newly loaded topics are ancestors so that their <see cref=
+  ///   "Topic.Children"/> can be correctly stamped as <see cref="LoadState.NotLoaded"/>. The default is <c>-1</c>, which
+  ///   applies when the root was loaded, or when no single seed applies (e.g., the <c>GetTopicUpdates</c> path).
+  /// </param>
   /// <param name="referenceTopic">
   ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
   ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
@@ -45,35 +52,93 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  /// <param name="includeExternalReferences">
-  ///   Optionally disables populating external references such as <see cref="Topic.Relationships"/> and <see
-  ///   cref="Topic.BaseTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
-  ///   thus external references aren't likely to be available.
-  /// </param>
-  internal static Topic? LoadTopicGraph(
-    this IDataReader reader,
-    Topic? referenceTopic = null,
-    bool? markDirty = null,
-    bool includeExternalReferences = true
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
+  /*============================================================================================================================
+  | METHOD: LOAD TOPIC GRAPH
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  internal static async Task<Topic?> LoadTopicGraph(
+    this DbDataReader reader,
+    int seedTopicId             = -1,
+    Topic? referenceTopic       = null,
+    bool? markDirty             = null,
+    CancellationToken cancellationToken = default
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish topic index
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Null signals that no root has been established yet: AddTopic() uses that to distinguish between a graph's root and an
+    | orphaned row that couldn't be attached and was thus skipped. A referenceTopic supplies an live index; a cold load
+    | establishes its own root from the first row.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var sqlDataReader           = reader as SqlDataReader;
-    var topics                  = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
-    var rootTopicId             = -1;
+    var topics                  = referenceTopic?.GetLiveTopicIndex();
+    var rootTopic               = (Topic?)null;
+    var preExistingIds          = new HashSet<int>(topics?.Keys ?? []);
+    var seedTopic               = (Topic?)null;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Populate topics
     \-------------------------------------------------------------------------------------------------------------------------*/
     Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
-    while (reader.Read()) {
-      if (rootTopicId < 0) {
-        rootTopicId             = reader.GetTopicId();
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+
+      // Add the topic to the topic graph; a null result means the row couldn't be attached and was skipped
+      var addedTopic            = reader.AddTopic(topics, markDirty);
+      if (addedTopic is null) {
+        continue;
       }
-      reader.AddTopic(topics, markDirty);
+
+      var rawTopic              = (ITopicBackingAccessor)addedTopic;
+
+      // The first topic returned is the root topic; materialize its live index so later rows can resolve against it
+      if (rootTopic is null) {
+        rootTopic               = addedTopic;
+        topics                  ??= addedTopic.GetLiveTopicIndex();
+      }
+
+      // If loading the entire tree, the rootTopic is also the seedTopic
+      if (seedTopicId < 0) {
+        seedTopic               ??= addedTopic;
+      }
+
+      // Otherwise, check if the addedTopic is the seedTopic
+      else if (addedTopic.Id == seedTopicId) {
+        seedTopic               = addedTopic;
+      }
+
+      // The extended attributes are complete if HasExtendedAttributes is not true: NULL means extended attributes were included
+      // in this load, and false means the topic has no extended attributes at all; either way, nothing is deferred
+      var hasExtendedAttributes = reader.GetNullableBoolean("HasExtendedAttributes");
+      rawTopic.Attributes.LoadState = ConvergeLoadState(
+        rawTopic.Attributes.LoadState,
+        preExistingIds.Contains(addedTopic.Id),
+        isComplete: hasExtendedAttributes is not true
+      );
+
+      // HasChildren is NULL when the column is not applicable (e.g., in version or update paths); skip those topics
+      // This applies to pre-existing topics too, since a differential load must be able to converge children LoadState as well
+      if (reader.GetNullableBoolean("HasChildren") is { } hasChildren) {
+        rawTopic.Children.LoadState = ConvergeLoadState(
+          rawTopic.Children.LoadState,
+          preExistingIds.Contains(addedTopic.Id),
+          isComplete: !hasChildren
+        );
+
+        // Any rows after the seed are a genuine child, indicating that the parent's full child set was returned. This is only
+        // meaningful here, where HasChildren is populated (GetTopics' ordered, complete result set); GetTopicUpdates'
+        // Refresh() batch leaves HasChildren NULL for every row, since it is an unordered, possibly disconnected set of changed
+        // topics, not a complete child listing. The parent may also be unresolved, hence the null-conditional.
+        if (seedTopic is not null && addedTopic != seedTopic) {
+          (addedTopic.Parent as ITopicLazyLoadable)?.SetLoadState(TopicPayload.Children, LoadState.Loaded);
+        }
+      }
+
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | An empty result set never established a root, leaving topics null; fall back to an empty index for the passes below
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    topics                      ??= new();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Read attributes
@@ -81,9 +146,9 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetIndexedAttributes() [" + DateTime.Now + "]");
 
     // Move to TopicAttributes dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetIndexedAttributes(topics, markDirty);
     }
 
@@ -92,12 +157,12 @@ internal static class SqlDataReaderExtensions {
     \-------------------------------------------------------------------------------------------------------------------------*/
     Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
 
-    // Move to extened attributes dataset
-    reader.NextResult();
+    // Move to extended attributes dataset
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each extended attribute record associated with a specific topic
-    while (reader.Read()) {
-      sqlDataReader?.SetExtendedAttributes(topics, markDirty);
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      (reader as SqlDataReader)?.SetExtendedAttributes(topics, markDirty);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -106,13 +171,11 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetRelationships() [" + DateTime.Now + "]");
 
     // Move to the relationships dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each relationship; multiple records may exist per topic
-    if (includeExternalReferences) {
-      while (reader.Read()) {
-        reader.SetRelationships(topics, markDirty);
-      }
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      reader.SetRelationships(topics, markDirty);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -121,10 +184,10 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetReferences() [" + DateTime.Now + "]");
 
     // Move to the version history dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each version; multiple records may exist per topic
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetReferences(topics, markDirty);
     }
 
@@ -134,20 +197,17 @@ internal static class SqlDataReaderExtensions {
     Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
 
     // Move to the version history dataset
-    reader.NextResult();
+    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
 
     // Loop through each version; multiple records may exist per topic
-    while (reader.Read()) {
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
       reader.SetVersionHistory(topics);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (topics.TryGetValue(rootTopicId, out var rootTopic)) {
-      return rootTopic;
-    }
-    return topics.Values.FirstOrDefault();
+    return seedTopic;
 
   }
 
@@ -155,18 +215,33 @@ internal static class SqlDataReaderExtensions {
   | METHOD: ADD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given the primary topic attributes from the <c>TopicIndex</c> view, establishes a barebones <see cref="Topic"/>
-  ///   instance and adds it to the <paramref name="topics"/> collection.
+  ///   Given the primary topic attributes from the <c>TopicIndex</c> view, establishes a barebones <see cref="Topic"/> instance
+  ///   and attaches it to its parent, if resolvable.
   /// </summary>
+  /// <remarks>
+  ///   Attach-first: A new row is never separately added to an index and then reconciled with its parent; assigning <see cref=
+  ///   "Topic.Parent"/> attaches it to the graph immediately, and the <see cref="TopicIndexRegistry.OnAttached"/> hook indexes
+  ///   it as a side effect. A row whose parent cannot be resolved is unreachable from the returned graph and is skipped (i.e.,
+  ///   returns <see langword="null"/>), <i>unless</i> <paramref name="topics"/> is itself <see langword="null"/>, meaning no
+  ///   root has been established yet for this load, in which case the row becomes the root of a fresh graph and is created
+  ///   unattached. Callers must materialize a live index from that root before the next row is processed, so that the row can
+  ///   resolve against it.
+  /// </remarks>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
-  /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-  /// <param name="markDirty">
-  ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
-  ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
-  ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
-  ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+  /// <param name="topics">
+  ///   The live index of topics resolved so far, or <see langword="null"/> if this load hasn't yet established a root.
   /// </param>
-  private static void AddTopic(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  /// <param name="markDirty">
+  ///   Specifies whether the target collection value should be marked as dirty, assuming the value changes. By default, it will
+  ///   be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+  ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+  ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
+  /// </param>
+  /// <returns>
+  ///   The resolved or newly created <see cref="Topic"/>; <see langword="null"/> if the row is unreachable from the returned
+  ///   graph and was skipped.
+  /// </returns>
+  private static Topic? AddTopic(this IDataReader reader, TopicIndex? topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -176,33 +251,87 @@ internal static class SqlDataReaderExtensions {
     var contentType             = reader.GetString("ContentType");
     var parentId                = reader.GetInteger("ParentID");
     var wasDirty                = false;
+    Topic current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish topic
+    | New row: Attach first, per the database ordering which guarantees parents are delivered before children
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!topics.TryGetValue(topicId, out var current)) {
-      current = TopicFactory.Create(key, contentType, topicId);
-      topics.Add(current.Id, current);
+    if (topics is null || !topics.TryGetValue(topicId, out var existing)) {
+      current                   = TopicFactory.Create(key, contentType, topicId);
+
+      // Default to NotLoaded; a corresponding row in the version history dataset, if any, promotes this to Loaded
+      ((ITopicBackingAccessor)current).VersionHistory.LoadState = LoadState.NotLoaded;
+
+      // No root established yet: This row is the root of a fresh graph, so create it unattached
+      if (topics is null) { }
+
+      // Parent is available: Attach immediately, and the hook indexes the new topic and its (empty) subtree
+      else if (parentId >= 0 && topics.TryGetValue(parentId, out var parentTopic)) {
+        current.Parent          = parentTopic;
+      }
+
+      // Parent is neither available nor previously returned: treat as an orphan and skip (generally unexpected)
+      else {
+        return null;
+      }
+
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Pre-existing row: Update in place, including re-parenting if it moved, assuming the new parent is available
+    \-------------------------------------------------------------------------------------------------------------------------*/
     else {
+      current                   = existing;
       wasDirty                  = current.IsDirty();
       current.Key               = key;
       current.ContentType       = contentType;
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Assign parent
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var parentTopic)) {
-      current.Parent = parentTopic;
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.TryGetValue(parentId, out var newParent)) {
+        current.Parent          = newParent;
+      }
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Mark clean
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (wasDirty is false && markDirty is not null and false) {
+    if (wasDirty is false && markDirty is false) {
       current.MarkClean();
     }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Return the topic created
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return current;
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: FILL CHILDREN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Reads the children result set (the first result set) from a <c>GetTopics</c> response, adds each child to the <paramref
+  ///   name="topics"/> index via <see cref="AddChildTopic"/>, and marks the <paramref name="parent"/>'s <c>Children</c> as <see
+  ///   cref="LoadState.Loaded"/> after a successful fill.
+  /// </summary>
+  /// <param name="reader">
+  ///   The <see cref="IDataReader"/>, positioned at the first result set of the <c>GetTopics</c> response.
+  /// </param>
+  /// <param name="parent">The topic whose immediate children are being loaded.</param>
+  /// <param name="topics">The <see cref="TopicIndex"/> to populate with the new child topics.</param>
+  /// <param name="cancellationToken">An optional token that can be used to cancel the operation.</param>
+  internal static async Task FillChildren(
+    this DbDataReader reader,
+    Topic parent,
+    TopicIndex topics,
+    CancellationToken cancellationToken
+  ) {
+
+    // Loop through each record, delegating to the shared AddChildTopic()
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+      reader.AddChildTopic(parent, topics);
+    }
+
+    // Mark confirmed children payload as Loaded
+    ((ITopicLazyLoadable)parent).SetLoadState(TopicPayload.Children, LoadState.Loaded);
 
   }
 
@@ -221,7 +350,7 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void SetIndexedAttributes(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  internal static void SetIndexedAttributes(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -234,12 +363,16 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its attribute rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set attribute value
     \-------------------------------------------------------------------------------------------------------------------------*/
-    current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, false);
+    rawTopic.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, false);
 
   }
 
@@ -262,7 +395,17 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void SetExtendedAttributes(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
+  /// <param name="preserveDirty">
+  ///   When <c>true</c>, skips any attribute key whose in-memory record is already dirty. This is used by the lazy-load
+  ///   resolver so that a value set by the call while the extended boundary was <see cref="LoadState.NotLoaded"/> is not
+  ///   silently overwritten by the blob merge.
+  /// </param>
+  internal static void SetExtendedAttributes(
+    this SqlDataReader reader,
+    TopicIndex topics,
+    bool? markDirty,
+    bool preserveDirty          = false
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -279,7 +422,11 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify the current topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its attribute rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Handle scenario where there isn't an <attribute /> element
@@ -310,7 +457,11 @@ internal static class SqlDataReaderExtensions {
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) continue;
-      current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, true);
+
+      // Skip keys already dirty in memory to avoid clobbering unsaved values during a lazy fill
+      if (preserveDirty && rawTopic.Attributes.IsDirty(attributeKey)) continue;
+
+      rawTopic.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, true);
 
     } while (xmlReader.Name is  "attribute");
 
@@ -334,7 +485,7 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? markDirty = false) {
+  internal static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? markDirty = false) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -347,7 +498,12 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[sourceTopicId];
+    // A source absent from topics was orphaned and skipped by AddTopic(); its relationship rows are skipped in kind, rather
+    // than resolved, so an orphan never registers on a target's IncomingRelationships
+    if (!topics.TryGetValue(sourceTopicId, out var current)) {
+      return;
+    }
+    var rawTopic                = (ITopicBackingAccessor)current;
     var related                 = (Topic?)null;
 
     // Fetch the related topic
@@ -355,9 +511,9 @@ internal static class SqlDataReaderExtensions {
       related                   = relatedTopic;
     }
 
-    // Bypass if the target object is missing
+    // When the target is absent, defer it for resolution on next access
     if (related is null) {
-      current.Relationships.IsFullyLoaded = false;
+      rawTopic.Relationships.Deferred.SetValue(relationshipKey, targetTopicId);
       return;
     }
 
@@ -365,10 +521,10 @@ internal static class SqlDataReaderExtensions {
     | Set relationship on object
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!isDeleted) {
-      current.Relationships.SetValue(relationshipKey, related, markDirty);
+      rawTopic.Relationships.SetValue(relationshipKey, related, markDirty);
     }
-    else if (current.Relationships.Contains(relationshipKey, related)) {
-      current.Relationships.Remove(relationshipKey, related);
+    else if (rawTopic.Relationships.Contains(relationshipKey, related)) {
+      rawTopic.Relationships.Remove(relationshipKey, related);
     }
 
   }
@@ -391,7 +547,7 @@ internal static class SqlDataReaderExtensions {
   ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
   ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
-  private static void SetReferences(this IDataReader reader, TopicIndex topics, bool? markDirty) {
+  internal static void SetReferences(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -403,26 +559,105 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify affected topics
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[sourceTopicId];
+    // A source absent from topics was orphaned and skipped by AddTopic(); its reference rows are skipped in kind, rather than
+    // resolved, so an orphan never registers on a target's IncomingRelationships
+    if (!topics.TryGetValue(sourceTopicId, out var current)) {
+      return;
+    }
+    var rawTopic                = (ITopicBackingAccessor)current;
     var referenced              = (Topic?)null;
 
-    // Fetch the related topic
-    if (targetTopicId is null)  {
+    // This happens when the reference has been deleted, so SetValue() will remove the reference
+    if (targetTopicId is null) {
     }
+
+    // Attempt to get a reference to the target via the topic index
     else if (topics.TryGetValue(targetTopicId.Value, out var referencedTopic)) {
       referenced                = referencedTopic;
     }
+
+    // When the target isn't (yet) available, defer it to be lazy loaded when the references are accessed
     else {
-      current.References.IsFullyLoaded = false;
+      rawTopic.References.Deferred.SetValue(referenceKey, targetTopicId.Value);
       return;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set reference on object
     \-------------------------------------------------------------------------------------------------------------------------*/
-    current.References.SetValue(referenceKey, referenced, markDirty);
+    rawTopic.References.SetValue(referenceKey, referenced, markDirty);
 
   }
+
+
+  /*============================================================================================================================
+  | METHOD: ADD CHILD TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Processes a single row from the children result set of a <c>GetTopics</c> response: Attaches the child via <see cref=
+  ///   "AddTopic"/>, then stamps its <c>Children.LoadState</c> and <c>Attributes.LoadState</c> based on the  <c>HasChildren</c>
+  ///   and <c>HasExtendedAttributes</c> database hints. Returns <see langword="null"/> when the row represents the <paramref
+  ///   name="parent"/> itself (which the stored procedure includes alongside its children), or when <see cref="AddTopic"/>
+  ///   skipped it as an orphan, which is unexpected here.
+  /// </summary>
+  /// <param name="reader">The <see cref="IDataReader"/>, positioned at a row in the children result set.</param>
+  /// <param name="parent">The topic whose children are being loaded; rows matching this ID are skipped.</param>
+  /// <param name="topics">The live <see cref="TopicIndex"/> of <paramref name="parent"/>'s graph.</param>
+  private static Topic? AddChildTopic(this IDataReader reader, Topic parent, TopicIndex topics) {
+
+    // Capture pre-existing status before AddTopic() introduces the topic to the index
+    var wasPreExisting          = topics.ContainsKey(reader.GetTopicId());
+
+    // Add or update the topic in the index; parent is always available, so a null result here isn't expected in practice
+    var addedTopic              = reader.AddTopic(topics, markDirty: false);
+
+    // Skip the parent record, which the stored procedure returns alongside its children, or for an orphaned row (unexpected)
+    if (addedTopic is null || addedTopic.Id == parent.Id) {
+      return null;
+    }
+
+    var rawTopic                = (ITopicBackingAccessor)addedTopic;
+
+    // The extended attributes are completely loaded if HasExtendedAttributes is not true: NULL means this fill included
+    // extended attributes, and false means the child has none at all; either way, nothing is deferred. True means extended
+    // attributes exist but weren't requested this fill, deferring to lazy loading.
+    rawTopic.Attributes.LoadState = ConvergeLoadState(
+      rawTopic.Attributes.LoadState,
+      wasPreExisting,
+      isComplete: reader.GetNullableBoolean("HasExtendedAttributes") is not true
+    );
+
+    // The children property is completely loaded if HasChildren is not true. This fill only refreshes the child's own row,
+    // never its children, so a pre-existing child already Loaded from a prior Load() is preserved rather than downgraded; this
+    // fill returned no information about whether that boundary is complete
+    rawTopic.Children.LoadState = ConvergeLoadState(
+      rawTopic.Children.LoadState,
+      wasPreExisting,
+      isComplete: reader.GetNullableBoolean("HasChildren") is not true
+    );
+
+    // Return the topic created
+    return addedTopic;
+
+  }
+
+  /*============================================================================================================================
+  | METHOD: CONVERGE LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Determines the converged <see cref="LoadState"/> for a boundary given whether this load fully provided it.
+  /// </summary>
+  /// <remarks>
+  ///   A load never downgrades a boundary it didn't fully provide. If <paramref name="isComplete"/>, the boundary is promoted
+  ///   to <see cref="LoadState.Loaded"/> regardless of prior state. Otherwise, a pre-existing boundary is left untouched,
+  ///   preserving whatever it already knew, while a freshly introduced boundary is set to <see cref="LoadState.NotLoaded"/>,
+  ///   deferring the fetch.
+  /// </remarks>
+  /// <param name="current">The boundary's current <see cref="LoadState"/>.</param>
+  /// <param name="isPreExisting">Whether the topic was already resident in the topic index before this load began.</param>
+  /// <param name="isComplete">Whether this load fully provided the boundary.</param>
+  private static LoadState ConvergeLoadState(LoadState current, bool isPreExisting, bool isComplete) =>
+    isComplete? LoadState.Loaded : isPreExisting? current : LoadState.NotLoaded;
 
   /*============================================================================================================================
   | METHOD: SET VERSION HISTORY
@@ -437,7 +672,7 @@ internal static class SqlDataReaderExtensions {
   /// </remarks>
   /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
   /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-  private static void SetVersionHistory(this IDataReader reader, TopicIndex topics) {
+  internal static void SetVersionHistory(this IDataReader reader, TopicIndex topics) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify attributes
@@ -448,14 +683,22 @@ internal static class SqlDataReaderExtensions {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Identify topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var current                 = topics[topicId];
+    // Absent from topics means the topic was orphaned and skipped by AddTopic(); its version rows are ignored in kind
+    if (!topics.TryGetValue(topicId, out var current)) {
+      return;
+    }
+    var rawTopic                = (ITopicBackingAccessor)current;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set history
+    >-------------------------------------------------------------------------------------------------------------------------
+    | A row being present, regardless of its content, means version history was fetched for this topic; promote the state
+    | to Loaded so subsequent access doesn't trigger a redundant fill.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!current.VersionHistory.Contains(dateTime)) {
-      current.VersionHistory.Add(dateTime);
+    if (!rawTopic.VersionHistory.Contains(dateTime)) {
+      rawTopic.VersionHistory.Add(dateTime);
     }
+    rawTopic.VersionHistory.LoadState = LoadState.Loaded;
 
   }
 
@@ -491,6 +734,17 @@ internal static class SqlDataReaderExtensions {
   /// <param name="columnName">The name of the column to retrieve the value from.</param>
   private static bool GetBoolean(this IDataReader reader, string columnName) =>
     reader.GetBoolean(reader.GetOrdinal(columnName));
+
+  /*============================================================================================================================
+  | METHOD: GET NULLABLE BOOLEAN
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves a nullable boolean value by column name.
+  /// </summary>
+  /// <param name="reader">The <see cref="IDataReader"/> object.</param>
+  /// <param name="columnName">The name of the column to retrieve the value from.</param>
+  private static bool? GetNullableBoolean(this IDataReader reader, string columnName) =>
+    reader.IsDBNull(reader.GetOrdinal(columnName))? null : reader.GetBoolean(reader.GetOrdinal(columnName));
 
   /*============================================================================================================================
   | METHOD: GET INTEGER

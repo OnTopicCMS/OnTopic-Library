@@ -348,8 +348,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET PROPERTY VALUE: KEY: SETS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a key value can be properly set using the <see cref="
-  ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a key value can be properly set using the <see cref=
+  ///   "TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
   /// </summary>
   [Fact]
   public void SetPropertyValue_Key_SetsValue() {
@@ -392,8 +392,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Establishes a <see cref="TypeAccessor"/> and confirms that the <see cref="TypeAccessor.SetPropertyValue(Object,
-  ///   String, Object?, Boolean)"/> sets the target property value to <c>null</c> if the value is set to <see cref="
-  ///   String.Empty"/>.
+  ///   String, Object?, Boolean)"/> sets the target property value to <c>null</c> if the value is set to <see cref=
+  ///   "String.Empty"/>.
   /// </summary>
   [Fact]
   public void SetPropertyValue_EmptyValue_SetsToNull() {
@@ -452,8 +452,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET PROPERTY VALUE: DATE/TIME: SETS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a date/time value can be properly set using the <see cref="
-  ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a date/time value can be properly set using the <see cref=
+  ///   "TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method.
   /// </summary>
   [Fact]
   public void SetPropertyValue_DateTime_SetsValue() {
@@ -476,8 +476,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET PROPERTY VALUE: INVALID PROPERTY: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that an invalid property being set via the <see cref="
-  ///   TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method throws an <see cref=
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that an invalid property being set via the <see cref=
+  ///   "TypeAccessor.SetPropertyValue(Object, String, Object?, Boolean)"/> method throws an <see cref=
   ///   "InvalidOperationException"/>.
   /// </summary>
   [Fact]
@@ -495,8 +495,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: VALID VALUE: SETS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value can be properly set using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value can be properly set using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method.
   /// </summary>
   [Fact]
   public void SetMethodValue_ValidValue_SetsValue() {
@@ -513,8 +513,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: INVALID VALUE: DOESN'T SET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
   /// </summary>
   [Fact]
   public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -532,8 +532,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: INVALID MEMBER: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method throws an exception.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method throws an exception.
   /// </summary>
   [Fact]
   public void SetMethodValue_InvalidMember_ThrowsException() {
@@ -570,9 +570,9 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method throws an <see cref="
-  ///   InvalidCastException"/>.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an invalid value using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method throws an <see cref=
+  ///   "InvalidCastException"/>.
   /// </summary>
   [Fact]
   public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
@@ -591,8 +591,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that setting an invalid method name using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object?, Boolean)"/> method returns <c>false</c>.
   /// </summary>
   [Fact]
   public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
@@ -610,8 +610,8 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
   | TEST: SET METHOD VALUE: NULL REFERENCE VALUE: DOESN'T SET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an null value using the <see cref="
-  ///   TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method returns <c>false</c>.
+  ///   Establishes a <see cref="TypeAccessor"/> and confirms that a value set with an null value using the <see cref=
+  ///   "TypeAccessor.SetMethodValue(Object, String, Object, Boolean)"/> method returns <c>false</c>.
   /// </summary>
   [Fact]
   public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
@@ -666,7 +666,7 @@ public class TypeAccessorTest:  IClassFixture<TypeAccessorFixture<MemberAccessor
     var topic                   = new Topic("Test", "ContentType");
 
     int i;
-    for (i = 0; i < totalIterations; i++) {
+    for (i                      = 0; i < totalIterations; i++) {
       typeAccessor.SetPropertyValue(topic, "Key", "Key" + i);
     }
 

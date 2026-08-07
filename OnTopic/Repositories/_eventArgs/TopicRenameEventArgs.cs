@@ -24,7 +24,7 @@ public class TopicRenameEventArgs : TopicEventArgs {
   /// <param name="topic">The <see cref="Topic"/> object associated with the rename event.</param>
   /// <param name="originalKey">The original key of the <see cref="Topic"/> prior to being renamed.</param>
   /// <param name="newKey">The new key of the <see cref="Topic"/> after being renamed.</param>
-  public TopicRenameEventArgs(Topic topic, string originalKey, string newKey): base(topic, true) {
+  public TopicRenameEventArgs(Topic topic, string originalKey, string newKey): base(topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Vaidate parameters

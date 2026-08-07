@@ -75,7 +75,7 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     var                         viewEngine                      = viewResult.ViewEngine?? ViewEngine;
     var                         requestContext                  = actionContext.HttpContext.Request;
     var                         view                            = (ViewEngineResult?)null;
-    var                         searchedPaths                   = new List<string>();
+    List<string>                searchedPaths                   = [];
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Cache content type as route variable
@@ -95,10 +95,10 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     | Determines if the view is defined in the querystring.
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (requestContext.Query.ContainsKey("View")) {
-      var queryStringValue = requestContext.Query["View"].First<string>();
+      var queryStringValue      = requestContext.Query["View"].First<string>();
       if (queryStringValue is not null) {
-        view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
-        searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+        view                    = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
+        searchedPaths           = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
       }
     }
 
@@ -110,16 +110,16 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
         if (header is null) {
           continue;
         }
-        var value = header.Replace("+", "-", StringComparison.Ordinal);
+        var value               = header.Replace("+", "-", StringComparison.Ordinal);
         if (value.Contains('/', StringComparison.Ordinal)) {
-          value = value[(value.IndexOf('/', StringComparison.Ordinal)+1)..];
+          value                 = value[(value.IndexOf('/', StringComparison.Ordinal)+1)..];
         }
         if (value.Contains(';', StringComparison.Ordinal)) {
-          value = value[..(value.IndexOf(';', StringComparison.Ordinal))];
+          value                 = value[..(value.IndexOf(';', StringComparison.Ordinal))];
         }
         if (value is not null)  {
-          view = viewEngine.FindView(actionContext, value, isMainPage: true);
-          searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+          view                  = viewEngine.FindView(actionContext, value, isMainPage: true);
+          searchedPaths         = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
         }
         if (view?.Success ?? false) {
           break;
@@ -137,10 +137,10 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!view?.Success ?? true) {
       if (routeData.Values.TryGetValue("action", out var action)) {
-        var actionName = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
+        var actionName          = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
         if (actionName is not null) {
-          view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
-          searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+          view                  = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
+          searchedPaths         = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
         }
       }
     }
@@ -152,16 +152,16 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     | as it is set as the default View value for the Topic
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!(view?.Success ?? false) && !String.IsNullOrEmpty(topicView)) {
-      view = viewEngine.FindView(actionContext, topicView, isMainPage: true);
-      searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+      view                      = viewEngine.FindView(actionContext, topicView, isMainPage: true);
+      searchedPaths             = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Default to content type
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (!view?.Success ?? true) {
-      view = viewEngine.FindView(actionContext, contentType, isMainPage: true);
-      searchedPaths = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
+      view                      = viewEngine.FindView(actionContext, contentType, isMainPage: true);
+      searchedPaths             = [.. searchedPaths.Union(view.SearchedLocations ?? [])];
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -189,9 +189,9 @@ public class TopicViewResultExecutor : ViewExecutor, IActionResultExecutor<Topic
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find view
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var viewEngineResult = FindView(context, result);
+    var viewEngineResult        = FindView(context, result);
     viewEngineResult.EnsureSuccessful(originalLocations: null);
-    var view = viewEngineResult.View;
+    var view                    = viewEngineResult.View;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Execute

@@ -40,11 +40,11 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// <remarks>
   ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
   ///   with. This will be used when setting incoming relationships. In addition, a <see cref="TopicRelationshipMultiMap"/>
-  ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is
-  ///   not set, then it will not allow incoming relationships to be set via the internal <see cref=
-  ///   "SetValue(String, Topic, Boolean?, Boolean)"/> overload.
+  ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; when set,
+  ///   <see cref="SetValue(String, Topic, Boolean?)"/> and <see cref="Remove(String, Topic)"/> won't set the reciprocal
+  ///   relationship, since <paramref name="parent"/> in this case represents that reciprocal.
   /// </remarks>
-  public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base(new()) {
+  internal TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base(new()) {
     _parent                     = parent;
     _isIncoming                 = isIncoming;
     _storage                    = base.Source;
@@ -54,22 +54,48 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   | METHOD: CLEAR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>.
+  ///   Removes every <see cref="Topic"/> object across all relationship keys.
   /// </summary>
   /// <remarks>
-  ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref="
-  ///   TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
+  ///   Delegates to <see cref="Clear(String)"/> for each key, which handles both the <c>isDirty</c> as well as the removal of
+  ///   reciprocal relationships in <see cref="Topic.IncomingRelationships"/>.
+  /// </remarks>
+  internal void Clear() {
+    foreach (var key in Keys) {
+      Clear(key);
+    }
+  }
+
+  /// <summary>
+  ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>, as well as any <see
+  ///   cref="Deferred"/> entries registered under that key.
+  /// </summary>
+  /// <remarks>
+  ///   If there are any <see cref="Topic"/> objects or <see cref="Deferred"/> entries registered under the specified <paramref
+  ///   name="relationshipKey"/>, then the <see cref="TopicRelationshipMultiMap"/> will be marked as <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/>. Delegates to <see cref="Remove(String, Topic)"/> for each resolved entry so the
+  ///   reciprocal relationship is also removed from each target's <see cref="Topic.IncomingRelationships"/>. Clearing the <see
+  ///   cref="Deferred"/> entries prevents a subsequent <see cref="ITopicLazyLoadable.EnsureLoaded"/> from resolving and
+  ///   resurrecting relationships this call just removed.
   /// </remarks>
   /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
   public void Clear(string relationshipKey) {
+
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
-    if (_storage.Contains(relationshipKey)) {
-      var relationship = _storage.GetValues(relationshipKey);
-      if (relationship.Count >  0) {
-        _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
-      }
-      _storage.Clear(relationshipKey);
+
+    var hadLoadedValues         = _storage.GetValues(relationshipKey).Count > 0;
+    var hadDeferredEntries      = Deferred.Remove(relationshipKey);
+
+    foreach (var topic in _storage.GetValues(relationshipKey).ToArray()) {
+      Remove(relationshipKey, topic);
     }
+
+    // Remove() already marks the key dirty for each resident topic it removes; if only deferred entries existed, mark it here
+    // so the clear isn't silently lost
+    if (!hadLoadedValues && hadDeferredEntries) {
+      _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
+    }
+
   }
 
   /// <inheritdoc cref="Clear(String)"/>
@@ -89,21 +115,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the specified <paramref name="
   ///   relationshipKey"/> or the <paramref name="topic"/> cannot be found.
   /// </returns>
-  public bool Remove(string relationshipKey, Topic topic) => Remove(relationshipKey, topic, false);
-
-  /// <summary>
-  ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
-  /// </summary>
-  /// <param name="relationshipKey">The key of the relationship.</param>
-  /// <param name="topic">The topic to be removed.</param>
-  /// <param name="isIncoming">
-  ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
-  /// </param>
-  /// <returns>
-  ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
-  ///   <see cref="Topic"/> cannot be found.
-  /// </returns>
-  internal bool Remove(string relationshipKey, Topic topic, bool isIncoming) {
+  public bool Remove(string relationshipKey, Topic topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate contracts
@@ -114,14 +126,8 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Remove reciprocal relationship, if appropriate
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isIncoming) {
-      if (_isIncoming) {
-        throw new InvalidOperationException(
-          "You are attempting to remove an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
-          nameof(isIncoming)
-        );
-      }
-      topic.IncomingRelationships.Remove(relationshipKey, _parent, true);
+    if (!_isIncoming) {
+      topic.IncomingRelationships.Remove(relationshipKey, _parent);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -149,12 +155,6 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
   public bool RemoveTopic(string relationshipKey, Topic topic) => Remove(relationshipKey, topic);
 
-  /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
-  [ExcludeFromCodeCoverage]
-  [Obsolete($"The {nameof(RemoveTopic)} method has been renamed to {nameof(Remove)}.", true)]
-  public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) =>
-    Remove(relationshipKey, topic, isIncoming);
-
   /*============================================================================================================================
   | METHOD: SET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -170,25 +170,7 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// <param name="markDirty">
   ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
   /// </param>
-  public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null)
-    => SetValue(relationshipKey, topic, markDirty, false);
-
-  /// <summary>
-  ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified <paramref name="relationshipKey"/>.
-  /// </summary>
-  /// <remarks>
-  ///   If a relationship by a given <paramref name="relationshipKey"/> is not currently established, it will automatically be
-  ///   created.
-  /// </remarks>
-  /// <param name="relationshipKey">The key of the relationship.</param>
-  /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
-  /// <param name="isIncoming">
-  ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
-  /// </param>
-  /// <param name="markDirty">
-  ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
-  /// </param>
-  internal void SetValue(string relationshipKey, Topic topic, bool? markDirty, bool isIncoming) {
+  public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate contracts
@@ -210,19 +192,16 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
       else {
         _dirtyKeys.MarkDirty(relationshipKey);
       }
+
+      // Remove any pending deferred entry for this relationship/target pair
+      Deferred.Remove(relationshipKey, topic.Id);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Create reciprocal relationship, if appropriate
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (!isIncoming) {
-      if (_isIncoming) {
-        throw new InvalidOperationException(
-          "You are attempting to set an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
-          nameof(isIncoming)
-        );
-      }
-      topic.IncomingRelationships.SetValue(relationshipKey, _parent, markDirty, true);
+    if (!_isIncoming) {
+      topic.IncomingRelationships.SetValue(relationshipKey, _parent, markDirty);
     }
 
   }
@@ -232,39 +211,46 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
   public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null) => SetValue(relationshipKey, topic, isDirty);
 
-  /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
-  [ExcludeFromCodeCoverage]
-  [Obsolete($"The {nameof(SetTopic)} method has been renamed to {nameof(SetValue)}.", true)]
-  public void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) =>
-    SetValue(relationshipKey, topic, isDirty, isIncoming);
-
   /*============================================================================================================================
-  | IS FULLY LOADED?
+  | PROPERTY: LOAD STATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Determines whether or not the collection was fully loaded from the persistence store.
+  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
+  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
   /// </summary>
   /// <remarks>
-  ///   <para>
-  ///     When loading an individual <see cref="Topic"/> or branch from the persistence store, it is possible that the
-  ///     relationships may not be fully available. In this scenario, updating relationships while e.g. deleting unmatched
-  ///     relationships can result in unintended data loss. To account for this, the <see cref="IsFullyLoaded"/> property
-  ///     tracks whether a collection was fully loaded from the persistence store; if it wasn't, the <see cref="
-  ///     ITopicRepository"/> should not deleted unmatched relationships.
-  ///   </para>
-  ///   <para>
-  ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see cref="
-  ///     ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped back to
-  ///     a valid <see cref="Topic"/> reference in memory.
-  ///   </para>
+  ///   Returns <see cref="LoadState.NotLoaded"/> when <see cref="Deferred"/> contains values, meaning one or more relationships
+  ///   aren't yet available and must be lazy loaded. Returns <see cref="LoadState.Loaded"/> once <see cref="Deferred"/> is
+  ///   empty, meaning all targets have been loaded. While <see cref="LoadState.NotLoaded"/>, the <see cref="ITopicRepository"/>
+  ///   will not delete unmatched relationships on save, preventing unintended data loss.
   /// </remarks>
-  public bool IsFullyLoaded {   get; set; } = true;
+  public LoadState LoadState => Deferred.Count > 0 ? LoadState.NotLoaded : LoadState.Loaded;
+
+  /*============================================================================================================================
+  | PROPERTY: DEFERRED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Collects relationship targets that were absent from the topic graph during an <see cref="ITopicRepository"/> load,
+  ///   pending resolution via lazy-loading.
+  /// </summary>
+  /// <remarks>
+  ///   Written to by the <see cref="ITopicRepository"/> when a relationship target cannot be found in the current <see cref=
+  ///   "TopicIndex"/>. The <see cref="Repositories.ITopicLazyLoader.EnsureLoaded(Topic, TopicPayload)"/> resolves each entry
+  ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
+  ///   to the topic graph.
+  /// </remarks>
+  public DeferredAssociationCollection Deferred { get; } = new();
 
   /*============================================================================================================================
   | METHOD: IS DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public bool IsDirty() => _dirtyKeys.IsDirty();
+  /// <remarks>
+  ///   Also accounts for any dirty <see cref="Deferred"/> entries as introduced by e.g., <see cref=
+  ///  "TopicRepository.Rollback(Topic, DateTime)"/>, so a relationship that hasn't yet been resolved to an in-memory <see cref=
+  ///  "Topic"/> still marks the collection as dirty.
+  /// </remarks>
+  public bool IsDirty() => _dirtyKeys.IsDirty() || Deferred.Any(deferred => deferred.IsDirty);
 
   /// <inheritdoc/>
   public bool IsDirty(string key) => _dirtyKeys.IsDirty(key);

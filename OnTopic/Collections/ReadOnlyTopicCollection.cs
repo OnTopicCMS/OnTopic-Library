@@ -23,7 +23,7 @@ public class ReadOnlyTopicCollection : ReadOnlyCollection<Topic> {
   /// </summary>
   /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection"/>.</param>
   [ExcludeFromCodeCoverage]
-  public ReadOnlyTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection?? new List<Topic>()) {
+  public ReadOnlyTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection ?? []) {
   }
 
   /*============================================================================================================================

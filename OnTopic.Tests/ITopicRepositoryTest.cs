@@ -52,7 +52,7 @@ public class ITopicRepositoryTest {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository = fixture.CachedTopicRepository;
+    _topicRepository            = fixture.CachedTopicRepository;
 
   }
 
@@ -63,9 +63,9 @@ public class ITopicRepositoryTest {
   ///   Loads the default topic and ensures there are the expected number of children.
   /// </summary>
   [Fact]
-  public void Load_Default_ReturnsTopicTopic() {
+  public async Task Load_Default_ReturnsTopicTopic() {
 
-    var rootTopic               = _topicRepository.Load();
+    var rootTopic               = await _topicRepository.Load();
 
     Assert.Equal(2, rootTopic?.Children.Count);
     Assert.Equal("Configuration", rootTopic?.Children.First().Key);
@@ -80,8 +80,8 @@ public class ITopicRepositoryTest {
   ///   Loads topics and ensures there are the expected number of children.
   /// </summary>
   [Fact]
-  public void Load_ValidUniqueKey_ReturnsCorrectTopic() =>
-    Assert.Equal("Page", _topicRepository.Load("Root:Configuration:ContentTypes:Page")?.Key);
+  public async Task Load_ValidUniqueKey_ReturnsCorrectTopic() =>
+    Assert.Equal("Page", (await _topicRepository.Load("Root:Configuration:ContentTypes:Page"))?.Key);
 
   /*============================================================================================================================
   | TEST: LOAD: INVALID UNIQUE KEY: RETURNS NULL
@@ -90,8 +90,8 @@ public class ITopicRepositoryTest {
   ///   Loads invalid topic key and ensures a null is returned.
   /// </summary>
   [Fact]
-  public void Load_InvalidUniqueKey_ReturnsTopic() =>
-    Assert.Null(_topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType"));
+  public async Task Load_InvalidUniqueKey_ReturnsTopic() =>
+    Assert.Null(await _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType"));
 
   /*============================================================================================================================
   | TEST: LOAD: VALID TOPIC ID: RETURNS CORRECT TOPIC
@@ -100,9 +100,9 @@ public class ITopicRepositoryTest {
   ///   Loads topic by ID and ensures it is found.
   /// </summary>
   [Fact]
-  public void Load_ValidTopicId_ReturnsCorrectTopic() {
+  public async Task Load_ValidTopicId_ReturnsCorrectTopic() {
 
-    var topic                   = _topicRepository.Load(11111);
+    var topic                   = await _topicRepository.Load(11111);
 
     Assert.NotNull(topic);
     Assert.Equal("Web_1_1_1_1", topic?.Key);
@@ -116,8 +116,8 @@ public class ITopicRepositoryTest {
   ///   Loads topic by an incorrect ID and ensures it a null is returned.
   /// </summary>
   [Fact]
-  public void Load_InvalidTopicId_ReturnsNull() =>
-    Assert.Null(_topicRepository.Load(9999999));
+  public async Task Load_InvalidTopicId_ReturnsNull() =>
+    Assert.Null(await _topicRepository.Load(9999999));
 
   /*============================================================================================================================
   | TEST: SAVE
@@ -126,17 +126,17 @@ public class ITopicRepositoryTest {
   ///   Saves topics and ensures their identifiers are properly set.
   /// </summary>
   [Fact]
-  public void Save() {
+  public async Task Save() {
 
     var topic                   = new Topic("Test", "Page");
     var child                   = new Topic("Child", "Page", topic);
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
 
     Assert.NotEqual(-1, topic.Id);
     Assert.Equal(-1, child.Id);
 
-    _topicRepository.Save(topic, true);
+    await _topicRepository.Save(topic, true);
 
     Assert.NotEqual(-1, child.Id);
 
@@ -149,14 +149,14 @@ public class ITopicRepositoryTest {
   ///   Moves topics and ensures their parents are correctly set.
   /// </summary>
   [Fact]
-  public void Move_ToNewParent_ConfirmedMove() {
+  public async Task Move_ToNewParent_ConfirmedMove() {
 
     var source                  = new Topic("OriginalParent", "Page");
     var destination             = new Topic("NewParent", "Page");
     var topic                   = new Topic("Topic", "Page", source);
     _                           = new Topic("Sibling", "Page", source);
 
-    _topicRepository.Move(topic, destination);
+    await _topicRepository.Move(topic, destination);
 
     Assert.Equal(topic.Parent,  destination);
     Assert.Single(source.Children);
@@ -171,13 +171,13 @@ public class ITopicRepositoryTest {
   ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
   /// </summary>
   [Fact]
-  public void Move_ToNewSibling_ConfirmedMove() {
+  public async Task Move_ToNewSibling_ConfirmedMove() {
 
     var parent                  = new Topic("OriginalParent", "Page");
     var topic                   = new Topic("Topic", "Page", parent);
     var sibling                 = new Topic("Sibling", "Page", parent);
 
-    _topicRepository.Move(topic, parent, sibling);
+    await _topicRepository.Move(topic, parent, sibling);
 
     Assert.Equal(topic.Parent,  parent);
     Assert.Equal(2, parent.Children.Count);
@@ -193,13 +193,13 @@ public class ITopicRepositoryTest {
   ///   Deletes a topic to ensure it is properly removed.
   /// </summary>
   [Fact]
-  public void Delete_Topic_Removed() {
+  public async Task Delete_Topic_Removed() {
 
     var parent                  = new Topic("OriginalParent", "Page");
     var topic                   = new Topic("Topic", "Page", parent);
     _                           = new Topic("child", "Page", topic);
 
-    _topicRepository.Delete(topic, true);
+    await _topicRepository.Delete(topic, true);
 
     Assert.Empty(parent.Children);
 
@@ -214,14 +214,14 @@ public class ITopicRepositoryTest {
   ///   and not the immediate <see cref="CachedTopicRepository"/>.
   /// </summary>
   [Fact]
-  public void Delete_DeleteEvent_IsFired() {
+  public async Task Delete_DeleteEvent_IsFired() {
 
     var topic                   = new Topic("Test", "Page");
     var hasFired                = false;
 
-    _topicRepository.Save(topic);
+    await _topicRepository.Save(topic);
     _topicRepository.TopicDeleted += eventHandler;
-    _topicRepository.Delete(topic);
+    await _topicRepository.Delete(topic);
 
     Assert.True(hasFired);
 

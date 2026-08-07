@@ -3,7 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+
 using OnTopic.Collections.Specialized;
+using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.Attributes;
@@ -18,6 +20,14 @@ namespace OnTopic.Attributes;
 ///   <see cref="AttributeRecord"/> objects represent individual instances of attributes associated with particular topics.
 ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
 ///   the <see cref="AttributeCollection"/> class.
+///   <para>
+///     When <see cref="LoadState"/> is <see cref="LoadState.NotLoaded"/>, iterating the collection directly (e.g., via <c>
+///     foreach</c> or LINQ operators) returns only the indexed attributes already present and does not fetch the deferred
+///     extended attribute blob; only a keyed lookup or <see cref="AsAttributeDictionary(Boolean)"/> autoloads. Callers that
+///     enumerate the collection directly and require a complete set of attributes must first await <see cref=
+///     "ITopicLazyLoadable.EnsureLoaded"/> with <see cref="TopicPayload.ExtendedAttributes"/>. Otherwise, a decision that
+///     depends on seeing every attribute may act on a partial view without any error being raised.
+///   </para>
 /// </remarks>
 public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
 
@@ -36,8 +46,8 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   ///   Initializes a new instance of the <see cref="AttributeCollection"/> class.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref="
-  ///   Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
+  ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref=
+  ///   "Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
   /// </remarks>
   /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
   internal AttributeCollection(Topic parentTopic) : base(parentTopic) {
@@ -56,6 +66,22 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   /// <inheritdoc/>
   protected override TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute>? BaseCollection =>
     AssociatedTopic.BaseTopic?.Attributes;
+
+  /*============================================================================================================================
+  | PROPERTY: LOAD STATE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
+  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
+  /// </summary>
+  /// <remarks>
+  ///   Defaults to <see cref="LoadState.Loaded"/>. When a topic is loaded without extended attributes (e.g., on a shallow
+  ///   load), the repository conditionally sets this to <see cref="LoadState.NotLoaded"/> to indicate that the extended
+  ///   attribute blob has not yet been retrieved. The persistence store may optionally provide an indicator of the count
+  ///   without returning the full data, thus allowing this to be set to <see cref="LoadState.Loaded"/> if, in fact, there are
+  ///   no extended attributes. Indexed attributes are never deferred regardless of this state.
+  /// </remarks>
+  public LoadState LoadState { get; set; } = LoadState.Loaded;
 
   /*============================================================================================================================
   | METHOD: IS DIRTY
@@ -80,6 +106,46 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
       a.IsDirty &&
       (!excludeLastModified ||  !a.Key.StartsWith("LastModified", StringComparison.OrdinalIgnoreCase))
     );
+
+  /*============================================================================================================================
+  | METHOD: GET VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Retrieves the value associated with the specified <paramref name="key"/>, autoloading the extended attribute blob if the
+  ///   key is not yet loaded and the extended attribute property is set to <see cref="LoadState.NotLoaded"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Indexed attributes are always loaded in the local collection; the autoload is skipped for them. A deferred key that has
+  ///   never been fetched triggers a single synchronous blob fill through the stamped resolver; all subsequent reads find the
+  ///   property <see cref="LoadState.Loaded"/> and return immediately without an additional round-trip. Callers that know a key
+  ///   is always indexed and, thus, never resides in the extended attribute blob, may set <paramref name="autoLoad"/> to
+  ///   <c>false</c> to suppress this behavior. This is a correctness trade-off: An <see cref="AttributeDescriptor"/> can force
+  ///   any attribute to be treated as extended, in which case a value stored only in an unloaded blob will be missed and the
+  ///   <paramref name="defaultValue"/> returned instead. It should therefore only be used for attributes known to be indexed.
+  /// </remarks>
+  /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+  /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+  /// <param name="inheritFromParent">
+  ///   Determines if the value should be inherited from the parent topic when not found locally.
+  /// </param>
+  /// <param name="maxHops">The maximum number of ancestor hops when inheriting from parent topics.</param>
+  /// <param name="autoLoad">
+  ///   Determines whether a <see cref="LoadState.NotLoaded"/> extended attribute property may trigger a synchronous load when
+  ///   <paramref name="key"/> is absent locally. Defaults to <c>true</c>.
+  /// </param>
+  [return: NotNullIfNotNull(nameof(defaultValue))]
+  internal override string? GetValue(
+    string key,
+    string? defaultValue,
+    bool inheritFromParent,
+    int maxHops,
+    bool autoLoad               = true
+  ) {
+    if (autoLoad && LoadState is LoadState.NotLoaded && !Contains(key)) {
+      ((ITopicLazyLoadable)AssociatedTopic).EnsureLoaded(TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
+    }
+    return base.GetValue(key, defaultValue, inheritFromParent, maxHops, autoLoad);
+  }
 
   /*============================================================================================================================
   | METHOD: SET VALUE
@@ -123,9 +189,9 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   public void SetValue(
     string key,
     string? value,
-    bool? markDirty = null,
-    DateTime? version = null,
-    bool? isExtendedAttribute = null
+    bool? markDirty             = null,
+    DateTime? version           = null,
+    bool? isExtendedAttribute   = null
   ) {
     base.SetValue(key, value, markDirty, version);
     if (Contains(key)) {
@@ -133,7 +199,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
       var attributeIndex        = IndexOf(attributeValue);
       if (isExtendedAttribute is not null && isExtendedAttribute != attributeValue.IsExtendedAttribute) {
         attributeValue          = attributeValue with {
-          IsExtendedAttribute = isExtendedAttribute
+          IsExtendedAttribute   = isExtendedAttribute
         };
         base[attributeIndex]    = attributeValue;
       }
@@ -144,14 +210,16 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   | METHOD: AS ATTRIBUTE DICTIONARY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref="
-  ///   AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
+  ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref=
+  ///   "AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
   /// </summary>
   /// <remarks>
   ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on
-  ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref="Topic.
-  ///   LastModified"/>.
+  ///   <see cref="Topic"/> which contain specialized getter logic, such as <see cref="Topic.Title"/> and <see cref=
+  ///   "Topic.LastModified"/>. Unlike a direct enumeration of the collection, this autoloads the extended attribute blob for
+  ///   each source (the current collection, and, if <paramref name="inheritFromBase"/> is <c>true</c>, each <see cref=
+  ///   "Topic.BaseTopic"/> in the chain) that is <see cref="LoadState.NotLoaded"/>, so the result is always complete.
   /// </remarks>
   /// <param name="inheritFromBase">
   ///   Determines if attributes from the <see cref="Topic.BaseTopic"/> should be included. Defaults to <c>false</c>.
@@ -162,12 +230,16 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
     var attributes              = new AttributeDictionary();
     var count                   = 0;
     while (sourceAttributes is  not null && ++count < 5) {
+      if (sourceAttributes.LoadState is LoadState.NotLoaded) {
+        var associatedTopic     = (ITopicLazyLoadable)sourceAttributes.AssociatedTopic;
+        associatedTopic.EnsureLoaded(TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();
+      }
       foreach (var attribute in sourceAttributes) {
         if (count is 1 || !attributes.ContainsKey(attribute.Key)) {
           attributes.TryAdd(attribute.Key, attribute.Value);
         }
       }
-      sourceAttributes = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
+      sourceAttributes          = inheritFromBase? sourceAttributes.AssociatedTopic.BaseTopic?.Attributes : null;
     }
     foreach (var attribute in _excludedAttributes) {
       attributes.Remove(attribute);

@@ -21,7 +21,7 @@ namespace OnTopic.Data.Sql;
 /// <remarks>
 ///   Concrete implementation of the <see cref="ITopicRepository"/> class.
 /// </remarks>
-public class SqlTopicRepository : TopicRepository, ITopicRepository {
+public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyLoader {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -37,7 +37,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   /// </summary>
   /// <param name="connectionString">A connection string to a SQL server that contains the Topics database.</param>
   /// <returns>A new instance of the SqlTopicRepository.</returns>
-  public SqlTopicRepository(string connectionString) : base() {
+  public SqlTopicRepository(string connectionString) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -55,7 +55,12 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override async Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -84,8 +89,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
 
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
       topicId                   = command.GetReturnCode();
 
@@ -108,12 +113,24 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    return Load(topicId, referenceTopic, isRecursive);
+    return await Load(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
 
   }
 
   /// <inheritdoc />
-  public override Topic Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+  public override async Task<Topic?> Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Normalize depth
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (payload.HasFlag(TopicPayload.Children) && depth is 0) {
+      depth                     = 1;
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish database connection
@@ -130,15 +147,20 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     | Establish query parameters
     \-------------------------------------------------------------------------------------------------------------------------*/
     command.AddParameter("TopicID", topicId);
-    command.AddParameter("DeepLoad", isRecursive);
+    command.AddParameter("Depth", depth);
+    command.AddParameter("LoadAscendants", topicId >= 0);
+    command.AddParameter("IncludeExtended", payload.HasFlag(TopicPayload.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships", true);
+    command.AddParameter("IncludeReferences", true);
+    command.AddParameter("IncludeHistory", payload.HasFlag(TopicPayload.VersionHistory));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-      topic                     = reader.LoadTopicGraph(referenceTopic, false);
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
+      topic                     = await reader.LoadTopicGraph(topicId, referenceTopic, false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +175,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     \-------------------------------------------------------------------------------------------------------------------------*/
     if (topic is null) {
       if (topicId == -1) {
-        topic = TopicFactory.Create("Root", "Container");
+        topic                   = TopicFactory.Create("Root", "Container");
       }
       else {
         throw new TopicNotFoundException(topicId);
@@ -173,7 +195,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    OnTopicLoaded(new(topic, isRecursive));
+    OnTopicLoaded(new(topic, depth));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
@@ -183,7 +205,13 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   }
 
   /// <inheritdoc />
-  public override Topic Load(int topicId, DateTime version, Topic? referenceTopic = null) {
+  /// <remarks>
+  ///   Always returns a detached <see cref="Topic"/> graph, populated exclusively from the historical dataset; it is never
+  ///   merged into a resident graph, and relationship and reference targets are left in <c>Deferred</c> rather than resolved.
+  ///   Callers that need a historical version merged into a live <see cref="Topic"/> to e.g., commit a rollback should use <see
+  ///   cref="TopicRepository.Rollback"/> instead, which performs that merge before persisting the result.
+  /// </remarks>
+  public override async Task<Topic?> Load(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -200,31 +228,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     );
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Clear associations
-    >-------------------------------------------------------------------------------------------------------------------------
-    | Because we don't (currently) track version as part of the .NET data model for relationships or topic references, there's
-    | no easy way to determine if an association should be deleted when doing a rollback. As such, existing associations
-    | should be deleted, assuming a `referenceTopic` is passed, and it contains the `topicId`.
+    | Establish database connection
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topic                   = (Topic?)null;
 
-    if (referenceTopic?.Id == topicId) {
-      topic                     = referenceTopic;
-    }
-    else if (referenceTopic is  not null) {
-      topic                     = referenceTopic.GetRootTopic().FindFirst(t => t.Id == topicId);
-    }
-
-    if (topic is not null) {
-      foreach (var relationship in topic.Relationships) {
-        topic.Relationships.Clear(relationship.Key);
-      }
-      topic.References.Clear();
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Establish database connection
-    \-------------------------------------------------------------------------------------------------------------------------*/
     using var connection        = new SqlConnection(_connectionString);
     using var command           = new SqlCommand("GetTopicVersion", connection) {
       CommandType               = CommandType.StoredProcedure,
@@ -243,19 +250,18 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-      topic                     = reader.LoadTopicGraph(referenceTopic, includeExternalReferences: referenceTopic is not null);
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+      // Load the historical version as a detached topic
+      topic                     = await reader.LoadTopicGraph(topicId).ConfigureAwait(false);
+
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Catch exception
     \-------------------------------------------------------------------------------------------------------------------------*/
     catch (SqlException exception) {
-      if (topic is not null) {
-        topic.Relationships.IsFullyLoaded = false;
-        topic.References.IsFullyLoaded = false;
-      }
       throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
     }
 
@@ -267,22 +273,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
-    | Delete orphaned attributes
-    >-------------------------------------------------------------------------------------------------------------------------
-    | If a referenceTopic is passed, and it contains the `topicId`, then that instance will be updated with the previous
-    | version. In that case, however, any attributes which were first introduced after that version won't be overwritten.
-    | That's because there isn't a previous value associated with that key to overwrite the current value. In those cases,
-    | those attributes must be manually removed.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    var orphanedAttributes = topic.Attributes.Where(a => a.LastModified > version).ToList();
-    foreach (var attribute in orphanedAttributes) {
-      topic.Attributes.Remove(attribute.Key);
-    }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
     | Raise event
     \-------------------------------------------------------------------------------------------------------------------------*/
-    OnTopicLoaded(new(topic, false, version));
+    OnTopicLoaded(new(topic, 0, version));
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return objects
@@ -295,7 +288,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  public override void Refresh(Topic referenceTopic, DateTime since) {
+  public override async Task Refresh(Topic referenceTopic, DateTime since) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -331,9 +324,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      using var reader          = command.ExecuteReader();
-      reader.LoadTopicGraph(referenceTopic.GetRootTopic(), false);
+      await connection.OpenAsync().ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync().ConfigureAwait(false);
+      await reader.LoadTopicGraph(-1, referenceTopic.GetRootTopic(), false).ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -346,10 +339,153 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   }
 
   /*============================================================================================================================
+  | METHODS: TOPIC LAZY LOADER
+  \---------------------------------------------------------------------------------------------------------------------------*/
+
+  /// <inheritdoc />
+  public virtual async Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate parameters
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires(topic);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Skip for new topics, as there's no persistent data to fetch
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (topic.IsNew) {
+      return;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Filter to pending (not yet Loaded) payload
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    payload                     = ((ITopicLazyLoadable)topic).FilterPayload(payload);
+
+    if (payload is TopicPayload.None) {
+      return;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Resolve any relationship and reference targets first
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    // Resolve any deferred relationship/reference targets by loading each individually; these were left unresolved by the
+    // initial Load() because their targets weren't part of that call's ascendant/descendant scope, and couldn't be found in the
+    // referenceTopic, if provided.
+    if (payload.HasFlag(TopicPayload.Relationships) || payload.HasFlag(TopicPayload.References)) {
+      await LoadDeferredAssociations(topic, payload, cancellationToken).ConfigureAwait(false);
+    }
+
+    // Exit early if nothing else is pending so we don't open a database connection unnecessarily
+    if (
+      !payload.HasFlag(TopicPayload.Children) &&
+      !payload.HasFlag(TopicPayload.ExtendedAttributes) &&
+      !payload.HasFlag(TopicPayload.VersionHistory)
+    ) {
+      return;
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Establish database connection
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    using var connection        = new SqlConnection(_connectionString);
+    using var command           = new SqlCommand("GetTopics", connection) {
+      CommandType               = CommandType.StoredProcedure
+    };
+
+    // Set the stored procedure parameters based on the TopicPayload enum values
+    AddEnsureLoadedParameters(command, topic.Id, payload);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Process database query
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Use the full live graph as the topic index so already-resident relationship targets are found without extra round-trips.
+    | When filling Children, associations for the parent/seed topic are re-fetched alongside the children's; the
+    | DeferredAssociationCollection.SetValue() deduplicate those values so reprocessing doesn't accumulate duplicate entries in
+    | the Deferred collection.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var topics                  = topic.GetLiveTopicIndex();
+    var rawTopic                = (ITopicBackingAccessor)topic;
+
+    try {
+
+      // Setup
+      await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+      using var reader          = (SqlDataReader)await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+      // Children: Fill first result set; FillChildrenAsync() sets each child's Children.LoadState and marks the parent Loaded
+      if (payload.HasFlag(TopicPayload.Children)) {
+        await reader.FillChildren(topic, topics, cancellationToken).ConfigureAwait(false);
+      }
+
+      // Otherwise, skip the first result set since the topic is already resident
+      else {
+        await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      }
+
+      // Indexed attributes
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetIndexedAttributes(topics, markDirty: false);
+      }
+
+      // Extended attributes
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetExtendedAttributes(topics, markDirty: false, preserveDirty: true);
+      }
+
+      // Relationships (will be empty, unless loading children)
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetRelationships(topics, markDirty: false);
+      }
+
+      // References (will be empty, unless loading children)
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetReferences(topics, markDirty: false);
+      }
+
+      // History
+      await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+      while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+        reader.SetVersionHistory(topics);
+      }
+
+    }
+    catch (SqlException exception) {
+      throw new TopicRepositoryException($"Topic payload failed to load: '{exception.Message}'", exception);
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Raise event for each newly loaded child
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Children filled here, as opposed to the initial recursive Load(), are new Topic instances introduced to the graph for the
+    | first time and are conceptually the same as being loaded via Load(), just via a different entry point.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (payload.HasFlag(TopicPayload.Children)) {
+      foreach (var child in topic.Children) {
+        OnTopicLoaded(new(child, depth: 0));
+      }
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Mark confirmed payload as Loaded
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Children is excluded: Its LoadState is set inside FillChildren() after a successful fill. Relationships and References
+    | are computed from Deferred.Count and require no explicit assignment here. History is set directly by SetVersionHistory()
+    | as rows are read, since every persisted topic has at least one version. Only Extended Attributes needs to be set here.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ((ITopicLazyLoadable)topic).SetLoadState(payload & TopicPayload.ExtendedAttributes, LoadState.Loaded);
+
+  }
+
+  /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override sealed void SaveTopic(
+  protected override sealed async Task SaveTopic(
     [NotNull]Topic topic,
     DateTime version,
     bool persistRelationships
@@ -358,17 +494,37 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Define variables
     \-------------------------------------------------------------------------------------------------------------------------*/
+    var rawTopic                = (ITopicBackingAccessor)topic;
     var isTopicDirty            = topic.IsDirty();
-    var areRelationshipsDirty = topic.Relationships.IsDirty();
-    var areReferencesDirty      = topic.References.IsDirty();
-    var areAttributesDirty      = topic.Attributes.IsDirty(true);
-    var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true).ToList();
+    var areRelationshipsDirty   = rawTopic.Relationships.IsDirty();
+    var areReferencesDirty      = rawTopic.References.IsDirty();
+    var areAttributesDirty      = rawTopic.Attributes.IsDirty(true);
+    var extendedBoundaryLoaded  = rawTopic.Attributes.LoadState is LoadState.Loaded;
+    var extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
     var indexedAttributeList    = GetAttributes(
       topic                     : topic,
       isExtendedAttribute       : false,
       isDirty                   : true,
       excludeLastModified       : !areAttributesDirty
     ).ToList();
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Ensure extended attribute blob is available before save
+    >-------------------------------------------------------------------------------------------------------------------------
+    | If the extended attribute boundary is NotLoaded and at least one extended attribute is dirty, call EnsureLoaded first so
+    | we write a complete snapshot rather than a partial one. When the boundary is NotLoaded and no extended attrs are dirty,
+    | @ExtendedAttributes is omitted (NULL), leaving the persisted blob untouched (UpdateTopic guards on IS NOT NULL).
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (!extendedBoundaryLoaded) {
+      if (extendedAttributeList.Any(a => a.IsDirty)) {
+        await EnsureLoaded(topic, TopicPayload.ExtendedAttributes).ConfigureAwait(false);
+        extendedBoundaryLoaded  = true;
+        extendedAttributeList   = GetAttributes(topic, isExtendedAttribute: true).ToList();
+      }
+      else {
+        extendedAttributeList   = [];
+      }
+    }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Detect whether anything has changed
@@ -401,7 +557,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     >-------------------------------------------------------------------------------------------------------------------------
     | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it.
     \-------------------------------------------------------------------------------------------------------------------------*/
-    using var attributeValues = new AttributeValuesDataTable();
+    using var attributeValues   = new AttributeValuesDataTable();
 
     if (areAttributesDirty) {
 
@@ -418,10 +574,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Add extended attributes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var extendedAttributes      = new StringBuilder();
+    var extendedAttributes      = (StringBuilder?)null;
 
-    if (areAttributesDirty) {
+    if (areAttributesDirty && extendedBoundaryLoaded) {
 
+      extendedAttributes        = new();
       extendedAttributes.Append("<attributes>");
 
       foreach (var attributeValue in extendedAttributeList) {
@@ -449,7 +606,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     using var connection        = new SqlConnection(_connectionString);
     var procedureName           = topic.IsNew? "CreateTopic" : "UpdateTopic";
 
-    connection.Open();
+    await connection.OpenAsync().ConfigureAwait(false);
 
     using var command           = new SqlCommand(procedureName, connection) {
       CommandType               = CommandType.StoredProcedure
@@ -472,7 +629,9 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     command.AddParameter("Version", version);
     if (areAttributesDirty) {
       command.AddParameter("Attributes", attributeValues);
-      command.AddParameter("ExtendedAttributes", extendedAttributes);
+      if (extendedAttributes is not null) {
+        command.AddParameter("ExtendedAttributes", extendedAttributes);
+      }
     }
     command.AddOutputParameter();
 
@@ -482,8 +641,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     try {
 
       if (topic.IsNew || isTopicDirty || areAttributesDirty) {
-        command.ExecuteNonQuery();
-        topic.Id = command.GetReturnCode();
+        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+        topic.Id                = command.GetReturnCode();
       }
 
       Contract.Assume(
@@ -492,11 +651,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
       );
 
       if (persistRelationships  && areRelationshipsDirty) {
-        PersistRelationships(topic, version, connection);
+        await PersistRelationships(topic, version, connection).ConfigureAwait(false);
       }
 
       if (persistRelationships  && areReferencesDirty) {
-        PersistReferences(topic, version, connection);
+        await PersistReferences(topic, version, connection).ConfigureAwait(false);
       }
 
     }
@@ -524,7 +683,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: MOVE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override sealed void MoveTopic(Topic topic, Topic target, Topic? sibling) {
+  protected override sealed async Task MoveTopic(Topic topic, Topic target, Topic? sibling) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -555,8 +714,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -575,7 +734,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   | METHOD: DELETE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  protected override sealed void DeleteTopic(Topic topic) {
+  protected override sealed async Task DeleteTopic(Topic topic) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -599,8 +758,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
     | Process database query
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
-      connection.Open();
-      command.ExecuteNonQuery();
+      await connection.OpenAsync().ConfigureAwait(false);
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -616,6 +775,37 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   }
 
   /*============================================================================================================================
+  | METHOD: ADD ENSURE LOADED PARAMETERS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Configures a <see cref="SqlCommand"/> targeting <c>GetTopics</c> for use by the <see cref="ITopicLazyLoader"/>,
+  ///   setting the payload parameters based on the requested <paramref name="payload"/>.
+  /// </summary>
+  /// <remarks>
+  ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> property,
+  ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, TopicPayload, int)"/> for
+  ///   existing topics.
+  /// </remarks>
+  private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {
+
+    // Set the topic we're working with
+    command.AddParameter("TopicID",                             topicId);
+
+    // Scope: One tier of children when filling the Children property, otherwise just this topic's own content
+    command.AddParameter("Depth",                               payload.HasFlag(TopicPayload.Children) ? 1 : 0);
+    command.AddParameter("LoadAscendants",                      false);
+
+    // Payload: Include only what the requested payload requires; relationships and references are loaded during the initial
+    // Load() call, so they do not need to be re-fetched
+    command.AddParameter("IncludeIndexed",                      payload.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeExtended",                     payload.HasFlag(TopicPayload.ExtendedAttributes));
+    command.AddParameter("IncludeRelationships",                payload.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeReferences",                   payload.HasFlag(TopicPayload.Children));
+    command.AddParameter("IncludeHistory",                      payload.HasFlag(TopicPayload.VersionHistory));
+
+  }
+
+  /*============================================================================================================================
   | METHOD: PERSIST RELATIONSHIPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -624,13 +814,27 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   /// <param name="topic">The topic object whose relationships should be persisted.</param>
   /// <param name="version">The version that should be associated with the updated value.</param>
   /// <param name="connection">The SQL connection.</param>
-  private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
+  private static async Task PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Determine relationship keys to persist
+    >---------------------------------------------------------------------------------------------------------------------------
+    | Limited to dirty keys, either resolved or deferred. Each key maps to its own UpdateRelationships call, scoped to that
+    | key's own TVP and DeleteUnmatched, so skipping a clean key here simply leaves its existing rows untouched in SQL, while a
+    | also ensuring any deleted keys are correctly accounted for.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    var rawTopic                = (ITopicBackingAccessor)topic;
+    var dirtyDeferred           = rawTopic.Relationships.Deferred.Where(deferred => deferred.IsDirty).ToList();
+    var relationshipKeys        = rawTopic.Relationships.Keys
+      .Where(key => rawTopic.Relationships.IsDirty(key))
+      .Union(dirtyDeferred.Select(deferred => deferred.Key)).ToList();
+    var deferredByKey           = rawTopic.Relationships.Deferred.ToLookup(deferred => deferred.Key);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Return blank if the topic has no relations.
     \-------------------------------------------------------------------------------------------------------------------------*/
     // return if the topic has no relations
-    if (topic.Relationships.Keys.Count == 0) {
+    if (relationshipKeys.Count == 0) {
       return;
     }
 
@@ -639,17 +843,24 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
       /*------------------------------------------------------------------------------------------------------------------------
       | Iterate through each scope and persist to SQL
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var key in topic.Relationships.Keys) {
+      foreach (var key in relationshipKeys) {
 
+        // Setup stored procedure
         using var targetIds     = new TopicListDataTable();
         using var command       = new SqlCommand("UpdateRelationships", connection) {
           CommandType           = CommandType.StoredProcedure
         };
 
-        foreach (var targetTopic in topic.Relationships.GetValues(key)) {
+        // Include resolved relationships
+        foreach (var targetTopic in rawTopic.Relationships.GetValues(key)) {
           if (!targetTopic.IsNew) {
             targetIds.AddRow(targetTopic.Id);
           }
+        }
+
+        // Include deferred relationships
+        foreach (var deferred in deferredByKey[key]) {
+          targetIds.AddRow(deferred.TopicId);
         }
 
         // Add Parameters
@@ -657,9 +868,10 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
         command.AddParameter("RelationshipKey", key);
         command.AddParameter("RelatedTopics", targetIds);
         command.AddParameter("Version", version);
-        command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
+        command.AddParameter("DeleteUnmatched", true);
 
-        command.ExecuteNonQuery();
+        // Execute command
+        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
       }
 
@@ -675,11 +887,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
       );
     }
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Return
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    return;
-
   }
 
   /*============================================================================================================================
@@ -691,31 +898,41 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
   /// <param name="topic">The topic object whose references should be persisted.</param>
   /// <param name="version">The version that should be associated with the updated value.</param>
   /// <param name="connection">The SQL connection.</param>
-  private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
+  private static async Task PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
+
+    var rawTopic                = (ITopicBackingAccessor)topic;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Persist relations to database
     \-------------------------------------------------------------------------------------------------------------------------*/
     try {
 
+      // Setup stored procedure
       using var references      = new TopicReferencesDataTable();
       using var command         = new SqlCommand("UpdateReferences", connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
-      foreach (var relatedTopic in topic.References) {
+      // Include resolved references
+      foreach (var relatedTopic in rawTopic.References) {
         if (!relatedTopic.Value?.IsNew?? false) {
           references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
         }
+      }
+
+      // Include deferred references
+      foreach (var deferred in rawTopic.References.Deferred) {
+        references.AddRow(deferred.Key, deferred.TopicId);
       }
 
       // Add Parameters
       command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
       command.AddParameter("ReferencedTopics", references);
       command.AddParameter("Version", version);
-      command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
+      command.AddParameter("DeleteUnmatched", true);
 
-      command.ExecuteNonQuery();
+      // Execute the command
+      await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
     }
 
@@ -728,11 +945,6 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository {
         exception
       );
     }
-
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | Return
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    return;
 
   }
 

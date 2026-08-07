@@ -23,7 +23,7 @@ namespace OnTopic.Repositories;
 ///   can leave everything else as is.
 /// </remarks>
 [ExcludeFromCodeCoverage]
-public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
+public abstract class TopicRepositoryDecorator : LazyLoadingTopicRepository {
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -36,7 +36,7 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
   /// </param>
   /// <returns>A new instance of the <see cref="TopicRepositoryDecorator"/>.</returns>
-  protected TopicRepositoryDecorator(ITopicRepository topicRepository) : base() {
+  protected TopicRepositoryDecorator(ITopicRepository topicRepository) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate input
@@ -46,16 +46,16 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set values locally
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository = topicRepository;
+    TopicRepository             = topicRepository;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Subscribe to underlying events
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicRepository.TopicLoaded  += (object? sender, TopicLoadEventArgs args)                 => OnTopicLoaded(args);
-    TopicRepository.TopicSaved   += (object? sender, TopicSaveEventArgs args)                 => OnTopicSaved(args);
-    TopicRepository.TopicDeleted += (object? sender, TopicEventArgs args)                     => OnTopicDeleted(args);
-    TopicRepository.TopicMoved   += (object? sender, TopicMoveEventArgs args)                 => OnTopicMoved(args);
-    TopicRepository.TopicRenamed += (object? sender, TopicRenameEventArgs args)               => OnTopicRenamed(args);
+    TopicRepository.TopicLoaded += (_, args)                    => OnTopicLoaded(args);
+    TopicRepository.TopicSaved  += (_, args)                    => OnTopicSaved(args);
+    TopicRepository.TopicDeleted += (_, args)                   => OnTopicDeleted(args);
+    TopicRepository.TopicMoved  += (_, args)                    => OnTopicMoved(args);
+    TopicRepository.TopicRenamed += (_, args)                   => OnTopicRenamed(args);
 
   }
 
@@ -77,52 +77,62 @@ public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Topic? Load() => Load(-1);
+  public override Task<Topic?> Load() => Load(-1);
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
-    TopicRepository.Load(topicId, referenceTopic, isRecursive);
+  public override Task<Topic?> Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) =>
+    TopicRepository.Load(topicId, referenceTopic, payload, depth);
 
   /// <inheritdoc />
-  public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) =>
-    TopicRepository.Load(uniqueKey, referenceTopic, isRecursive);
+  public override Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) =>
+    TopicRepository.Load(uniqueKey, referenceTopic, payload, depth);
 
   /// <inheritdoc />
-  public override Topic? Load(Topic topic, DateTime version)
+  public override Task<Topic?> Load(Topic topic, DateTime version)
     => TopicRepository.Load(topic, version);
 
   /// <inheritdoc />
-  public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) =>
-    TopicRepository.Load(topicId, version, referenceTopic);
+  public override Task<Topic?> Load(int topicId, DateTime version) =>
+    TopicRepository.Load(topicId, version);
 
   /*============================================================================================================================
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Refresh(Topic referenceTopic, DateTime since) => TopicRepository.Refresh(referenceTopic, since);
+  public override Task Refresh(Topic referenceTopic, DateTime since) => TopicRepository.Refresh(referenceTopic, since);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Rollback(Topic topic, DateTime version) => TopicRepository.Rollback(topic, version);
+  public override Task Rollback(Topic topic, DateTime version) => TopicRepository.Rollback(topic, version);
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Save(Topic topic, bool isRecursive = false) => TopicRepository.Save(topic, isRecursive);
+  public override Task Save(Topic topic, bool isRecursive = false) => TopicRepository.Save(topic, isRecursive);
 
   /*============================================================================================================================
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Move(Topic topic, Topic target, Topic? sibling = null) => TopicRepository.Move(topic, target, sibling);
+  public override Task Move(Topic topic, Topic target, Topic? sibling = null) => TopicRepository.Move(topic, target, sibling);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override void Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
+  public override Task Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
 
 } //Class

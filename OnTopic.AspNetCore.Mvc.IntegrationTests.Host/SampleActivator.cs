@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers;
-using OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories;
 using OnTopic.Data.Caching;
 using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
+using OnTopic.TestDoubles;
 using OnTopic.ViewModels;
 
 namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
@@ -33,6 +33,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
   private readonly              ITypeLookupService              _typeLookupService;
   private readonly              ITopicMappingService            _topicMappingService;
   private readonly              ITopicRepository                _topicRepository;
+  private readonly              ISitemapTopicRepository         _sitemapTopicRepository;
 
   /*============================================================================================================================
   | HIERARCHICAL TOPIC MAPPING SERVICE
@@ -55,22 +56,23 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize Topic Repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var                         sqlTopicRepository              = new StubTopicRepository();
+    var                         sqlTopicRepository              = new Repositories.StubTopicRepository();
     var                         cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-    _                                                         = new PageTopicViewModel();
+    _                                                           = new PageTopicViewModel();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Preload repository
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _topicRepository                                          = cachedTopicRepository;
-    _typeLookupService                                        = new DynamicTopicViewModelLookupService();
-    _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-    _                                                         = _topicRepository.Load();
+    _topicRepository                                            = cachedTopicRepository;
+    _sitemapTopicRepository                                     = new StubSitemapTopicRepository(_topicRepository);
+    _typeLookupService                                          = new DynamicTopicViewModelLookupService();
+    _topicMappingService                                        = new TopicMappingService(_topicRepository, _typeLookupService);
+    _                                                           = _topicRepository.Load().GetAwaiter().GetResult();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Establish hierarchical topic mapping service
     \-------------------------------------------------------------------------------------------------------------------------*/
-    _hierarchicalMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
+    _hierarchicalMappingService                                 = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
       new HierarchicalTopicMappingService<NavigationTopicViewModel>(
         _topicRepository,
         _topicMappingService
@@ -96,7 +98,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine controller type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+    var type                    = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate controller
@@ -111,7 +113,7 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
       nameof(ControllerController) =>
         new ControllerController(),
       nameof(SitemapController) =>
-        new SitemapController(_topicRepository),
+        new SitemapController(_sitemapTopicRepository),
       nameof(RedirectController) =>
         new RedirectController(_topicRepository),
       _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
@@ -133,13 +135,13 @@ public class SampleActivator :  IControllerActivator, IViewComponentActivator {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Determine view component type
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var type = context.ViewComponentDescriptor.TypeInfo.AsType();
+    var type                    = context.ViewComponentDescriptor.TypeInfo.AsType();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Configure and return appropriate view component
     \-------------------------------------------------------------------------------------------------------------------------*/
     return type.Name switch {
-      _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
+      _                         => throw new InvalidOperationException($"Unknown view component {type.Name}")
     };
 
   }

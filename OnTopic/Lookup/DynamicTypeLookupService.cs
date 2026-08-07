@@ -23,12 +23,12 @@ public class DynamicTypeLookupService : StaticTypeLookupService {
   ///   optionally, a default <see cref="Type"/> object to return if none is specified.
   /// </summary>
   /// <param name="predicate">The search condition to use to identify target classes.</param>
-  public DynamicTypeLookupService(Func<Type, bool> predicate) : base() {
+  public DynamicTypeLookupService(Func<Type, bool> predicate) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Find target classes
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var matchedTypes = AppDomain
+    var matchedTypes            = AppDomain
       .CurrentDomain
       .GetAssemblies()
       .Where(a => !(a.FullName?.StartsWith("Microsoft", StringComparison.Ordinal) ?? false) && !(a.FullName?.StartsWith("System", StringComparison.Ordinal) ?? false))

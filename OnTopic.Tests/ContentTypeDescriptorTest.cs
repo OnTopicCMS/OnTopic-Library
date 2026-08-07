@@ -13,8 +13,8 @@ namespace OnTopic.Tests;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Provides unit tests for the <see cref="ContentTypeDescriptor"/> class and other types associated with it, such as <see
-///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref="
-///   AttributeDescriptorCollection"/>.
+///   cref="AttributeDescriptor"/>, <see cref="ContentTypeDescriptorCollection"/>, and <see cref=
+///   "AttributeDescriptorCollection"/>.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public class ContentTypeDescriptorTest {
@@ -150,9 +150,9 @@ public class ContentTypeDescriptorTest {
   [Fact]
   public void IsTypeOf_DerivedContentType_ReturnsTrue() {
 
-    var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
-    for (var i = 0; i < 5; i++) {
-      var childContentType = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
+    var contentType             = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
+    for (var i                  = 0; i < 5; i++) {
+      var childContentType      = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
       contentType               = childContentType;
     }
 
@@ -170,9 +170,9 @@ public class ContentTypeDescriptorTest {
   [Fact]
   public void IsTypeOf_InvalidContentType_ReturnsFalse() {
 
-    var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
-    for (var i = 0; i < 5; i++) {
-      var childContentType = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
+    var contentType             = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
+    for (var i                  = 0; i < 5; i++) {
+      var childContentType      = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
       contentType               = childContentType;
     }
 
@@ -194,7 +194,7 @@ public class ContentTypeDescriptorTest {
     var pageContentType         = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
     _                           = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
 
-    var contentTypeCollection = new ContentTypeDescriptorCollection(rootContentType);
+    var contentTypeCollection   = new ContentTypeDescriptorCollection(rootContentType);
 
     Assert.Equal(3, contentTypeCollection.Count);
 
@@ -215,7 +215,7 @@ public class ContentTypeDescriptorTest {
     var videoContentType        = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
     var slideshowContentType    = new ContentTypeDescriptor("Slideshow", "ContentTypeDescriptor");
 
-    var contentTypeCollection = new ContentTypeDescriptorCollection(rootContentType);
+    var contentTypeCollection   = new ContentTypeDescriptorCollection(rootContentType);
 
     pageContentType.Children.Remove(videoContentType);
     pageContentType.Children.Add(slideshowContentType);

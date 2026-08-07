@@ -28,7 +28,7 @@ public class TopicNotFoundException: TopicRepositoryException {
   /// <summary>
   ///   Initializes a new <see cref="TopicNotFoundException" /> instance.
   /// </summary>
-  public TopicNotFoundException() : base() { }
+  public TopicNotFoundException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="TopicNotFoundException" /> instance based on a missing topic ID.

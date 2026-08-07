@@ -11,8 +11,8 @@ namespace OnTopic.Tests.ViewModels;
 | VIEW MODEL: LOAD TESTING
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Provides a simple view model with a series of properties that can be used for load testing the <see cref="
-///   TopicMappingService"/>.
+///   Provides a simple view model with a series of properties that can be used for load testing the <see cref=
+///   "TopicMappingService"/>.
 /// </summary>
 /// <remarks>
 ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
@@ -28,27 +28,27 @@ public class LoadTestingViewModel: KeyOnlyTopicViewModel {
   /// <param name="attributes">An <see cref="AttributeDictionary"/> of attribute values.</param>
   public LoadTestingViewModel(AttributeDictionary attributes) {
     Contract.Requires(attributes);
-    Property0 = attributes.GetInteger("Property0");
-    Property1 = attributes.GetInteger("Property1");
-    Property2 = attributes.GetInteger("Property2");
-    Property3 = attributes.GetInteger("Property3");
-    Property4 = attributes.GetInteger("Property4");
-    Property5 = attributes.GetInteger("Property5");
-    Property6 = attributes.GetInteger("Property6");
-    Property7 = attributes.GetInteger("Property7");
-    Property8 = attributes.GetInteger("Property8");
-    Property9 = attributes.GetInteger("Property9");
-    Property10 = attributes.GetInteger("Property10");
-    Property11 = attributes.GetInteger("Property11");
-    Property12 = attributes.GetInteger("Property12");
-    Property13 = attributes.GetInteger("Property13");
-    Property14 = attributes.GetInteger("Property14");
-    Property15 = attributes.GetInteger("Property15");
-    Property16 = attributes.GetInteger("Property16");
-    Property17 = attributes.GetInteger("Property17");
-    Property18 = attributes.GetInteger("Property18");
-    Property19 = attributes.GetInteger("Property19");
-    Property20 = attributes.GetInteger("Property20");
+    Property0                   = attributes.GetInteger("Property0");
+    Property1                   = attributes.GetInteger("Property1");
+    Property2                   = attributes.GetInteger("Property2");
+    Property3                   = attributes.GetInteger("Property3");
+    Property4                   = attributes.GetInteger("Property4");
+    Property5                   = attributes.GetInteger("Property5");
+    Property6                   = attributes.GetInteger("Property6");
+    Property7                   = attributes.GetInteger("Property7");
+    Property8                   = attributes.GetInteger("Property8");
+    Property9                   = attributes.GetInteger("Property9");
+    Property10                  = attributes.GetInteger("Property10");
+    Property11                  = attributes.GetInteger("Property11");
+    Property12                  = attributes.GetInteger("Property12");
+    Property13                  = attributes.GetInteger("Property13");
+    Property14                  = attributes.GetInteger("Property14");
+    Property15                  = attributes.GetInteger("Property15");
+    Property16                  = attributes.GetInteger("Property16");
+    Property17                  = attributes.GetInteger("Property17");
+    Property18                  = attributes.GetInteger("Property18");
+    Property19                  = attributes.GetInteger("Property19");
+    Property20                  = attributes.GetInteger("Property20");
   }
 
   /// <summary>

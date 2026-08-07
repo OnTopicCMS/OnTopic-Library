@@ -53,8 +53,8 @@ namespace OnTopic.Internal.Reflection;
 ///     "/>. As such, by saving a reference to those as part of the <see cref="Register(String, TItem?)"/> process, we allow
 ///     the source collection to retrieve the original request in order to ensure that data isn't lost. This isn't as critical
 ///     for e.g. <see cref="Topic.References"/> since the <typeparamref name="TItem"/> will be the same <see cref="Topic"/>
-///     that's sent to the corresponding property, and thus is expected to be the same as the value set by the <see cref="
-///     Topic"/> property itself.
+///     that's sent to the corresponding property, and thus is expected to be the same as the value set by the <see cref=
+///     "Topic"/> property itself.
 ///   </para>
 ///   <para>
 ///     In a typical workflow, the <see cref="Enforce(String, TItem?)"/> method will end up getting once or twice. The first
@@ -69,8 +69,8 @@ namespace OnTopic.Internal.Reflection;
 ///     One caveat to this are cases where the caller attempts to set the value via the <see cref="Topic"/> property directly,
 ///     instead of adding the item directly to the corresponding collection—e.g., they call <see cref="Topic.View"/> instead
 ///     of e.g. the <see cref="AttributeCollection.SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/> method from
-///     <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see cref="
-///     Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called twice,
+///     <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see cref=
+///     "Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called twice,
 ///     collection implementors are advised to offer an internal overload that allows an item to be added to the collection
 ///     while bypassing the business logic. For instance, this can be done using <see cref="TrackedRecordCollection{TItem,
 ///     TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="TrackedRecordCollection{
@@ -100,7 +100,7 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// </summary>
   /// <param name="associatedTopic">The <see cref="Topic"/> whose properties should be called, when appropriate.</param>
   internal TopicPropertyDispatcher(Topic associatedTopic) {
-    _associatedTopic = associatedTopic;
+    _associatedTopic            = associatedTopic;
   }
 
   /*============================================================================================================================
@@ -160,8 +160,8 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   ///     .SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>.
   ///   </para>
   ///   <para>
-  ///     It's worth noting that any calls to <see cref="Register(String, TItem?)"/> are invalidated the next time <see cref="
-  ///     Enforce(String, TItem?)"/> is called. As such, <see cref="Register(String, TItem?)"/> is not a way to permanently
+  ///     It's worth noting that any calls to <see cref="Register(String, TItem?)"/> are invalidated the next time <see cref=
+  ///     "Enforce(String, TItem?)"/> is called. As such, <see cref="Register(String, TItem?)"/> is not a way to permanently
   ///     disable calling a property setter. (The correct way to do that is to remove the property setter, or at least its
   ///     corresponding <typeparamref name="TAttributeType"/>.) Instead, it only disables the next attempt to add an item
   ///     corresponding to that key—which, if correctly implemented, will be when the current <paramref name="initialValue"/>
@@ -173,9 +173,9 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// </param>
   /// <param name="initialValue">The <typeparamref name="TItem"/> object which is being inserted.</param>
   internal bool Register(string itemKey, TItem? initialValue) {
-    var type = (Type?)null;
+    var type                    = (Type?)null;
     if (!AttributeValueConverter.IsConvertible(typeof(TValue))) {
-      type = typeof(TValue);
+      type                      = typeof(TValue);
     }
     if (
       !PropertyCache.ContainsKey(itemKey) &&
@@ -251,7 +251,7 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
     #pragma warning restore CA1853 // Unnecessary call to 'Dictionary.ContainsKey(key)'
     else if (Register(itemKey,  initialObject)) {
       try {
-        var typeAccessor = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
+        var typeAccessor        = TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType());
         typeAccessor.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value, true);
       }
       catch (TargetInvocationException ex) {

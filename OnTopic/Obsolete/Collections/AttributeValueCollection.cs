@@ -214,9 +214,9 @@ public class AttributeValueCollection : KeyedCollection<string, AttributeValue> 
   public void SetValue(
     string key,
     string? value,
-    bool? isDirty = null,
-    DateTime? version = null,
-    bool? isExtendedAttribute = null
+    bool? isDirty               = null,
+    DateTime? version           = null,
+    bool? isExtendedAttribute   = null
   )
     => SetValue(key, value, isDirty, true, version, isExtendedAttribute);
 
@@ -267,8 +267,8 @@ public class AttributeValueCollection : KeyedCollection<string, AttributeValue> 
     string? value,
     bool? isDirty,
     bool enforceBusinessLogic,
-    DateTime? version = null,
-    bool? isExtendedAttribute = null
+    DateTime? version           = null,
+    bool? isExtendedAttribute   = null
   ) => throw new NotImplementedException();
 
   /*============================================================================================================================

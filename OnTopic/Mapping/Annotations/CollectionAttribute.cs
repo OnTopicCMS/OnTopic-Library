@@ -40,7 +40,7 @@ public sealed class CollectionAttribute : Attribute {
   /// <param name="key">The key value of the collection associated with the current property.</param>
   public CollectionAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
-    Key = key;
+    Key                         = key;
   }
 
   /// <summary>
@@ -48,7 +48,7 @@ public sealed class CollectionAttribute : Attribute {
   /// </summary>
   /// <param name="type">Optional. The type of collection the collection is associated with.</param>
   public CollectionAttribute(CollectionType type = CollectionType.Any) {
-    Type = type;
+    Type                        = type;
   }
 
   /*============================================================================================================================

@@ -34,7 +34,7 @@ public class StaticTypeLookupService: ITypeLookupService {
   /// </remarks>
   /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
   public StaticTypeLookupService(
-    IEnumerable<Type>? types =  null
+    IEnumerable<Type>? types    =  null
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

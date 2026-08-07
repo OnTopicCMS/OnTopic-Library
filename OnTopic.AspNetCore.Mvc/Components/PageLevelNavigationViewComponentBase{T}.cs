@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Diagnostics.CodeAnalysis;
+
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Mapping.Hierarchical;
@@ -85,7 +85,7 @@ public abstract class PageLevelNavigationViewComponentBase<T> :
       while (
         navigationRootTopic is  not null and not ({ Parent: null } or { ContentType: "PageGroup" })
       ) {
-        navigationRootTopic = navigationRootTopic.Parent;
+        navigationRootTopic     = navigationRootTopic.Parent;
       }
     }
 
@@ -117,14 +117,14 @@ public abstract class PageLevelNavigationViewComponentBase<T> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve root topic
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationRootTopic = GetNavigationRoot();
+    var navigationRootTopic     = GetNavigationRoot();
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Construct view model
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var navigationViewModel = new NavigationViewModel<T>() {
-      NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
-      CurrentWebPath = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
+    var navigationViewModel     = new NavigationViewModel<T>() {
+      NavigationRoot            = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
+      CurrentWebPath            = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
     };
 
     /*--------------------------------------------------------------------------------------------------------------------------

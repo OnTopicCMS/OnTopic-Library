@@ -134,44 +134,48 @@ public class TopicRelationshipMultiMapTest {
   }
 
   /*============================================================================================================================
-  | TEST: SET VALUE: INCOMING RELATIONSHIPS: THROWS EXCEPTION
+  | TEST: SET VALUE: INCOMING RELATIONSHIPS: WRITES ONE-WAY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Attempts to set a relationship on a <see cref="TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c>
-  ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.SetValue(String, Topic,
-  ///   Boolean?, Boolean)"/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
+  ///   Calls <see cref="TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?)"/> directly against a <see cref=
+  ///   "TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c> and confirms it writes the entry locally without
+  ///   also writing the reciprocal relationship to <see cref="Topic.IncomingRelationships"/> on the target topic.
   /// </summary>
   [Fact]
-  public void SetValue_IncomingRelationships_ThrowsException() {
+  public void SetValue_IncomingRelationships_WritesOneWay() {
 
     var parent                  = new Topic("Parent", "Page");
     var related                 = new Topic("Related", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent, true);
 
-    Assert.Throws<InvalidOperationException>(() =>
-      relationships.SetValue("Friends", related)
-    );
+    relationships.SetValue("Friends", related);
+
+    Assert.Contains(related, relationships.GetValues("Friends"));
+    Assert.Empty(related.IncomingRelationships.GetValues("Friends"));
 
   }
 
   /*============================================================================================================================
-  | TEST: REMOVE: INCOMING RELATIONSHIPS: THROWS EXCEPTION
+  | TEST: REMOVE: INCOMING RELATIONSHIPS: REMOVES ONE-WAY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Attempts to remove a relationship from a <see cref="TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c>
-  ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.Remove(String, Topic, Boolean)
-  ///   "/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
+  ///   Calls <see cref="TopicRelationshipMultiMap.Remove(String, Topic)"/> directly against a <see cref=
+  ///   "TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c> and confirms it removes the entry locally without also
+  ///   removing the reciprocal relationship from <see cref="Topic.IncomingRelationships"/> on the target topic.
   /// </summary>
   [Fact]
-  public void Remove_IncomingRelationships_ThrowsException() {
+  public void Remove_IncomingRelationships_RemovesOneWay() {
 
     var parent                  = new Topic("Parent", "Page");
     var related                 = new Topic("Related", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent, true);
 
-    Assert.Throws<InvalidOperationException>(() =>
-      relationships.Remove("Friends", related)
-    );
+    relationships.SetValue("Friends", related);
+    related.IncomingRelationships.SetValue("Friends", parent);
+    relationships.Remove("Friends", related);
+
+    Assert.Empty(relationships.GetValues("Friends"));
+    Assert.Contains(parent, related.IncomingRelationships.GetValues("Friends"));
 
   }
 
@@ -187,7 +191,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
     }
 
@@ -200,8 +204,8 @@ public class TopicRelationshipMultiMapTest {
   | TEST: GET ENUMERATOR: RETURNS KEY/VALUES PAIRS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Enumerates over the <see cref="ReadOnlyTopicMultiMap"/>, ensuring that the enumerator defined by the <see cref="
-  ///   ReadOnlyTopicMultiMap.GetEnumerator()"/> interface implementation successfully relays the call to the underlying
+  ///   Enumerates over the <see cref="ReadOnlyTopicMultiMap"/>, ensuring that the enumerator defined by the <see cref=
+  ///   "ReadOnlyTopicMultiMap.GetEnumerator()"/> interface implementation successfully relays the call to the underlying
   ///   <see cref="TopicMultiMap"/>.
   /// </summary>
   [Fact]
@@ -209,9 +213,9 @@ public class TopicRelationshipMultiMapTest {
 
     var counter                 = 0;
     var multiMap                = new TopicMultiMap();
-    var readOnlyRelationships = new ReadOnlyTopicMultiMap(multiMap);
+    var readOnlyRelationships   = new ReadOnlyTopicMultiMap(multiMap);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       multiMap.Add(new("Relationship" + i, new()));
     }
 
@@ -235,7 +239,7 @@ public class TopicRelationshipMultiMapTest {
   public void Indexer_ReturnsKeyValuesPair() {
 
     var multiMap                = new TopicMultiMap();
-    var readOnlyTopicMultiMap = new ReadOnlyTopicMultiMap(multiMap);
+    var readOnlyTopicMultiMap   = new ReadOnlyTopicMultiMap(multiMap);
     var topics                  = new TopicCollection();
     var keyValuesPair           = new KeyValuesPair<string, TopicCollection>("Relationship", topics);
     var topic                   = new Topic("Test", "Test");
@@ -261,7 +265,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "Page"));
     }
 
@@ -275,8 +279,8 @@ public class TopicRelationshipMultiMapTest {
   | TEST: GET ALL VALUES: CONTENT TYPES: RETURNS ALL CONTENT TYPES
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of <see cref="
-  ///   ReadOnlyTopicMultiMap.GetAllValues(String)"/> by content type.
+  ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of <see cref=
+  ///   "ReadOnlyTopicMultiMap.GetAllValues(String)"/> by content type.
   /// </summary>
   [Fact]
   public void GetAllValues_ContentTypes_ReturnsAllContentTypes() {
@@ -284,7 +288,7 @@ public class TopicRelationshipMultiMapTest {
     var parent                  = new Topic("Parent", "Page");
     var relationships           = new TopicRelationshipMultiMap(parent);
 
-    for (var i = 0; i < 5; i++) {
+    for (var i                  = 0; i < 5; i++) {
       relationships.SetValue("Relationship" + i, new Topic("Related" + i, "ContentType" + i));
     }
 
@@ -317,8 +321,8 @@ public class TopicRelationshipMultiMapTest {
   | TEST: SET VALUE: IS DUPLICATE: IS NOT DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
-  ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
+  ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
   /// </summary>
   [Fact]
   public void SetValue_IsDuplicate_IsNotDirty() {
@@ -340,8 +344,8 @@ public class TopicRelationshipMultiMapTest {
   | TEST: SET VALUE: IS DUPLICATE: STAYS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
-  ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
+  ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
   /// </summary>
   [Fact]
   public void SetSetValue_IsDuplicate_StaysDirty() {
@@ -429,8 +433,8 @@ public class TopicRelationshipMultiMapTest {
   | TEST: CLEAR: EXISTING TOPICS: IS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> and confirms that value of <see cref="
-  ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>true</c>.
+  ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> and confirms that value of <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> is <c>true</c>.
   /// </summary>
   [Fact]
   public void Clear_ExistingTopics_IsDirty() {
@@ -444,6 +448,27 @@ public class TopicRelationshipMultiMapTest {
     relationships.Clear("Related");
 
     Assert.True(relationships.IsDirty());
+
+  }
+
+  /*============================================================================================================================
+  | TEST: CLEAR: EXISTING TOPICS: REMOVES INCOMING RELATIONSHIP
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Sets a relationship and then clears it by key, and confirms that it is removed from the incoming relationships property
+  ///   of the previously related <see cref="Topic"/>.
+  /// </summary>
+  [Fact]
+  public void Clear_ExistingTopics_RemovesIncomingRelationship() {
+
+    var topic                   = new Topic("Test", "Page");
+    var relationships           = new TopicRelationshipMultiMap(topic);
+    var related                 = new Topic("Topic", "Page");
+
+    relationships.SetValue("Related", related);
+    relationships.Clear("Related");
+
+    Assert.Null(related.IncomingRelationships.GetValues("Related").FirstOrDefault());
 
   }
 
@@ -467,12 +492,36 @@ public class TopicRelationshipMultiMapTest {
   }
 
   /*============================================================================================================================
+  | TEST: CLEAR: DEFERRED ENTRIES: REMOVES DEFERRED ENTRIES AND IS DIRTY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Registers a <see cref="TopicRelationshipMultiMap.Deferred"/> entry with no corresponding target <see cref="Topic"/> and
+  ///   calls <see cref="TopicRelationshipMultiMap.Clear(String)"/>, confirming that the deferred entry is purged and <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> reports <c>true</c>, even though no target topic was removed.
+  /// </summary>
+  [Fact]
+  public void Clear_DeferredEntries_RemovesDeferredEntriesAndIsDirty() {
+
+    var topic                   = new Topic("Test", "Page", null, 1);
+    var relationships           = new TopicRelationshipMultiMap(topic);
+
+    relationships.Deferred.SetValue("Related", 999);
+    relationships.Deferred.SetValue("Other", 998);
+    relationships.Clear("Related");
+
+    Assert.False(relationships.Deferred.Remove("Related"));
+    Assert.True(relationships.Deferred.Remove("Other"));
+    Assert.True(relationships.IsDirty());
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: MARK NOT DIRTY: IS NOT DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> and confirms that <see cref="
-  ///   TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c> if <see cref="TopicRelationshipMultiMap.SetValue(String,
-  ///   Topic, Boolean?, Boolean)"/> is called with the <c>markDirty</c> parameter set to <c>false</c>.
+  ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> and confirms that <see cref=
+  ///   "TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c> if <see cref="TopicRelationshipMultiMap.SetValue(String,
+  ///   Topic, Boolean?)"/> is called with the <c>markDirty</c> parameter set to <c>false</c>.
   /// </summary>
   [Fact]
   public void SetValue_MarkNotDirty_IsNotDirty() {
@@ -493,8 +542,8 @@ public class TopicRelationshipMultiMapTest {
   /// <summary>
   ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic.
   ///   IsNew"/> <see cref="Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>
-  ///   even if <see cref="TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?, Boolean)"/> is called with the <c>
-  ///   markDirty</c> parameter set to <c>false</c>.
+  ///   even if <see cref="TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?)"/> is called with the <c>markDirty</c>
+  ///   parameter set to <c>false</c>.
   /// </summary>
   [Fact]
   public void SetValue_NewParent_IsDirty() {
@@ -513,10 +562,10 @@ public class TopicRelationshipMultiMapTest {
   | TEST: SET VALUE: NEW TOPIC: IS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Adds a new <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with an existing <see cref="
-  ///   Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even if <see cref="
-  ///   TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?, Boolean)"/> is called with the <c>markDirty</c> parameter
-  ///   set to <c>false</c>.
+  ///   Adds a new <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with an existing <see cref=
+  ///   "Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even if <see cref=
+  ///   "TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?)"/> is called with the <c>markDirty</c> parameter set to
+  ///   <c>false</c>.
   /// </summary>
   [Fact]
   public void SetValue_NewTopic_IsDirty() {
@@ -536,8 +585,8 @@ public class TopicRelationshipMultiMapTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/>.
-  ///   Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c> after calling <see cref="
-  ///   TopicRelationshipMultiMap.MarkClean(String)"/>.
+  ///   Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c> after calling <see cref=
+  ///   "TopicRelationshipMultiMap.MarkClean(String)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_ReturnsFalse() {
@@ -585,9 +634,9 @@ public class TopicRelationshipMultiMapTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/>.
-  ///   Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even after calling <see cref="
-  ///   TopicRelationshipMultiMap.MarkClean(String)"/> if any of the <see cref="Topic"/>s in the <see cref="
-  ///   TopicRelationshipMultiMap"/> are marked as <see cref="Topic.IsNew"/>.
+  ///   Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even after calling <see cref=
+  ///   "TopicRelationshipMultiMap.MarkClean(String)"/> if any of the <see cref="Topic"/>s in the <see cref=
+  ///   "TopicRelationshipMultiMap"/> are marked as <see cref="Topic.IsNew"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkCleanWithNewTopic_ReturnsTrue() {

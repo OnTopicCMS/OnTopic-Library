@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic.All\OnTopic.All.csproj" />
+    <ProjectReference Include="..\OnTopic.TestDoubles\OnTopic.TestDoubles.csproj" />
     <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
   </ItemGroup>
 

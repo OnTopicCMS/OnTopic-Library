@@ -6,6 +6,7 @@
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
+using OnTopic.Tests.TestDoubles;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -27,7 +28,7 @@ public class TopicTest {
   /// </summary>
   [Fact]
   public void Create_ReturnsTopic() {
-    var topic = TopicFactory.Create("Test", "Page");
+    var topic                   = TopicFactory.Create("Test", "Page");
     Assert.NotNull(topic);
     Assert.Equal("Test", topic.Key);
     Assert.Equal("Page", topic.ContentType);
@@ -42,7 +43,7 @@ public class TopicTest {
   /// </summary>
   [Fact]
   public void Create_ContentType_ReturnsDerivedTopic() {
-    var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
+    var topic                   = TopicFactory.Create("Test", "ContentTypeDescriptor");
     Assert.NotNull(topic);
     Assert.IsType<ContentTypeDescriptor>(topic);
   }
@@ -56,13 +57,13 @@ public class TopicTest {
   /// </summary>
   /// <remarks>
   ///   This is a special use case to address the fact that we expect concrete types of <see cref="AttributeDescriptor"/> to
-  ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref="
-  ///   AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
+  ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref=
+  ///   "AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
   ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
   /// </remarks>
   [Fact]
   public void Create_AttributeDescriptor_ReturnsFallback() {
-    var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
+    var topic                   = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
     Assert.NotNull(topic);
     Assert.IsType<AttributeDescriptor>(topic);
   }
@@ -79,7 +80,7 @@ public class TopicTest {
     var topic                   = new ContentTypeDescriptor("Test", "ContentTypeDescriptor", null, 123);
 
     Assert.Throws<InvalidOperationException>(() =>
-      topic.Id = 124
+      topic.Id                  = 124
     );
 
   }
@@ -92,8 +93,8 @@ public class TopicTest {
   ///   collection is updated to reflect the new <see cref="Topic.Key"/>.
   /// </summary>
   /// <remarks>
-  ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref="
-  ///   Topic.Key"/> changed. We have code that will handle that, however.
+  ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref=
+  ///   "Topic.Key"/> changed. We have code that will handle that, however.
   /// </remarks>
   [Fact]
   public void Key_ChangeValue_UpdatesParent() {
@@ -134,8 +135,8 @@ public class TopicTest {
   | TEST: PARENT: SET TO DESCENDANT: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref="
-  ///   ArgumentOutOfRangeException"/>.
+  ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref=
+  ///   "ArgumentOutOfRangeException"/>.
   /// </summary>
   [Fact]
   public void Parent_SetToDescendant_ThrowsException() {
@@ -253,6 +254,50 @@ public class TopicTest {
 
     Assert.Equal("UntitledTopic", untitledTopic.Title);
     Assert.Equal("Titled Topic", titledTopic.Title);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: TITLE: NOT LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="LoadState.NotLoaded"/> <see cref=
+  ///   "Attributes"/> collection. Confirms that <see cref="Topic.Title"/> falls back to <see cref="Topic.Key"/> without
+  ///   triggering a lazy load, since <c>Title</c> is always expected to be indexed.
+  /// </summary>
+  [Fact]
+  public void Title_NotLoaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Page");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    Assert.Equal("Test", topic.Title);
+    Assert.False(loader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: VIEW: NOT LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="LoadState.NotLoaded"/> <see cref=
+  ///   "Attributes"/> collection. Confirms that <see cref="Topic.View"/> falls back to <see cref="String.Empty"/> without
+  ///   triggering a lazy load, since <c>View</c> is always expected to be indexed.
+  /// </summary>
+  [Fact]
+  public void View_NotLoaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Page");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    Assert.Equal("", topic.View);
+    Assert.False(loader.WasCalled);
 
   }
 
@@ -382,7 +427,7 @@ public class TopicTest {
   | IS DIRTY: NEW TOPIC: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
+  ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty()"/> returns <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_NewTopic_ReturnsTrue() =>
@@ -392,7 +437,7 @@ public class TopicTest {
   | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
+  ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty()"/> returns <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ExistingTopic_ReturnsFalse() =>
@@ -402,8 +447,8 @@ public class TopicTest {
   | IS DIRTY: CHANGE KEY: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
-  ///   Boolean)"/> returns <c>true</c>.
+  ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty()"/> returns
+  ///   <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ChangeKey_ReturnsTrue() =>
@@ -417,8 +462,8 @@ public class TopicTest {
   | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref="
-  ///   Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
+  ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref=
+  ///   "Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ExistingValue_RemainsClean() {
@@ -435,84 +480,11 @@ public class TopicTest {
   }
 
   /*============================================================================================================================
-  | IS DIRTY: CHANGE COLLECTIONS: RETURNS TRUE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns
-  ///   <c>true</c>.
-  /// </summary>
-  [Fact]
-  public void IsDirty_ChangeCollections_ReturnsTrue() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    Assert.True(topic.IsDirty(true));
-    Assert.True(topic.IsDirty("Related", true));
-
-  }
-
-  /*============================================================================================================================
-  | MARK CLEAN: CHANGE COLLECTIONS: RESETS IS DIRTY
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(Boolean, DateTime?)"/> resets the
-  ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
-  /// </summary>
-  [Fact]
-  public void MarkClean_ChangeCollections_ResetIsDirty() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    topic.MarkClean(true);
-
-    Assert.False(topic.IsDirty(true));
-
-  }
-
-  /*============================================================================================================================
-  | MARK CLEAN: INCLUDE COLLECTIONS: RESETS IS DIRTY
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
-  ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(String, Boolean)"/> resets the value
-  ///   of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
-  /// </summary>
-  [Fact]
-  public void MarkClean_IncludeCollections_ResetsIsDirty() {
-
-    var topic                   = new Topic("Topic", "Page", null, 1);
-    var related                 = new Topic("Related", "Page", null, 2);
-
-    topic.Attributes.SetValue("Related", related.Key);
-    topic.References.SetValue("Related", related);
-    topic.Relationships.SetValue("Related", related);
-
-    topic.MarkClean("Related",  true);
-
-    Assert.False(topic.IsDirty("Related", true));
-    Assert.False(topic.IsDirty(true));
-
-  }
-
-
-  /*============================================================================================================================
   | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Creates a new <see cref="Topic"/> and confirms that <see cref="Topic.MarkClean()"/> does <i>not</i> reset the value of
-  ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
+  ///   <see cref="Topic.IsDirty()"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
   /// </summary>
   [Fact]
   public void MarkClean_NewTopic_RemainsDirty() {
@@ -520,12 +492,11 @@ public class TopicTest {
     var topic                   = new Topic("Topic", "Page");
 
     topic.Attributes.SetValue("Attribute", "Test");
-
-    topic.MarkClean("Attribute", true);
-    topic.MarkClean(true);
+    topic.MarkClean("Attribute");
+    topic.MarkClean();
 
     Assert.True(topic.IsDirty());
-    Assert.True(topic.IsDirty("Attribute", true));
+    Assert.True(topic.IsDirty("Attribute"));
 
   }
 

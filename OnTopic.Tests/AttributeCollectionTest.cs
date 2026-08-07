@@ -6,7 +6,10 @@
 using System.Collections;
 using System.Globalization;
 using OnTopic.Collections.Specialized;
+using OnTopic.Repositories;
 using OnTopic.Tests.Entities;
+using OnTopic.Tests.TestDoubles;
+using OnTopic.TestDoubles.LazyLoading;
 using Xunit;
 
 namespace OnTopic.Tests;
@@ -67,7 +70,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_MissingValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Null(topic.Attributes.GetValue("InvalidAttribute"));
     Assert.Equal("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
@@ -84,13 +87,62 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_EmptyValue_ReturnsNull() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("EmptyValue", ""));
 
     Assert.Null(topic.Attributes.GetValue("EmptyValue"));
 
   }
+
+
+  /*============================================================================================================================
+  | TEST: GET VALUE: NOT LOADED: KEY ABSENT: TRIGGERS LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="AttributeCollection"/> that is
+  ///   <see cref="LoadState.NotLoaded"/>. Confirms that a raw <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> call, which defaults <c>autoLoad</c> to
+  ///   <c>true</c>, still triggers a lazy load for a key that isn't present locally. This guards against over-suppression of
+  ///   the autoload behavior.
+  /// </summary>
+  [Fact]
+  public void GetValue_NotLoaded_KeyAbsent_TriggersLoad() {
+
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+
+    topic.Attributes.GetValue("Missing");
+
+    Assert.True(loader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: GET VALUE: LOADED: KEY ABSENT: DOES NOT TRIGGER LOAD
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> whose <see cref="AttributeCollection"/> is already
+  ///   <see cref="LoadState.Loaded"/>. Confirms that requesting an absent key never triggers a lazy load, preserving existing
+  ///   behavior on fully loaded collections.
+  /// </summary>
+  [Fact]
+  public void GetValue_Loaded_KeyAbsent_DoesNotTriggerLoad() {
+
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+
+    topic.Attributes.GetValue("Missing");
+
+    Assert.False(loader.WasCalled);
+
+  }
+
 
   /*============================================================================================================================
   | TEST: GET INTEGER: CORRECT VALUE: IS RETURNED
@@ -101,7 +153,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetInteger("Number1", 1);
 
@@ -142,7 +194,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_IncorrectValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -160,7 +212,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetInteger_IncorrectKey_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Equal(0, topic.Attributes.GetInteger("InvalidKey"));
     Assert.Equal(5, topic.Attributes.GetInteger("InvalidKey", 5));
@@ -176,7 +228,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetDouble("Number1", 1);
 
@@ -217,7 +269,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_IncorrectValue_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Number3", "Invalid");
 
@@ -235,7 +287,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetDouble_IncorrectKey_ReturnsDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Equal(0.0, topic.Attributes.GetDouble("InvalidKey"));
     Assert.Equal(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
@@ -333,7 +385,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_CorrectValue_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetBoolean("IsValue1", true);
     topic.Attributes.SetBoolean("IsValue2", false);
@@ -377,7 +429,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_IncorrectValue_ReturnDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("IsValue", "Invalid");
 
@@ -396,11 +448,94 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetBoolean_IncorrectKey_ReturnDefault() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.False(topic.Attributes.GetBoolean("InvalidKey"));
     Assert.True(topic.Attributes.GetBoolean("InvalidKey", true));
     Assert.False(topic.Attributes.GetBoolean("InvalidKey", false));
+
+  }
+
+  /*============================================================================================================================
+| TEST: GET BOOLEAN: NOT LOADED: KEY ABSENT: SUPPRESSES AUTO LOAD
+\---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Creates a topic and a <see cref="Topic.BaseTopic"/>, both stamped with a <see cref="TrackingTopicLazyLoader"/> and both
+  ///   with a <see cref="LoadState.NotLoaded"/> <see cref="AttributeCollection"/>. Confirms that <see cref=
+  ///   "AttributeCollectionExtensions.GetBoolean(AttributeCollection, String, Boolean, Boolean, Boolean)"/>—used only for
+  ///   always-indexed attributes—suppresses the autoload on both the topic and its base topic.
+  /// </summary>
+  [Fact]
+  public void GetBoolean_NotLoaded_KeyAbsent_SuppressesAutoLoad() {
+
+    var baseTopic               = new Topic("Base", "Container");
+    var topic                   = new Topic("Test", "Container");
+    var loader                  = new TrackingTopicLazyLoader();
+    var baseLoader              = new TrackingTopicLazyLoader();
+
+    topic.BaseTopic             = baseTopic;
+
+    ((ITopicLazyLoadable)topic).Loader = loader;
+    ((ITopicLazyLoadable)baseTopic).Loader = baseLoader;
+
+    topic.Attributes.LoadState  = LoadState.NotLoaded;
+    baseTopic.Attributes.LoadState = LoadState.NotLoaded;
+
+    topic.Attributes.GetBoolean("Missing");
+
+    Assert.False(loader.WasCalled);
+    Assert.False(baseLoader.WasCalled);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS VISIBLE: NOT LOADED EXTENDED ATTRIBUTES TOPIC: PERFORMS ZERO FILLS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="Topic.IsVisible(Boolean)"/> on a topic with pending, not-yet-loaded extended attributes, and confirms
+  ///   it performs zero fills: <see cref="Topic.IsHidden"/> and <see cref="Topic.IsDisabled"/> are indexed attributes and must
+  ///   never trigger the extended attributes to be fetched merely to determine visibility.
+  /// </summary>
+  [Fact]
+  public async Task IsVisible_NotLoadedExtendedAttributesTopic_PerformsZeroFills() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(201, "Sparse", "Page", null, extendedAttributes: new Dictionary<string, string> { ["Summary"] = "Some text." })
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+    var topic                   = await stub.Load("Root:Sparse");
+
+    Assert.True(topic!.IsVisible());
+    Assert.Equal(0, stub.GetFetchCount(201, TopicPayload.ExtendedAttributes));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: IS HIDDEN: RESIDENT BASE TOPIC: INHERITS VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Resolves a topic's <see cref="Topic.BaseTopic"/> reference against an already-resident base topic, and confirms <see
+  ///   cref="Topic.IsHidden"/> is honored through the base chain once the reference is no longer deferred.
+  /// </summary>
+  [Fact]
+  public async Task IsHidden_ResidentBaseTopic_InheritsValue() {
+
+    var records                 = new StubLazyLoadingTopicRepositoryBuilder()
+      .AddTopic(211, "Base", "Page", null, indexedAttributes: new Dictionary<string, string> { ["IsHidden"] = "1" })
+      .AddTopic(212, "Derived", "Page", null)
+      .AddReference(212, "BaseTopic", 211)
+      .Build();
+
+    var stub                    = new StubLazyLoadingTopicRepository(records);
+
+    await stub.Load("Root:Base");
+    var derived                 = await stub.Load("Root:Derived", null, TopicPayload.References);
+    var rawDerived              = (ITopicBackingAccessor)derived!;
+
+    Assert.Empty(rawDerived.References.Deferred);
+    Assert.True(derived.IsHidden);
+    Assert.Equal(0, stub.GetFetchCount(211, TopicPayload.ExtendedAttributes));
 
   }
 
@@ -456,7 +591,7 @@ public class AttributeCollectionTest {
   /// </summary>
   [Fact]
   public void SetValue_CorrectValue_IsReturned() {
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
     topic.Attributes.SetValue("Foo", "Bar");
     Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
   }
@@ -470,7 +605,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_ValueChanged_IsDirty() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
     topic.Attributes.SetValue("Foo", "Baz");
@@ -508,7 +643,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Clear_ExistingValues_IsDirty() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -529,7 +664,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_ValueUnchanged_IsNotDirty() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Fah", "Bar", false);
     topic.Attributes.SetValue("Fah", "Bar");
@@ -542,13 +677,13 @@ public class AttributeCollectionTest {
   | TEST: IS DIRTY: DIRTY VALUES: RETURNS TRUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref="
-  ///   TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
+  ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see cref=
+  ///   "TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_DirtyValues_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
 
@@ -568,7 +703,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_IsNew_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -590,7 +725,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_DeletedValues_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.Remove("Foo");
@@ -610,7 +745,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_UndeletedValues_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.Remove("Foo");
@@ -633,7 +768,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_NoDirtyValues_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -652,7 +787,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_IsNew_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -670,7 +805,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MissingKey_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.False(topic.Attributes.IsDirty("MissingKey"));
 
@@ -688,7 +823,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_ExcludeLastModified_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar", false);
     topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
@@ -704,8 +839,8 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
-  ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_UpdatesLastModified() {
@@ -737,13 +872,13 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
-  ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.SetValue("Baz", "Foo");
@@ -769,7 +904,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkClean_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
 
@@ -790,7 +925,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-    var topic = new Topic("Test", "Container", null, 1);
+    var topic                   = new Topic("Test", "Container", null, 1);
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.MarkClean("Foo");
@@ -810,7 +945,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(
       new() {
@@ -836,7 +971,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Foo", "Bar");
     topic.Attributes.MarkClean();
@@ -854,7 +989,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_InvalidValue_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Throws<InvalidKeyException>(() =>
       topic.Attributes.SetValue("View", "# ?")
@@ -872,7 +1007,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_DuplicateValue_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("Test", "Original"));
 
@@ -892,7 +1027,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_ValidAttributeRecord_IsReturned() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.Add(new("View", "NewKey", false));
 
@@ -910,7 +1045,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_NumericValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     topic.Attributes.SetInteger("NumericAttribute", 1);
 
@@ -928,7 +1063,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_BooleanValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     topic.Attributes.SetBoolean("BooleanAttribute", true);
 
@@ -945,7 +1080,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_NumericValueWithBusinessLogic_ThrowsException() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     Assert.Throws<ArgumentOutOfRangeException>(() =>
       topic.Attributes.SetInteger("NumericAttribute", -1)
@@ -963,8 +1098,8 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_DateTimeValueWithBusinessLogic_IsReturned() {
 
-    var topic = new CustomTopic("Test", "Page");
-    var dateTime = new DateTime(2021, 1, 5);
+    var topic                   = new CustomTopic("Test", "Page");
+    var dateTime                = new DateTime(2021, 1, 5);
 
     topic.Attributes.SetDateTime("DateTimeAttribute", dateTime);
 
@@ -981,7 +1116,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
 
-    var topic = new CustomTopic("Test", "Page");
+    var topic                   = new CustomTopic("Test", "Page");
 
     Assert.Throws<ArgumentOutOfRangeException>(() =>
       topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue)
@@ -1018,7 +1153,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void Add_InvalidAttributeRecord_ThrowsException() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     Assert.Throws<InvalidKeyException>(() =>
       topic.Attributes.Add(new("View", "# ?"))
@@ -1045,9 +1180,9 @@ public class AttributeCollectionTest {
 
     Contract.Assume(originalValue);
 
-    var index = topic.Attributes.IndexOf(originalValue);
+    var index                   = topic.Attributes.IndexOf(originalValue);
 
-    topic.Attributes[index] = new AttributeRecord("View", "NewValue", false);
+    topic.Attributes[index]     = new AttributeRecord("View", "NewValue", false);
     topic.Attributes.TryGetValue("View", out var newAttribute);
 
     topic.Attributes.SetValue("View", "NewerValue", false);
@@ -1069,7 +1204,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_EmptyAttributeRecord_Skips() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Attribute", "");
 
@@ -1088,7 +1223,7 @@ public class AttributeCollectionTest {
   [Fact]
   public void SetValue_EmptyAttributeRecord_Replaces() {
 
-    var topic = new Topic("Test", "Container");
+    var topic                   = new Topic("Test", "Container");
 
     topic.Attributes.SetValue("Attribute", "New Value");
     topic.Attributes.SetValue("Attribute", "");
@@ -1106,12 +1241,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_InheritFromParent_ReturnsParentValue() {
 
-    var topics = new Topic[8];
+    var topics                  = new Topic[8];
 
-    for (var i = 0; i <= 7; i++) {
-      var topic = new Topic("Topic" + i, "Container");
-      if (i > 0) topic.Parent = topics[i - 1];
-      topics[i] = topic;
+    for (var i                  = 0; i <= 7; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
+      if (i > 0) topic.Parent   = topics[i - 1];
+      topics[i]                 = topic;
     }
 
     topics[0].Attributes.SetValue("Foo", "Bar");
@@ -1131,12 +1266,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_InheritFromBase_ReturnsInheritedValue() {
 
-    var topics = new Topic[5];
+    var topics                  = new Topic[5];
 
-    for (var i = 0; i <= 4; i++) {
-      var topic = new Topic("Topic" + i, "Container");
+    for (var i                  = 0; i <= 4; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
       if (i > 0) topics[i - 1].BaseTopic = topic;
-      topics[i] = topic;
+      topics[i]                 = topic;
     }
 
     topics[4].Attributes.SetValue("Foo", "Bar");
@@ -1154,12 +1289,12 @@ public class AttributeCollectionTest {
   [Fact]
   public void GetValue_ExceedsMaxHops_ReturnsDefault() {
 
-    var topics = new Topic[8];
+    var topics                  = new Topic[8];
 
-    for (var i = 0; i <= 7; i++) {
-      var topic = new Topic("Topic" + i, "Container");
+    for (var i                  = 0; i <= 7; i++) {
+      var topic                 = new Topic("Topic" + i, "Container");
       if (i > 0) topics[i - 1].BaseTopic = topic;
-      topics[i] = topic;
+      topics[i]                 = topic;
     }
 
     topics[7].Attributes.SetValue("Foo", "Bar");

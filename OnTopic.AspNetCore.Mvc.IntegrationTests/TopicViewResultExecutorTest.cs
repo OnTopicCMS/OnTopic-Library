@@ -30,7 +30,7 @@ public class TopicViewResultExecutorTest: IClassFixture<WebApplicationFactory<St
   ///   Initializes a new instance of the <see cref="TopicViewResultExecutorTest"/>.
   /// </summary>
   public TopicViewResultExecutorTest(WebApplicationFactory<Startup> factory) {
-    _factory = factory;
+    _factory                    = factory;
   }
 
   /*============================================================================================================================
@@ -154,9 +154,9 @@ public class TopicViewResultExecutorTest: IClassFixture<WebApplicationFactory<St
   [Fact]
   public async Task MissingView_ReturnsInternalServerError() {
 
-    var client = _factory.CreateClient();
-    var uri = new Uri("/Web/MissingView/", UriKind.Relative);
-    var response = await client.GetAsync(uri, TestContext.Current.CancellationToken);
+    var client                  = _factory.CreateClient();
+    var uri                     = new Uri("/Web/MissingView/", UriKind.Relative);
+    var response                = await client.GetAsync(uri, TestContext.Current.CancellationToken);
 
     Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 

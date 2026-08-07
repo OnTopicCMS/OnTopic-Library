@@ -93,6 +93,7 @@
     <Build Include="Functions\GetUniqueKey.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
+    <Build Include="Stored Procedures\GetSitemap.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />

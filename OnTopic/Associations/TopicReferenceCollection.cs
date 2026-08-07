@@ -40,26 +40,45 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     AssociatedTopic.BaseTopic?.References;
 
   /*============================================================================================================================
-  | IS FULLY LOADED?
+  | PROPERTY: LOAD STATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Determines whether or not the collection was fully loaded from the persistence store.
+  ///   Indicates whether the collection has been populated from the underlying <see cref="Repositories.ITopicRepository" />,
+  ///   allowing callers to distinguish data that is present and authoritative from data that must still be fetched.
   /// </summary>
   /// <remarks>
-  ///   <para>
-  ///     When loading an individual <see cref="Topic"/> or branch from the persistence store, it is possible that topic
-  ///     references may not be fully available. In this scenario, updating topic references while e.g. deleting unmatched
-  ///     relationships can result in unintended data loss. To account for this, the <see cref="IsFullyLoaded"/> property '
-  ///     tracks whether a collection was fully loaded from the persistence store; if it wasn't, the <see cref="
-  ///     ITopicRepository"/> should not deleted unmatched topic references.
-  ///   </para>
-  ///   <para>
-  ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see
-  ///     cref="ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped
-  ///     back to a valid <see cref="Topic"/> reference in memory.
-  ///   </para>
+  ///   Returns <see cref="LoadState.NotLoaded"/> when <see cref="Deferred"/> contains values, meaning one or more references
+  ///   aren't yet available and must be lazy loaded. Returns <see cref="LoadState.Loaded"/> once <see cref="Deferred"/> is
+  ///   empty, meaning all targets have been loaded. While <see cref="LoadState.NotLoaded"/>, the <see cref="ITopicRepository"/>
+  ///   will not delete unmatched references on save, preventing unintended data loss.
   /// </remarks>
-  public bool IsFullyLoaded {   get; set; } = true;
+  public LoadState LoadState => Deferred.Count > 0 ? LoadState.NotLoaded : LoadState.Loaded;
+
+  /*============================================================================================================================
+  | PROPERTY: DEFERRED
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Collects reference targets that were absent from the topic graph during an <see cref="ITopicRepository"/> load, pending
+  ///   resolution via lazy-loading.
+  /// </summary>
+  /// <remarks>
+  ///   Written to by the <see cref="ITopicRepository"/> when a reference target cannot be found in the current <see cref=
+  ///   "TopicIndex"/>. The <see cref="Repositories.ITopicLazyLoader.EnsureLoaded(Topic, TopicPayload)"/> resolves each entry
+  ///   by calling the <see cref="ITopicRepository"/>'s <c>Load()</c> method, assuming the topics haven't since been introduced
+  ///   to the topic graph.
+  /// </remarks>
+  public DeferredAssociationCollection Deferred { get; } = new(singleValued: true);
+
+  /*============================================================================================================================
+  | METHOD: IS DIRTY?
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc/>
+  /// <remarks>
+  ///   Extends the base <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> to also account for a dirty
+  ///   <see cref="Deferred"/> entry introduced by e.g., <see cref="Repositories.TopicRepository.Rollback(Topic, DateTime)"/>,
+  ///   so a reference that hasn't yet been resolved to an in-memory <see cref="Topic"/> still marks the collection dirty.
+  /// </remarks>
+  public override bool IsDirty() => base.IsDirty() || Deferred.Any(deferred => deferred.IsDirty);
 
   /*============================================================================================================================
   | INSERT ITEM
@@ -78,9 +97,14 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     base.InsertItem(index, item);
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Remove any pending deferred entry for this reference key
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Deferred.Remove(item.Key);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
     \-------------------------------------------------------------------------------------------------------------------------*/
-    item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+    item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic);
 
   }
 
@@ -106,10 +130,17 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     base.SetItem(index, item);
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Remove any pending deferred entry for this reference key
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Deferred.Remove(item.Key);
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Handle recipricol references
     \-------------------------------------------------------------------------------------------------------------------------*/
-    existingItem.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic, true);
-    item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+    if (existingItem.Value != item.Value) {
+      existingItem.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic);
+      item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic);
+    }
 
   }
 
@@ -124,7 +155,7 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
     \-------------------------------------------------------------------------------------------------------------------------*/
     var existing                = this[index];
 
-    existing.Value?.IncomingRelationships.Remove(existing.Key, AssociatedTopic, true);
+    existing.Value?.IncomingRelationships.Remove(existing.Key, AssociatedTopic);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Provide base logic

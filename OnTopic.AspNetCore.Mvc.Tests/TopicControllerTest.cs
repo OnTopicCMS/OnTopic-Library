@@ -51,7 +51,7 @@ public class TopicControllerTest: IClassFixture<TestTopicRepository> {
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = new CachedTopicRepository(topicRepository);
-    _topic                      = _topicRepository.Load("Root:Web:Valid:Child")!;
+    _topic                      = _topicRepository.Load("Root:Web:Valid:Child").GetAwaiter().GetResult()!;
     _topicMappingService        = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
     _context                    = FakeControllerContext.GetControllerContext("Web", "Web/Valid/Child/");
 

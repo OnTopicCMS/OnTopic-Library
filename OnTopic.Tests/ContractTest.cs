@@ -73,7 +73,7 @@ public class ContractTest {
   [Fact]
   public void Requires_MessageExists_ThrowExceptionWithMessage() {
 
-    var errorMessage = "The argument cannot be null";
+    var errorMessage            = "The argument cannot be null";
 
     try {
       Contract.Requires<ArgumentException>(false, errorMessage);
@@ -88,13 +88,13 @@ public class ContractTest {
   | TEST: REQUIRES: INVALID CONSTRUCTOR: THROW ARGUMENT EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref="
-  ///   NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
+  ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref=
+  ///   "NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
   ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
   /// </summary>
   [Fact]
   public void Requires_InvalidConstructor_ThrowArgumentException() {
-    var errorMessage = "The argument cannot be null";
+    var errorMessage            = "The argument cannot be null";
     Assert.Throws<ArgumentException>(() =>
       Contract.Requires<NoMessageException>(false, errorMessage)
     );
@@ -146,7 +146,7 @@ public class ContractTest {
   /// </summary>
   [Fact]
   public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage() {
-    var exception = Assert.Throws<IndexOutOfRangeException>(() =>
+    var exception               = Assert.Throws<IndexOutOfRangeException>(() =>
       Contract.Assume<IndexOutOfRangeException>(false)
     );
     Assert.Equal("false", exception.Message);

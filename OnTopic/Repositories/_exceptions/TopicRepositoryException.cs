@@ -30,7 +30,7 @@ public class TopicRepositoryException : DbException {
   /// <summary>
   ///   Initializes a new <see cref="TopicRepositoryException" /> instance.
   /// </summary>
-  public TopicRepositoryException() : base() { }
+  public TopicRepositoryException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message.

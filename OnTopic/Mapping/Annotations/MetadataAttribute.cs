@@ -30,7 +30,7 @@ public sealed class MetadataAttribute : Attribute {
   /// <param name="key">The key represents the name of the Metadata topic that should be mapped to.</param>
   public MetadataAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
-    Key = key;
+    Key                         = key;
   }
 
   /*============================================================================================================================

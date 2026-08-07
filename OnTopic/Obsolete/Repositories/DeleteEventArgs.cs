@@ -23,8 +23,8 @@ public class DeleteEventArgs :  EventArgs {
   ///   Initializes a new instance of the <see cref="DeleteEventArgs"/> class.
   /// </summary>
   /// <param name="topic">The topic.</param>
-  public DeleteEventArgs(Topic  topic) : base() {
-    Topic = topic;
+  public DeleteEventArgs(Topic  topic) {
+    Topic                       = topic;
   }
 
   /*============================================================================================================================

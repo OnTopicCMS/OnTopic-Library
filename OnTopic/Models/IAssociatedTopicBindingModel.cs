@@ -15,8 +15,8 @@ namespace OnTopic.Models;
 ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
 /// </summary>
 /// <remarks>
-///   It is strictly required that any binding models used as associations implement the <see cref="
-///   IAssociatedTopicBindingModel"/> interface for the default <see cref="ReverseTopicMappingService"/> to correctly identify
+///   It is strictly required that any binding models used as associations implement the <see cref=
+///   "IAssociatedTopicBindingModel"/> interface for the default <see cref="ReverseTopicMappingService"/> to correctly identify
 ///   and map an association back to a <see cref="Topic"/>.
 /// </remarks>
 public interface IAssociatedTopicBindingModel {

@@ -6,7 +6,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
-using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
 
@@ -86,19 +85,19 @@ internal sealed class ItemConfiguration {
     \-------------------------------------------------------------------------------------------------------------------------*/
     GetAttributeValue<CollectionAttribute>(
       a => {
-        CollectionKey = a.Key ?? CollectionKey;
-        CollectionType = a.Type;
+        CollectionKey           = a.Key ?? CollectionKey;
+        CollectionType          = a.Type;
       }
     );
 
     if (CollectionKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
-      CollectionType = CollectionType.Children;
+      CollectionType            = CollectionType.Children;
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Attributes: Set attribute filters
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var filterByAttributes = CustomAttributes.OfType<FilterByAttributeAttribute>().ToArray();
+    var filterByAttributes      = CustomAttributes.OfType<FilterByAttributeAttribute>().ToArray();
     if (filterByAttributes.Length > 0) {
       foreach (var filter in filterByAttributes) {
         AttributeFilters.Add(filter.Key, filter.Value);
@@ -250,9 +249,9 @@ internal sealed class ItemConfiguration {
   /// <remarks>
   ///   <para>
   ///     By default, a collection property on a model class will be mapped to a corresponding collection of the same name.
-  ///     So, for instance, if the property on the model class is called <c>Cousins</c> then the <see cref="
-  ///     ITopicMappingService"/> will search <see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, <see cref="
-  ///     Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/> for an object named <c>Cousins</c>. If
+  ///     So, for instance, if the property on the model class is called <c>Cousins</c> then the <see cref=
+  ///     "ITopicMappingService"/> will search <see cref="Topic.Relationships"/>, <see cref="Topic.References"/>, <see cref=
+  ///     "Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/> for an object named <c>Cousins</c>. If
   ///     the <see cref="CollectionKey"/> is set, however, then that value is used instead, thus allowing the property on the
   ///     model to be aliased to a different collection name on the source <see cref="Topic"/>.
   ///   </para>
@@ -274,8 +273,8 @@ internal sealed class ItemConfiguration {
   ///     By default, a collection property on a model class will attempt to find a match from, in order, <see cref="Topic.
   ///     Relationships"/>, <see cref="Topic.References"/>, <see cref="Topic.IncomingRelationships"/>, and, finally, <see cref
   ///     ="Topic.Children"/>. If the <see cref="CollectionType"/> is set, however, then the <see cref="ITopicMappingService"
-  ///     /> will <i>only</i> map the collection to a collection of that type. This can be valuable when the <see cref="
-  ///     CollectionKey"/> might be ambiguous between multiple collections.
+  ///     /> will <i>only</i> map the collection to a collection of that type. This can be valuable when the <see cref=
+  ///     "CollectionKey"/> might be ambiguous between multiple collections.
   ///   </para>
   ///   <para>
   ///     The <see cref="CollectionType"/> property corresponds to the <see cref="CollectionAttribute.Type"/> property. It
@@ -468,7 +467,7 @@ internal sealed class ItemConfiguration {
   /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
   /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
   private void GetAttributeValue<T>(Action<T> action) where T : Attribute {
-    var attribute = GetAttribute<T>();
+    var attribute               = GetAttribute<T>();
     if (attribute is not null)  {
       action(attribute);
     }

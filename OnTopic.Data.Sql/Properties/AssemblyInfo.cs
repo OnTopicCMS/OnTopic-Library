@@ -8,6 +8,7 @@
 | USING DIRECTIVES (GLOBAL)
 \-----------------------------------------------------------------------------------------------------------------------------*/
 global using System.Data;
+global using System.Data.Common;
 global using Microsoft.Data.SqlClient;
 global using OnTopic.Internal.Diagnostics;
 

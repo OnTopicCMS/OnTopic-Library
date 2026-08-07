@@ -29,7 +29,7 @@ public class TopicEventArgs :   EventArgs {
   /// </summary>
   /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
   /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
-  public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
+  public TopicEventArgs(Topic topic, bool isRecursive = true) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Vaidate parameters

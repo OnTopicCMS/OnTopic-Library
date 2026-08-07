@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
+
 using System.Net;
 using Microsoft.AspNetCore.Routing;
 
@@ -31,7 +31,7 @@ public class ServiceCollectionExtensionsTests: IClassFixture<WebApplicationFacto
   ///   Initializes a new instance of the <see cref="TopicViewLocationExpanderTest"/>.
   /// </summary>
   public ServiceCollectionExtensionsTests(WebApplicationFactory<Startup> factory) {
-    _factory = factory;
+    _factory                    = factory;
   }
 
   /*============================================================================================================================

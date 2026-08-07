@@ -148,7 +148,7 @@ static internal class BindingModelValidator {
     | Define variables
     \-------------------------------------------------------------------------------------------------------------------------*/
     var configuration           = propertyAccessor.Configuration;
-    var compositeAttributeKey = configuration.GetCompositeAttributeKey(attributePrefix);
+    var compositeAttributeKey   = configuration.GetCompositeAttributeKey(attributePrefix);
     var attributeDescriptor     = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
     var childCollections        = new[] { CollectionType.Children, CollectionType.NestedTopics };
     var relationships           = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
@@ -188,7 +188,7 @@ static internal class BindingModelValidator {
     foreach (var type in propertyAccessor.Type.GetInterfaces()) {
       if (type.IsGenericType && typeof(IList<>) == type.GetGenericTypeDefinition()) {
         //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-        listType = type.GetGenericArguments().Last();
+        listType                = type.GetGenericArguments().Last();
       }
     }
 

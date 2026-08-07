@@ -58,7 +58,7 @@ public static class Contract {
   /// </exception>
   public static void Requires(
     bool isValid,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(isValid))] string? expression = null
   ) => Requires<InvalidOperationException>(isValid, errorMessage, expression);
 
@@ -80,7 +80,7 @@ public static class Contract {
   #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
   public static T Requires<T>(
     [AllowNull, ValidatedNotNull, NotNull]T requiredObject,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(requiredObject))] string? expression = null
   ) {
     Requires<ArgumentNullException>(requiredObject is not null, errorMessage, expression);
@@ -111,7 +111,7 @@ public static class Contract {
   /// </exception>
   public static void Requires<T>(
     bool isValid,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(isValid))] string? expression = null
   ) where T : Exception, new()  {
     if (isValid) return;
@@ -161,7 +161,7 @@ public static class Contract {
   /// </exception>
   public static void Assume(
     bool isValid,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(isValid))] string? expression = null
   ) => Requires<InvalidOperationException>(isValid, errorMessage, expression);
 
@@ -191,7 +191,7 @@ public static class Contract {
   /// </exception>
   public static void Assume<T>(
     bool isValid,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(isValid))] string? expression = null
   ) where T : Exception, new()  => Requires<T>(isValid, errorMessage, expression);
 
@@ -210,7 +210,7 @@ public static class Contract {
   #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
   public static void Assume(
     [ValidatedNotNull, NotNull]object? requiredObject,
-    string? errorMessage = null,
+    string? errorMessage        = null,
     [CallerArgumentExpression(nameof(requiredObject))] string? expression = null
   ) => Requires<InvalidOperationException>(requiredObject is not null, errorMessage, expression);
   #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.

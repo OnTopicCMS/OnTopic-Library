@@ -35,7 +35,7 @@ public class TopicViewResult :  ViewResult {
     object                      viewModel,
     string?                     contentType                     = null,
     string?                     view                            = null
-  ) : base() {
+  ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters
@@ -94,7 +94,7 @@ public class TopicViewResult :  ViewResult {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Call associated executor
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var executor = context.HttpContext.RequestServices.GetRequiredService<IActionResultExecutor<TopicViewResult>>();
+    var executor                = context.HttpContext.RequestServices.GetRequiredService<IActionResultExecutor<TopicViewResult>>();
     await executor.ExecuteAsync(context, this).ConfigureAwait(false);
 
   }

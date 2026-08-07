@@ -200,3 +200,6 @@ ModelManifest.xml
 
 # Custom
 ConnectionStrings.config
+docs/
+.idea/
+*.DS_Store

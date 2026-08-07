@@ -28,7 +28,7 @@ public class NestedTopicListAttributeDescriptor : AttributeDescriptor {
     string key,
     string contentType,
     Topic parent,
-    int id = -1
+    int id                      = -1
   ) : base(
     key,
     contentType,
@@ -39,7 +39,7 @@ public class NestedTopicListAttributeDescriptor : AttributeDescriptor {
     /*--------------------------------------------------------------------------------------------------------------------------
     | Initialize values
     \-------------------------------------------------------------------------------------------------------------------------*/
-    ModelType = ModelType.NestedTopic;
+    ModelType                   = ModelType.NestedTopic;
 
   }
 

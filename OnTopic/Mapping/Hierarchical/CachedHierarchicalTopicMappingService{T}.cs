@@ -53,7 +53,7 @@ public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappin
   | GET HIERARCHICAL ROOT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
+  public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Root:Web") =>
     _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
 
   /*============================================================================================================================
@@ -62,7 +62,7 @@ public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappin
   /// <inheritdoc />
   public async Task<T?> GetRootViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   ) {
 
@@ -83,7 +83,7 @@ public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappin
     /*--------------------------------------------------------------------------------------------------------------------------
     | Cache and return new version
     \-------------------------------------------------------------------------------------------------------------------------*/
-    var viewModel = await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
+    var viewModel               = await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
     return _cache.GetOrAdd(sourceTopic.Id, viewModel);
 
   }
@@ -94,7 +94,7 @@ public class CachedHierarchicalTopicMappingService<T> : IHierarchicalTopicMappin
   /// <inheritdoc />
   public async Task<T?> GetViewModelAsync(
     Topic? sourceTopic,
-    int tiers = 1,
+    int tiers                   = 1,
     Func<Topic, bool>? validationDelegate = null
   ) =>
     await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);

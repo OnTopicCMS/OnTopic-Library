@@ -158,8 +158,8 @@ public class MemberAccessorTest {
   | TEST: GET VALUE: VALID PROPERTY: RETURNS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
   /// </summary>
   [Fact]
   public void GetValue_ValidProperty_ReturnsValue() {
@@ -178,8 +178,8 @@ public class MemberAccessorTest {
   | TEST: GET VALUE: VALID METHOD: RETURNS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.GetValue(Object)"/> with a compliant object, expecting that the correct value will be returned.
   /// </summary>
   [Theory]
   [InlineData(15)]
@@ -203,8 +203,8 @@ public class MemberAccessorTest {
   | TEST: GET VALUE: TYPE MISMATCH: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.GetValue(Object)"/> with an object that doesn't contain the <see cref="MemberInfo"/>, expecting that an
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.GetValue(Object)"/> with an object that doesn't contain the <see cref="MemberInfo"/>, expecting that an
   ///   <see cref="ArgumentException"/> will be thrown.
   /// </summary>
   [Fact]
@@ -224,8 +224,8 @@ public class MemberAccessorTest {
   | TEST: SET VALUE: VALID PROPERTY: SETS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
   ///   set.
   /// </summary>
   [Theory]
@@ -249,8 +249,8 @@ public class MemberAccessorTest {
   | TEST: SET VALUE: VALID METHOD: SETS VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.SetValue(Object, Object?, Boolean)"/> with a compliant object, expecting that the correct value will be
   ///   set.
   /// </summary>
   [Theory]
@@ -274,9 +274,9 @@ public class MemberAccessorTest {
   | TEST: SET VALUE: MEMBER TYPE MISMATCH: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref="
-  ///   MemberAccessor.SetValue(Object, Object?, Boolean)"/> with an object that isn't compatible with the <see cref="
-  ///   MemberInfo.MemberType"/>, expecting that an <see cref="InvalidCastException"/> will be thrown.
+  ///   Assembles a new <see cref="MemberAccessor"/> from a <see cref="MemberInfo"/>, and attempts to call <see cref=
+  ///   "MemberAccessor.SetValue(Object, Object?, Boolean)"/> with an object that isn't compatible with the <see cref=
+  ///   "MemberInfo.MemberType"/>, expecting that an <see cref="InvalidCastException"/> will be thrown.
   /// </summary>
   [Fact]
   public void SetValue_MemberTypeMismatch_ThrowsException() {
@@ -396,7 +396,7 @@ public class MemberAccessorTest {
   public void IsValid_Constructor_ReturnsFalse() {
 
     var type                    = typeof(MemberAccessorViewModel);
-    var memberInfo              = type.GetConstructor(Array.Empty<Type>())!;
+    var memberInfo              = type.GetConstructor([])!;
 
     Assert.NotNull(memberInfo);
     Assert.False(MemberAccessor.IsValid(memberInfo));

@@ -17,8 +17,8 @@ namespace OnTopic.Mapping.Annotations;
 ///   <para>
 ///     The <see cref="TopicMappingService"/> and <see cref="IncludeAttribute"/> use the <see cref="AssociationTypes"/> enum to
 ///     determine what associations should be mapped—or followed—as part of the mapping process. This helps constrain the
-///     scope of the object graph to only include the data needed for a given view, or vice verse. That said, the <see cref="
-///     AssociationTypes"/> enum can be used any place where the code needs to model multiple types of associations relevant
+///     scope of the object graph to only include the data needed for a given view, or vice verse. That said, the <see cref=
+///     "AssociationTypes"/> enum can be used any place where the code needs to model multiple types of associations relevant
 ///     to the <see cref="Topic"/> class and its view models.
 ///   </para>
 ///   <para>
@@ -80,7 +80,7 @@ public enum AssociationTypes {
   ///   cref="AttributeKeyAttribute.Key"/>.
   /// </summary>
   /// <remarks>
-  ///   This allows mapping of custom collection, such as <see cref="ContentTypeDescriptor.AttributeDescriptors"/>.
+  ///   This allows mapping of custom collections, such as <see cref="ContentTypeDescriptor.AttributeDescriptors"/>.
   /// </remarks>
   MappedCollections             = 1 << 4,
 
@@ -91,8 +91,8 @@ public enum AssociationTypes {
   ///   Map topic pointer references, such as <see cref="Topic.BaseTopic"/>.
   /// </summary>
   /// <remarks>
-  ///   By convention, <see cref="References"/> types refer to a <see cref="AttributeDescriptor"/>, <see cref="
-  ///   AttributeKeyAttribute.Key"/>, or property identifier ending in <c>Id</c>.
+  ///   By convention, <see cref="References"/> types refer to a <see cref="AttributeDescriptor"/>, <see cref=
+  ///   "AttributeKeyAttribute.Key"/>, or property identifier ending in <c>Id</c>.
   /// </remarks>
   References                    = 1 << 5,
 
@@ -102,6 +102,6 @@ public enum AssociationTypes {
   /// <summary>
   ///   Map all association types.
   /// </summary>
-  All = Parents | Children | Relationships | IncomingRelationships | MappedCollections | References
+  All                           = Parents | Children | Relationships | IncomingRelationships | MappedCollections | References
 
 } //Enum

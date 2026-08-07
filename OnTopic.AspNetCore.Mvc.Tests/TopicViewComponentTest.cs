@@ -61,7 +61,7 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
     | Establish dependencies
     \-------------------------------------------------------------------------------------------------------------------------*/
     _topicRepository            = new CachedTopicRepository(topicRepository);
-    _topic                      = _topicRepository.Load("Root:Web:Web_3:Web_3_0")!;
+    _topic                      = _topicRepository.Load("Root:Web:Web_3:Web_3_0").GetAwaiter().GetResult()!;
     _topicMappingService        = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -159,8 +159,8 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
-  ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
+  ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref=
+  ///   "NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
   /// </summary>
   [Fact]
   public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {
@@ -214,7 +214,7 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   [Fact]
   public async Task PageLevelNavigation_Invoke_ReturnsNull() {
 
-    var webPath                 = "/Web/Web_1/Web_1_0/";
+    var webPath                 = "/Web/Web_1/Web_1_1/";
 
     var viewComponent           = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
       ViewComponentContext      = GetViewComponentContext(webPath)
@@ -241,16 +241,16 @@ public class TopicViewComponentTest: IClassFixture<StubTopicRepository> {
   public async Task PageLevelNavigation_InvokeWithNullTopic_ReturnsNull()
   {
 
-    var webPath = "/Invalid/Path/";
+    var webPath                 = "/Invalid/Path/";
 
-    var viewComponent = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
+    var viewComponent           = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
     {
-      ViewComponentContext = GetViewComponentContext(webPath)
+      ViewComponentContext      = GetViewComponentContext(webPath)
     };
 
-    var result = await viewComponent.InvokeAsync();
-    var concreteResult = result as ViewViewComponentResult;
-    var model = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
+    var result                  = await viewComponent.InvokeAsync();
+    var concreteResult          = result as ViewViewComponentResult;
+    var model                   = concreteResult?.ViewData?.Model as NavigationViewModel<NavigationTopicViewModel>;
 
     Assert.NotNull(model);
     Assert.Equal(String.Empty,  model?.CurrentWebPath);

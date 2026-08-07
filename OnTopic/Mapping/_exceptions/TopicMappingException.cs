@@ -26,7 +26,7 @@ public class TopicMappingException : Exception {
   /// <summary>
   ///   Initializes a new <see cref="TopicMappingException" /> instance.
   /// </summary>
-  public TopicMappingException() : base() { }
+  public TopicMappingException() { }
 
   /// <summary>
   ///   Initializes a new <see cref="TopicMappingException" /> instance with a specific error message.

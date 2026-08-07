@@ -41,7 +41,7 @@ public sealed class MapAsAttribute : Attribute {
   /// </summary>
   /// <param name="type">The view model to map the association to.</param>
   public MapAsAttribute(Type type) {
-    Type = type;
+    Type                        = type;
   }
 
   /*============================================================================================================================

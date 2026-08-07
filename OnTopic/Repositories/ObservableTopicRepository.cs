@@ -36,32 +36,32 @@ public abstract class ObservableTopicRepository : ITopicRepository {
 
   /// <inheritdoc />
   public event EventHandler<TopicLoadEventArgs>? TopicLoaded {
-    add => _topicLoaded += value;
-    remove => _topicLoaded -= value;
+    add                         => _topicLoaded += value;
+    remove                      => _topicLoaded -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicSaveEventArgs>? TopicSaved {
-    add => _topicSaved += value;
-    remove => _topicSaved -= value;
+    add                         => _topicSaved += value;
+    remove                      => _topicSaved -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicEventArgs>? TopicDeleted {
-    add => _topicDeleted += value;
-    remove => _topicDeleted -=  value;
+    add                         => _topicDeleted += value;
+    remove                      => _topicDeleted -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicMoveEventArgs>? TopicMoved {
-    add => _topicMoved += value;
-    remove => _topicMoved -= value;
+    add                         => _topicMoved += value;
+    remove                      => _topicMoved -= value;
   }
 
   /// <inheritdoc />
   public event EventHandler<TopicRenameEventArgs>? TopicRenamed {
-    add => _topicRenamed += value;
-    remove => _topicRenamed -=  value;
+    add                         => _topicRenamed += value;
+    remove                      => _topicRenamed -= value;
   }
 
   #pragma warning disable CS0067 // Events are never used; retained as an obsolete stub which will be removed in the next major version
@@ -209,42 +209,52 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public virtual Topic? Load()  => Load(-1);
+  public virtual Task<Topic?> Load() => Load(-1);
 
   /// <inheritdoc />
-  public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
+  public abstract Task<Topic?> Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  );
 
   /// <inheritdoc />
-  public abstract Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
+  public abstract Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  );
 
-  /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+  /// <inheritdoc cref="ITopicRepository.Load(String?, Boolean)"/>
   [ExcludeFromCodeCoverage]
-  [Obsolete("This overload has  been removed in preference for Load(string, Topic, Boolean).")]
-  public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
+  [Obsolete("This overload has been removed in preference for Load(string, Topic, TopicPayload, int).")]
+  public Task<Topic?> Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
 
   /// <inheritdoc />
-  public abstract Topic? Load(Topic topic, DateTime version);
+  public abstract Task<Topic?> Load(Topic topic, DateTime version);
 
   /// <inheritdoc />
-  public abstract Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
+  public abstract Task<Topic?> Load(int topicId, DateTime version);
 
   /*============================================================================================================================
   | METHOD: REFRESH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Refresh(Topic referenceTopic, DateTime since);
+  public abstract Task Refresh(Topic referenceTopic, DateTime since);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Rollback(Topic topic, DateTime version);
+  public abstract Task Rollback(Topic topic, DateTime version);
 
   /*============================================================================================================================
   | METHOD: SAVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Save(Topic topic, bool isRecursive = false);
+  public abstract Task Save(Topic topic, bool isRecursive = false);
 
   /// <inheritdoc cref="Save(Topic, Boolean)"/>
   [ExcludeFromCodeCoverage]
@@ -255,13 +265,13 @@ public abstract class ObservableTopicRepository : ITopicRepository {
   | METHOD: MOVE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Move(Topic topic, Topic target, Topic? sibling = null);
+  public abstract Task Move(Topic topic, Topic target, Topic? sibling = null);
 
   /*============================================================================================================================
   | METHOD: DELETE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public abstract void Delete(Topic topic, bool isRecursive = false);
+  public abstract Task Delete(Topic topic, bool isRecursive = false);
 
   /*============================================================================================================================
   | METHOD: NORMALIZE TO UTC

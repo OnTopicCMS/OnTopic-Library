@@ -99,8 +99,8 @@ public class AttributeValue {
     string? value,
     bool isDirty,
     bool enforceBusinessLogic,
-    DateTime? lastModified = null,
-    bool? isExtendedAttribute = null
+    DateTime? lastModified      = null,
+    bool? isExtendedAttribute   = null
   ) : this(
     key,
     value,
@@ -203,8 +203,8 @@ public class AttributeValue {
   ///     cref="IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but the location
   ///     it should be stored has, that could potentially result in the attribute being deleted, as the attribute won't show
   ///     up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c> and
-  ///     <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref="
-  ///     IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
+  ///     <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref=
+  ///     "IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
   ///     the underlying data store, and ensure data is stored appropriately.
   ///   </para>
   ///   <para>
