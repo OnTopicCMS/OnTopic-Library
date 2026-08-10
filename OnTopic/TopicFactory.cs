@@ -110,6 +110,45 @@ public static partial class TopicFactory {
   }
 
   /*============================================================================================================================
+  | METHOD: NORMALIZE UNIQUE KEY
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Normalizes a <paramref name="uniqueKey"/> to its fully qualified form by prefixing it with the <paramref name="rootKey"
+  ///   />, unless it is already qualified, or is itself the root.
+  /// </summary>
+  /// <remarks>
+  ///   This is pure key syntax, identical across every repository, and dependent only on the key of the root topic, so it is
+  ///   centralized here rather than being duplicated by each repository that resolves a <c>uniqueKey</c>. The comparison
+  ///   requires either an exact match against <paramref name="rootKey"/>, or a match followed by a colon delimiter, so that
+  ///   a topic whose key merely starts with the same characters (e.g. <c>Rootbeer</c> relative to a root of <c>Root</c>) is not
+  ///   mistakenly treated as already qualified.
+  /// </remarks>
+  /// <param name="uniqueKey">The unique key that should be normalized.</param>
+  /// <param name="rootKey">The key of the root topic that <paramref name="uniqueKey"/> should be qualified against.</param>
+  /// <returns>A fully qualified unique key, prefixed with the <paramref name="rootKey"/> as needed.</returns>
+  public static string NormalizeUniqueKey(string uniqueKey, string rootKey) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Validate input
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), nameof(uniqueKey));
+    Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(rootKey), nameof(rootKey));
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Qualify the key against the root, unless it is already qualified, or is itself the root
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (
+      !uniqueKey.StartsWith(rootKey + ":", StringComparison.OrdinalIgnoreCase) &&
+      !uniqueKey.Equals(rootKey, StringComparison.OrdinalIgnoreCase)
+    ) {
+      uniqueKey                 = $"{rootKey}:{uniqueKey.TrimStart(':')}";
+    }
+
+    return uniqueKey;
+
+  }
+
+  /*============================================================================================================================
   | METHOD: KEY REGEX
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
