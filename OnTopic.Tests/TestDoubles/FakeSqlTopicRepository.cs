@@ -47,7 +47,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Registers a row in the fake row store, keyed by <paramref name="id"/>, and indexes its unique key for <see cref=
-  ///   "Load(String, Topic?, TopicPayload, Int32)"/> lookups.
+  ///   "LoadTopic(String, Topic?, TopicPayload, Int32)"/> lookups.
   /// </summary>
   public FakeSqlTopicRepository AddTopic(int id, string key, string contentType, int? parentId) {
     _rows[id]                   = (key, contentType, parentId);
@@ -60,7 +60,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Registers a relationship row, returned alongside its source topic's ascendant chain on a subsequent <see cref=
-  ///   "Load(Int32, Topic?, TopicPayload, Int32)"/>.
+  ///   "LoadTopic(Int32, Topic?, TopicPayload, Int32)"/>.
   /// </summary>
   public void AddRelationship(int sourceId, string key, int targetId) => _relationships.Add((sourceId, key, targetId));
 
@@ -69,7 +69,7 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Registers a relationship row belonging to a historical version, returned independently of the current relationships
-  ///   added by <see cref="AddRelationship"/>, and instead returned by a call to <see cref="Load(Int32, DateTime)"/>.
+  ///   added by <see cref="AddRelationship"/>, and instead returned by a call to <see cref="LoadTopic(Int32, DateTime)"/>.
   /// </summary>
   public void AddHistoricalRelationship(int sourceId, string key, int targetId) =>
     _historicalRelationships.Add((sourceId, key, targetId));
@@ -91,14 +91,14 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   }
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     string uniqueKey,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
     if (!_keyIndex.TryGetValue(uniqueKey, out var topicId)) {
       return null;
@@ -111,13 +111,13 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   ///   Builds the requested topic's ascendant chain into fresh <see cref="TopicsDataTable"/>/<see cref="RelationshipsDataTable"
   ///   /> rows on every call, then feeds them through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>—reproducing
   ///   the new instance per call, reconciled against the <c>referenceTopic</c> behavior of <see cref=
-  ///   "SqlTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/>.
+  ///   "SqlTopicRepository.LoadTopic(Int32, Topic?, TopicPayload, Int32)"/>.
   /// </remarks>
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     int topicId,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     // Bypass for rowstore misses
@@ -160,13 +160,13 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
 
   /// <inheritdoc />
   /// <remarks>
-  ///   Unlike <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>, this builds a single-row <see cref="TopicsDataTable"/>,
-  ///   without the ascendant chain, and populated from <see cref="_historicalRelationships"/> rather than <see cref=
-  ///   "_relationships"/>, then feeds it through <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with no<c>referenceTopic
-  ///   </c>, mirroring production's detached <c>GetTopicVersion</c>: The returned <see cref="Topic"/> has no <see cref=
-  ///   "Topic.Parent"/> and no resolved associations, only <c>Deferred</c> entries.
+  ///   Unlike <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/>, this builds a single-row <see cref="TopicsDataTable"
+  ///   />, without the ascendant chain, and populated from <see cref="_historicalRelationships"/> rather than <see cref=
+  ///   "_relationships"/>, then feeds it through <see cref="SqlDataReaderExtensions.LoadTopicGraph"/> with no
+  ///   <c>referenceTopic</c>, mirroring production's detached <c>GetTopicVersion</c>: The returned <see cref="Topic"/> has no
+  ///   <see cref="Topic.Parent"/> and no resolved associations, only <c>Deferred</c> entries.
   /// </remarks>
-  public override async Task<Topic?> Load(int topicId, DateTime version) {
+  protected override async Task<Topic?> LoadTopic(int topicId, DateTime version) {
 
     // Bypass for rowstore misses
     if (!_rows.TryGetValue(topicId, out var row)) {
@@ -196,10 +196,10 @@ internal sealed class FakeSqlTopicRepository : TopicRepository {
   | METHOD: LOAD TOPIC GRAPH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Shared core behind <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> and <see cref="Load(Int32, DateTime)"/>:
-  ///   Builds a fresh set of <see cref="TopicsDataTable"/> and <see cref="RelationshipsDataTable"/> rows, then feeds them
-  ///   through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>, exactly as <see cref="SqlTopicRepository"/> does
-  ///   from a live reader.
+  ///   Shared core behind <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> and <see cref=
+  ///   "LoadTopic(Int32, DateTime)"/>: Builds a fresh set of <see cref="TopicsDataTable"/> and <see cref=
+  ///   "RelationshipsDataTable"/> rows, then feeds them through the real <see cref="SqlDataReaderExtensions.LoadTopicGraph"/>,
+  ///   exactly as <see cref="SqlTopicRepository"/> does from a live reader.
   /// </summary>
   /// <param name="topicId">The <see cref="Topic.Id"/> to seed the load with.</param>
   /// <param name="referenceTopic">The reference topic graph to reconcile new rows against, if any.</param>

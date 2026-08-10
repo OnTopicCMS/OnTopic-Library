@@ -12,8 +12,8 @@ namespace OnTopic.Tests.TestDoubles;
 | CLASS: BLOCKING STUB LAZY LOADING TOPIC REPOSITORY
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   A <see cref="StubLazyLoadingTopicRepository"/> that counts every <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>
-///   and <see cref="EnsureLoaded"/> call and, while "armed", suspends inside the corresponding one until released, thus
+///   A <see cref="StubLazyLoadingTopicRepository"/> that counts every <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"
+///   /> and <see cref="EnsureLoaded"/> call and, while "armed", suspends inside the corresponding one until released, thus
 ///   letting a test provably interleave two concurrent lazy loads of the same topic without <see cref="Thread.Sleep(int)"/> or
 ///   other timing hacks.
 /// </summary>
@@ -30,7 +30,7 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
   | PROPERTY: LOAD FETCH COUNT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Returns the number of times <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> has been called.
+  ///   Returns the number of times <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> has been called.
   /// </summary>
   public int                    LoadFetchCount                  { get; private set; }
 
@@ -46,7 +46,7 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
   | METHOD: ARM LOAD GATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   "Arms" the gate so the next <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> call suspends until <see cref=
+  ///   "Arms" the gate so the next <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> call suspends until <see cref=
   ///   "ReleaseLoadGate"/> is called.
   /// </summary>
   public void ArmLoadGate() => _loadGate = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -55,7 +55,8 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
   | METHOD: RELEASE LOAD GATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Releases a suspended <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> call "armed" via <see cref="ArmLoadGate"/>.
+  ///   Releases a suspended <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> call "armed" via <see cref=
+  ///   "ArmLoadGate"/>.
   /// </summary>
   public void ReleaseLoadGate() => _loadGate?.SetResult();
 
@@ -87,14 +88,14 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
   public void FaultEnsureLoadedGate(Exception exception) => _ensureLoadedGate?.SetException(exception);
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     int topicId,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     // Record the fetch
@@ -106,7 +107,7 @@ internal sealed class BlockingStubLazyLoadingTopicRepository: StubLazyLoadingTop
     }
 
     // Delegate to the base implementation to perform the actual fill
-    return await base.Load(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
+    return await base.LoadTopic(topicId, referenceTopic, payload, depth).ConfigureAwait(false);
 
   }
 

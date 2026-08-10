@@ -219,6 +219,29 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
   | METHOD: LOAD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
+  public override sealed Task<Topic?> Load(
+    int topicId,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) => LoadTopic(topicId, referenceTopic, payload, depth); // sealed for uniformity
+
+  /// <inheritdoc />
+  public override sealed async Task<Topic?> Load(
+    string uniqueKey,
+    Topic? referenceTopic       = null,
+    TopicPayload payload        = TopicPayload.None,
+    int depth                   = 0
+  ) {
+
+    /*--------------------------------------------------------------------------------------------------------------------------
+    | Execute core implementation
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    return await LoadTopic(uniqueKey, referenceTopic, payload, depth).ConfigureAwait(false);
+
+  }
+
+  /// <inheritdoc />
   public override Task<Topic?> Load(Topic topic, DateTime version) {
     Contract.Requires(topic, nameof(topic));
     Contract.Requires<ArgumentException>(
@@ -228,6 +251,45 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
     );
     return Load(topic.Id, version);
   }
+
+  /// <inheritdoc />
+  // sealed for surface uniformity
+  public override sealed Task<Topic?> Load(int topicId, DateTime version) => LoadTopic(topicId, version);
+
+  /*============================================================================================================================
+  | METHOD: LOAD TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc cref="Load(Int32, Topic?, TopicPayload, Int32)" />
+  /// <summary>
+  ///   The core implementation logic for loading a <see cref="Topic"/> by <see cref="Topic.Id"/>.
+  /// </summary>
+  protected abstract Task<Topic?> LoadTopic(
+    int topicId,
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
+  );
+
+  /// <inheritdoc cref="Load(String, Topic?, TopicPayload, Int32)" />
+  /// <summary>
+  ///   The core implementation logic for loading a <see cref="Topic"/> by its fully qualified <paramref name="uniqueKey"/>.
+  /// </summary>
+  /// <remarks>
+  ///   The main <see cref="Load(String, Topic?, TopicPayload, Int32)"/> implementation normalizes <paramref name="uniqueKey"/>
+  ///   to its fully qualified form, via <see cref="TopicFactory.NormalizeUniqueKey(String, String)"/>, before delegating here.
+  /// </remarks>
+  protected abstract Task<Topic?> LoadTopic(
+    string uniqueKey,
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
+  );
+
+  /// <inheritdoc cref="Load(Int32, DateTime)" />
+  /// <summary>
+  ///   The core implementation logic for loading a historical version of a <see cref="Topic"/>.
+  /// </summary>
+  protected abstract Task<Topic?> LoadTopic(int topicId, DateTime version);
 
   /*============================================================================================================================
   | METHOD: ROLLBACK

@@ -503,8 +503,8 @@ public class SqlTopicRepositoryTest {
   ///   than downgraded by the ancestor crawl.
   /// </summary>
   /// <remarks>
-  ///   <c>@LoadAscendants</c> is passed for every <see cref="SqlTopicRepository.Load(Int32, Topic, TopicPayload, Int32)"/>
-  ///   call outside of the root, regardless of <c>depth</c> or payload, so the ancestor crawl runs on essentially every load
+  ///   <c>@LoadAscendants</c> is passed for every <see cref="SqlTopicRepository.LoadTopic(Int32, Topic?, TopicPayload, Int32)"
+  ///   />  call outside of the root, regardless of <c>depth</c> or payload, so the ancestor crawl runs on essentially every load
   ///   of anything beneath an already loaded ancestor. Without this guard, an already complete ancestor would be perpetually
   ///   reset to <see cref="LoadState.NotLoaded"/>.
   /// </remarks>

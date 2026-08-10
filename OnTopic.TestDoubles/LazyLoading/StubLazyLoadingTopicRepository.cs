@@ -25,7 +25,7 @@ namespace OnTopic.TestDoubles.LazyLoading;
 ///   </para>
 ///   <para>
 ///     Filling happens two ways, matching how a real, e.g., SQL-backed repository distinguishes a batch <c>Load()</c> from an
-///     on-demand fill. <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/> and its overloads only connect association
+///     on-demand fill. <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> and its overloads only connect association
 ///     targets already present in the graph being built, leaving the rest deferred; it never issues an additional fetch to
 ///     resolve a missing target. <see cref="EnsureLoaded(Topic, TopicPayload, CancellationToken)"/>, invoked either explicitly
 ///     or via one of <see cref="Topic"/>'s autoloading getters, goes further: It recursively loads whatever deferred targets it
@@ -121,15 +121,15 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   }
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     string uniqueKey,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     // Validate unique key
@@ -167,11 +167,11 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   can from the graph already built so far via <see cref="FillRequestedPayload"/>; targets that aren't yet resident stay
   ///   deferred.
   /// </remarks>
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     int topicId,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     // Setup
@@ -213,7 +213,7 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   }
 
   /// <inheritdoc />
-  public override async Task<Topic?> Load(int topicId, DateTime version) {
+  protected override async Task<Topic?> LoadTopic(int topicId, DateTime version) {
 
     // Setup
     Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
@@ -282,9 +282,10 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
   /// <remarks>
-  ///   The on-demand fill: Unlike <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>, this recursively resolves deferred
-  ///   relationship and reference targets via the inherited <c>LoadDeferredAssociations</c>, discarding whatever remains
-  ///   unresolved as stale, assuming either <see cref="TopicPayload.Relationships"/> or <see cref="TopicPayload.References"/>.
+  ///   The on-demand fill: Unlike <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/>, this recursively resolves
+  ///   deferred relationship and reference targets via the inherited <c>LoadDeferredAssociations</c>, discarding whatever
+  ///   remains unresolved as stale, assuming either <see cref="TopicPayload.Relationships"/> or <see cref=
+  ///   "TopicPayload.References"/>.
   /// </remarks>
   public virtual async Task EnsureLoaded(Topic topic, TopicPayload payload, CancellationToken cancellationToken = default) {
 
@@ -316,10 +317,10 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
   ///   any already <see cref="LoadState.Loaded"/> flags, recording a fetch in the spy for each property filled. Children are
   ///   fetched from the record store one tier at a time, decrementing <paramref name="depth"/> at each level, until it reaches
   ///   <c>0</c>; a <paramref name="depth"/> of <c>-1</c> descends the entire subtree. A child already present in <see cref=
-  ///   "_served"/> (e.g., attached while building ancestor for a deeper <see cref="Load(Int32, Topic?, TopicPayload, Int32)"/>
-  ///   call, or eagerly preloaded) is reused rather than rebuilt, to avoid colliding with the existing instance already
-  ///   attached to the graph, but is still offered the requested payload so a resident child converges to the requested scope
-  ///   instead of being silently skipped.
+  ///   "_served"/> (e.g., attached while building ancestor for a deeper <see cref=
+  ///   "LoadTopic(Int32, Topic?, TopicPayload, Int32)"/> call, or eagerly preloaded) is reused rather than rebuilt, to avoid
+  ///   colliding with the existing instance already attached to the graph, but is still offered the requested payload so a
+  ///   resident child converges to the requested scope instead of being silently skipped.
   /// </summary>
   /// <param name="topic">The topic whose requested payload should be filled.</param>
   /// <param name="payload">The requested <see cref="TopicPayload"/> flags.</param>
