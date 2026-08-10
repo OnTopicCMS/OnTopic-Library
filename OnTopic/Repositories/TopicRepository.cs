@@ -235,6 +235,13 @@ public abstract class TopicRepository : LazyLoadingTopicRepository {
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
+    | Normalize key
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    if (!String.IsNullOrWhiteSpace(uniqueKey)) {
+      uniqueKey                 = TopicFactory.NormalizeUniqueKey(uniqueKey, "Root");
+    }
+
+    /*--------------------------------------------------------------------------------------------------------------------------
     | Execute core implementation
     \-------------------------------------------------------------------------------------------------------------------------*/
     return await LoadTopic(uniqueKey, referenceTopic, payload, depth).ConfigureAwait(false);

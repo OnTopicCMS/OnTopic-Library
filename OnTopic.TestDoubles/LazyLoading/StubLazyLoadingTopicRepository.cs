@@ -137,11 +137,6 @@ public class StubLazyLoadingTopicRepository : TopicRepository, ITopicRepository,
       return null;
     }
 
-    // Normalize unique key by ensuring "root:" prefix
-    if (!uniqueKey.StartsWith(_root.Key, StringComparison.OrdinalIgnoreCase)) {
-      uniqueKey                 = $"{_root.Key}:{uniqueKey.TrimStart(':')}";
-    }
-
     // If the root is requested, hardcode the topicId at -1
     if (uniqueKey.Equals(_root.Key, StringComparison.OrdinalIgnoreCase)) {
       return await Load(-1, referenceTopic, payload, depth).ConfigureAwait(false);
