@@ -117,7 +117,7 @@ public class TopicMultiMap: KeyedCollection<string, KeyValuesPair<string, TopicC
     \-------------------------------------------------------------------------------------------------------------------------*/
     var topics                  = GetValues(key);
 
-    if (topics is null || !topics.Contains(topic)) {
+    if (!topics.Contains(topic)) {
       return false;
     }
 
