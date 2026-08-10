@@ -68,9 +68,9 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   | INDEXER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves an <see cref="Topic"/> by key.
+  ///   Retrieves a <typeparamref name="T"/> by key.
   /// </summary>
   /// <param name="key">The topic key.</param>
-  public Topic this[string key] => _innerCollection[key];
+  public T this[string key] => _innerCollection[key];
 
 } //Class
