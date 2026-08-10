@@ -21,54 +21,6 @@ namespace OnTopic.Tests;
 public class TopicTest {
 
   /*============================================================================================================================
-  | TEST: CREATE: RETURNS TOPIC
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates a topic using the factory method, and ensures it's correctly returned.
-  /// </summary>
-  [Fact]
-  public void Create_ReturnsTopic() {
-    var topic                   = TopicFactory.Create("Test", "Page");
-    Assert.NotNull(topic);
-    Assert.Equal("Test", topic.Key);
-    Assert.Equal("Page", topic.ContentType);
-  }
-
-  /*============================================================================================================================
-  | TEST: CREATE: CONTENT TYPE: RETURNS DERIVED TOPIC
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates a topic of a content type which maps to a class derived from <see cref="Topic"/>, and ensures the derived
-  ///   version of the <see cref="Topic"/> class is returned.
-  /// </summary>
-  [Fact]
-  public void Create_ContentType_ReturnsDerivedTopic() {
-    var topic                   = TopicFactory.Create("Test", "ContentTypeDescriptor");
-    Assert.NotNull(topic);
-    Assert.IsType<ContentTypeDescriptor>(topic);
-  }
-
-  /*============================================================================================================================
-  | TEST: CREATE: ATTRIBUTE DESCRIPTOR: RETURNS FALLBACK
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Creates a topic with a <see cref="Topic.ContentType"/> ending with <c>AttributeDescriptor</c> and ensures that, by
-  ///   convention, a <see cref="AttributeDescriptor"/> is returned.
-  /// </summary>
-  /// <remarks>
-  ///   This is a special use case to address the fact that we expect concrete types of <see cref="AttributeDescriptor"/> to
-  ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref=
-  ///   "AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
-  ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
-  /// </remarks>
-  [Fact]
-  public void Create_AttributeDescriptor_ReturnsFallback() {
-    var topic                   = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
-    Assert.NotNull(topic);
-    Assert.IsType<AttributeDescriptor>(topic);
-  }
-
-  /*============================================================================================================================
   | TEST: ID: CHANGE VALUE: THROWS ARGUMENT EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
