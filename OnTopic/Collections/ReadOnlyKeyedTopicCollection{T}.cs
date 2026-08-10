@@ -24,11 +24,12 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
+  ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref=
+  ///   "KeyedTopicCollection{T}"/>.
   /// </summary>
   /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
-  public ReadOnlyKeyedTopicCollection(IList<T>? innerCollection = null) : base(innerCollection ?? []) {
-    _innerCollection            = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
+  public ReadOnlyKeyedTopicCollection(KeyedTopicCollection<T>? innerCollection = null) : base(innerCollection ?? new()) {
+    _innerCollection            = innerCollection ?? new();
   }
 
   /*============================================================================================================================
