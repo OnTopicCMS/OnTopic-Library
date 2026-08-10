@@ -89,10 +89,28 @@ public class TopicRepositoryBaseTest {
     Assert.Equal("Root", (await _cachedTopicRepository.Load(-2))?.GetUniqueKey());
 
   /*============================================================================================================================
+  | TEST: LOAD: PARTIAL UNIQUE KEY: NORMALIZES AND RETURNS EXPECTED TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="TopicRepository.Load(String, Topic?, TopicPayload, Int32)"/> with a partial (unqualified) <see cref=
+  ///   "Topic.Key"/> against a direct, non-cached repository, and confirms it is normalized to its fully qualified form before
+  ///   being resolved, returning the same topic as an already-qualified key.
+  /// </summary>
+  [Fact]
+  public async Task Load_PartialUniqueKey_ReturnsExpectedTopic() {
+
+    var topic                   = await _topicRepository.Load("Web");
+
+    Assert.NotNull(topic);
+    Assert.Equal(await _topicRepository.Load("Root:Web"), topic);
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
+  ///   Calls <see cref="TopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
   ///   "TopicPayload.None"/> and confirms that a topic is still returned. The stub always returns fully-loaded topics
   ///   regardless of this parameter; the test simply verifies the signature is accepted.
   /// </summary>
@@ -109,7 +127,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: NARROW PAYLOAD: EXTENDED ATTRIBUTES LOADED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Calls <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
+  ///   Calls <see cref="TopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> with <c>payload</c> set to <see cref=
   ///   "TopicPayload.None"/> and confirms the extended-attribute boundary is <see cref="LoadState.Loaded"/>. The stub does not
   ///   defer extended attributes; this simply confirms no regression for stub-backed tests.
   /// </summary>
@@ -1048,7 +1066,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> and ensures that the
+  ///   Loads a topic using <see cref="TopicRepository.Load(Int32, Topic?, TopicPayload, Int32)"/> and ensures that the
   ///   <see cref="ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]
@@ -1072,7 +1090,7 @@ public class TopicRepositoryBaseTest {
   | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED WITH VERSION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime)"/> and ensures that the <see cref=
+  ///   Loads a topic using <see cref="TopicRepository.Load(Int32, DateTime)"/> and ensures that the <see cref=
   ///   "ITopicRepository.TopicLoaded"/> event is raised.
   /// </summary>
   [Fact]

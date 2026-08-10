@@ -44,14 +44,14 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   }
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override Task<Topic?> Load(
+  protected override Task<Topic?> LoadTopic(
     int topicId,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -78,11 +78,11 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   }
 
   /// <inheritdoc />
-  public override Task<Topic?> Load(
+  protected override Task<Topic?> LoadTopic(
     string uniqueKey,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public class StubTopicRepository : TopicRepository, ITopicRepository, ITopicLazy
   }
 
   /// <inheritdoc />
-  public override Task<Topic?> Load(int topicId, DateTime version) {
+  protected override Task<Topic?> LoadTopic(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Validate parameters

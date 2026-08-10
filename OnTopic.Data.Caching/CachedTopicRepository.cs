@@ -216,12 +216,7 @@ public class CachedTopicRepository : TopicRepositoryDecorator, ITopicLazyLoader 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize key: Accept partial paths such as "Web:Valid:Child" in addition to the canonical "Root:Web:Valid:Child"
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (
-      !uniqueKey.StartsWith(_cache.Key + ":", StringComparison.OrdinalIgnoreCase) &&
-      !uniqueKey.Equals(_cache.Key, StringComparison.OrdinalIgnoreCase)
-    ) {
-      uniqueKey                 = $"{_cache.Key}:{uniqueKey.TrimStart(':')}";
-    }
+    uniqueKey                   = TopicFactory.NormalizeUniqueKey(uniqueKey, _cache.Key);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Lookup by unique key; top up and return on a hit, or skip a known miss, before falling through to a fresh load

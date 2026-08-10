@@ -52,14 +52,14 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   }
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override sealed async Task<Topic?> LoadTopic(
     string uniqueKey,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -118,11 +118,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   }
 
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override sealed async Task<Topic?> LoadTopic(
     int topicId,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   ///   Callers that need a historical version merged into a live <see cref="Topic"/> to e.g., commit a rollback should use <see
   ///   cref="TopicRepository.Rollback"/> instead, which performs that merge before persisting the result.
   /// </remarks>
-  public override async Task<Topic?> Load(int topicId, DateTime version) {
+  protected override sealed async Task<Topic?> LoadTopic(int topicId, DateTime version) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Normalize parameters
@@ -783,8 +783,8 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   /// </summary>
   /// <remarks>
   ///   Indexed attributes and associations are only requested when filling the <see cref="TopicPayload.Children"/> property,
-  ///   as they are otherwise always loaded as part of the initial <see cref="Load(int, Topic, TopicPayload, int)"/> for
-  ///   existing topics.
+  ///   as they are otherwise always loaded as part of the initial <see cref="LoadTopic(Int32, Topic?, TopicPayload, Int32)"/>
+  ///   for existing topics.
   /// </remarks>
   private static void AddEnsureLoadedParameters(SqlCommand command, int topicId, TopicPayload payload) {
 

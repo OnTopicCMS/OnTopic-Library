@@ -12,8 +12,8 @@ namespace OnTopic.Tests.TestDoubles;
 | CLASS: STAGGERED STUB TOPIC REPOSITORY
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   A <see cref="StubTopicRepository"/> that delays <see cref="Load(String, Topic?, TopicPayload, Int32)"/> by a per-key <see
-///   cref="TimeSpan"/>, letting a test invert completion order relative to call order.
+///   A <see cref="StubTopicRepository"/> that delays <see cref="LoadTopic(String, Topic?, TopicPayload, Int32)"/> by a per-key
+///   <see cref="TimeSpan"/>, letting a test invert completion order relative to call order.
 /// </summary>
 /// <remarks>
 ///   <para>
@@ -45,14 +45,14 @@ internal sealed class StaggeredStubTopicRepository: StubTopicRepository {
   }
 
   /*============================================================================================================================
-  | METHOD: LOAD
+  | METHOD: LOAD TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc />
-  public override async Task<Topic?> Load(
+  protected override async Task<Topic?> LoadTopic(
     string uniqueKey,
-    Topic? referenceTopic       = null,
-    TopicPayload payload        = TopicPayload.None,
-    int depth                   = 0
+    Topic? referenceTopic,
+    TopicPayload payload,
+    int depth
   ) {
 
     // Delay resolution of this key, if configured
@@ -61,7 +61,7 @@ internal sealed class StaggeredStubTopicRepository: StubTopicRepository {
     }
 
     // Delegate to the base implementation to perform the actual lookup
-    return await base.Load(uniqueKey, referenceTopic, payload, depth).ConfigureAwait(false);
+    return await base.LoadTopic(uniqueKey, referenceTopic, payload, depth).ConfigureAwait(false);
 
   }
 
