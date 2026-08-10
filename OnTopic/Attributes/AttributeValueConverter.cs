@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
+using System.Collections.Frozen;
 using System.Globalization;
 using OnTopic.Mapping;
 
@@ -25,8 +25,8 @@ internal static class AttributeValueConverter {
   /// <summary>
   ///   A list of types that are allowed to be converted using <see cref="Convert(String, Type)"/>.
   /// </summary>
-   private static Collection<Type> ConvertibleTypes { get; } =
-    new() {
+  private static FrozenSet<Type> ConvertibleTypes { get; } =
+    new[] {
       typeof(bool),
       typeof(bool?),
       typeof(int),
@@ -37,7 +37,7 @@ internal static class AttributeValueConverter {
       typeof(DateTime),
       typeof(DateTime?),
       typeof(Uri)
-    };
+    }.ToFrozenSet();
 
   /*============================================================================================================================
   | METHOD: IS CONVERTIBLE?
