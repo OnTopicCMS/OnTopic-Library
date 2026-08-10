@@ -152,7 +152,6 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   }
 
   /// <inheritdoc/>
-  [ExcludeFromCodeCoverage]
-  IEnumerator IEnumerable.GetEnumerator() => Source.GetEnumerator();
+  IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 } //Class
