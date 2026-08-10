@@ -143,7 +143,6 @@ public class AttributeCollectionTest {
 
   }
 
-
   /*============================================================================================================================
   | TEST: GET INTEGER: CORRECT VALUE: IS RETURNED
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -1011,9 +1010,11 @@ public class AttributeCollectionTest {
 
     topic.Attributes.Add(new("Test", "Original"));
 
-    Assert.Throws<ArgumentException>(() =>
+    var exception                = Assert.Throws<ArgumentException>(() =>
       topic.Attributes.Add(new("Test", "New"))
     );
+
+    Assert.Contains(nameof(AttributeRecord), exception.Message, StringComparison.Ordinal);
 
   }
 
