@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections;
+using System.Collections.Frozen;
 using System.Reflection;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Internal;
@@ -22,20 +23,12 @@ internal abstract class ItemMetadata {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-  private readonly static       List<Type>                      _listTypes                      = new();
+  private static readonly       FrozenSet<Type>                 _listTypes                      = new[] {
+    typeof(IEnumerable<>),
+    typeof(ICollection<>),
+    typeof(IList<>)
+  }.ToFrozenSet();
   private readonly              ICustomAttributeProvider        _attributeProvider;
-
-  /*============================================================================================================================
-  | CONSTRUCTOR
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Establishes a new instance of a <see cref="ItemMetadata"/> with required dependencies.
-  /// </summary>
-  static ItemMetadata() {
-    _listTypes.Add(typeof(IEnumerable<>));
-    _listTypes.Add(typeof(ICollection<>));
-    _listTypes.Add(typeof(IList<>));
-  }
 
   /*============================================================================================================================
   | CONSTRUCTOR

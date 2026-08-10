@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Collections.Frozen;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Repositories;
 
@@ -19,7 +20,7 @@ namespace OnTopic.Mapping.Internal;
 ///   when a single <see cref="CollectionType"/> needs to be related to an item in the collection of <see cref=
 ///   "AssociationTypes"/>. This mapping makes that feasible.
 /// </remarks>
-static internal class AssociationMap {
+internal static class AssociationMap {
 
   /*============================================================================================================================
   | CONSTRUCTOR (STATIC)
@@ -46,15 +47,15 @@ static internal class AssociationMap {
       { CollectionType.IncomingRelationship, TopicPayload.None }
     };
 
-    Mappings                    = mappings;
-    PayloadMappings             = payloadMappings;
+    Mappings                    = mappings.ToFrozenDictionary();
+    PayloadMappings             = payloadMappings.ToFrozenDictionary();
 
   }
 
   /*============================================================================================================================
   | PROPERTY: MAPPINGS
   \---------------------------------------------------------------------------------------------------------------------------*/
-  static internal Dictionary<CollectionType, AssociationTypes> Mappings { get; }
+  internal static FrozenDictionary<CollectionType, AssociationTypes> Mappings { get; }
 
   /*============================================================================================================================
   | PROPERTY: PAYLOAD MAPPINGS
@@ -65,6 +66,6 @@ static internal class AssociationMap {
   /// <remarks>
   ///   Used by <see cref="TopicMappingService"/> to determine which lazy-load payloads to warm before probing collections.
   /// </remarks>
-  static internal Dictionary<CollectionType, TopicPayload> PayloadMappings { get; }
+  internal static FrozenDictionary<CollectionType, TopicPayload> PayloadMappings { get; }
 
 } //Class
