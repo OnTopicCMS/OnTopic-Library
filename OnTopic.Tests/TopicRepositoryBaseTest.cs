@@ -89,6 +89,24 @@ public class TopicRepositoryBaseTest {
     Assert.Equal("Root", (await _cachedTopicRepository.Load(-2))?.GetUniqueKey());
 
   /*============================================================================================================================
+  | TEST: LOAD: PARTIAL UNIQUE KEY: NORMALIZES AND RETURNS EXPECTED TOPIC
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="TopicRepository.Load(String, Topic?, TopicPayload, Int32)"/> with a partial (unqualified) <see cref=
+  ///   "Topic.Key"/> against a direct, non-cached repository, and confirms it is normalized to its fully qualified form before
+  ///   being resolved, returning the same topic as an already-qualified key.
+  /// </summary>
+  [Fact]
+  public async Task Load_PartialUniqueKey_ReturnsExpectedTopic() {
+
+    var topic                   = await _topicRepository.Load("Web");
+
+    Assert.NotNull(topic);
+    Assert.Equal(await _topicRepository.Load("Root:Web"), topic);
+
+  }
+
+  /*============================================================================================================================
   | TEST: LOAD: NARROW PAYLOAD: RETURNS TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
