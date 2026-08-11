@@ -459,7 +459,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       else if (markDirty.HasValue) {
         markAsDirty             = markDirty.Value;
       }
-      else if (!originalItem.Value?.Equals(value)?? false) {
+      else if (!originalItem.Value?.Equals(value)?? value is not null) {
         markAsDirty             = true;
       }
       else if (!version.HasValue) {
