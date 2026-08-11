@@ -14,7 +14,7 @@ namespace OnTopic.Associations;
 /// <summary>
 ///   Represents a collection of <see cref="Topic"/> objects associated with particular reference keys.
 /// </summary>
-public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute> {
+public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRecord, Topic> {
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -23,20 +23,20 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   ///   Initializes a new instance of the <see cref="TopicReferenceCollection"/>.
   /// </summary>
   /// <param name="parentTopic">A reference to the topic that the current collection is bound to.</param>
-  public TopicReferenceCollection(Topic parentTopic) : base(parentTopic) { }
+  public TopicReferenceCollection(Topic parentTopic) : base(parentTopic, typeof(ReferenceSetterAttribute)) { }
 
   /*============================================================================================================================
   | PROPERTY: PARENT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute>? ParentCollection =>
+  protected override TrackedRecordCollection<TopicReferenceRecord, Topic>? ParentCollection =>
     AssociatedTopic.Parent?.References;
 
   /*============================================================================================================================
   | PROPERTY: BASE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute>? BaseCollection =>
+  protected override TrackedRecordCollection<TopicReferenceRecord, Topic>? BaseCollection =>
     AssociatedTopic.BaseTopic?.References;
 
   /*============================================================================================================================
@@ -74,9 +74,9 @@ public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRe
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
   /// <remarks>
-  ///   Extends the base <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> to also account for a dirty
-  ///   <see cref="Deferred"/> entry introduced by e.g., <see cref="Repositories.TopicRepository.Rollback(Topic, DateTime)"/>,
-  ///   so a reference that hasn't yet been resolved to an in-memory <see cref="Topic"/> still marks the collection dirty.
+  ///   Extends the base <see cref="TrackedRecordCollection{TItem, TValue}.IsDirty()"/> to also account for a dirty <see cref=
+  ///   "Deferred"/> entry introduced by e.g., <see cref="Repositories.TopicRepository.Rollback(Topic, DateTime)"/>, so a
+  ///   reference that hasn't yet been resolved to an in-memory <see cref="Topic"/> still marks the collection dirty.
   /// </remarks>
   public override bool IsDirty() => base.IsDirty() || Deferred.Any(deferred => deferred.IsDirty);
 

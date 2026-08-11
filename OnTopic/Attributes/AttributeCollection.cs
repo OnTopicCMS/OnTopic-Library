@@ -29,7 +29,7 @@ namespace OnTopic.Attributes;
 ///     depends on seeing every attribute may act on a partial view without any error being raised.
 ///   </para>
 /// </remarks>
-public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
+public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string> {
 
   /*============================================================================================================================
   | PRIVATE VARIABLES
@@ -50,21 +50,21 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   ///   "Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
   /// </remarks>
   /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-  internal AttributeCollection(Topic parentTopic) : base(parentTopic) {
+  internal AttributeCollection(Topic parentTopic) : base(parentTopic, typeof(AttributeSetterAttribute)) {
   }
 
   /*============================================================================================================================
   | PROPERTY: PARENT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute>? ParentCollection =>
+  protected override TrackedRecordCollection<AttributeRecord, string>? ParentCollection =>
     AssociatedTopic.Parent?.Attributes;
 
   /*============================================================================================================================
   | PROPERTY: BASE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc/>
-  protected override TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute>? BaseCollection =>
+  protected override TrackedRecordCollection<AttributeRecord, string>? BaseCollection =>
     AssociatedTopic.BaseTopic?.Attributes;
 
   /*============================================================================================================================
@@ -211,8 +211,8 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Gets an <see cref="AttributeDictionary"/> based on the <see cref="Topic.Attributes"/> of the current <see cref=
-  ///   "AttributeCollection"/>. Optionall includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.AssociatedTopic"/> derives from.
+  ///   "AttributeCollection"/>. Optionally includes attributes from any <see cref="Topic.BaseTopic"/>s that the <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue}.AssociatedTopic"/> derives from.
   /// </summary>
   /// <remarks>
   ///   The <see cref="AsAttributeDictionary(Boolean)"/> method will exclude attributes which correspond to properties on

@@ -32,9 +32,9 @@ namespace OnTopic.Associations;
 ///   </para>
 ///   <para>
 ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
-///     create a new instance of the <see cref="TopicReferenceRecord"/> class or, preferably, call the <see cref="Topic.
-///     References"/>'s <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
-///     DateTime?)"/> method.
+///     create a new instance of the <see cref="TopicReferenceRecord"/> class or, preferably, call the <see cref=
+///     "Topic.References"/>'s <see cref="TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, DateTime?)"
+///     /> method.
 ///   </para>
 /// </remarks>
 public record TopicReferenceRecord: TrackedRecord<Topic> {

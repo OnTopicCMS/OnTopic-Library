@@ -12,7 +12,7 @@ namespace OnTopic.Mapping.Annotations;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see cref=
-///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>.
+///   "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)"/>.
 /// </summary>
 /// <remarks>
 ///   By default, <see cref="ITopicMappingService"/> implementations will attempt to map the property of the target data

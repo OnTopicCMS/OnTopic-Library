@@ -655,15 +655,15 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured
-  ///     as a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see
-  ///     cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method is unable to find a
-  ///     local value for the attribute.
+  ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured as
+  ///     a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see cref=
+  ///     "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)" /> method is unable to find a local value for the
+  ///     attribute.
   ///   </para>
   ///   <para>
   ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref=
-  ///     "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
-  ///     of five "hops" in order to help avoid an infinite loop.
+  ///     "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)" /> method defaults to a maximum level of five
+  ///     "hops" in order to help avoid an infinite loop.
   ///   </para>
   ///   <para>
   ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
@@ -809,11 +809,11 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   existing one, depending on whether that value already exists.
   /// </summary>
   /// <remarks>
-  ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
-  ///   called by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers
-  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
+  ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be called
+  ///   by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers from
+  ///   introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
   ///   "AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
+  ///   "TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
   ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
