@@ -10,7 +10,7 @@ namespace OnTopic.Collections;
 | CLASS: READ-ONLY KEYED TOPIC COLLECTION
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Represents a collection of <see cref="Topic"/> objects.
+///   Represents a read-only collection of <see cref="Topic"/> objects that can be looked up by <see cref="Topic.Key"/>.
 /// </summary>
 public class ReadOnlyKeyedTopicCollection : ReadOnlyKeyedTopicCollection<Topic> {
 

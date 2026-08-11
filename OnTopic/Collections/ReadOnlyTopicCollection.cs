@@ -11,7 +11,7 @@ namespace OnTopic.Collections;
 | CLASS: READ-ONLY TOPIC COLLECTION
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Represents a collection of <see cref="Topic"/> objects.
+///   Represents a read-only, ordered collection of <see cref="Topic"/> objects.
 /// </summary>
 public class ReadOnlyTopicCollection : ReadOnlyCollection<Topic> {
 
