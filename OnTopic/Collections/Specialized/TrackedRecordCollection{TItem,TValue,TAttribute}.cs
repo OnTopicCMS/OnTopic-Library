@@ -639,7 +639,6 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     foreach (var item in Items.ToList()) {
       Remove(item);
     }
-    base.ClearItems();
   }
 
   /*============================================================================================================================
