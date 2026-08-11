@@ -29,6 +29,10 @@ public sealed class FilterByAttributeAttribute : Attribute {
   /// </summary>
   /// <param name="key">The key of the attribute to filter by.</param>
   /// <param name="value">The value of the attribute to filter by.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if <paramref name="key"/> is null or empty, or contains characters other than letters, numbers, hyphens,
+  ///   periods, and/or underscores.
+  /// </exception>
   public FilterByAttributeAttribute(string key, string value) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

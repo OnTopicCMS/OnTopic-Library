@@ -188,6 +188,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
   /// </value>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public string ContentType {
     get => _contentType;
     [MemberNotNull(nameof(_contentType))]
@@ -212,15 +216,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The current <see cref="Topic"/>'s key, which is guaranteed to be unique among its siblings.
   /// </value>
-  /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-  ///   value is not null
-  /// </requires>
-  /// <requires
-  ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public string Key {
     get => _key;
     [MemberNotNull(nameof(_key))]
@@ -256,12 +255,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The key, as represented in the persistence layer.
   /// </value>
-  /// <requires
-  ///   description="The OriginalKey should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value?.Contains(" ")?? true
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is non-empty and contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   internal string? OriginalKey  {
     get => _originalKey;
     set {
@@ -290,12 +287,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The view, as specified by the current <see cref="Topic"/>.
   /// </value>
-  /// <requires
-  ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value?.Contains(" ")?? true
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is non-empty and contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   [AttributeSetter]
   public string? View {
     get =>

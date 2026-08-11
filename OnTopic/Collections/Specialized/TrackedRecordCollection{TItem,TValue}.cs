@@ -233,14 +233,10 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
   ///   true</c>.
   /// </param>
   /// <returns>The <typeparamref name="TValue"/> value for the <typeparamref name="TItem"/>.</returns>
-  /// <requires description="The key name must be specified." exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(key)
-  /// </requires>
-  /// <requires
-  ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException">
-  ///   !key.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="key"/> is non-empty and contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   /// <requires
   ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
   ///   maxHops &gt;= 0
@@ -404,16 +400,10 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
   ///   populating the topic graph from a persistent data store as a means of indicating the current version for each attribute.
   ///   This is used when e.g. importing values to determine if the existing value is newer than the source value.
   /// </param>
-  /// <requires
-  ///   description="The key must be specified for the AttributeRecord key/value pair."
-  ///   exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(key)
-  /// </requires>
-  /// <requires
-  ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-  ///   exception="T:System.ArgumentException">
-  ///   !value.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="key"/> is non-empty and contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   internal void SetValue(
     string key,
     TValue? value,

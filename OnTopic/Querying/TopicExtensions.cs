@@ -188,14 +188,13 @@ public static class TopicExtensions {
   /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/> against which to be searched.</param>
   /// <param name="attributeValue">The text value for the <see cref="AttributeRecord"/> against which to be searched.</param>
   /// <returns>A collection of topics matching the input parameters.</returns>
-  /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(name)
-  /// </requires>
-  /// <requires
-  ///   decription="The name should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException">
-  ///   !name.Contains(" ")
-  /// </requires>
+  /// <exception cref="ArgumentNullException">
+  ///   <paramref name="attributeKey"/> or <paramref name="attributeValue"/> is null, empty, or whitespace.
+  /// </exception>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="attributeKey"/> contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   public static ReadOnlyTopicCollection FindAllByAttribute(this Topic topic, string attributeKey, string attributeValue) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

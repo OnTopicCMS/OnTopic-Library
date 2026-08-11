@@ -42,6 +42,10 @@ public abstract record TrackedRecord<T> {
   /// <param name="lastModified">
   ///   The optional <see cref="LastModified"/> for the <see cref="TrackedRecord{T}"/> instance.
   /// </param>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="key"/> is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   protected TrackedRecord(string key, T? value, bool isDirty = true, DateTime? lastModified = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

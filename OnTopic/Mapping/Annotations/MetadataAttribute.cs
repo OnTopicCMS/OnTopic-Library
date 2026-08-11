@@ -28,6 +28,10 @@ public sealed class MetadataAttribute : Attribute {
   ///   Annotates a property with the <see cref="MetadataAttribute"/> class by providing a (required) key.
   /// </summary>
   /// <param name="key">The key represents the name of the Metadata topic that should be mapped to.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public MetadataAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
     Key                         = key;

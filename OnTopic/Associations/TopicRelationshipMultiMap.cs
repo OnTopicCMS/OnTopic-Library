@@ -170,6 +170,11 @@ public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys 
   /// <param name="markDirty">
   ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
   /// </param>
+  /// <exception cref="ArgumentNullException"><paramref name="relationshipKey"/> is null, empty, or whitespace.</exception>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="relationshipKey"/> contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

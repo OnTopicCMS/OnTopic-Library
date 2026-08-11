@@ -30,6 +30,10 @@ public sealed class AttributeKeyAttribute : Attribute {
   ///   Annotates a property with the <see cref="AttributeKeyAttribute"/> class by providing a (required) attribute key.
   /// </summary>
   /// <param name="key">The key value of the attribute associated with the current property.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public AttributeKeyAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
     Key                         = key;
