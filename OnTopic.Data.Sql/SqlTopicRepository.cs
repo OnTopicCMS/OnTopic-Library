@@ -6,6 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using OnTopic.Collections.Specialized;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Querying;
 using OnTopic.Repositories;
@@ -811,6 +812,11 @@ public class SqlTopicRepository : TopicRepository, ITopicRepository, ITopicLazyL
   /// <summary>
   ///   Internal method that saves topic relationships to the n:n mapping table in SQL.
   /// </summary>
+  /// <remarks>
+  ///   Relies on <see cref="TopicMultiMap"/> retaining a dirty key's now-empty <see cref="KeyValuesPair{TKey, TValue}"/> entry
+  ///   after <see cref="TopicMultiMap.Remove(String, Topic)"/> or <see cref="TopicMultiMap.Clear(String)"/> empties it out:
+  ///   Sending an empty target table for that key with <c>DeleteUnmatched</c> is what persists the deletion.
+  /// </remarks>
   /// <param name="topic">The topic object whose relationships should be persisted.</param>
   /// <param name="version">The version that should be associated with the updated value.</param>
   /// <param name="connection">The SQL connection.</param>
