@@ -13,7 +13,7 @@ namespace OnTopic.Collections;
 /// <summary>
 ///   Provides a strongly-typed collection of <see cref="Topic"/> instances, or a derived type.
 /// </summary>
-public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
+public class KeyedTopicCollection<T>: KeyedCollection<string, T> where T : Topic {
 
   /*============================================================================================================================
   | CONSTRUCTOR
