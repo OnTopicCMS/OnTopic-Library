@@ -14,33 +14,31 @@ namespace OnTopic.Internal.Reflection;
 | CLASS: TOPIC PROPERTY DISPATCHER
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   The <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> allows a collection on a <see cref="Topic"/>
-///   entity to optionally route requests through properties on the corresponding <see cref="Topic"/> which correspond to the
-///   item key, thus ensuring local state and any business logic enforced by the property setter are maintained.
+///   The <see cref="TopicPropertyDispatcher{TItem, TValue}"/> allows a collection on a <see cref="Topic"/> entity to optionally
+///   route requests through properties on the corresponding <see cref="Topic"/> which correspond to the item key, thus ensuring
+///   local state and any business logic enforced by the property setter are maintained.
 /// </summary>
 /// <remarks>
 ///   <para>
 ///     Collections on <see cref="Topic"/>, such as <see cref="Topic.Attributes"/> and <see cref="Topic.References"/>, aren't
 ///     well-positioned to enforce attribute-specific business logic when adding or setting items in the collection. Instead,
 ///     this logic is typically handled by property setters on <see cref="Topic"/>, such as <see cref="Topic.View"/> or <see
-///     cref="Topic.BaseTopic"/>. This introduces a potential backdoor, as updates made directly to the collection can
-///     bypass any business logic—such as data validation or local state management—handled by those property setters. The
-///     <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> class addresses this by allowing those
-///     collections to route requests through appropriately decorated properties on <see cref="Topic"/> prior to adding or
-///     setting a value.
+///     cref="Topic.BaseTopic"/>. This introduces a potential backdoor, as updates made directly to the collection can bypass
+///     any business logic—such as data validation or local state management—handled by those property setters. The <see cref=
+///     "TopicPropertyDispatcher{TItem, TValue}"/> class addresses this by allowing those collections to route requests through
+///     appropriately decorated properties on <see cref="Topic"/> prior to adding or setting a value.
 ///   </para>
 ///   <para>
-///     The <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> requires two type arguments. <typeparamref
-///     name="TAttributeType"/> represents an attribute which must be present on each property setter. This helps avoid
-///     potential ambiguities. For instance, if both <see cref="Topic.Attributes"/> and <see cref="Topic.References"/> have
-///     the same key, and that key maps to a <see cref="Topic"/> property, the usage will be restricted based on whether the
-///     expected attribute is used to decorate the property—for instance, the <see cref="AttributeSetterAttribute"/> or <see
-///     cref="ReferenceSetterAttribute"/>. In practice, this is an unexpected situation since a) individual content types
-///     cannot use the same key for both <see cref="Topic.Attributes"/> and <see cref="Topic.References"/>, and b) even if
-///     they did, these properties support different data types, and thus are not intercompatible. Nevertheless, these
-///     attributes provide an additional level of explicitness to avoid any ambiguity, and provide both developers as well as
-///     the <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> hints about what a <see cref="Topic"/>
-///     property is intended for.
+///     The constructor accepts an <c>attributeType</c>, representing an attribute which must be present on each property
+///     setter. This helps avoid potential ambiguities. For instance, if both <see cref="Topic.Attributes"/> and <see cref=
+///     "Topic.References"/> have the same key, and that key maps to a <see cref="Topic"/> property, the usage will be
+///     restricted based on whether the expected attribute is used to decorate the property—for instance, the <see cref=
+///     "AttributeSetterAttribute"/> or <see cref="ReferenceSetterAttribute"/>. In practice, this is an unexpected situation
+///     since a) individual content types cannot use the same key for both <see cref="Topic.Attributes"/> and <see cref=
+///     "Topic.References"/>, and b) even if they did, these properties support different data types, and thus are not
+///     intercompatible. Nevertheless, this attribute provides an additional level of explicitness to avoid any ambiguity, and
+///     provide both developers as well as the <see cref="TopicPropertyDispatcher{TItem, TValue}"/> hints about what a <see
+///     cref="Topic"/> property is intended for.
 ///   </para>
 ///   <para>
 ///     The <typeparamref name="TItem"/> represents the value that is stored in the corresponding collection. This value is
@@ -72,16 +70,14 @@ namespace OnTopic.Internal.Reflection;
 ///     <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see cref=
 ///     "Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called twice,
 ///     collection implementors are advised to offer an internal overload that allows an item to be added to the collection
-///     while bypassing the business logic. For instance, this can be done using <see cref="TrackedRecordCollection{TItem,
-///     TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="TrackedRecordCollection{
-///     TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; in each case, the internally
-///     accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this
-///     is done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(String, TItem?)"/> that
-///     the business logic has already occurred.
+///     while bypassing the business logic. For instance, this can be done using <see cref=
+///     "TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; the internally
+///     accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this is
+///     done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(String, TItem?)"/> that the
+///     business logic has already occurred.
 ///   </para>
 /// </remarks>
-internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
-  where TAttributeType: Attribute
+internal sealed class TopicPropertyDispatcher<TItem, TValue>
   where TItem: TrackedRecord<TValue>
   where TValue: class
 {
@@ -90,17 +86,22 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly              Topic                           _associatedTopic;
+  private readonly              Type                            _attributeType;
 
   /*============================================================================================================================
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Initializes a new instance of the <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> class
-  ///   associated with a specific <see cref="Topic"/>.
+  ///   Initializes a new instance of the <see cref="TopicPropertyDispatcher{TItem, TValue}"/> class associated with a specific
+  ///   <see cref="Topic"/>.
   /// </summary>
   /// <param name="associatedTopic">The <see cref="Topic"/> whose properties should be called, when appropriate.</param>
-  internal TopicPropertyDispatcher(Topic associatedTopic) {
+  /// <param name="attributeType">
+  ///   The <see cref="Attribute"/> type expected to decorate a corresponding <see cref="Topic"/> property setter.
+  /// </param>
+  internal TopicPropertyDispatcher(Topic associatedTopic, Type attributeType) {
     _associatedTopic            = associatedTopic;
+    _attributeType              = attributeType;
   }
 
   /*============================================================================================================================
@@ -113,24 +114,22 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// <remarks>
   ///   <para>
   ///     Whenever a property setter has been called, a record in the <see cref="PropertyCache"/> is added containing a) the
-  ///     key associated with the item (and, therefore, property), and b) the original <typeparamref name="TItem"/> that
-  ///     was to be added to the collection. This registers that the business logic for that property has been enforced.
+  ///     key associated with the item (and, therefore, property), and b) the original <typeparamref name="TItem"/> that was
+  ///     to be added to the collection. This registers that the business logic for that property has been enforced.
   ///   </para>
   ///   <para>
   ///     There are two ways that a record is created in the <see cref="PropertyCache"/>. The typical way is to call <see cref
-  ///     ="Enforce(String, TItem?)"/>, which will check to see if there is a corresponding property setter and, if there
-  ///     is, will add a record to the cache, and call the property. The second way is to call <see cref="Register(String,
-  ///     TItem?)"/> to directly register that the property has already been executed. This is typically done by special
-  ///     internal methods, called exclusively by the property setters themselves, with a <c>enforceBusinessLogic</c>
-  ///     parameter that is set to <c>false</c>; that prevents calls made directly to the property setter to bypass the
-  ///     dispatcher.
+  ///     ="Enforce(String, TItem?)"/>, which will check to see if there is a corresponding property setter and, if there is,
+  ///     will add a record to the cache, and call the property. The second way is to call <see cref="Register(String, TItem?)"
+  ///     /> to directly register that the property has already been executed. This is typically done by special internal
+  ///     methods, called exclusively by the property setters themselves, with a <c>enforceBusinessLogic</c> parameter that is
+  ///     set to <c>false</c>; that prevents calls made directly to the property setter to bypass the dispatcher.
   ///   </para>
   ///   <para>
-  ///     There is only one way to remove an item from the <see cref="PropertyCache"/> once it's been created. This happens
-  ///     when <see cref="Enforce(String, TItem?)"/> is called, and a record already exists. When this occurs, the record
-  ///     is removed, and <see cref="Enforce(String, TItem?)"/> returns <c>true</c> without any further action. This
-  ///     instructs the caller—i.e., a method on a collection responsible for adding or setting an item—that it can complete
-  ///     the request.
+  ///     There is only one way to remove an item from the <see cref="PropertyCache"/> once it's been created. This happens when
+  ///     <see cref="Enforce(String, TItem?)"/> is called, and a record already exists. When this occurs, the record is removed,
+  ///      and <see cref="Enforce(String, TItem?)"/> returns <c>true</c> without any further action. This instructs the
+  ///      caller—i.e., a method on a collection responsible for adding or setting an item—that it can complete the request.
   ///   </para>
   /// </remarks>
   private Dictionary<string, TItem?> PropertyCache { get; } = new();
@@ -139,33 +138,30 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   | REGISTER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Instructs the <see cref="TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> that the business logic for a
+  ///   Instructs the <see cref="TopicPropertyDispatcher{TItem, TValue}"/> that the business logic for a
   ///   corresponding property has been set, and does not need to be executed again.
   /// </summary>
   /// <remarks>
   ///   <para>
   ///     The <see cref="Register(String, TItem?)"/> method is called by <see cref="Enforce(String, TItem?)"/> right before it
-  ///     triggers a call to a corresponding property setter. This allows it to track that the business logic has been
-  ///     enforced, and it doesn't need to make the call again on a round trip.
+  ///     triggers a call to a corresponding property setter. This allows it to track that the business logic has been enforced,
+  ///     and it doesn't need to make the call again on a round trip.
   ///   </para>
   ///   <para>
   ///     The <see cref="Register(String, TItem?)"/> method can also be called directly by a collection to tell the <see cref=
-  ///     "TopicPropertyDispatcher{TItem, TValue, TAttributeType}"/> that business logic should not be enforced when adding or
-  ///     setting an item. The typical use case for this is an internal method which allows the property setters to bypass
-  ///     business logic, thus preventing them from being called twice. These methods should be marked internal to prevent
-  ///     external actors from bypassing the business logic; the purpose is to confirm that the business logic has already
-  ///     been enforced, not to make the business logic optional. Two examples of this are the internal <c>
-  ///     enforceBusinessLogic</c> parameters on <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(
-  ///     String, TValue, Boolean?, Boolean, DateTime?)"/> and <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}
-  ///     .SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>.
+  ///     "TopicPropertyDispatcher{TItem, TValue}"/> that business logic should not be enforced when adding or setting an item.
+  ///     The typical use case for this is an internal method which allows the property setters to bypass business logic, thus
+  ///     preventing them from being called twice. These methods should be marked internal to prevent external actors from
+  ///     bypassing the business logic; the purpose is to confirm that the business logic has already been enforced, not to make
+  ///     the business logic optional. One example of this is the internal <c>enforceBusinessLogic</c> parameter on <see cref=
+  ///     "TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>.
   ///   </para>
   ///   <para>
   ///     It's worth noting that any calls to <see cref="Register(String, TItem?)"/> are invalidated the next time <see cref=
   ///     "Enforce(String, TItem?)"/> is called. As such, <see cref="Register(String, TItem?)"/> is not a way to permanently
   ///     disable calling a property setter. (The correct way to do that is to remove the property setter, or at least its
-  ///     corresponding <typeparamref name="TAttributeType"/>.) Instead, it only disables the next attempt to add an item
-  ///     corresponding to that key—which, if correctly implemented, will be when the current <paramref name="initialValue"/>
-  ///     is added to the collection.
+  ///     corresponding attribute.) Instead, it only disables the next attempt to add an item corresponding to that key—which,
+  ///     if correctly implemented, will be when the current <paramref name="initialValue"/> is added to the collection.
   ///   </para>
   /// </remarks>
   /// <param name="itemKey">
@@ -179,7 +175,7 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
     }
     if (
       !PropertyCache.ContainsKey(itemKey) &&
-      TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType()).HasSettableProperty<TAttributeType>(itemKey, type)
+      TypeAccessorCache.GetTypeAccessor(_associatedTopic.GetType()).HasSettableProperty(itemKey, type, _attributeType)
     ) {
       PropertyCache.Add(itemKey, initialValue);
       return true;
@@ -222,18 +218,18 @@ internal sealed class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     If a settable property is available on the associated <see cref="Topic"/> corresponding to the <paramref name="
-  ///     itemKey"/>, the call should be routed through that property to ensure that local business logic is enforced. This is
-  ///     determined by looking for <typeparamref name="TAttributeType"/> attribute, which confirms that a property with a
-  ///     matching name is aware of and intended to operate with a given collection.
+  ///     If a settable property is available on the associated <see cref="Topic"/> corresponding to the <paramref name=
+  ///     "itemKey"/>, the call should be routed through that property to ensure that local business logic is enforced. This is
+  ///     determined by looking for the constructor-supplied attribute type, which confirms that a property with a matching name
+  ///     is aware of and intended to operate with a given collection.
   ///   </para>
   ///   <para>
-  ///     The <see cref="Enforce(String, TItem?)"/> method should be called from an implementing collection prior to
-  ///     committing an add, insert, or set operation. That operation should only be completed if <see cref="Enforce(String,
-  ///     TItem?)"/> returns <c>true</c>; otherwise, the request will be routed through the corresponding property on <see
-  ///     cref="Topic"/> in order to enforce any business logic, after which the property will attempt to add the property to
-  ///     the collection again. When <see cref="Enforce(String, TItem?)"/> is called a second time for the same <paramref name
-  ///     ="itemKey"/>, it won't enforce the business logic, and will instead return <c>true</c>.
+  ///     The <see cref="Enforce(String, TItem?)"/> method should be called from an implementing collection prior to committing
+  ///     an add, insert, or set operation. That operation should only be completed if <see cref="Enforce(String, TItem?)"/>
+  ///     returns <c>true</c>; otherwise, the request will be routed through the corresponding property on <see cref="Topic"/>
+  ///     in order to enforce any business logic, after which the property will attempt to add the property to the collection
+  ///     again. When <see cref="Enforce(String, TItem?)"/> is called a second time for the same <paramref name="itemKey"/>, it
+  ///     won't enforce the business logic, and will instead return <c>true</c>.
   ///   </para>
   /// </remarks>
   /// <param name="itemKey">

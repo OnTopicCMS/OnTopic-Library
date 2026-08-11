@@ -14,6 +14,12 @@ namespace OnTopic.Collections.Specialized;
 /// <summary>
 ///   The <see cref="ReadOnlyTopicMultiMap"/> provides a read-only façade to a <see cref="TopicMultiMap"/>.
 /// </summary>
+/// <remarks>
+///   <see cref="GetValues(String)"/> and the indexer return live views over the underlying <see cref="TopicMultiMap"/>: Changes
+///   to the source are reflected without re-querying. <see cref="GetAllValues()"/>, <see cref="GetAllValues(String)"/>, and
+///   <see cref="Keys"/> return point-in-time snapshots instead, since they must flatten, deduplicate, or copy the data, rather
+///   than wrapping a single underlying collection.
+/// </remarks>
 public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTopicCollection>> {
 
   /*============================================================================================================================
@@ -35,13 +41,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   Provides access to the underlying <see cref="TopicMultiMap"/> from which the <see cref="ReadOnlyTopicMultiMap"/> will
   ///   derive values.
   /// </summary>
-  /// <returns>
-  ///   The <see cref="Source"/> must be passed in via either the public <see cref="ReadOnlyTopicMultiMap(TopicMultiMap)"/>
-  ///   constructor, or must be set manually from the constructor of a derived class when using the protected <see cref=
-  ///   "ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
-  /// </returns>
-  [NotNull, DisallowNull]
-  private protected TopicMultiMap? Source { get; init; }
+  private protected TopicMultiMap Source { get; init; }
 
   /*============================================================================================================================
   | PROPERTY: KEYS
@@ -50,7 +50,8 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   Retrieves a list of keys available for the available collections.
   /// </summary>
   /// <returns>
-  ///   Returns an enumerable list of keys.
+  ///   Returns an enumerable list of keys, as a point-in-time snapshot; subsequent changes to the underlying <see cref=
+  ///   "TopicMultiMap"/> aren't reflected in a previously retrieved <see cref="Keys"/> value.
   /// </returns>
   public ReadOnlyCollection<string> Keys => new([.. Source.Select(m => m.Key)]);
 
@@ -73,7 +74,8 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   name="key"/>.
   /// </summary>
   /// <returns>
-  ///   A <see cref="ReadOnlyCollection{Topic}"/> collection.
+  ///   A live <see cref="ReadOnlyCollection{Topic}"/> view over the underlying <see cref="TopicMultiMap"/> collection;
+  ///   changes to the source are reflected here.
   /// </returns>
   public ReadOnlyTopicCollection this[string key] => new(Source[key].Values);
 
@@ -93,7 +95,10 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
   /// </summary>
   /// <remarks>
-  ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
+  ///   For an existing <paramref name="key"/>, returns a live view over the underlying <see cref="TopicCollection"/>; changes
+  ///   to the source are reflected here. For a key that doesn't exist, returns a new, disconnected, empty <see cref=
+  ///   "ReadOnlyTopicCollection"/>, which isn't added to the underlying <see cref="TopicMultiMap"/>, and thus not maintained
+  ///   should that key subsequently be added.
   /// </remarks>
   /// <param name="key">The key of the collection to be returned.</param>
   public ReadOnlyTopicCollection GetValues(string key) {
@@ -116,7 +121,8 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of collection key.
   /// </summary>
   /// <returns>
-  ///   Returns an enumerable list of <see cref="Topic"/> objects.
+  ///   Returns an enumerable list of <see cref="Topic"/> objects, as a point-in-time snapshot; subsequent changes to the
+  ///   underlying <see cref="TopicMultiMap"/> aren't reflected in a previously retrieved result.
   /// </returns>
   public ReadOnlyTopicCollection GetAllValues() =>
     new([.. Source.SelectMany(list => list.Values).Distinct()]);
@@ -126,7 +132,8 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   type.
   /// </summary>
   /// <returns>
-  ///   Returns an enumerable list of <see cref="Topic"/> objects.
+  ///   Returns an enumerable list of <see cref="Topic"/> objects, as a point-in-time snapshot; subsequent changes to the
+  ///   underlying <see cref="TopicMultiMap"/> aren't reflected in a previously retrieved result.
   /// </returns>
   public ReadOnlyTopicCollection GetAllValues(string contentType) =>
     new([.. GetAllValues().Where(t => t.ContentType == contentType)]);
@@ -152,7 +159,6 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   }
 
   /// <inheritdoc/>
-  [ExcludeFromCodeCoverage]
-  IEnumerator IEnumerable.GetEnumerator() => Source.GetEnumerator();
+  IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 } //Class

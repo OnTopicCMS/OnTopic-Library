@@ -70,7 +70,7 @@ The `OnTopic` assembly contains a number of generic, keyed, and/or read-only col
 
 ### Specialty Collections
 The `OnTopic.Collections.Specialized` namespace includes a number of collections that are used by the OnTopic library, but won't generally be used directly by implementors, except as exposed by the core library. These include:
-- **[`TrackedRecordCollection{TItem, TValue, TAttribute}`](Collections/Specialized/TrackedRecordCollection{TItem,TValue,TAttribute}.cs)**: A `KeyedCollection<TItem, TValue>` of `TrackedRecord<TValue>` instances which tracks the `IsDirty` status and `DeletedItems`, while also enforcing business logic against corresponding properties on the associated `Topic`.
+- **[`TrackedRecordCollection{TItem, TValue}`](Collections/Specialized/TrackedRecordCollection{TItem,TValue}.cs)**: A `KeyedCollection<TItem, TValue>` of `TrackedRecord<TValue>` instances which tracks the `IsDirty` status and `DeletedItems`, while also enforcing business logic against corresponding properties on the associated `Topic`.
   - **[`AttributeCollection`](attributes/AttributeCollection.cs)**: A `TrackedRecordCollection` of [`AttributeRecord`](Attributes/AttributeRecord.cs) instances keyed by `AttributeRecord.Key`; exposed by `Topic.Attributes`.
   - **[`TopicReferenceCollection`](associations/TopicReferenceCollection.cs)**: A `TrackedRecordCollection` of [`TopicReferenceRecord`](Associations/TopicReferenceRecord.cs) instances keyed by `TopicReference.Key`; exposed by `Topic.References`.
 - **[`TopicMultiMap`](Collections/Specialized/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection key.

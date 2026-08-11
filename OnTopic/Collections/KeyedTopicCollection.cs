@@ -10,7 +10,7 @@ namespace OnTopic.Collections;
 | CLASS: KEYED TOPIC COLLECTION
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Represents a collection of <see cref="Topic"/> objects.
+///   Represents a mutable collection of <see cref="Topic"/> objects that can be looked up by <see cref="Topic.Key"/>.
 /// </summary>
 public class KeyedTopicCollection : KeyedTopicCollection<Topic> {
 

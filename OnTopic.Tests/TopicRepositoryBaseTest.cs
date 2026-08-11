@@ -884,7 +884,7 @@ public class TopicRepositoryBaseTest {
   /// <summary>
   ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
   ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref=
-  ///   "TrackedRecordCollection{TItem,TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
+  ///   "TrackedRecordCollection{TItem, TValue}.IsDirty()"/> as <c>false</c>.
   /// </summary>
   [Fact]
   public async Task Save_UnresolvedReference_Resolves() {

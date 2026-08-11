@@ -81,8 +81,8 @@ public class AttributeCollectionTest {
   | TEST: GET VALUE: EMPTY VALUE: RETURNS NULL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   If the <see cref="TrackedRecord{T}.Value"/> is <see cref="String.Empty"/>, then <see cref="TrackedRecordCollection{
-  ///   TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> should return <c>null</c>.
+  ///   If the <see cref="TrackedRecord{T}.Value"/> is <see cref="String.Empty"/>, then <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)"/> should return <c>null</c>.
   /// </summary>
   [Fact]
   public void GetValue_EmptyValue_ReturnsNull() {
@@ -102,7 +102,7 @@ public class AttributeCollectionTest {
   /// <summary>
   ///   Creates a topic stamped with a <see cref="TrackingTopicLazyLoader"/> and a <see cref="AttributeCollection"/> that is
   ///   <see cref="LoadState.NotLoaded"/>. Confirms that a raw <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> call, which defaults <c>autoLoad</c> to
+  ///   "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)"/> call, which defaults <c>autoLoad</c> to
   ///   <c>true</c>, still triggers a lazy load for a key that isn't present locally. This guards against over-suppression of
   ///   the autoload behavior.
   /// </summary>
@@ -142,7 +142,6 @@ public class AttributeCollectionTest {
     Assert.False(loader.WasCalled);
 
   }
-
 
   /*============================================================================================================================
   | TEST: GET INTEGER: CORRECT VALUE: IS RETURNED
@@ -597,6 +596,27 @@ public class AttributeCollectionTest {
   }
 
   /*============================================================================================================================
+  | TEST: SET VALUE: BASE TYPED CALLER: SETS VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, DateTime?)"/> through a
+  ///   base-typed <see cref="TrackedRecordCollection{TItem, TValue}"/> reference to the same <see cref="AttributeCollection"/>
+  ///   instance, and confirms that the value is set correctly, verifying that the four-parameter overload dispatches through
+  ///   the <see cref="AttributeCollection"/> override rather than being shadowed by it.
+  /// </summary>
+  [Fact]
+  public void SetValue_BaseTypedCaller_SetsValue() {
+
+    var topic                   = new Topic("Test", "Container");
+    var attributes               = (TrackedRecordCollection<AttributeRecord, string>)topic.Attributes;
+
+    attributes.SetValue("Foo", "Bar");
+
+    Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: VALUE CHANGED: IS DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -655,6 +675,31 @@ public class AttributeCollectionTest {
   }
 
   /*============================================================================================================================
+  | TEST: CLEAR: EXISTING VALUES: RECORDS ALL DELETED ITEMS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Sets multiple attributes on a topic instance, calls <see cref="IList.Clear()"/>, and confirms that every cleared key is
+  ///   recorded in <see cref="TrackedRecordCollection{TItem, TValue}.DeletedItems"/>, thus ensuring <see cref=
+  ///   "AttributeCollection.ClearItems()"/> routes every removal through <see cref=
+  ///   "AttributeCollection.RemoveItem(Int32)"/> instead of silently wiping items via the base class.
+  /// </summary>
+  [Fact]
+  public void Clear_ExistingValues_RecordsAllDeletedItems() {
+
+    var topic                   = new Topic("Test", "Container", null, 1);
+
+    topic.Attributes.SetValue("Foo", "Bar", false);
+    topic.Attributes.SetValue("Baz", "Qux", false);
+
+    topic.Attributes.Clear();
+
+    Assert.Contains("Foo", topic.Attributes.DeletedItems);
+    Assert.Contains("Baz", topic.Attributes.DeletedItems);
+    Assert.Equal(2, topic.Attributes.DeletedItems.Count);
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
@@ -696,9 +741,8 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
-  ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
-  ///   <c>true</c> if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
-  ///   MarkClean(String)"/> was called.
+  ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true</c>
+  ///   if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue}.MarkClean(String)"/> was called.
   /// </summary>
   [Fact]
   public void IsDirty_IsNew_ReturnsTrue() {
@@ -799,8 +843,8 @@ public class AttributeCollectionTest {
   | TEST: IS DIRTY: MISSING KEY: RETURNS FALSE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Confirms that calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> with an invalid
-  ///   <c>key</c> returns <c>false</c>.
+  ///   Confirms that calling <see cref="TrackedRecordCollection{TItem, TValue}.IsDirty(String)"/> with an invalid <c>key</c>
+  ///   returns <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_MissingKey_ReturnsFalse() {
@@ -816,9 +860,9 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
-  ///   cref="TrackedRecord{T}.IsDirty"/>. Updates the <c>LastModified</c> attributes, thus marking the collection as <see
-  ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/>. Confirms that <see cref="AttributeCollection.
-  ///   IsDirty(Boolean)"/> returns <c>false</c>.
+  ///   cref="TrackedRecord{T}.IsDirty"/>. Updates the <c>LastModified</c> attributes, thus marking the collection as <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue}.IsDirty()"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/>
+  ///   returns <c>false</c>.
   /// </summary>
   [Fact]
   public void IsDirty_ExcludeLastModified_ReturnsFalse() {
@@ -840,7 +884,7 @@ public class AttributeCollectionTest {
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
   ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   "TrackedRecordCollection{TItem, TValue}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_UpdatesLastModified() {
@@ -873,7 +917,7 @@ public class AttributeCollectionTest {
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
   ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+  ///   "TrackedRecordCollection{TItem, TValue}.MarkClean(DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_ReturnsFalse() {
@@ -898,8 +942,8 @@ public class AttributeCollectionTest {
   /// <summary>
   ///   Adds an <see cref="AttributeRecord"/> to a <see cref="AttributeCollection"/> associated with a <see cref="Topic"/>
   ///   that is <see cref="Topic.IsNew"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>true
-  ///   </c> even after calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String)"/> since new
-  ///   topics cannot be clean.
+  ///   </c> even after calling <see cref="TrackedRecordCollection{TItem, TValue}.MarkClean(String)"/> since new topics cannot
+  ///   be clean.
   /// </summary>
   [Fact]
   public void IsDirty_MarkClean_ReturnsTrue() {
@@ -919,8 +963,8 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then confirms that <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute after
-  ///   calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
+  ///   "TrackedRecordCollection{TItem, TValue}.IsDirty(String)"/> returns <c>false</c> for that attribute after calling <see
+  ///   cref="TrackedRecordCollection{TItem, TValue}.MarkClean(String, DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkAttributeClean_ReturnsFalse() {
@@ -940,7 +984,7 @@ public class AttributeCollectionTest {
   /// <summary>
   ///   Populates a <see cref="AttributeCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/> with a
   ///   <see cref="AttributeRecord"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms that <see
-  ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
+  ///   cref="TrackedRecordCollection{TItem, TValue}.IsDirty()"/> returns <c>true</c>.
   /// </summary>
   [Fact]
   public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
@@ -964,9 +1008,9 @@ public class AttributeCollectionTest {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Populates a <see cref="AttributeCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/> with a
-  ///   <see cref="AttributeRecord"/> and then confirms that <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
-  ///   IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedRecordCollection{TItem,
-  ///   TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
+  ///   <see cref="AttributeRecord"/> and then confirms that <see cref="TrackedRecordCollection{TItem, TValue}.IsDirty(String)"
+  ///   /> returns <c>true</c> for that attribute after calling <see cref=
+  ///   "TrackedRecordCollection{TItem, TValue}.MarkClean(String, DateTime?)"/>.
   /// </summary>
   [Fact]
   public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
@@ -1011,9 +1055,11 @@ public class AttributeCollectionTest {
 
     topic.Attributes.Add(new("Test", "Original"));
 
-    Assert.Throws<ArgumentException>(() =>
+    var exception                = Assert.Throws<ArgumentException>(() =>
       topic.Attributes.Add(new("Test", "New"))
     );
+
+    Assert.Contains(nameof(AttributeRecord), exception.Message, StringComparison.Ordinal);
 
   }
 
@@ -1147,8 +1193,9 @@ public class AttributeCollectionTest {
   | TEST: SET VALUE: INSERT INVALID ATTRIBUTE RECORD: THROWS EXCEPTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Attempts to violate the business logic by bypassing <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
-  ///   SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that business logic is enforced.
+  ///   Attempts to violate the business logic by bypassing
+  ///   <see cref="TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that
+  ///   business logic is enforced.
   /// </summary>
   [Fact]
   public void Add_InvalidAttributeRecord_ThrowsException() {
@@ -1229,6 +1276,30 @@ public class AttributeCollectionTest {
     topic.Attributes.SetValue("Attribute", "");
 
     Assert.True(topic.Attributes.Contains("Attribute"));
+
+  }
+
+  /*============================================================================================================================
+  | TEST: SET VALUE: NULL ORIGINAL VALUE: UPDATES VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Adds an <see cref="AttributeRecord"/> directly via <see cref="KeyedCollection{TKey, TItem}.Add(TItem)"/> with a <c>null
+  ///   </c> <see cref="TrackedRecord{T}.Value"/>, thus bypassing the standard call to <see cref=
+  ///   "AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/>, the only path guaranteed never to preserve a
+  ///   null-valued asstribute and then calls <see cref="AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/>
+  ///   with a new value and no <c>version</c>. Confirms that the new value is actually saved, and not silently discarded,
+  ///   guarding the public <c>Add()</c> entry point even though the call to <see cref=
+  ///   "AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/> itself never produces this state.
+  /// </summary>
+  [Fact]
+  public void SetValue_NullOriginalValue_UpdatesValue() {
+
+    var topic                   = new Topic("Test", "Container", null, 1);
+
+    topic.Attributes.Add(new("Attribute", null));
+    topic.Attributes.SetValue("Attribute", "New Value");
+
+    Assert.Equal("New Value", topic.Attributes.GetValue("Attribute"));
 
   }
 

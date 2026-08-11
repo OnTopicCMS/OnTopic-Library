@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Collections;
 using OnTopic.Associations;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
@@ -225,6 +226,29 @@ public class TopicRelationshipMultiMapTest {
 
     Assert.Equal(5, readOnlyRelationships.Count);
     Assert.Equal(5, counter);
+
+  }
+
+  /*============================================================================================================================
+  | TEST: GET ENUMERATOR: NON-GENERIC: RETURNS READ-ONLY VALUES
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Enumerates over a <see cref="Topic.Relationships"/> collection via the non-generic <see cref="IEnumerable"/> interface,
+  ///   and confirms that the yielded values are the read-only <see cref="KeyValuesPair{TKey, TValue}"/> type, not the mutable
+  ///   underlying <see cref="TopicMultiMap"/> storage.
+  /// </summary>
+  [Fact]
+  public void GetEnumerator_NonGeneric_ReturnsReadOnlyValues() {
+
+    var topic                   = new Topic("Test", "Page");
+
+    topic.Relationships.SetValue("Related", new Topic("Related", "Page"));
+
+    var enumerable               = (IEnumerable)topic.Relationships;
+
+    foreach (var value in enumerable) {
+      Assert.IsType<KeyValuesPair<string, ReadOnlyTopicCollection>>(value);
+    }
 
   }
 

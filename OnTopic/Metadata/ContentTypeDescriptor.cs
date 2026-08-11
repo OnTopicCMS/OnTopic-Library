@@ -250,9 +250,13 @@ public class ContentTypeDescriptor : Topic {
   /// </summary>
   /// <param name="contentTypeName">The string identifier for the Content Type to compare to.</param>
   /// <returns>A Boolean value stating whether the current topic implements a particular Content Type.</returns>
-  /// <requires description="The Content Type name must be specified." exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(contentTypeName)
-  /// </requires>
+  /// <exception cref="InvalidOperationException">
+  ///   <paramref name="contentTypeName"/> is null, empty, or whitespace.
+  /// </exception>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="contentTypeName"/> contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   public bool IsTypeOf(string contentTypeName) {
 
     /*--------------------------------------------------------------------------------------------------------------------------

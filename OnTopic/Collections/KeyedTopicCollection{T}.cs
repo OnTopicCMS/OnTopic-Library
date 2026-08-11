@@ -13,7 +13,7 @@ namespace OnTopic.Collections;
 /// <summary>
 ///   Provides a strongly-typed collection of <see cref="Topic"/> instances, or a derived type.
 /// </summary>
-public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
+public class KeyedTopicCollection<T>: KeyedCollection<string, T> where T : Topic {
 
   /*============================================================================================================================
   | CONSTRUCTOR
@@ -36,12 +36,15 @@ public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T>
   /// <summary>
   ///   Retrieves a <typeparamref name="T"/> by <paramref name="key"/>.
   /// </summary>
+  /// <returns>
+  ///   The <typeparamref name="T"/> associated with the <paramref name="key"/>, if found; otherwise, <c>null</c>.
+  /// </returns>
+  /// <exception cref="InvalidKeyException">
+  ///   Key names should only contain letters, numbers, hyphens, periods, and/or underscores.
+  /// </exception>
   public T? GetValue(string key) {
     TopicFactory.ValidateKey(key);
-    if (Contains(key)) {
-      return this[key];
-    }
-    return null;
+    return TryGetValue(key, out var value)? value : null;
   }
 
   /// <inheritdoc cref="GetValue(String)"/>

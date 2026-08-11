@@ -12,7 +12,7 @@ namespace OnTopic.Mapping.Annotations;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
 ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see cref=
-///   "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>.
+///   "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)"/>.
 /// </summary>
 /// <remarks>
 ///   By default, <see cref="ITopicMappingService"/> implementations will attempt to map the property of the target data
@@ -30,6 +30,10 @@ public sealed class AttributeKeyAttribute : Attribute {
   ///   Annotates a property with the <see cref="AttributeKeyAttribute"/> class by providing a (required) attribute key.
   /// </summary>
   /// <param name="key">The key value of the attribute associated with the current property.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public AttributeKeyAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
     Key                         = key;

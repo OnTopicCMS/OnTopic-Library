@@ -24,11 +24,12 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
+  ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref=
+  ///   "KeyedTopicCollection{T}"/>.
   /// </summary>
   /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
-  public ReadOnlyKeyedTopicCollection(IList<T>? innerCollection = null) : base(innerCollection ?? []) {
-    _innerCollection            = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
+  public ReadOnlyKeyedTopicCollection(KeyedTopicCollection<T>? innerCollection = null) : base(innerCollection ?? new()) {
+    _innerCollection            = innerCollection ?? new();
   }
 
   /*============================================================================================================================
@@ -51,12 +52,15 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   /// <summary>
   ///   Retrieves a <typeparamref name="T"/> by <paramref name="key"/>.
   /// </summary>
+  /// <returns>
+  ///   The <typeparamref name="T"/> associated with the <paramref name="key"/>, if found; otherwise, <c>null</c>.
+  /// </returns>
+  /// <exception cref="InvalidKeyException">
+  ///   Key names should only contain letters, numbers, hyphens, periods, and/or underscores.
+  /// </exception>
   public T? GetValue(string key) {
     TopicFactory.ValidateKey(key);
-    if (_innerCollection.Contains(key)) {
-      return _innerCollection[key];
-    }
-    return null;
+    return TryGetValue(key, out var value)? value : null;
   }
 
   /// <inheritdoc cref="GetValue(String)"/>
@@ -65,12 +69,22 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   public T? GetTopic(string key) => GetValue(key);
 
   /*============================================================================================================================
+  | METHOD: TRY GET VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Attempts to retrieve a <typeparamref name="T"/> by <paramref name="key"/>, returning whether it was found.
+  /// </summary>
+  /// <param name="key">The topic key.</param>
+  /// <param name="value">The <typeparamref name="T"/> associated with the <paramref name="key"/>, if found.</param>
+  public bool TryGetValue(string key, [NotNullWhen(true)] out T? value) => _innerCollection.TryGetValue(key, out value);
+
+  /*============================================================================================================================
   | INDEXER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Retrieves an <see cref="Topic"/> by key.
+  ///   Retrieves a <typeparamref name="T"/> by key.
   /// </summary>
   /// <param name="key">The topic key.</param>
-  public Topic this[string key] => _innerCollection[key];
+  public T this[string key] => _innerCollection[key];
 
 } //Class

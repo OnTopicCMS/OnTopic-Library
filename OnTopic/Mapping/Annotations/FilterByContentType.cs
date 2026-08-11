@@ -27,6 +27,10 @@ public sealed class FilterByContentTypeAttribute : Attribute {
   ///   Annotates a property with the <see cref="FilterByContentTypeAttribute"/> class by providing a (required) content type.
   /// </summary>
   /// <param name="contentType">The content type to filter by.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public FilterByContentTypeAttribute(string contentType) {
     TopicFactory.ValidateKey(contentType, false);
     ContentType                 = contentType;

@@ -188,6 +188,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
   /// </value>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public string ContentType {
     get => _contentType;
     [MemberNotNull(nameof(_contentType))]
@@ -212,15 +216,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The current <see cref="Topic"/>'s key, which is guaranteed to be unique among its siblings.
   /// </value>
-  /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-  ///   value is not null
-  /// </requires>
-  /// <requires
-  ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public string Key {
     get => _key;
     [MemberNotNull(nameof(_key))]
@@ -256,12 +255,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The key, as represented in the persistence layer.
   /// </value>
-  /// <requires
-  ///   description="The OriginalKey should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value?.Contains(" ")?? true
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is non-empty and contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   internal string? OriginalKey  {
     get => _originalKey;
     set {
@@ -290,12 +287,10 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// <value>
   ///   The view, as specified by the current <see cref="Topic"/>.
   /// </value>
-  /// <requires
-  ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException"
-  /// >
-  ///   !value?.Contains(" ")?? true
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is non-empty and contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   [AttributeSetter]
   public string? View {
     get =>
@@ -655,15 +650,15 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured
-  ///     as a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see
-  ///     cref="TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method is unable to find a
-  ///     local value for the attribute.
+  ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured as
+  ///     a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see cref=
+  ///     "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)" /> method is unable to find a local value for the
+  ///     attribute.
   ///   </para>
   ///   <para>
   ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref=
-  ///     "TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level
-  ///     of five "hops" in order to help avoid an infinite loop.
+  ///     "TrackedRecordCollection{TItem, TValue}.GetValue(String, Boolean)" /> method defaults to a maximum level of five
+  ///     "hops" in order to help avoid an infinite loop.
   ///   </para>
   ///   <para>
   ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
@@ -809,11 +804,11 @@ public class Topic: ITrackDirtyKeys, ITopicLazyLoadable {
   ///   existing one, depending on whether that value already exists.
   /// </summary>
   /// <remarks>
-  ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
-  ///   called by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers
-  ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
+  ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be called
+  ///   by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers from
+  ///   introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref=
   ///   "AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
-  ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
+  ///   "TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
   ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>

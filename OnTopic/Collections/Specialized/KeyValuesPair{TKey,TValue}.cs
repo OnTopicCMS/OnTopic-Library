@@ -28,7 +28,7 @@ namespace OnTopic.Collections.Specialized;
 ///     }
 ///   </code>
 /// </example>
-public class KeyValuesPair<TKey, TValue> where TValue: class, ICollection<Topic> {
+public class KeyValuesPair<TKey, TValue> where TValue: class {
 
   /*============================================================================================================================
   | CONSTRUCTOR

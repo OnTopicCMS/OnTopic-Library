@@ -11,7 +11,7 @@ namespace OnTopic.Collections;
 | CLASS: TOPIC COLLECTION
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /// <summary>
-///   Represents a collection of <see cref="Topic"/> objects.
+///   Represents a mutable, ordered collection of <see cref="Topic"/> objects.
 /// </summary>
 public class TopicCollection :  Collection<Topic> {
 

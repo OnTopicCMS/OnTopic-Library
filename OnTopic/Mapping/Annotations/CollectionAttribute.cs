@@ -38,6 +38,10 @@ public sealed class CollectionAttribute : Attribute {
   ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing an <paramref name="key"/>.
   /// </summary>
   /// <param name="key">The key value of the collection associated with the current property.</param>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is null or empty, or contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   public CollectionAttribute(string key) {
     TopicFactory.ValidateKey(key, false);
     Key                         = key;

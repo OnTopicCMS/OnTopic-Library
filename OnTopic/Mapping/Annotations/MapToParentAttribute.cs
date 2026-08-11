@@ -48,6 +48,10 @@ public sealed class MapToParentAttribute : Attribute {
   ///   The string that will be prepended to each property name when mapping to topic attributes. Defaults to the name of the
   ///   property being annotated.
   /// </summary>
+  /// <exception cref="InvalidKeyException">
+  ///   Thrown if the value is non-empty and contains characters other than letters, numbers, hyphens, periods, and/or
+  ///   underscores.
+  /// </exception>
   public string? AttributePrefix {
     get => field;
     set {

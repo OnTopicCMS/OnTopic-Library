@@ -19,37 +19,48 @@ namespace OnTopic.Collections.Specialized;
 /// <remarks>
 ///   <see cref="TrackedRecord{T}"/> records represent individual instances of values associated with a particular <see cref=
 ///   "Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
-///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with
-///   these records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
-///   "SetValue(String, TValue?, Boolean?, DateTime?)"/> for creating or "updating" a record. (Records are
-///   immutable, so updates actually involve cloning the record with updated values.)
+///   cref="TrackedRecordCollection{TItem, TValue}"/> class provides a base class with methods for working with these records,
+///   such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
+///   "SetValue(String, TValue?, Boolean?, DateTime?)"/> for creating or "updating" a record. (Records are immutable, so updates
+///   actually involve cloning the record with updated values.)
 /// </remarks>
-public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
+public abstract class TrackedRecordCollection<TItem, TValue> :
   KeyedCollection<string, TItem>, ITrackDirtyKeys
   where TItem: TrackedRecord<TValue>, new()
-  where TAttribute: Attribute
   where TValue : class
 {
 
   /*============================================================================================================================
+  | CONSTANT: MAX BASE TOPIC HOPS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   The maximum number of <see cref="Topic.BaseTopic"/> hops to crawl when resolving an inherited value.
+  /// </summary>
+  private protected const int   MaxBaseTopicHops                = 5;
+
+  /*============================================================================================================================
   | DISPATCHER
   \---------------------------------------------------------------------------------------------------------------------------*/
-  private readonly TopicPropertyDispatcher<TItem, TValue, TAttribute> _topicPropertyDispatcher;
+  private readonly TopicPropertyDispatcher<TItem, TValue> _topicPropertyDispatcher;
 
   /*============================================================================================================================
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Initializes a new instance of the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> class.
+  ///   Initializes a new instance of the <see cref="TrackedRecordCollection{TItem, TValue}"/> class.
   /// </summary>
   /// <param name="parentTopic">A reference to the topic that the current collection is bound to.</param>
-  internal TrackedRecordCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
+  /// <param name="attributeType">
+  ///   The <see cref="Attribute"/> type expected to decorate a corresponding <see cref="Topic"/> property setter, used to
+  ///   disambiguate which property a given key should be routed through.
+  /// </param>
+  internal TrackedRecordCollection(Topic parentTopic, Type attributeType) : base(StringComparer.OrdinalIgnoreCase) {
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Set properties
     \-------------------------------------------------------------------------------------------------------------------------*/
     AssociatedTopic             = parentTopic;
-    _topicPropertyDispatcher    = new(parentTopic);
+    _topicPropertyDispatcher    = new(parentTopic, attributeType);
 
   }
 
@@ -107,12 +118,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   Returns <c>true</c> if the <see cref="TrackedRecord{T}"/> is marked as <see cref="TrackedRecord{T}.IsDirty"/>;
   ///   otherwise <c>false</c>.
   /// </returns>
-  public bool IsDirty(string key) {
-    if (!Contains(key)) {
-      return false;
-    }
-    return this[key].IsDirty;
-  }
+  public bool IsDirty(string key) => TryGetValue(key, out var trackedRecord) && trackedRecord.IsDirty;
 
   /*============================================================================================================================
   | METHOD: MARK CLEAN
@@ -128,8 +134,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// <remarks>
   ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
   ///   mark the collection, and all <see cref="TrackedRecord{T}"/> instances it contains, as clean. After this, <see cref=
-  ///   "IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedRecord{T}"/> instances are added, modified,
-  ///   or removed.
+  ///   "IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedRecord{T}"/> instances are added, modified, or
+  ///   removed.
   /// </remarks>
   /// <param name="version">
   ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last saved. This corresponds to the <see
@@ -167,8 +173,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     if (AssociatedTopic.IsNew)  {
       return;
     }
-    else if (Contains(key)) {
-      var trackedRecord         = this[key];
+    else if (TryGetValue(key, out var trackedRecord)) {
       if (trackedRecord.IsDirty && AllowClean(trackedRecord)) {
         SetValue(trackedRecord.Key, trackedRecord.Value, false, false, version?? DateTime.UtcNow);
       }
@@ -207,7 +212,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   [return: NotNullIfNotNull(nameof(defaultValue))]
   public TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
-    return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? 5 : 0);
+    return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? MaxBaseTopicHops : 0);
   }
 
   /// <summary>
@@ -228,14 +233,10 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   true</c>.
   /// </param>
   /// <returns>The <typeparamref name="TValue"/> value for the <typeparamref name="TItem"/>.</returns>
-  /// <requires description="The key name must be specified." exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(key)
-  /// </requires>
-  /// <requires
-  ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-  ///   exception="T:System.ArgumentException">
-  ///   !key.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="key"/> is non-empty and contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   /// <requires
   ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
   ///   maxHops &gt;= 0
@@ -265,8 +266,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Look up value from collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (Contains(key)) {
-      value                     = this[key].Value;
+    if (TryGetValue(key, out var trackedRecord)) {
+      value                     = trackedRecord.Value;
     }
 
     if (value is "") {
@@ -292,8 +293,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       inheritFromParent &&
       ParentCollection is not null
     ) {
-      // Literal 5 preserves the base-inheritance restart applied by the public overload
-      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent, 5, autoLoad);
+      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent, MaxBaseTopicHops, autoLoad);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
@@ -314,19 +314,19 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   | METHOD: PARENT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> on the <see
-  ///   cref="Topic.Parent"/>, if available.
+  ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue}"/> on the <see cref=
+  ///   "Topic.Parent"/>, if available.
   /// </summary>
-  protected abstract TrackedRecordCollection<TItem, TValue, TAttribute>? ParentCollection { get; }
+  protected abstract TrackedRecordCollection<TItem, TValue>? ParentCollection { get; }
 
   /*============================================================================================================================
   | METHOD: BASE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> on the <see
+  ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue}"/> on the <see
   ///   cref="Topic.BaseTopic"/>, if available.
   /// </summary>
-  protected abstract TrackedRecordCollection<TItem, TValue, TAttribute>? BaseCollection { get; }
+  protected abstract TrackedRecordCollection<TItem, TValue>? BaseCollection { get; }
 
   /*============================================================================================================================
   | METHOD: SET VALUE
@@ -337,10 +337,10 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// </summary>
   /// <remarks>
   ///   Working with records can be a bit cumbersome, and especially in determining if a value should be marked as <see cref=
-  ///   "TrackedRecord{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(
-  ///   String,TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously allowing
-  ///   callers to explicitly set whether the <see cref="TrackedRecord{T}"/> instances should be marked as dirty�via the
-  ///   <paramref name="markDirty"/> parameter�and, optionally, what the <paramref name="version"/> should be.
+  ///   "TrackedRecord{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref=
+  ///   "SetValue(String,TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously
+  ///   allowing callers to explicitly set whether the <see cref="TrackedRecord{T}"/> instances should be marked as dirty�via
+  ///   the <paramref name="markDirty"/> parameter�and, optionally, what the <paramref name="version"/> should be.
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
   /// <param name="value">The text value for the <see cref="TrackedRecord{T}"/>.</param>
@@ -351,10 +351,10 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
   /// <param name="version">
-  ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last modified. This is intended
-  ///   exclusively for use when populating the topic graph from a persistent data store as a means of indicating the current
-  ///   version for each <see cref="TrackedRecord{T}"/>. This is used when e.g. importing values to determine if the existing
-  ///   value is newer than the source value.
+  ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last modified. This is intended exclusively
+  ///   for use when populating the topic graph from a persistent data store as a means of indicating the current version for
+  ///   each <see cref="TrackedRecord{T}"/>. This is used when e.g. importing values to determine if the existing value is newer
+  ///   than the source value.
   /// </param>
   /// <requires
   ///   description="The key must be specified for the TrackedItem{T} key/value pair."
@@ -379,37 +379,31 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   ///   existing one, depending on whether that value already exists.
   /// </summary>
   /// <remarks>
-  ///   When the <paramref name="enforceBusinessLogic"/> parameter is called, no attempt will be made to route the call
-  ///   through the corresponding properties, if available. As such, this is intended specifically to be called by internal
-  ///   properties as a means of avoiding the property being called again when a caller uses the property's setter directly.
+  ///   When the <paramref name="enforceBusinessLogic"/> parameter is called, no attempt will be made to route the call through
+  ///   the corresponding properties, if available. As such, this is intended specifically to be called by internal properties
+  ///   as a means of avoiding the property being called again when a caller uses the property's setter directly.
   /// </remarks>
   /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
   /// <param name="value">The text value for the <see cref="TrackedRecord{T}"/>.</param>
   /// <param name="enforceBusinessLogic">
-  ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
-  ///   This should be set to <c>false</c> if setting items from internal properties in order to avoid an infinite loop.
+  ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced. This
+  ///   should be set to <c>false</c> if setting items from internal properties in order to avoid an infinite loop.
   /// </param>
   /// <param name="markDirty">
-  ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
-  ///   as <c>true</c> if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+  ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked as
+  ///   <c>true</c> if the value is new or has changed from a previous value. By setting this parameter, that behavior is
   ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
   ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
   /// </param>
   /// <param name="version">
   ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
-  ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
-  ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
+  ///   populating the topic graph from a persistent data store as a means of indicating the current version for each attribute.
+  ///   This is used when e.g. importing values to determine if the existing value is newer than the source value.
   /// </param>
-  /// <requires
-  ///   description="The key must be specified for the AttributeRecord key/value pair."
-  ///   exception="T:System.ArgumentNullException">
-  ///   !String.IsNullOrWhiteSpace(key)
-  /// </requires>
-  /// <requires
-  ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-  ///   exception="T:System.ArgumentException">
-  ///   !value.Contains(" ")
-  /// </requires>
+  /// <exception cref="InvalidKeyException">
+  ///   <paramref name="key"/> is non-empty and contains characters other than letters, numbers, hyphens, periods,
+  ///   and/or underscores.
+  /// </exception>
   internal void SetValue(
     string key,
     TValue? value,
@@ -426,11 +420,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve original item
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TItem? originalItem         = null;
-
-    if (Contains(key)) {
-      originalItem              = this[key];
-    }
+    TryGetValue(key, out var originalItem);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Update from business logic
@@ -459,7 +449,7 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       else if (markDirty.HasValue) {
         markAsDirty             = markDirty.Value;
       }
-      else if (!originalItem.Value?.Equals(value)?? false) {
+      else if (!originalItem.Value?.Equals(value)?? value is not null) {
         markAsDirty             = true;
       }
       else if (!version.HasValue) {
@@ -533,12 +523,12 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     If a settable property is available corresponding to the <see cref="TrackedRecord{T}.Key"/>, the call should be
-  ///     routed through that to ensure local business logic is enforced, if it hasn't already been enforced.
+  ///     If a settable property is available corresponding to the <see cref="TrackedRecord{T}.Key"/>, the call should be routed
+  ///     through that to ensure local business logic is enforced, if it hasn't already been enforced.
   ///   </para>
   ///   <para>
-  ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
-  ///     is inserted. This conveniently provides the name of the <see cref="TrackedRecord{T}.Key"/> so it's clear what key is
+  ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key is
+  ///     inserted. This conveniently provides the name of the <see cref="TrackedRecord{T}.Key"/> so it's clear what key is
   ///     being duplicated.
   ///   </para>
   /// </remarks>
@@ -564,8 +554,8 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
       }
       else {
         throw new ArgumentException(
-          $"An {nameof(TItem)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
-          $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(TItem)}s are associated " +
+          $"An {typeof(TItem).Name} with the Key '{item.Key}' already exists. The Value of the existing item is " +
+          $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {typeof(TItem).Name}s are associated " +
           $"with the {nameof(Topic)} '{AssociatedTopic.GetUniqueKey()}'.",
           nameof(item)
         );
@@ -625,21 +615,20 @@ public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
   | OVERRIDE: CLEAR ITEMS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Intercepts all attempts to clear the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/>, to ensure that
-  ///   it is appropriately marked as <see cref="IsDirty()"/>.
+  ///   Intercepts all attempts to clear the <see cref="TrackedRecordCollection{TItem, TValue}"/>, to ensure that it is
+  ///   appropriately marked as <see cref="IsDirty()"/>.
   /// </summary>
   /// <remarks>
   ///   In order to ensure any business logic is enforced, <see cref="ClearItems()"/> loops through every <see cref=
-  ///   "TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> and explicitly calls <see
-  ///   cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/>. This is slower, but ensures that any state tracking and null
-  ///   validation that occurs in the properties is maintained. Fortunately, this is a rare use case; we typically expect
-  ///   attributes to be handled individually.
+  ///   "TrackedRecord{T}"/> in the <see cref="TrackedRecordCollection{TItem, TValue}"/> and explicitly calls <see cref=
+  ///   "KeyedCollection{TKey, TItem}.Remove(TKey)"/>. This is slower, but ensures that any state tracking and null validation
+  ///   that occurs in the properties is maintained. Fortunately, this is a rare use case; we typically expect attributes to be
+  ///   handled individually.
   /// </remarks>
   protected override void ClearItems() {
     foreach (var item in Items.ToList()) {
       Remove(item);
     }
-    base.ClearItems();
   }
 
   /*============================================================================================================================
