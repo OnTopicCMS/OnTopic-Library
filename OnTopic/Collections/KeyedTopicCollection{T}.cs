@@ -36,6 +36,12 @@ public class KeyedTopicCollection<T>: KeyedCollection<string, T> where T : Topic
   /// <summary>
   ///   Retrieves a <typeparamref name="T"/> by <paramref name="key"/>.
   /// </summary>
+  /// <returns>
+  ///   The <typeparamref name="T"/> associated with the <paramref name="key"/>, if found; otherwise, <c>null</c>.
+  /// </returns>
+  /// <exception cref="InvalidKeyException">
+  ///   Key names should only contain letters, numbers, hyphens, periods, and/or underscores.
+  /// </exception>
   public T? GetValue(string key) {
     TopicFactory.ValidateKey(key);
     return TryGetValue(key, out var value)? value : null;
