@@ -150,6 +150,10 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
   /*============================================================================================================================
   | METHOD: SET VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <inheritdoc/>
+  public override void SetValue(string key, string? value, bool? markDirty = null, DateTime? version = null)
+    => SetValue(key, value, markDirty, version, null);
+
   /// <summary>
   ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
   ///   depending on whether that value already exists.
