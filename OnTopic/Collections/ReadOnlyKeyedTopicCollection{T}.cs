@@ -66,6 +66,16 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   public T? GetTopic(string key) => GetValue(key);
 
   /*============================================================================================================================
+  | METHOD: TRY GET VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Attempts to retrieve a <typeparamref name="T"/> by <paramref name="key"/>, returning whether it was found.
+  /// </summary>
+  /// <param name="key">The topic key.</param>
+  /// <param name="value">The <typeparamref name="T"/> associated with the <paramref name="key"/>, if found.</param>
+  public bool TryGetValue(string key, [NotNullWhen(true)] out T? value) => _innerCollection.TryGetValue(key, out value);
+
+  /*============================================================================================================================
   | INDEXER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
