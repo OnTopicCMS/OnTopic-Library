@@ -45,7 +45,9 @@ public class TopicMultiMap: KeyedCollection<string, KeyValuesPair<string, TopicC
   ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
   /// </summary>
   /// <remarks>
-  ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
+  ///   For an existing <paramref name="key"/>, returns a reference to the underlying <see cref="TopicCollection"/>; changes
+  ///   made to it are reflected in the <see cref="TopicMultiMap"/>. For a key that doesn't exist, returns a new, disconnected,
+  ///   empty <see cref="TopicCollection"/> instead of adding the key; any changes to it are discarded.
   /// </remarks>
   /// <param name="key">The key of the collection to be returned.</param>
   public TopicCollection GetValues(string key) {
