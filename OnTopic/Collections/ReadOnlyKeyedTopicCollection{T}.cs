@@ -54,10 +54,7 @@ public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : T
   /// </summary>
   public T? GetValue(string key) {
     TopicFactory.ValidateKey(key);
-    if (_innerCollection.Contains(key)) {
-      return _innerCollection[key];
-    }
-    return null;
+    return TryGetValue(key, out var value)? value : null;
   }
 
   /// <inheritdoc cref="GetValue(String)"/>

@@ -38,10 +38,7 @@ public class KeyedTopicCollection<T>: KeyedCollection<string, T> where T : Topic
   /// </summary>
   public T? GetValue(string key) {
     TopicFactory.ValidateKey(key);
-    if (Contains(key)) {
-      return this[key];
-    }
-    return null;
+    return TryGetValue(key, out var value)? value : null;
   }
 
   /// <inheritdoc cref="GetValue(String)"/>

@@ -50,10 +50,7 @@ public class TopicMultiMap: KeyedCollection<string, KeyValuesPair<string, TopicC
   /// <param name="key">The key of the collection to be returned.</param>
   public TopicCollection GetValues(string key) {
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
-    if (Contains(key)) {
-      return this[key].Values;
-    }
-    return new();
+    return TryGetValue(key, out var pair)? pair.Values : new();
   }
 
   /// <inheritdoc cref="GetValues(String)"/>

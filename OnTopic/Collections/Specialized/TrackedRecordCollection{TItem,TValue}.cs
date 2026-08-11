@@ -118,12 +118,7 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
   ///   Returns <c>true</c> if the <see cref="TrackedRecord{T}"/> is marked as <see cref="TrackedRecord{T}.IsDirty"/>;
   ///   otherwise <c>false</c>.
   /// </returns>
-  public bool IsDirty(string key) {
-    if (!Contains(key)) {
-      return false;
-    }
-    return this[key].IsDirty;
-  }
+  public bool IsDirty(string key) => TryGetValue(key, out var trackedRecord) && trackedRecord.IsDirty;
 
   /*============================================================================================================================
   | METHOD: MARK CLEAN
@@ -178,8 +173,7 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
     if (AssociatedTopic.IsNew)  {
       return;
     }
-    else if (Contains(key)) {
-      var trackedRecord         = this[key];
+    else if (TryGetValue(key, out var trackedRecord)) {
       if (trackedRecord.IsDirty && AllowClean(trackedRecord)) {
         SetValue(trackedRecord.Key, trackedRecord.Value, false, false, version?? DateTime.UtcNow);
       }
@@ -276,8 +270,8 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Look up value from collection
     \-------------------------------------------------------------------------------------------------------------------------*/
-    if (Contains(key)) {
-      value                     = this[key].Value;
+    if (TryGetValue(key, out var trackedRecord)) {
+      value                     = trackedRecord.Value;
     }
 
     if (value is "") {
@@ -436,11 +430,7 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
     /*--------------------------------------------------------------------------------------------------------------------------
     | Retrieve original item
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TItem? originalItem         = null;
-
-    if (Contains(key)) {
-      originalItem              = this[key];
-    }
+    TryGetValue(key, out var originalItem);
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | Update from business logic
