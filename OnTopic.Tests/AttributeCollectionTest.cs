@@ -654,6 +654,31 @@ public class AttributeCollectionTest {
   }
 
   /*============================================================================================================================
+  | TEST: CLEAR: EXISTING VALUES: RECORDS ALL DELETED ITEMS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Sets multiple attributes on a topic instance, calls <see cref="IList.Clear()"/>, and confirms that every cleared key is
+  ///   recorded in <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.DeletedItems"/>, thus ensuring <see cref=
+  ///   "AttributeCollection.ClearItems()"/> routes every removal through <see cref="AttributeCollection.RemoveItem(Int32)"/>
+  ///   instead of silently wiping items via the base class.
+  /// </summary>
+  [Fact]
+  public void Clear_ExistingValues_RecordsAllDeletedItems() {
+
+    var topic                   = new Topic("Test", "Container", null, 1);
+
+    topic.Attributes.SetValue("Foo", "Bar", false);
+    topic.Attributes.SetValue("Baz", "Qux", false);
+
+    topic.Attributes.Clear();
+
+    Assert.Contains("Foo", topic.Attributes.DeletedItems);
+    Assert.Contains("Baz", topic.Attributes.DeletedItems);
+    Assert.Equal(2, topic.Attributes.DeletedItems.Count);
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
