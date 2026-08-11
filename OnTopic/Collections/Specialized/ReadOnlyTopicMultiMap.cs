@@ -35,13 +35,7 @@ public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTo
   ///   Provides access to the underlying <see cref="TopicMultiMap"/> from which the <see cref="ReadOnlyTopicMultiMap"/> will
   ///   derive values.
   /// </summary>
-  /// <returns>
-  ///   The <see cref="Source"/> must be passed in via either the public <see cref="ReadOnlyTopicMultiMap(TopicMultiMap)"/>
-  ///   constructor, or must be set manually from the constructor of a derived class when using the protected <see cref=
-  ///   "ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
-  /// </returns>
-  [NotNull, DisallowNull]
-  private protected TopicMultiMap? Source { get; init; }
+  private protected TopicMultiMap Source { get; init; }
 
   /*============================================================================================================================
   | PROPERTY: KEYS
