@@ -1259,6 +1259,30 @@ public class AttributeCollectionTest {
   }
 
   /*============================================================================================================================
+  | TEST: SET VALUE: NULL ORIGINAL VALUE: UPDATES VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Adds an <see cref="AttributeRecord"/> directly via <see cref="KeyedCollection{TKey, TItem}.Add(TItem)"/> with a <c>null
+  ///   </c> <see cref="TrackedRecord{T}.Value"/>, thus bypassing the standard call to <see cref=
+  ///   "AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/>, the only path guaranteed never to preserve a
+  ///   null-valued asstribute and then calls <see cref="AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/>
+  ///   with a new value and no <c>version</c>. Confirms that the new value is actually saved, and not silently discarded,
+  ///   guarding the public <c>Add()</c> entry point even though the call to <see cref=
+  ///   "AttributeCollection.SetValue(String, String?, Boolean?, DateTime?)"/> itself never produces this state.
+  /// </summary>
+  [Fact]
+  public void SetValue_NullOriginalValue_UpdatesValue() {
+
+    var topic                   = new Topic("Test", "Container", null, 1);
+
+    topic.Attributes.Add(new("Attribute", null));
+    topic.Attributes.SetValue("Attribute", "New Value");
+
+    Assert.Equal("New Value", topic.Attributes.GetValue("Attribute"));
+
+  }
+
+  /*============================================================================================================================
   | TEST: GET VALUE: INHERIT FROM PARENT: RETURNS PARENT VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
