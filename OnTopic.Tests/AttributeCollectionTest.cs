@@ -596,6 +596,27 @@ public class AttributeCollectionTest {
   }
 
   /*============================================================================================================================
+  | TEST: SET VALUE: BASE TYPED CALLER: SETS VALUE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Calls <see cref="TrackedRecordCollection{TItem, TValue}.SetValue(String, TValue, Boolean?, DateTime?)"/> through a
+  ///   base-typed <see cref="TrackedRecordCollection{TItem, TValue}"/> reference to the same <see cref="AttributeCollection"/>
+  ///   instance, and confirms that the value is set correctly, verifying that the four-parameter overload dispatches through
+  ///   the <see cref="AttributeCollection"/> override rather than being shadowed by it.
+  /// </summary>
+  [Fact]
+  public void SetValue_BaseTypedCaller_SetsValue() {
+
+    var topic                   = new Topic("Test", "Container");
+    var attributes               = (TrackedRecordCollection<AttributeRecord, string>)topic.Attributes;
+
+    attributes.SetValue("Foo", "Bar");
+
+    Assert.Equal("Bar", topic.Attributes.GetValue("Foo"));
+
+  }
+
+  /*============================================================================================================================
   | TEST: SET VALUE: VALUE CHANGED: IS DIRTY?
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
