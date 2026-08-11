@@ -233,7 +233,7 @@ public class AttributeCollection : TrackedRecordCollection<AttributeRecord, stri
     var sourceAttributes        = (AttributeCollection?)this;
     var attributes              = new AttributeDictionary();
     var count                   = 0;
-    while (sourceAttributes is  not null && ++count < 5) {
+    while (sourceAttributes is  not null && ++count < MaxBaseTopicHops) {
       if (sourceAttributes.LoadState is LoadState.NotLoaded) {
         var associatedTopic     = (ITopicLazyLoadable)sourceAttributes.AssociatedTopic;
         associatedTopic.EnsureLoaded(TopicPayload.ExtendedAttributes).GetAwaiter().GetResult();

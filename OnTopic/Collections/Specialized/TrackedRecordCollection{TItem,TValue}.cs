@@ -31,6 +31,14 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
 {
 
   /*============================================================================================================================
+  | CONSTANT: MAX BASE TOPIC HOPS
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   The maximum number of <see cref="Topic.BaseTopic"/> hops to crawl when resolving an inherited value.
+  /// </summary>
+  private protected const int   MaxBaseTopicHops                = 5;
+
+  /*============================================================================================================================
   | DISPATCHER
   \---------------------------------------------------------------------------------------------------------------------------*/
   private readonly TopicPropertyDispatcher<TItem, TValue> _topicPropertyDispatcher;
@@ -210,7 +218,7 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
   [return: NotNullIfNotNull(nameof(defaultValue))]
   public TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
     Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
-    return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? 5 : 0);
+    return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? MaxBaseTopicHops : 0);
   }
 
   /// <summary>
@@ -295,8 +303,7 @@ public abstract class TrackedRecordCollection<TItem, TValue> :
       inheritFromParent &&
       ParentCollection is not null
     ) {
-      // Literal 5 preserves the base-inheritance restart applied by the public overload
-      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent, 5, autoLoad);
+      value                     = ParentCollection.GetValue(key, defaultValue, inheritFromParent, MaxBaseTopicHops, autoLoad);
     }
 
     /*--------------------------------------------------------------------------------------------------------------------------
